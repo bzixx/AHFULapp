@@ -1,0 +1,39 @@
+
+name: Verify README (required content)
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  verify-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ensure README.md exists
+        shell: bash
+        run: |
+          if [[ ! -f "README.md" ]]; then
+            echo "::error file=README.md::README.md is missing."
+            exit 1
+          fi
+
+      - name: Verify README.md contains required content
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          required=(
+            "A Helpful Fitness Utilization Logger"
+          )
+
+          for text in "${required[@]}"; do
+            if ! grep -Fq "$text" README.md; then
+              echo "::error file=README.md::Missing required text: $text"
+              exit 1
+            fi
+          done
+
+          echo "All required README content is present"
