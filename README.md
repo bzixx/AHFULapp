@@ -1,6 +1,5 @@
 # AHFULapp
-A (Very) Helpful Fitness Utilization Logger
+A Helpful Fitness Utilization Logger
 
-A test addition to the readme
+Another test addition to the readme. Trying to break it into branches now
 
-Another push that should fail the github action
