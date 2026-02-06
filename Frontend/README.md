@@ -1,10 +1,9 @@
-## Logs Don't Lie -- AWS IAM Threat Mapping Visualization -- Frontend Technical Documentation
+## AHFUL Application -- Frontend Technical Documentation
 
 This directory holds all information required for the Frontend to render and load for the user.  
 Key components:
 All Navigation Pages for the user
 Custom Auth Context component for persistent authentication
-Graphing compnents to visual IAM Check results
 
 ### Frontend Directory Structure
 
@@ -51,13 +50,14 @@ frontend/
 
 ## Setup Instructions
 1. **Install Dependencies**:
-    - In vscode, open a terminal (ctrl + ~) and run:
+    - In vscode, open a terminal (ctrl + ~) 
+        Navigat to the Frontend folder then run the following: 
         
         ```bash
         npm install
-        npm run serve:dev
+        npm run dev
         #Use Ctrl+C to terminate development process.
         ```
 
 2. **Access the Application**:
-    - Open your browser and navigate to `http://localhost:8000`.
+    - Open your browser and navigate to `http://localhost:5173`.
