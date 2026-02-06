@@ -1,6 +1,6 @@
 import React from 'react'
 
-function App() {
+function AHFULApp() {
   return (
     <div>
       <h1>Hello from React!</h1>
@@ -9,4 +9,4 @@ function App() {
   )
 }
 
-export default App
+export default AHFULApp
