@@ -1,20 +1,21 @@
-import os
-import certifi
+import os, certifi
 from flask import Flask
 from flask_cors import CORS
 from flask_session import Session
 from dotenv import load_dotenv
 from pymongo import MongoClient
+# AI Note: ProxyFix is used to ensure Flask correctly identifies the original request scheme (HTTP/HTTPS) when behind a proxy like CloudFront. This is crucial for CORS and secure cookie handling.
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-
-# Load environment variables
+# Load environment variables Before Creating the Flask App
 load_dotenv()
 
+# Dependency Injection Functions for mail.
 def inject_util_services(app: Flask):
     from flaskr.services.util.mail import BrevoMailer
     app.brevo_mailer = BrevoMailer()
 
+# Dependency Injection Functions for security and authentication.
 def inject_security_services(app: Flask):
     from flaskr.services.security.google_auth_service import GoogleAuthService
     from flaskr.services.security.session_service import SessionService
@@ -23,34 +24,26 @@ def inject_security_services(app: Flask):
     app.google_auth_service = GoogleAuthService(GOOGLE_CLIENT_ID)
     app.session_service = SessionService()
 
+# Dependency Injection Functions for database services.
 def inject_db_services(app: Flask):
     from flaskr.services.util.db import get_db
-    from flaskr.services.mongodb.role_attempts_DBsrv import RoleAttemptsDBService
-    from flaskr.services.mongodb.AWS_creds_DBsrv import AwsCredsDBService
     from flaskr.services.mongodb.report_DBsrv import ReportDBService
     from flaskr.services.mongodb.user_service import UserService
 
-    app.role_attempt_service = RoleAttemptsDBService(lambda: get_db())
-    app.AWS_creds_service = AwsCredsDBService(lambda: get_db())
     app.report_service = ReportDBService(lambda: get_db())
     app.user_service = UserService(lambda: get_db())
 
+# Register Blueprints for modular route organization.
 def register_blueprints(app):
-    from flaskr.API_routes.awscreds_controller import awscreds_bp
-    from flaskr.API_routes.role_attempts_controller import role_attempts_blueprint
     from flaskr.API_routes.reports_controller import reports_bp
     from flaskr.API_routes.email_controller import email_bp
-    from flaskr.API_routes.multi_account_controller import multi_account_bp
     from flaskr.API_routes.auth_controller import auth_bp
 
-    app.register_blueprint(awscreds_bp)
-    app.register_blueprint(role_attempts_blueprint)
     app.register_blueprint(reports_bp)
     app.register_blueprint(email_bp)
-    app.register_blueprint(multi_account_bp)
     app.register_blueprint(auth_bp)
 
-# Application factory
+# Application factory, creates and configures the Flask app instance.
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     # Makes Flask aware it's behind a proxy (for HTTPS handling)
@@ -80,10 +73,6 @@ def create_app(test_config=None):
         'https://localhost:8000',
         'https://localhost:5000',
         'http://localhost:5000',
-        'https://d276768syktl8n.cloudfront.net',  # CloudFront production
-        'https://www.threatmappingapi.org',  # Custom domain frontend
-        'https://api.threatmappingapi.org',  # Custom domain API
-        'https://threat-mapping-backend-prod.eba-4y2dpfff.us-east-1.elasticbeanstalk.com',  # Backend URL
     ]
     CORS(app, supports_credentials=True, origins=allowed_origins, 
          allow_headers=['Content-Type', 'Authorization'],
@@ -117,5 +106,5 @@ def create_app(test_config=None):
 
     @app.route("/")
     def root():
-        return {"message": "ThreatMappingAPI v1.1 - CORS Updated"}, 200
+        return {"message": "AHFUL CORS Updated Successfully"}, 200
     return app

@@ -34,19 +34,28 @@ frontend/
 │   ├── services/                               # Frontend API services
 │   │   └── threatMappingApi.js                 # Frontend API client file to allow backend communication.
 |   |   
-│   ├── App.jsx                                 # Main application with router & DOM rendering
-│   ├── index.jsx                               # Entry point, gets bundled to public/
+│   ├── AHFULApp.jsx                                 # Main application with router & DOM rendering
+│   ├── main.jsx                               # Entry point, gets bundled to dist/
 │   └── siteStyles.css                          # Site CSS File.  Provides Styling for the enitre project
 |  
-├── public/                                     # Static assets and build output
-│   └── index.html                              # Main HTML file for the application
+├── dist/                                     # Static assets and build output
+│   ├── assets/ 
+│   └── index.html                             #Static Assets
 |       (Other files will be generated here for JS and CSS from react.)
 |
-├── package.json                                # Dependencies and build scripts
+├── node_modules/                                     # Node assets and build output
+│   └── misc                                        #Node Assets
+|
 ├── biome.json                                  # Code formatting configuration
-└── README.md                                   # Specific frontend documentation
-```
+├── index.html                              # Main HTML file for the application
+├── package.json                                # Dependencies and build scripts
+├── package-lock.json                                # Dependencies and build scripts
+├── README.md                                   # Specific frontend documentation
+└── vite.config.js                              #Vite configuration file
 
+
+
+```
 
 ## Setup Instructions
 1. **Install Dependencies**:
