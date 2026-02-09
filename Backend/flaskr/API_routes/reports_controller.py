@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify, request, current_app
 from flaskr.API_routes.decorators.auth_decorator import auth_required
-from flaskr.AWS_core.AWSClientManager import AWSClientManager
 import flaskr.services.util.report as reportService
 from flaskr.services.mongodb.report_DBsrv import ReportDBService
 
