@@ -2,7 +2,6 @@
 from enum import Enum
 from datetime import datetime
 
-from flaskr.AWS_core.AWSClientManager import AWSClientManager
 
 class ReportType(Enum):
     CRED_COMPLIANCE = "cred_compliance"
