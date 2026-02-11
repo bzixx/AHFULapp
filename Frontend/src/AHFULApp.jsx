@@ -1,11 +1,17 @@
-import React from 'react'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Home } from "./src/pages/Home/Home.jsx";
+import { Layout } from "./layout.jsx";
+import "./siteStyles.css";
 
 function AHFULApp() {
   return (
-    <div>
-      <h1>Hello from React!</h1>
-      <p>Your app is running!</p>
-    </div>
+  <Router>
+    <Routes>
+      <Route element={<Layout/>}>
+        <Route path="/" element={<Home/>}/>
+      </Route>
+    </Routes>
+  </Router>
   )
 }
 
