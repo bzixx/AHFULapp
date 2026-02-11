@@ -46,7 +46,7 @@ pip install -r requirements.txt
 
 Run Backend App
 ```bash
-py run.py
+python -m flask --app flaskr run --debug
 ```
 
 # Create and configure .env file in flaskr/ directory
