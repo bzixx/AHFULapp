@@ -2,7 +2,7 @@ import { useAuth } from "../functions/LDLAuthContext";
 import { Link } from "react-router-dom";
 
 import CustomLDLLogin from "../forms/CustomLDLLogin";
-import LoadingPage from '../pages/LoadingPage';
+import LoadingPage from './LoadingPage';
 import SessionCard from "../displays/SessionCard";
 import "../../siteStyles.css";
 
