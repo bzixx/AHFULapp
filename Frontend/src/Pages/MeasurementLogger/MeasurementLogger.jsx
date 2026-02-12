@@ -1,6 +1,6 @@
 import React from "react";
 import "./MeasurementLogger.css";
-import "../../../siteStyles.css";
-export default function MeasurementLogger() {
+import "../../SiteStyles.css";
+export function MeasurementLogger() {
     return <h1>MeasurementLogger</h1>
 }

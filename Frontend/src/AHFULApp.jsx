@@ -1,16 +1,16 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { CreateTemplate } from "./components/pages/CreateTemplate/CreateTemplate.jsx";
-import { ExerciseLogger } from "./components/pages/ExerciseLogger/ExerciseLogger.jsx";
-import { ExploreWorkouts } from "./components/pages/ExploreWorkouts/ExploreWorkouts.jsx";
-import { FoodLog } from "./components/pages/FoodLog/FoodLog.jsx";
-import { Home } from "./components/pages/Home/Home.jsx";
-import { Login } from "./components/pages/Login/Login.jsx";
-import { Map } from "./components/pages/Map/Map.jsx";
-import { MeasurementLogger } from "./components/pages/MeasurementLogger/MeasurementLogger.jsx";
-import { Profile } from "./components/pages/Profile/Profile.jsx";
-import { TOS } from "./components/pages/TOS/TOS.jsx";
-import { WorkoutHistory } from "./components/pages/WorkoutHistory/WorkoutHistory.jsx";
-import { Layout } from "./layout.jsx"
+import { CreateTemplate } from "./Pages/CreateTemplate/CreateTemplate.jsx";
+import { ExerciseLogger } from "./Pages/ExerciseLogger/ExerciseLogger.jsx";
+import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
+import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
+import { Home } from "./Pages/Home/Home.jsx";
+import { Login } from "./Pages/Login/Login.jsx";
+import { Map } from "./Pages/map/map.jsx";
+import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
+import { Profile } from "./Pages/Profile/Profile.jsx";
+import { TOS } from "./Pages/TOS/TOS.jsx";
+import { WorkoutHistory } from "./Pages/WorkoutHistory/WorkoutHistory.jsx";
+import { Layout } from "./Layout.jsx"
 import "./siteStyles.css";
 
 function AHFULApp() {

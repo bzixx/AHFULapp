@@ -1,6 +1,6 @@
 import React from "react";
 import "./Login.css";
-import "../../../siteStyles.css";
-export default function Login() {
+import "../../SiteStyles.css";
+export function Login() {
     return <h1>Login</h1>
 }

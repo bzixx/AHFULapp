@@ -11,7 +11,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../functions/LDLAuthContext';
 import { threatMappingApi } from '../../services/threatMappingApi';
-import LoadingPage from '../pages/LoadingPage';
+import LoadingPage from './LoadingPage';
 import '../../siteStyles.css';
 import NewAWSCredentialsForm from '../forms/NewAWSCredentialsForm';
 import AWSCredsList from '../forms/AWSCredsList';

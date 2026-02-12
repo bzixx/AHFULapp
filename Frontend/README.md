@@ -8,44 +8,72 @@ Custom Auth Context component for persistent authentication
 ### Frontend Directory Structure
 
 ```
-frontend/
-├── src/
-│   ├── components/
-│   │   ├── displays/                           # React Visualization components (Shows content)
-│   │   │   ├── AWSCredsList.jsx                # Lists all saved AWS credentials for current user 
-│   │   │   ├── SessionCard.jsx                 # Displays the information of the currently logged in user session.
-│   │   |   └── graph/                          # Main Graph Page components folder
-│   │   │       ├── GraphFilter.jsx             # Switch for enabling Filtering and Basic Email submission setup. 
-│   │   │       └── ThreatMappingPageD3.jsx     # Map generation, management, & display
-|   |   | 
-│   │   ├── forms/                              # React Form components (Contain Submit Button)
-│   │   │   └── CustomLDLLogin.jsx           # Custom component for Google Sign-In integration
-|   |   | 
-|   |   │── functions/                          # React Function components (Not visually shown in to user)
-│   │   │   └── LDLAuthContext.jsx           #Function for Global Auth Context
-|   |   |   
-│   │   └── pages/                              # React Page components (Base page componets to show)
-│   │       ├── AwsCredentialsSelectorPage.jsx  # AWS credentials selector form to select the desired creds and run IAM check
-│   │       ├── LoadingPage.jsx                 # Loading Page that is displayed whenever the program is laoding
-│   │       ├── LoginPage.jsx                   # Login Page is the inital landing page of the website
-│   │       ├── Navigation.jsx                  # Nav Bar for the Website, shown on all pages.
-│   │       └── ThreatMappingPage.jsx           # Main Threat Mapping page to display graphical results of previous scans.
-|   |   
-│   ├── services/                               # Frontend API services
-│   │   └── threatMappingApi.js                 # Frontend API client file to allow backend communication.
-|   |   
-│   ├── App.jsx                                 # Main application with router & DOM rendering
-│   ├── index.jsx                               # Entry point, gets bundled to public/
-│   └── siteStyles.css                          # Site CSS File.  Provides Styling for the enitre project
-|  
-├── public/                                     # Static assets and build output
-│   └── index.html                              # Main HTML file for the application
-|       (Other files will be generated here for JS and CSS from react.)
-|
-├── package.json                                # Dependencies and build scripts
-├── biome.json                                  # Code formatting configuration
-└── README.md                                   # Specific frontend documentation
-```
+    frontend/
+    ├── images/
+    │   └── Flex.ico
+    ├── src/
+    │   ├── components/
+    │   │   ├── Calendar/
+    │   │   │   ├── Calendar.css
+    │   │   │   └── Calendar.jsx
+    │   │   ├── HeatMap/
+    │   │   │   ├── HeatMap.css
+    │   │   │   └── HeatMap.jsx
+    │   │   ├── Navbar/
+    │   │   │   ├── Navbar.css
+    │   │   │   ├── Navbar.jsx
+    │   │   │   └── NavbarSlider.jsx
+    │   │   └── pages/   
+    │   ├── pages/
+    │   │   ├── CreateTemplate/
+    │   │   │   ├── CreateTemplate.css
+    │   │   │   └── CreateTemplate.jsx
+    │   │   ├── ExerciseLogger/
+    │   │   │   ├── ExerciseLogger.css
+    │   │   │   └── ExerciseLogger.jsx
+    │   │   ├── ExploreWorkouts/
+    │   │   │   ├── ExploreWorkouts.css
+    │   │   │   └── ExploreWorkouts.jsx
+    │   │   ├── FoodLog/
+    │   │   │   ├── FoodLog.css
+    │   │   │   └── FoodLog.jsx
+    │   │   ├── Home/
+    │   │   │   ├── Home.css
+    │   │   │   └── Home.jsx
+    │   │   ├── Login/
+    │   │   │   ├── authSlicer.jsx
+    │   │   │   ├── Login.css
+    │   │   │   └── Login.jsx
+    │   │   ├── Map/
+    │   │   │   ├── Map.css
+    │   │   │   └── Map.jsx
+    │   │   ├── MeasurementLogger/
+    │   │   │   ├── MeasurementLogger.css
+    │   │   │   └── MeasurementLogger.jsx
+    │   │   ├── Profile/
+    │   │   │   ├── Profile.css
+    │   │   │   └── Profile.jsx
+    │   │   ├── TOS/
+    │   │   │   ├── TOS.css
+    │   │   │   └── TOS.jsx
+    │   │   ├── WorkoutHistory/
+    │   │   │   ├── WorkoutHistory.css
+    │   │   │   └── WorkoutHistory.jsx
+    │   │   ├── AwsCredentialsSelectorPage.jsx    
+    │   │   ├── LoadingPage.jsx                
+    │   │   ├── LoginPageOld.jsx               
+    │   │   └── Navigation.jsx                    
+    │   ├── AHFULApp.jsx
+    │   ├── Layout.jsx
+    │   ├── Main.jsx
+    │   ├── siteStyles.css
+    │   └── Store.jsx
+    ├── index.html
+    ├── package.json
+    ├── package-lock.json
+    ├── biome.json
+    ├── README.md
+    └── vite.config.js
 
 
 ## Setup Instructions
