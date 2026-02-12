@@ -7,7 +7,9 @@ The commands below are for Windows, so if you're on Mac/Linux, sucks to be you ;
 backend/
 ├── flaskr/                     # Flask application package
 │   ├── __init__.py            # Application factory with CORS and services
-│   ├── routes/
+│   ├            
+│   ├            
+│   ├── API_routes/                 #This is where the URL Routes are created
 │   │   ├── awsCredsController.py # AWS credential management routes
 │   │   ├── data_api_routes.py    # Data API endpoints
 │   │   └── test.py            # Enhanced API routes with credentials
@@ -95,35 +97,6 @@ To run tests:
 1. Navigate to the backend directory
 2. Run(Windows): py -m pytest
 
-# Exposed API Endpoints:
-
-## AWS Creds
-
-1. Query
-
-- /awsCreds/query
-- GET
-- Returns all creds unless query param provided e.g. /awsCreds/query?your_param=
-- NOTE: do not include quotes for strings in query
-
-2. Add
-
-- /awsCreds/add
-- POST
-- Adds new cred document to mongodb collection
-
-3. Update
-
-- /awsCreds/update
-- PUT
-- place whole document to update in the request body
-
-4. Delete
-
-- awsCreds/delete/<document_id>
-- document_id: \_id from mongodb
-- DELETE
-- deletes a document by its \_id
 
 # Cert Generation/Config (REQUIRED)
 🚀 1. Prerequisites
