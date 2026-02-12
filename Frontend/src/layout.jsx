@@ -6,7 +6,8 @@ export function Layout() {
         <>
             <Navbar/>
             <main style={{ paddingTop: "90px" }}>
-                <Outlet/>
+            <Outlet/>
+            {/* Outlet is used to render the child routes on every page listed in the AHFULApp.jsx file in this case our Navbar*/}
             </main>
         </>
     )
