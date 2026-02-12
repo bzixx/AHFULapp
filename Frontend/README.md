@@ -76,6 +76,9 @@ Custom Auth Context component for persistent authentication
     └── vite.config.js
 
 
+
+```
+
 ## Setup Instructions
 1. **Install Dependencies**:
     - In vscode, open a terminal (ctrl + ~) 
