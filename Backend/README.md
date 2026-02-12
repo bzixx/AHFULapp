@@ -37,27 +37,17 @@ backend/
 ### Backend Environment Setup
 
 Windows Users:
-Change your working directory to Backend (“cd Backend”) 
+    Change your working directory to Backend (“cd Backend”) 
 
-Ensure flask & dependencies are installed correctly 
+        pip install flask 
 
-pip install flask  
+    Create a venv environment in a bash terminal 
 
-pip install flask-cors 
+        python -m venv venv 
 
-Create a venv environment in a bash terminal 
+        source venv/Scripts/activate 
 
-python -m venv venv 
-
-source venv/Scripts/activate 
-
-Open Terminal 
-
-cd "Backend” 
-
-.\.venv\Scripts\activate 
-
-flask –-app app run 
+        flask –-app app run 
 
 (not sure if the or section is up to date) 
 # Create and configure .env file in flaskr/ directory
