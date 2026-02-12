@@ -1,6 +1,6 @@
 import React from "react";
 import "./Home.css";
-import "../../../siteStyles.css";
-export default function Home() {
+import "../../SiteStyles.css";
+export function Home() {
     return <h1>Home</h1>
 }
