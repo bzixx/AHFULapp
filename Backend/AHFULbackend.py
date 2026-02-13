@@ -1,9 +1,7 @@
 from flask import Flask
 from services.MongoDriver import MongoDriver
 
-
 app = Flask(__name__)
-
 
 @app.route("/")
 def hello_world():
