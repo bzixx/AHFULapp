@@ -1,2 +1,4 @@
-MONGODB_URI=mongodb+srv://AHFULClientDBUser:Planet!Blood!Limited!Bound6@ahful.dicih8m.mongodb.net/?appName=AHFUL
-MONGODB_DB=AHFUL
+import os
+
+MONGODB_URI=os.environ.get("MONGODB_URI")
+MONGODB_DB=os.environ.get("MONGODB_DB")
