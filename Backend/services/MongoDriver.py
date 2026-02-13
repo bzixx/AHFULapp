@@ -16,11 +16,10 @@ def MongoDriver():
     appDataDB = client["appData"]
 
     print(appDataDB.list_collection_names())
-
     userCollection = appDataDB['user']
-    #user = appDataDB.get_collection('user')
-
-    print(userCollection.find_one({"name": "John Doe"}))
+    len = userCollection.count_documents({})
+    for i in range(0, len):
+        print(userCollection.find_one({"userId": i}))
 
     # Send a ping to confirm a successful connection
     try:
