@@ -1,6 +1,42 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import "../../SiteStyles.css";
+
 export function Login() {
-    return <h1>Login</h1>
+    // Variables
+    const navigate = useNavigate();
+
+    // Functions
+    function goHome(){
+        navigate("/");
+    }
+
+    return (
+        <div className = "login-page">
+            <div className = "login-card">
+                <div className = "login-title">
+                    <h1>'AHFUL'</h1>
+                    <p>(A Helpful Fitness Utilization Logger)</p>
+                </div>
+                <div>
+                    <h3>
+                    An 'AHFUL' app is your one-stop shop for everything you need in a fitness logger.
+                    </h3>
+                    
+                    <ul>
+                    <li>Record workouts</li>
+                    <li>Save templates</li>
+                    <li>Schedule future workouts on a calendar</li>
+                    <li>Track food nutrition, etc.</li>
+                    </ul>
+
+                    <h3>
+                    To use this 'AHFUL' app, you'll need to sign in with your Google account below.
+                    </h3>
+                </div>
+                <button className = "login-button" onClick={goHome}>Login with Google</button>
+            </div>
+        </div>
+    );
 }
