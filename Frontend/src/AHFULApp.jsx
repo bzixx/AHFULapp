@@ -1,11 +1,37 @@
-import React from 'react'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { CreateTemplate } from "./Pages/CreateTemplate/CreateTemplate.jsx";
+import { ExerciseLogger } from "./Pages/ExerciseLogger/ExerciseLogger.jsx";
+import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
+import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
+import { Home } from "./Pages/Home/Home.jsx";
+import { Login } from "./Pages/Login/Login.jsx";
+import { Map } from "./Pages/map/map.jsx";
+import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
+import { Profile } from "./Pages/Profile/Profile.jsx";
+import { TOS } from "./Pages/TOS/TOS.jsx";
+import { WorkoutHistory } from "./Pages/WorkoutHistory/WorkoutHistory.jsx";
+import { Layout } from "./Layout.jsx"
+import "./siteStyles.css";
 
 function AHFULApp() {
   return (
-    <div>
-      <h1>Hello from React!</h1>
-      <p>Your app is running!</p>
-    </div>
+  <Router>
+    <Routes>
+      <Route element={<Layout/>}>
+        <Route path="/" element={<Home/>}/>
+        <Route path="/CreateTemplate" element={<CreateTemplate/>}/>
+        <Route path="/ExerciseLogger" element={<ExerciseLogger/>}/>
+        <Route path="/ExploreWorkout" element={<ExploreWorkouts/>}/>
+        <Route path="/FoodLog" element={<FoodLog/>}/>
+        <Route path="/Login" element={<Login/>}/>
+        <Route path="/Map" element={<Map/>}/>
+        <Route path="/MeasurementLogger" element={<MeasurementLogger/>}/>
+        <Route path="/Profile" element={<Profile/>}/>
+        <Route path="/TOS" element={<TOS/>}/>
+        <Route path="/WorkoutHistory" element={<WorkoutHistory/>}/>
+      </Route>
+    </Routes>
+  </Router>
   )
 }
 
