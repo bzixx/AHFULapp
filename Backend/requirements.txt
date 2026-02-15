@@ -12,7 +12,7 @@ msgspec==0.19.0 #- Fast JSON/MessagePack/YAML serialization and validation libra
 #Network & API Libraries
 requests==2.32.5 #- User-friendly HTTP library for making API calls
 urllib3==2.5.0 #- HTTP client library (underlying transport for requests)
-certifi==2025.8.3 #- Collection of root SSL certificates for verifying HTTPS connections
+certifi==2026.1.4 #- Collection of root SSL certificates for verifying HTTPS connections
 charset-normalizer==3.4.3 #- Detects character encoding in HTTP responses
 idna==3.10 #- Handles Internationalized Domain Names in Applications (IDNA)
 

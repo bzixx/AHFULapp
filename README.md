@@ -3,7 +3,10 @@ A Helpful Fitness Utilization Logger
 
 Another test addition to the readme. Trying to break it into branches now
 
-I made an additional push here, hopefully it gets squashed
+Use Standard Comment Langaguse of '# Comment' Notation 
+
+Use camelCase for file names
+
 
 See detailed Frontend setup in ./Frontend/README.md
 
