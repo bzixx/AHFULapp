@@ -29,14 +29,14 @@ class UserDriver:
             return None, str(e)
 
     @staticmethod
-    def register_user(name, email, password):
+    def register_user(name, email, password, role):
         # Validate required fields
-        if not name or not email or not password:
-            return None, "Name, email, and password are required"
+        if not name or not email or not password or not role:
+            return None, "I'm Sorry, You Don't Have All the Keys for Tea Time. Try Again or Reach out to Management."
 
         # Business rule: no duplicate emails
         if userObject.find_by_email(email):
-            return None, "Email already in use"
+            return None, "You are asking for keys you already have. Management declined Duplication."
 
         # Hash password before storing — never store plain text
         hashed_pw = generate_password_hash(password)
@@ -45,6 +45,7 @@ class UserDriver:
             "name": name,
             "email": email,
             "password": hashed_pw,
+            "role": int(role),
         }
 
         try:
@@ -56,15 +57,15 @@ class UserDriver:
     @staticmethod
     def authenticate_user(email, password):
         if not email or not password:
-            return None, "Email and password are required"
+            return None, "Bro, Email and password are required. What R U Doing?"
 
         user = userObject.find_by_email(email)
         if not user:
             # Intentionally vague — don't reveal whether email exists
-            return None, "Invalid email or password"
+            return None, "Something was wrong with your email or password"
 
         if not check_password_hash(user["password"], password):
-            return None, "Invalid email or password"
+            return None, "Something was wrong with your email or password"
 
         return str(user["_id"]), None
 

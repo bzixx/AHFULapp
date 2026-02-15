@@ -12,7 +12,7 @@ def create_app():
     # Load environment variables from .env file At Main Level
     load_dotenv()
 
-    app.register_blueprint(userRouteBlueprint, url_prefix="/api/users")
+    app.register_blueprint(userRouteBlueprint)
 
 
     

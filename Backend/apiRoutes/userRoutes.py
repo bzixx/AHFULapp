@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from services.userDriver import UserDriver
 
-userRouteBlueprint = Blueprint("users", __name__)
+userRouteBlueprint = Blueprint("users", __name__, url_prefix="/AHFULusers")
 
 
 # ── GET all users ─────────────────────────────────────────────────────────────
@@ -33,6 +33,7 @@ def register():
         name=data.get("name"),
         email=data.get("email"),
         password=data.get("password"),
+        role=data.get("role"),
     )
     if error:
         return jsonify({"error": error}), 400
@@ -55,6 +56,7 @@ def login():
     return jsonify({"user_id": user_id, "message": "Login successful"}), 200
 
 
+##NOT TESTED YET — MAYBE NOT NEEDED DEPENDING ON FRONTEND DESIGN, BUT HERE FROM AI
 # ── UPDATE user ───────────────────────────────────────────────────────────────
 @userRouteBlueprint.route("/<user_id>", methods=["PUT"])
 def update_user(user_id):
@@ -67,7 +69,8 @@ def update_user(user_id):
         return jsonify({"error": error}), 400
     return jsonify({"message": "User updated successfully"}), 200
 
-
+##NOT TESTED YET — MAYBE NOT NEEDED DEPENDING ON FRONTEND DESIGN, BUT HERE FROM AI
+##TODO DETERMINE HOW TO HANDLE USER ID AT DB LEVEL?
 # ── DELETE user ───────────────────────────────────────────────────────────────
 @userRouteBlueprint.route("/<user_id>", methods=["DELETE"])
 def delete_user(user_id):

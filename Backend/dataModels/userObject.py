@@ -24,7 +24,7 @@ class userObject:
         return [userObject._serialize(u) for u in users]
 
     def find_by_id(user_id):
-        user = userCollection.find_one({"userId": user_id})
+        user = userCollection.find_one({"userId": int(user_id)})
         return userObject._serialize(user)
 
     def find_by_email(email):
