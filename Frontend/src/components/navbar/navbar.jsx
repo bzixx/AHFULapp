@@ -3,9 +3,8 @@ import "./Navbar.css";
 
 export function Navbar() {
   return (
-    <nav>
+    <nav className="navbar">
       <Link to="/">Home</Link>
-      {" | "}
       <Link to="/Login">Login</Link>
     </nav>
   );
