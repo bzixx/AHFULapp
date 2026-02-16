@@ -1,4 +1,5 @@
 import React from "react";
+import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import "../../SiteStyles.css";
@@ -35,7 +36,7 @@ export function Login() {
                     To use this 'AHFUL' app, you'll need to sign in with your Google account below.
                     </h3>
                 </div>
-                <button className = "login-button" onClick={goHome}>Login with Google</button>
+                <GoogleLogin>AHFUL Google Login</GoogleLogin>
             </div>
         </div>
     );
