@@ -8,7 +8,7 @@ export function Layout() {
             <MenuButton/>
             <main style={{ 
                 background: "linear-gradient(0deg, #30364F, #3cb6b6)",
-                minHeight: "95vh",
+                minHeight: "90vh",
                 display: "flex"
              }}>
             <Outlet/>
