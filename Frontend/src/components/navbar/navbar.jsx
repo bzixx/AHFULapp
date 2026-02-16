@@ -3,9 +3,8 @@ import "./Navbar.css";
 
 export function Navbar({ minHeight }) {
   return (
-    <nav className = "navbar" style={{ minHeight }}>
+    <nav className="navbar">
       <Link to="/">Home</Link>
-      {" | "}
       <Link to="/Login">Login</Link>
     </nav>
   );
