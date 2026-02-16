@@ -36,7 +36,7 @@ class UserDriver:
 
         # Business rule: no duplicate emails
         if userObject.find_by_email(email):
-            return None, "You are asking for keys you already have. Management declined Duplication."
+            return None, "You are asking for keys you already have. Management declined duplication: email."
 
         # Hash password before storing — never store plain text
         hashed_pw = generate_password_hash(password)
