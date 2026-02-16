@@ -23,10 +23,6 @@ class userObject:
         users = userCollection.find()
         return [userObject._serialize(u) for u in users]
 
-    def find_by_id(user_id):
-        user = userCollection.find_one({"userId": int(user_id)})
-        return userObject._serialize(user)
-
     def find_by_email(email):
         user = userCollection.find_one({"email": email})
         return userObject._serialize(user)
@@ -37,6 +33,7 @@ class userObject:
         result = userCollection.insert_one(user_data)
         return str(result.inserted_id)
 
+    # Not correct
     @staticmethod
     def update(user_id, updates):
         userCollection.update_one(

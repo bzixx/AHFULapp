@@ -19,9 +19,9 @@ class UserDriver:
             return None, str(e)
 
     @staticmethod
-    def get_user_by_id(user_id):
+    def get_user_by_email(email):
         try:
-            user = userObject.find_by_id(user_id)
+            user = userObject.find_by_email(email)
             if not user:
                 return None, "User not found"
             return user, None
@@ -31,7 +31,11 @@ class UserDriver:
     @staticmethod
     def register_user(name, email, password, role):
         # Validate required fields
-        if not name or not email or not password or not role:
+        print(name)
+        print(email)
+        print(password)
+        print(role)
+        if (not name) or (not email) or (not password) or (role is None):
             return None, "I'm Sorry, You Don't Have All the Keys for Tea Time. Try Again or Reach out to Management."
 
         # Business rule: no duplicate emails
@@ -49,8 +53,8 @@ class UserDriver:
         }
 
         try:
-            user_id = userObject.create(user_data)
-            return user_id, None
+            email = userObject.create(user_data)
+            return email, None
         except Exception as e:
             return None, str(e)
 
@@ -70,7 +74,7 @@ class UserDriver:
         return str(user["_id"]), None
 
     @staticmethod
-    def update_user(user_id, updates):
+    def update_user(email, updates):
         # Prevent password from being updated through this route
         # Password changes should go through a dedicated change-password flow
         updates.pop("password", None)
@@ -80,19 +84,19 @@ class UserDriver:
             return None, "No valid fields to update"
 
         try:
-            userObject.update(user_id, updates)
+            userObject.update(email, updates)
             return True, None
         except Exception as e:
             return None, str(e)
 
     @staticmethod
-    def delete_user(user_id):
-        user = userObject.find_by_id(user_id)
+    def delete_user(email):
+        user = userObject.find_by_email(email)
         if not user:
             return None, "User not found"
 
         try:
-            userObject.delete(user_id)
+            userObject.delete(email)
             return True, None
         except Exception as e:
             return None, str(e)
