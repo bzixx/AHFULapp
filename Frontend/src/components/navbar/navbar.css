@@ -4,6 +4,7 @@
   align-items: center;
   background-color: #1E1E1E; 
   padding: 1rem 2rem;
+  height: 10vh;
 }
 
 .navbar a {
