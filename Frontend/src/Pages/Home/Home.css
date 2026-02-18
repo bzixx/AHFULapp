@@ -1,0 +1,50 @@
+.nametxt {
+  font-size: 8em;
+  font-family: monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  width: fit-content;
+  animation:
+    typing-name 1.5s steps(16, end),
+    cursor 0.4s step-end infinite alternate;
+}
+
+.text {
+  font: normal 6em Arial, sans-serif;
+  font-family: monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  width: fit-content;
+  visibility: hidden;
+  animation:
+    typing-text 1s steps(14, end) 2s forwards,
+    cursor 0.4s step-end infinite alternate 2.5s;
+}
+
+.blinking {
+  animation: blink 1s steps(1, end) infinite;
+}
+
+@keyframes typing-name {
+  from { width: 0 }
+  to { width: 16ch }
+}
+
+@keyframes typing-text {
+  0% {
+    width: 0;
+    visibility: visible;
+  }
+  100% {
+    width: 14ch;
+    visibility: visible;
+  }
+}
+
+@keyframes cursor {
+  50% { border-color: transparent; }
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
