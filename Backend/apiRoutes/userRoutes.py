@@ -24,11 +24,10 @@ def get_user(email):
 @userRouteBlueprint.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
-    print("data: ", data)
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
-    email, error = UserDriver.register_user(
+    id, error = UserDriver.register_user(
         name=data.get("name"),
         email=data.get("email"),
         password=data.get("password"),
@@ -36,7 +35,7 @@ def register():
     )
     if error:
         return jsonify({"error": error}), 400
-    return jsonify({"email": email, "message": "User created successfully"}), 201
+    return jsonify({"_id": id, "message": "User created successfully"}), 201
 
 
 # ── LOGIN ─────────────────────────────────────────────────────────────────────
