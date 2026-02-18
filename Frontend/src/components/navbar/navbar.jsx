@@ -1,11 +1,10 @@
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 
-export function Navbar() {
+export function Navbar({ minHeight }) {
   return (
-    <nav>
+    <nav className="navbar">
       <Link to="/">Home</Link>
-      {" | "}
       <Link to="/Login">Login</Link>
     </nav>
   );

@@ -1,0 +1,343 @@
+.food-log-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+.food-log-container h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Main Content Layout */
+.food-log-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Add Food Section */
+.add-food-section {
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+}
+
+.add-food-section:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.add-food-section h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+/* Form Styling */
+.food-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #34495e;
+    font-size: 0.95rem;
+}
+
+.form-group input {
+    padding: 0.75rem;
+    border: 2px solid #e0e6ed;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box shadow 0.3s ease;
+    font-family: inherit;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.form-group input::placeholder {
+    color: #bdc3c7;
+}
+
+/* Buttons */
+.btn-add {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-top: 0.5rem;
+}
+
+.btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-add:active {
+    transform: translateY(0);
+}
+
+/* Daily Summary */
+.daily-summary {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.daily-summary h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.total-calories,
+.food-count {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 4px solid #667eea;
+}
+
+.total-calories:last-child,
+.food-count:last-child {
+    margin-bottom: 0;
+}
+
+.total-calories .label,
+.food-count .label {
+    font-weight: 600;
+    color: #33495e;
+    font-size: 0.95rem;
+
+}
+
+.total-calories .value,
+.food-count .value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+/* Logged Foods Section */
+.logged-foods-section {
+    background: white;
+    border-radius: 12 px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    grid-column: 1 / -1;
+
+}
+
+.logged-foods-section h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+/* Empty State */
+.foods-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.food-item {
+    display: grid;
+    grid-template-columns: 1 fr auto auto;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
+}
+
+.food-item:hover {
+    background: #f0f1f6;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+}
+
+.food-details h3 {
+    color: #2c3e50;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+.food-meta {
+    color: #7f8c8d;
+    margin: 0;
+    font-size: 0.9rem;
+
+}
+
+.food-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+}
+
+.calories-badge,
+.time-badge {
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+
+}
+
+.calories-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.time-badge {
+    background: #e8eef5;
+    color: #667eea;
+    font-size: 0.8rem;
+}
+
+/* Remove Button */
+.btn-remove {
+    padding: 0.5rem;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32ox;
+    height: 32px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-remove:hover {
+    background: #c0392b;
+    transform: scale(1.1);
+}
+
+.btn-remove:active {
+    transform: scale(0.95);
+}
+
+/* Responsive Design */
+
+@media (max-width: 768px) {
+    .food-log-container {
+        padding: 1rem;
+    }
+
+    .food-log-container h1 {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+
+    }
+
+    .food-log-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .add-food-section,
+    .daily-summary,
+    .logged-foods-section {
+        padding: 1.5rem;
+    }
+
+    .add-food-section h2,
+    .daily-summary h2,
+    .logged-foods-section h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .food-item {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .food-info {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .btn-remove {
+        width: 28px;
+        height: 28px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .food-log-container {
+        padding: 0.75rem;
+    }
+
+    .food-log-container h1 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .add-food-section,
+    .daily-summary,
+    .logged-foods-section {
+        padding: 1rem;
+    }
+
+    .form-group input,
+    .btn-add {
+        font-size: 0.95rem;
+    }
+
+    .total-calories,
+    .food-count {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .food-item {
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+
+    .calories-badge,
+    .time-badge {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
+    }
+}
