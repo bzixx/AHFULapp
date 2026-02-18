@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
 import { CreateTemplate } from "./Pages/CreateTemplate/CreateTemplate.jsx";
 import { ExerciseLogger } from "./Pages/ExerciseLogger/ExerciseLogger.jsx";
 import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
@@ -15,23 +17,25 @@ import "./siteStyles.css";
 
 function AHFULApp() {
   return (
-  <Router>
-    <Routes>
-      <Route element={<Layout/>}>
-        <Route path="/" element={<Home/>}/>
-        <Route path="/CreateTemplate" element={<CreateTemplate/>}/>
-        <Route path="/ExerciseLogger" element={<ExerciseLogger/>}/>
-        <Route path="/ExploreWorkout" element={<ExploreWorkouts/>}/>
-        <Route path="/FoodLog" element={<FoodLog/>}/>
-        <Route path="/Login" element={<Login/>}/>
-        <Route path="/Map" element={<Map/>}/>
-        <Route path="/MeasurementLogger" element={<MeasurementLogger/>}/>
-        <Route path="/Profile" element={<Profile/>}/>
-        <Route path="/TOS" element={<TOS/>}/>
-        <Route path="/WorkoutHistory" element={<WorkoutHistory/>}/>
-      </Route>
-    </Routes>
-  </Router>
+    <GoogleOAuthProvider clientId={import.meta.env.REACT_APP_GOOGLE_CLIENT_ID}>
+      <Router>
+        <Routes>
+          <Route element={<Layout/>}>
+            <Route path="/" element={<Home/>}/>
+            <Route path="/CreateTemplate" element={<CreateTemplate/>}/>
+            <Route path="/ExerciseLogger" element={<ExerciseLogger/>}/>
+            <Route path="/ExploreWorkout" element={<ExploreWorkouts/>}/>
+            <Route path="/FoodLog" element={<FoodLog/>}/>
+            <Route path="/Login" element={<Login/>}/>
+            <Route path="/Map" element={<Map/>}/>
+            <Route path="/MeasurementLogger" element={<MeasurementLogger/>}/>
+            <Route path="/Profile" element={<Profile/>}/>
+            <Route path="/TOS" element={<TOS/>}/>
+            <Route path="/WorkoutHistory" element={<WorkoutHistory/>}/>
+          </Route>
+        </Routes>
+      </Router>
+    </GoogleOAuthProvider>
   )
 }
 
