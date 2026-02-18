@@ -9,7 +9,7 @@ html, body {
     height: 100%;
 }
 
-.login-page {
+.workout-page {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -17,35 +17,70 @@ html, body {
     width: 100%;
 }
 
-.login-card {
+.workout-card {
     background: #E1D9BC;
     border: 3px solid #000000;
     padding: 8px;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     margin: 0;
+    width: 500px;
+    height: 550px;
+    overflow-y: auto;
 }
 
-.login-title {
+.workout-title {
     text-align: center;
     margin-bottom: 50px;
 }
 
-.login-title h1 {
+.workout-title h1 {
     font-size: 48px;
     margin-bottom: 0;   
     line-height: 1.1;   
 }
 
-.login-title p {
+.workout-title p {
     margin: 0;          
     line-height: 1.2;   
 }
 
-.login-button {
-    font-size: 20px;
-    border-radius: 8px;
-    display: block; 
-    margin: 0 auto;
-    margin-bottom: 50px;
+.workout-button {
+    display: flex;
+    justify-content: center;
+}
+
+/* AI Grid css */
+.workout-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  max-height: 300px;
+  overflow-y: auto;
+  border: 2px solid #333;
+  background-color: #F0F0DB
+}
+
+.cell {
+  border-right: 1px solid #333;
+  border-bottom: 1px solid #333;
+  padding: 0.75rem;
+  font-size: small;
+  text-align: center;
+}
+
+.cell input {
+  width: 90%;
+  padding: 4px;
+  font-size: small;
+  text-align: center;
+}
+
+.cell:nth-child(5n) {
+  border-right: none;
+}
+
+.header { 
+    font-weight: bold;
+    border-bottom: 2px solid #333;
+    background: linear-gradient(0deg, #F0F0DB, #E1D9BC);
 }
