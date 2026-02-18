@@ -1,5 +1,4 @@
 from flask import Flask, current_app, send_from_directory #Import Main Flask application class
-from services.userDriver import UserDriver #[Local] Import UserDriver for user DB operations
 from apiRoutes.userRoutes import userRouteBlueprint #[Local] Import User API routes as a Flask Blueprint
 from apiRoutes.workoutRoutes import workoutRouteBlueprint
 from flask_swagger_ui import get_swaggerui_blueprint
