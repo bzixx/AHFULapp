@@ -3,40 +3,32 @@ from bson import ObjectId
 from services.mongoDriver import getMongoDatabase
 
 ahfulAppDataDB = getMongoDatabase()
-userCollection = ahfulAppDataDB['user']
+workoutCollection = ahfulAppDataDB['workout']
 
-class userObject:
+class workoutObject:
     # ── Helpers ────────────────────────────────────────────────────────────────
     @staticmethod
-    def _serialize(user):
+    def _serialize(workout):
         """Convert MongoDB document to JSON-safe dict."""
-        if user:
-            user["_id"] = str(user["_id"])
-        return user
+        if workout:
+            workout["_id"] = str(workout["_id"])
+        return workout
 
     # ── Reads ──────────────────────────────────────────────────────────────────
     def find_all():
-        users = userCollection.find()
-        return [userObject._serialize(u) for u in users]
+        workout = workoutCollection.find()
+        return [workoutObject._serialize(w) for w in workout]
 
+    def find_by_id(id):
+        workout = workoutCollection.find_one({"_id": ObjectId(id)})
+        return workoutObject._serialize(workout)
+    
     def find_by_email(email):
-        user = userCollection.find_one({"email": email})
-        return userObject._serialize(user)
+        workout = workoutCollection.find({"userEmail": email})
+        return [workoutObject._serialize(w) for w in workout]
 
     # ── Writes ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def create(user_data):
-        result = userCollection.insert_one(user_data)
+    def create(workout_data):
+        result = workoutCollection.insert_one(workout_data)
         return str(result.inserted_id)
-
-    # Not correct
-    @staticmethod
-    def update(user_id, updates):
-        userCollection.update_one(
-            {"_id": ObjectId(user_id)},
-            {"$set": updates}
-        )
-
-    @staticmethod
-    def delete(user_id):
-        userCollection.delete_one({"_id": ObjectId(user_id)})
