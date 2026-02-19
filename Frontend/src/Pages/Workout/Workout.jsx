@@ -6,12 +6,17 @@ export function Workout() {
     
     const exercisesRef = useRef([
         { name: "Pushups", reps: 15, sets: 3, weight: "0", completed: false },
-        { name: "Pullups", reps: 8, sets: 4, weight: "Full backpack", completed: true },
+        { name: "Pullups", reps: 8, sets: 4, weight: "Full backpack", completed: false },
         { name: "Squats", reps: 20, sets: 3, weight: "45 lbs", completed: false },
-        { name: "Run", reps: "-", sets: "-", weight: "0", completed: true }
+        { name: "Run", reps: "-", sets: "-", weight: "0", completed: false }
     ]);
 
     const [exercises, setExercises] = useState(exercisesRef.current);
+
+
+    const removeWorkout = (index) => { 
+        setExercises(prev => prev.filter((_, i) => i !== index)); 
+    };
 
     const toggleCompleted = (index) => {
     exercisesRef.current[index].completed =
@@ -43,6 +48,7 @@ export function Workout() {
                     <div className="cell header">Sets</div>
                     <div className="cell header">Weight</div>
                     <div className="cell header">Completed</div>
+                    <div className="cell header"></div>
 
                     {exercises.map((ex, i) => (
                         <React.Fragment key={i}>
@@ -94,6 +100,16 @@ export function Workout() {
                                 }}
 
                             />
+                        </div>
+
+                        <div className="cell">
+                            <button
+                                className="delete-button"
+                                onClick={() => removeWorkout(i)}
+
+                            >
+                                🗑️
+                            </button>
                         </div>
                         </React.Fragment>
                     ))}

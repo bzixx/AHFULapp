@@ -24,7 +24,7 @@ html, body {
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     margin: 0;
-    width: 500px;
+    width: 600px;
     height: 550px;
     overflow-y: auto;
 }
@@ -53,11 +53,11 @@ html, body {
 /* AI Grid css */
 .workout-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, 1fr) 0.33fr;
   max-height: 300px;
   overflow-y: auto;
   border: 2px solid #333;
-  background-color: #F0F0DB
+  background: linear-gradient(0deg, #3A9EA3, #E1D9BC);
 }
 
 .cell {
@@ -75,12 +75,30 @@ html, body {
   text-align: center;
 }
 
-.cell:nth-child(5n) {
+.cell:nth-child(6n) {
   border-right: none;
 }
 
 .header { 
     font-weight: bold;
     border-bottom: 2px solid #333;
-    background: linear-gradient(0deg, #F0F0DB, #E1D9BC);
+    background-color: #E1D9BC
+}
+
+/* Delete Button */
+.delete-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.2s ease;
+}
+.delete-button:hover {
+    background-color: #f0f0f0;
 }
