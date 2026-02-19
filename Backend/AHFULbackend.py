@@ -1,18 +1,20 @@
-from flask import Flask, current_app, send_from_directory #Import Main Flask application class
+from flask import Flask, send_from_directory #Import Main Flask application class
 from services.userDriver import UserDriver #[Local] Import UserDriver for user DB operations
 from apiRoutes.userRoutes import userRouteBlueprint #[Local] Import User API routes as a Flask Blueprint
 from apiRoutes.workoutRoutes import workoutRouteBlueprint
-from flask_swagger_ui import get_swaggerui_blueprint
-import os
-from dotenv import load_dotenv
+
+from os import getenv
+
+from services.signInDriver import signInDriver
+
 
 def create_app():
     # Create Flask application instance we will use to run the Backend server and handle requests
     app = Flask(__name__)
 
-    # Load environment variables from .env file At Main Level
-    load_dotenv()
+    app.AHFULsignInDriver = signInDriver(getenv("GOOGLE_CLIENT_ID"))
 
+    #Register App Blueprints
     app.register_blueprint(userRouteBlueprint)
     app.register_blueprint(workoutRouteBlueprint)
     
@@ -34,15 +36,6 @@ def create_app():
 
     return app
 
-# Define a route for the root URL ("/") that returns a simple "Hello, World!" message when accessed
-# @current_app.route("/")
-# def hello_world():
-#     return "<h1>Hello, World!</h1><h3>Welcome to the AHFUL Backend Server.</h3> <p>It's great here.</p>"
-
-#Test route to check if we can connect to MongoDB, will return the result of the returns a success message if successful
-# @app.route("/testdb")
-# def do_DB_test():
-#     # return mongoDriver()
 
 
 
