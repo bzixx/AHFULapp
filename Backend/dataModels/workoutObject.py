@@ -1,11 +1,11 @@
 #So the models are essentially the database access layer — they know how to talk to MongoDB but have no idea what business rules exist
 from bson import ObjectId
-from services.MongoDriver import getMongoDatabase
+from Services.MongoDriver import getMongoDatabase
 
 ahfulAppDataDB = getMongoDatabase()
 workoutCollection = ahfulAppDataDB['workout']
 
-class workoutObject:
+class WorkoutObject:
     # ── Helpers ────────────────────────────────────────────────────────────────
     @staticmethod
     def _serialize(workout):
@@ -17,15 +17,15 @@ class workoutObject:
     # ── Reads ──────────────────────────────────────────────────────────────────
     def find_all():
         workout = workoutCollection.find()
-        return [workoutObject._serialize(w) for w in workout]
+        return [WorkoutObject._serialize(w) for w in workout]
 
     def find_by_id(id):
         workout = workoutCollection.find_one({"_id": ObjectId(id)})
-        return workoutObject._serialize(workout)
+        return WorkoutObject._serialize(workout)
     
     def find_by_email(email):
         workout = workoutCollection.find({"userEmail": email})
-        return [workoutObject._serialize(w) for w in workout]
+        return [WorkoutObject._serialize(w) for w in workout]
 
     # ── Writes ─────────────────────────────────────────────────────────────────
     @staticmethod

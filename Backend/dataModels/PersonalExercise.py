@@ -3,9 +3,9 @@ from bson import ObjectId
 from Services.MongoDriver import getMongoDatabase
 
 ahfulAppDataDB = getMongoDatabase()
-workoutCollection = ahfulAppDataDB['gym']
+personalExerciseCollection = ahfulAppDataDB['personalExercise']
 
-class workoutObject:
+class PersonalExerciseObject:
     # ── Helpers ────────────────────────────────────────────────────────────────
     @staticmethod
     def _serialize(gym):
@@ -16,19 +16,19 @@ class workoutObject:
 
     # ── Reads ──────────────────────────────────────────────────────────────────
     def find_all():
-        workout = workoutCollection.find()
-        return [workoutObject._serialize(w) for w in workout]
+        workout = personalExerciseCollection.find()
+        return [PersonalExerciseObject._serialize(w) for w in workout]
 
     def find_by_id(id):
-        workout = workoutCollection.find_one({"_id": ObjectId(id)})
-        return workoutObject._serialize(workout)
+        workout = personalExerciseCollection.find_one({"_id": ObjectId(id)})
+        return PersonalExerciseObject._serialize(workout)
     
     def find_by_email(email):
-        workout = workoutCollection.find({"userEmail": email})
-        return [workoutObject._serialize(w) for w in workout]
+        workout = personalExerciseCollection.find({"userEmail": email})
+        return [PersonalExerciseObject._serialize(w) for w in workout]
 
     # ── Writes ─────────────────────────────────────────────────────────────────
     @staticmethod
     def create(workout_data):
-        result = workoutCollection.insert_one(workout_data)
+        result = personalExerciseCollection.insert_one(workout_data)
         return str(result.inserted_id)

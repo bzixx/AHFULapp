@@ -1,4 +1,4 @@
-from dataModels.workoutObject import workoutObject
+from DataModels.WorkoutObject import WorkoutObject
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -13,7 +13,7 @@ class WorkoutDriver:
     @staticmethod
     def get_all_workouts():
         try:
-            workouts = workoutObject.find_all()
+            workouts = WorkoutObject.find_all()
             return workouts, None
         except Exception as e:
             return None, str(e)
@@ -21,7 +21,7 @@ class WorkoutDriver:
     @staticmethod
     def get_workout_by_id(id):
         try:
-            workout = workoutObject.find_by_id(id)
+            workout = WorkoutObject.find_by_id(id)
             if not workout:
                 return None, "Workout not found"
             return workout, None
@@ -32,7 +32,7 @@ class WorkoutDriver:
     def get_workouts_by_email(email):
         print(email)
         try:
-            workout = workoutObject.find_by_email(email)
+            workout = WorkoutObject.find_by_email(email)
             if not workout:
                 return None, "Workout not found"
             return workout, None
@@ -54,7 +54,7 @@ class WorkoutDriver:
         }
 
         try:
-            response = workoutObject.create(workout_data)
+            response = WorkoutObject.create(workout_data)
             return response, None
         except Exception as e:
             return None, str(e)
