@@ -1,32 +1,45 @@
-from flask import Flask, current_app #Import Main Flask application class
-from services.userDriver import UserDriver #[Local] Import UserDriver for user DB operations
-from apiRoutes.userRoutes import userRouteBlueprint #[Local] Import User API routes as a Flask Blueprint
+from flask import Flask #Import Main Flask application class
+from flask_cors import CORS
+from os import getenv # Import Function from os to get .env variables
+from flask import Flask #Import Main Flask application class
 
-from dotenv import load_dotenv
+#Services/Drivers Imports
+from Services.SignInDriver import SignInDriver
 
+#Routes/Blueprints Imports
+from APIRoutes.UserRoutes import userRouteBlueprint #[Local] Import User API routes as a Flask Blueprint
+from APIRoutes.WorkoutRoutes import workoutRouteBlueprint
+from APIRoutes.SwaggerRoutes import swaggerUIBlueprint
+from APIRoutes.SignInRoutes import signInRouteBlueprint
 
+#Main AHFUL APP Backend Entry Point.
 def create_app():
-    app = Flask(__name__)
     # Create Flask application instance we will use to run the Backend server and handle requests
+    #FUN FACT: __name__ is a special variable that is the name of this file.
+    app = Flask(__name__)
 
-    # Load environment variables from .env file At Main Level
-    load_dotenv()
+    #Make an Appwade SignInDriver to reference later 
+    app.AHFULSignInDriver = SignInDriver(getenv("GOOGLE_CLIENT_ID"))
 
+    #Register App Routes and Blueprints
     app.register_blueprint(userRouteBlueprint)
+    app.register_blueprint(workoutRouteBlueprint)
+    app.register_blueprint(swaggerUIBlueprint)
+    app.register_blueprint(signInRouteBlueprint)
 
+    # Enable CORS - includes CloudFront production URL and custom domain
+    allowed_origins = [
+        'http://localhost:5173'
+    ]
 
+    CORS(app, origins=allowed_origins, supports_credentials=True)
     
+    #Print an list of all Route maps on the AHFUL App after startup.
+    print(app.url_map)
+
+    #Return AHFUL
     return app
 
-# Define a route for the root URL ("/") that returns a simple "Hello, World!" message when accessed
-# @current_app.route("/")
-# def hello_world():
-#     return "<h1>Hello, World!</h1><h3>Welcome to the AHFUL Backend Server.</h3> <p>It's great here.</p>"
-
-#Test route to check if we can connect to MongoDB, will return the result of the returns a success message if successful
-# @app.route("/testdb")
-# def do_DB_test():
-#     # return mongoDriver()
 
 
 

@@ -3,6 +3,8 @@ from pymongo.server_api import ServerApi
 from flask import current_app
 import os
 
+#Services & Drivers know how to implement business Logic related to the Route operations.  Intermediate between Routes and Objects.  Ensures validations and rules are applied before Calling Objects to interact with DB
+
 #Main function to connect to MongoDB, will return a success message if successful, 
 # and print the names of the collections in the database and the documents in the 
 # user collection for testing purposes
@@ -29,7 +31,6 @@ def getMongoClient():
 def getMongoDatabase():
     ahfulMongoDBClient = getMongoClient()
     return ahfulMongoDBClient["appData"]
-
 
 
 def killMongoClient():
