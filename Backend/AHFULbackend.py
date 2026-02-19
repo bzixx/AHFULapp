@@ -1,3 +1,4 @@
+from flask import Flask, current_app, send_from_directory #Import Main Flask application class
 from os import getenv # Import Function from os to get .env variables
 from flask import Flask #Import Main Flask application class
 
