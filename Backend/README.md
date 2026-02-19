@@ -49,17 +49,18 @@ Backend/
 All Users:
 1. Navigate to the Backend 
 2. Create or Locate a .env file
-3. See AHFUL Teams Secrets Channel for copy and paste
-4. Ensure MONGODB_URI is Present
-5. Ensure MONGODB_DB is Present
-6. Ensure GOOGLE_CLIENT_ID is Present
+3. See AHFUL Teams Secrets Channel to copy and paste Backend .env Secrets Post.
+4. Ensure MONGODB_URI is Present in your .env
+5. Ensure MONGODB_DB is Present in your .env
+6. Ensure GOOGLE_CLIENT_ID is Present in your .env
 
 Windows Users:
 Run Backend App
 ```bash
 cd Backend
 
-#Install any new Dependencies 
+#Install Required Packages and any new Dependencies since last run 
+#(Do Not need to run everytime, just on new pulls from Main)
 pip install -r requirements.txt
 
 #Run Backend App
@@ -70,7 +71,8 @@ Mac Users:
 ```bash
 cd Backend
 
-#Install any new Dependencies 
+#Install Required Packages and any new Dependencies since last run 
+#(Do Not need to run everytime, just on new pulls from Main)
 python3 pip install -r requirements.txt
 
 #Run Backend App

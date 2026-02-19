@@ -47,9 +47,6 @@ sib-api-v3-sdk==7.6.0 #- Sendinblue (Brevo) API client for transactional emails
 #API Libraries
 fastapi==0.129.0 # - Modern, fast (high-performance) web framework for building APIs with Python 3.7+ based on standard Python type hints
 
-
-
-
 #Data Visualization & Scientific Libraries (Future Use?)
 #matplotlib==3.10.0 - 2D plotting library
 #numpy==2.2.2 - Numerical computing with arrays/matrices

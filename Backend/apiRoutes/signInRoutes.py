@@ -48,6 +48,7 @@ def google_login():
     #UserDriver.create_session(routeUserObject)
     return jsonify({"message": "Login successful", "user_info": routeUserObject}), 200
 
+#TODO:
 # ── POST Log Out ────────────────────────────────────────────────────────────
 # @signInRouteBlueprint.route('/logout', methods=['POST'])
 # def logout():
@@ -55,6 +56,7 @@ def google_login():
 #     session_service.remove_session()
 #     return jsonify({"message": "Logout successful"}), 200
 
+#TODO:
 # ── GET whoami (Logged in or not) ────────────────────────────────────────────────────────────
 # @signInRouteBlueprint.route('/whoami', methods=['GET'])
 # def whoami():
@@ -63,42 +65,3 @@ def google_login():
 #     if not user_info:
 #         return jsonify({"error": "No user info available"}), 404
 #     return jsonify({"user_info": user_info}), 200
-
-
-
-
-
-#OLD USER ROUTE
-
-# # ── REGISTER ──────────────────────────────────────────────────────────────────
-# @userRouteBlueprint.route("/register", methods=["POST"])
-# def register():
-#     data = request.get_json()
-#     if not data:
-#         return jsonify({"error": "No data provided"}), 400
-
-#     id, error = UserDriver.register_user(
-#         name=data.get("name"),
-#         email=data.get("email"),
-#         password=data.get("password"),
-#         role=data.get("role"),
-#     )
-#     if error:
-#         return jsonify({"error": error}), 400
-#     return jsonify({"_id": id, "message": "User created successfully"}), 201
-
-
-# # ── LOGIN ─────────────────────────────────────────────────────────────────────
-# @userRouteBlueprint.route("/login", methods=["POST"])
-# def login():
-#     data = request.get_json()
-#     if not data:
-#         return jsonify({"error": "No data provided"}), 400
-
-#     email, error = UserDriver.authenticate_user(
-#         email=data.get("email"),
-#         password=data.get("password"),
-#     )
-#     if error:
-#         return jsonify({"error": error}), 401
-#     return jsonify({"email": email, "message": "Login successful"}), 200
