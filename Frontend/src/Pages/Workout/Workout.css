@@ -9,15 +9,33 @@ html, body {
     min-height: 100%;
 }
 
+.page-layout {
+    display: grid;
+    grid-template-columns: 1fr 600px 1fr; /* left | center | right */
+    width: 100%;
+    min-height: 100vh;
+}
+
+.left-column,
+.right-column {
+    /* empty for now */
+}
+
+.center-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+
 .workout-page {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* vertical */
-    align-items: center;         /* horizontal centering */
-    width: 100%;                 /* ensures full-width container */
-    min-height: 100vh;           /* allows scrolling + proper layout */
+    align-items: center;
     padding-top: 40px;
 }
+
 
 .workout-card {
     background: #E1D9BC;
