@@ -61,7 +61,7 @@ html, body {
     background: #f5f5f5;
     border: 2px solid #000;
     border-radius: 6px;
-    width: 80px;          /* keeps it from stretching */
+    min-width: 80px;          /* keeps it from stretching */
     text-align: center;   /* centers the numbers */
 }
 
