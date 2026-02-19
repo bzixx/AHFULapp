@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # ensuring that all necessary validations and rules are applied before interacting with 
 # the database.
 
-class userDriver:
+class UserDriver:
 
     @staticmethod
     def get_all_users():
