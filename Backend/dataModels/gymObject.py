@@ -5,7 +5,7 @@ from Services.MongoDriver import getMongoDatabase
 ahfulAppDataDB = getMongoDatabase()
 workoutCollection = ahfulAppDataDB['gym']
 
-class workoutObject:
+class GymObject:
     # ── Helpers ────────────────────────────────────────────────────────────────
     @staticmethod
     def _serialize(gym):
@@ -17,15 +17,15 @@ class workoutObject:
     # ── Reads ──────────────────────────────────────────────────────────────────
     def find_all():
         workout = workoutCollection.find()
-        return [workoutObject._serialize(w) for w in workout]
+        return [GymObject._serialize(w) for w in workout]
 
     def find_by_id(id):
         workout = workoutCollection.find_one({"_id": ObjectId(id)})
-        return workoutObject._serialize(workout)
+        return GymObject._serialize(workout)
     
     def find_by_email(email):
         workout = workoutCollection.find({"userEmail": email})
-        return [workoutObject._serialize(w) for w in workout]
+        return [GymObject._serialize(w) for w in workout]
 
     # ── Writes ─────────────────────────────────────────────────────────────────
     @staticmethod
