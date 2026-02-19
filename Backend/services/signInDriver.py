@@ -3,7 +3,7 @@ from google.auth.transport import requests
 
 ##THIS IS SKELETON NEED TO VERIFY
 
-class signInDriver:
+class SignInDriver:
     def __init__(self, GOOGLE_CLIENT_ID: str):
         self.client_id: str = GOOGLE_CLIENT_ID
 

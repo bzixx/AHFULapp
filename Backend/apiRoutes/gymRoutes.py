@@ -1,11 +1,11 @@
 from flask import Blueprint, request, jsonify
-from services.gymDriver import GymDriver
+from Services.GymDriver import GymDriver
 
-gym_bp = Blueprint("gyms", __name__)
+GymRouteBlueprint = Blueprint("gyms", __name__)
 
 
 # ── GET all gyms (supports ?city=Austin filtering) ────────────────────────────
-@gym_bp.route("/", methods=["GET"])
+@GymRouteBlueprint.route("/", methods=["GET"])
 def get_all_gyms():
     city = request.args.get("city")
     gyms, error = GymDriver.get_gyms(city=city)
@@ -15,7 +15,7 @@ def get_all_gyms():
 
 
 # ── GET single gym ────────────────────────────────────────────────────────────
-@gym_bp.route("/<gym_id>", methods=["GET"])
+@GymRouteBlueprint.route("/<gym_id>", methods=["GET"])
 def get_gym(gym_id):
     gym, error = GymDriver.get_gym_by_id(gym_id)
     if error:
@@ -24,7 +24,7 @@ def get_gym(gym_id):
 
 
 # ── CREATE gym ────────────────────────────────────────────────────────────────
-@gym_bp.route("/", methods=["POST"])
+@GymRouteBlueprint.route("/", methods=["POST"])
 def create_gym():
     data = request.get_json()
     if not data:
@@ -43,7 +43,7 @@ def create_gym():
 
 
 # ── ADD member to gym ─────────────────────────────────────────────────────────
-@gym_bp.route("/<gym_id>/members", methods=["POST"])
+@GymRouteBlueprint.route("/<gym_id>/members", methods=["POST"])
 def add_member(gym_id):
     data = request.get_json()
     if not data:
@@ -59,7 +59,7 @@ def add_member(gym_id):
 
 
 # ── REMOVE member from gym ────────────────────────────────────────────────────
-@gym_bp.route("/<gym_id>/members/<user_id>", methods=["DELETE"])
+@GymRouteBlueprint.route("/<gym_id>/members/<user_id>", methods=["DELETE"])
 def remove_member(gym_id, user_id):
     updated, error = GymDriver.remove_member(gym_id=gym_id, user_id=user_id)
     if error:
@@ -68,7 +68,7 @@ def remove_member(gym_id, user_id):
 
 
 # ── GET all members of a gym ──────────────────────────────────────────────────
-@gym_bp.route("/<gym_id>/members", methods=["GET"])
+@GymRouteBlueprint.route("/<gym_id>/members", methods=["GET"])
 def get_members(gym_id):
     members, error = GymDriver.get_members(gym_id)
     if error:
@@ -77,7 +77,7 @@ def get_members(gym_id):
 
 
 # ── UPDATE gym ────────────────────────────────────────────────────────────────
-@gym_bp.route("/<gym_id>", methods=["PUT"])
+@GymRouteBlueprint.route("/<gym_id>", methods=["PUT"])
 def update_gym(gym_id):
     data = request.get_json()
     if not data:
@@ -90,7 +90,7 @@ def update_gym(gym_id):
 
 
 # ── DELETE gym ────────────────────────────────────────────────────────────────
-@gym_bp.route("/<gym_id>", methods=["DELETE"])
+@GymRouteBlueprint.route("/<gym_id>", methods=["DELETE"])
 def delete_gym(gym_id):
     deleted, error = GymDriver.delete_gym(gym_id)
     if error:
