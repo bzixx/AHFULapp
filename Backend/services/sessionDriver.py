@@ -1,8 +1,7 @@
 from flask import session
 
 ##THIS IS SKELETON NEED TO VERIFY
-
-class sessionDriver:
+class SessionDriver:
     def create_session(self, user_info: dict) -> None:
         # print("Creating session for user:", user_info)
         if not 'user_info' in session:

@@ -6,7 +6,7 @@ from datetime import datetime
 # Used to group views
 signInRouteBlueprint = Blueprint('Sign-In', __name__, url_prefix='/sign-in')
 
-# Login with google auth
+# ── POST Login with Google Auth ────────────────────────────────────────────────────────────
 @signInRouteBlueprint.route('/google-login', methods=['POST'])
 def google_login():
     postAuthData = request.get_json()
@@ -42,18 +42,20 @@ def google_login():
     else: 
         # Update last login time
         routeUserObject['login_time'] = datetime.now()
-        UserDriver.update_user_info(routeUserObject)
+        UserDriver.update_user_info(dataToBeUpdated=routeUserObject)
 
     # Create session with routeUserObject
     #UserDriver.create_session(routeUserObject)
     return jsonify({"message": "Login successful", "user_info": routeUserObject}), 200
 
+# ── POST Log Out ────────────────────────────────────────────────────────────
 # @signInRouteBlueprint.route('/logout', methods=['POST'])
 # def logout():
 #     session_service: SessionService = current_app.session_service
 #     session_service.remove_session()
 #     return jsonify({"message": "Logout successful"}), 200
 
+# ── GET whoami (Logged in or not) ────────────────────────────────────────────────────────────
 # @signInRouteBlueprint.route('/whoami', methods=['GET'])
 # def whoami():
 #     session_service: SessionService = current_app.session_service
@@ -61,3 +63,42 @@ def google_login():
 #     if not user_info:
 #         return jsonify({"error": "No user info available"}), 404
 #     return jsonify({"user_info": user_info}), 200
+
+
+
+
+
+#OLD USER ROUTE
+
+# # ── REGISTER ──────────────────────────────────────────────────────────────────
+# @userRouteBlueprint.route("/register", methods=["POST"])
+# def register():
+#     data = request.get_json()
+#     if not data:
+#         return jsonify({"error": "No data provided"}), 400
+
+#     id, error = UserDriver.register_user(
+#         name=data.get("name"),
+#         email=data.get("email"),
+#         password=data.get("password"),
+#         role=data.get("role"),
+#     )
+#     if error:
+#         return jsonify({"error": error}), 400
+#     return jsonify({"_id": id, "message": "User created successfully"}), 201
+
+
+# # ── LOGIN ─────────────────────────────────────────────────────────────────────
+# @userRouteBlueprint.route("/login", methods=["POST"])
+# def login():
+#     data = request.get_json()
+#     if not data:
+#         return jsonify({"error": "No data provided"}), 400
+
+#     email, error = UserDriver.authenticate_user(
+#         email=data.get("email"),
+#         password=data.get("password"),
+#     )
+#     if error:
+#         return jsonify({"error": error}), 401
+#     return jsonify({"email": email, "message": "Login successful"}), 200

@@ -31,7 +31,6 @@ def getMongoDatabase():
     return ahfulMongoDBClient["appData"]
 
 
-
 def killMongoClient():
     # This function is a placeholder for any cleanup operations needed for the MongoDB connection
     openMongoDriver = current_app.config.get('ahfulMongoDBClient')
