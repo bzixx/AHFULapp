@@ -30,7 +30,7 @@ export function MenuButton({
                 <Link to="/FoodLog">Food Log</Link>
                 <Link to="/ExerciseLogger">Exercise Logger</Link>
                 <Link to="/ExploreWorkout">Explore Workouts</Link>
-                <Link to="/CreateTemplate">Create Template</Link>
+                <Link to="/Workout">Workout</Link>
                 <Link to="/Profile">Profile</Link>
             </div>
 
