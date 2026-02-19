@@ -1,6 +1,6 @@
 #So the models are essentially the database access layer — they know how to talk to MongoDB but have no idea what business rules exist
 from bson import ObjectId
-from services.mongoDriver import getMongoDatabase
+from services.MongoDriver import getMongoDatabase
 
 ahfulAppDataDB = getMongoDatabase()
 workoutCollection = ahfulAppDataDB['workout']
