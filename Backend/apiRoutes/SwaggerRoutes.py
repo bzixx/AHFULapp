@@ -1,11 +1,27 @@
-{
+from flask import jsonify                             # Use Flask to import Python Code as JSON
+from flask_swagger_ui import get_swaggerui_blueprint  #Import swagger from Python Package.
+
+swaggerAHFULDocsURL = '/APIDocs'                              # URL for exposing Swagger UI
+configDocURL = 'http://localhost:5000/APIDocs/swagger.json'   #URL for the Backend Configuration for the UI
+appNameconfig={'app_name': "AHFUL Users API"}                 #Header App Name to display in UI
+
+swaggerUIBlueprint = get_swaggerui_blueprint(swaggerAHFULDocsURL,configDocURL, appNameconfig)
+
+# ── GET Rotue to Return the Local Swagger API Config ────────────────────────────────────────────────────────────
+@swaggerUIBlueprint.route('/swagger.json', methods=["GET"])
+def swagger_json():
+    return jsonify(swaggerConfig)
+
+
+#All Local Swagger API Docs Config is setup here:
+swaggerConfig = {
   "openapi": "3.0.3",
   "info": {
     "title": "AHFUL Users API",
     "version": "1.0.0"
   },
   "servers": [
-    { "url": "/" }
+    { "url": "/Backend" }
   ],
   "paths": {
 
@@ -50,7 +66,7 @@
           {
             "name": "email",
             "in": "path",
-            "required": true,
+            "required": "true",
             "description": "Email address of the user",
             "schema": { "type": "string", "format": "email" }
           }
@@ -101,7 +117,7 @@
         "summary": "Register a new user",
         "tags": ["Users"],
         "requestBody": {
-          "required": true,
+          "required": "true",
           "content": {
             "application/json": {
               "schema": {
@@ -155,7 +171,7 @@
         "summary": "Authenticate a user",
         "tags": ["Users"],
         "requestBody": {
-          "required": true,
+          "required": "true",
           "content": {
             "application/json": {
               "schema": {
@@ -258,7 +274,7 @@
           {
             "name": "email",
             "in": "path",
-            "required": true,
+            "required": "true",
             "description": "Email address of the user",
             "schema": { "type": "string", "format": "email" }
           }
@@ -310,7 +326,7 @@
           {
             "name": "id",
             "in": "path",
-            "required": true,
+            "required": "true",
             "description": "id of the workout",
             "schema": { "type": "string"}
           }
@@ -354,7 +370,7 @@
         "summary": "Create a new workout",
         "tags": ["Workout"],
         "requestBody": {
-          "required": true,
+          "required": "true",
           "content": {
             "application/json": {
               "schema": {
@@ -403,6 +419,8 @@
         }
       }
     }
-
   }
 }
+    
+
+

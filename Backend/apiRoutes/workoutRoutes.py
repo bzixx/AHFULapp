@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.workoutDriver import WorkoutDriver
+from Services.WorkoutDriver import WorkoutDriver
 
 workoutRouteBlueprint = Blueprint("workouts", __name__, url_prefix="/AHFULworkout")
 
