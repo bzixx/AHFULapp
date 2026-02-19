@@ -6,15 +6,17 @@
 html, body {
     margin: 0;
     padding: 0;
-    height: 100%;
+    min-height: 100%;
 }
 
 .workout-page {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100%;   
-    width: 100%;
+    flex-direction: column;
+    justify-content: flex-start; /* vertical */
+    align-items: center;         /* horizontal centering */
+    width: 100%;                 /* ensures full-width container */
+    min-height: 100vh;           /* allows scrolling + proper layout */
+    padding-top: 40px;
 }
 
 .workout-card {
@@ -25,7 +27,7 @@ html, body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     margin: 0;
     width: 600px;
-    height: 550px;
+    height: 500px;
     overflow-y: auto;
 }
 
@@ -45,9 +47,34 @@ html, body {
     line-height: 1.2;   
 }
 
-.workout-button {
+.workout-footer {
+    width: 600px;             /* match card width */
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    margin-top: 16px;
+}
+
+.workout-timer {
+    font-size: 1.4rem;
+    font-weight: bold;
+    padding: 6px 12px;
+    background: #f5f5f5;
+    border: 2px solid #000;
+    border-radius: 6px;
+    width: 80px;          /* keeps it from stretching */
+    text-align: center;   /* centers the numbers */
+}
+
+.workout-button {
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 6px 12px;
+    background: #f5f5f5;
+    border: 2px solid #000;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100px;          /* keeps it visually balanced with the timer */
+    text-align: center;
 }
 
 /* AI Grid css */
@@ -99,6 +126,7 @@ html, body {
     font-size: 18px;
     transition: background-color 0.2s ease;
 }
+
 .delete-button:hover {
     background-color: #f0f0f0;
 }
