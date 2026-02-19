@@ -17,7 +17,7 @@ import "./siteStyles.css";
 
 function AHFULApp() {
   return (
-    <GoogleOAuthProvider clientId={import.meta.env.REACT_APP_GOOGLE_CLIENT_ID}>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <Router>
         <Routes>
           <Route element={<Layout/>}>
