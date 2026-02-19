@@ -102,7 +102,17 @@ export function Login() {
                     To use this 'AHFUL' app, you'll need to sign in with your Google account below.
                     </h3>
                 </div>
-                <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleFailure}>AHFUL Google Login</GoogleLogin>
+                <div className="login-button">
+                    <GoogleLogin 
+                        size="large"
+                        width="200"
+                        text="signin_with"
+                        theme="filled_black" 
+                        shape="pill"
+                        onSuccess={handleGoogleSuccess}
+                        onError={handleGoogleFailure}
+                    />
+                </div>
             </div>
         </div>
     );
