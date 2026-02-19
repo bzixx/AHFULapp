@@ -1,12 +1,7 @@
 from DataModels.WorkoutObject import WorkoutObject
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
-
-# The UserDriver is responsible for implementing the business logic related to user operations.
-#  It acts as an intermediary between the API routes and the data models, 
-# ensuring that all necessary validations and rules are applied before interacting with 
-# the database.
+#Services & Drivers know how to implement business Logic related to the Route operations.  Intermediate between Routes and Objects.  Ensures validations and rules are applied before Calling Objects to interact with DB
 
 class WorkoutDriver:
 

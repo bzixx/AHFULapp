@@ -1,4 +1,5 @@
 from flask import session
+#Services & Drivers know how to implement business Logic related to the Route operations.  Intermediate between Routes and Objects.  Ensures validations and rules are applied before Calling Objects to interact with DB
 
 ##THIS IS SKELETON NEED TO VERIFY
 class SessionDriver:

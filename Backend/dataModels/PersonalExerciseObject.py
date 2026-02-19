@@ -1,4 +1,4 @@
-#So the models are essentially the database access layer — they know how to talk to MongoDB but have no idea what business rules exist
+#DataModel & Objects are essentially the Database Access Layer -- They know how to talk to Mongo DB Collection and that is it. 
 from bson import ObjectId
 from Services.MongoDriver import getMongoDatabase
 
