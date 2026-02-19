@@ -1,9 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 import "./Workout.css";
 import "../../SiteStyles.css";
 export function Workout() {
     
+
+    /* Variables */
     const exercisesRef = useRef([
         { name: "Pushups", reps: 15, sets: 3, weight: "0", completed: false },
         { name: "Pullups", reps: 8, sets: 4, weight: "Full backpack", completed: false },
@@ -12,27 +14,57 @@ export function Workout() {
     ]);
 
     const [exercises, setExercises] = useState(exercisesRef.current);
+    const [isRunning, setIsRunning] = useState(false);
+    const [time, setTime] = useState(0);
 
 
+    /* Functions */
+
+    /* Exercise Functions */
     const removeWorkout = (index) => { 
         setExercises(prev => prev.filter((_, i) => i !== index)); 
     };
 
     const toggleCompleted = (index) => {
-    exercisesRef.current[index].completed =
-        !exercisesRef.current[index].completed;
+        exercisesRef.current[index].completed =
+            !exercisesRef.current[index].completed;
 
-    setExercises([...exercisesRef.current]); // force re-render
+        setExercises([...exercisesRef.current]); // force re-render
     };
-
 
     const updateField = (index, field, value) => {
-    setExercises(prev => {
-        const updated = [...prev];
-        updated[index][field] = value;
-        return updated;
-    });
+        setExercises(prev => {
+            const updated = [...prev];
+            updated[index][field] = value;
+            return updated;
+        });
     };
+
+    /* Timer Functions */
+    useEffect(() => {
+        let interval = null;
+
+        if (isRunning) {
+            interval = setInterval(() => {
+                setTime((t) => t + 1);
+            }, 1000);
+        } else {
+            clearInterval(interval);
+        }
+
+        return () => clearInterval(interval);
+    }, [isRunning]);
+
+    const toggleTimer = () => {
+        setIsRunning((r) => !r);
+    };
+
+    const formatTime = (seconds) => {
+        const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+        const s = String(seconds % 60).padStart(2, "0");
+        return `${m}:${s}`;
+    };
+
 
     
     return (
@@ -113,9 +145,17 @@ export function Workout() {
                         </div>
                         </React.Fragment>
                     ))}
-                    </div>
+                </div>
 
             </div>
+            <div className="workout-footer">
+                <div className="workout-timer">{formatTime(time)}</div>
+
+                <button className="workout-button" onClick={toggleTimer}>
+                    {isRunning ? "End" : "Start"}
+                </button>
+            </div>
+
         </div>
     );
 }
