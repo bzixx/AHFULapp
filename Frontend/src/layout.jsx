@@ -1,4 +1,4 @@
-import { Navbar } from "./components/Navbar/Navbar";
+import { Navbar } from "./components/navbar/navbar";
 import { Outlet } from "react-router-dom";
 import { MenuButton } from "./components/MenuButton/MenuButton";
 export function Layout() {

@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.UserDriver import UserDriver
+from Services.UserDriver import UserDriver
 
 userRouteBlueprint = Blueprint("users", __name__, url_prefix="/AHFULusers")
 
@@ -18,41 +18,6 @@ def get_user(email):
     if error:
         return jsonify({"error": error}), 404
     return jsonify(user), 200
-
-
-# ── REGISTER ──────────────────────────────────────────────────────────────────
-@userRouteBlueprint.route("/register", methods=["POST"])
-def register():
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-
-    id, error = UserDriver.register_user(
-        name=data.get("name"),
-        email=data.get("email"),
-        password=data.get("password"),
-        role=data.get("role"),
-    )
-    if error:
-        return jsonify({"error": error}), 400
-    return jsonify({"_id": id, "message": "User created successfully"}), 201
-
-
-# ── LOGIN ─────────────────────────────────────────────────────────────────────
-@userRouteBlueprint.route("/login", methods=["POST"])
-def login():
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-
-    email, error = UserDriver.authenticate_user(
-        email=data.get("email"),
-        password=data.get("password"),
-    )
-    if error:
-        return jsonify({"error": error}), 401
-    return jsonify({"email": email, "message": "Login successful"}), 200
-
 
 ##NOT TESTED YET — MAYBE NOT NEEDED DEPENDING ON FRONTEND DESIGN, BUT HERE FROM AI
 # ── UPDATE user ───────────────────────────────────────────────────────────────

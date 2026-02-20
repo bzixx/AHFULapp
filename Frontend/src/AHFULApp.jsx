@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
-import { CreateTemplate } from "./Pages/CreateTemplate/CreateTemplate.jsx";
+import { Workout } from "./Pages/Workout/Workout.jsx";
 import { ExerciseLogger } from "./Pages/ExerciseLogger/ExerciseLogger.jsx";
 import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
 import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
@@ -17,12 +17,12 @@ import "./siteStyles.css";
 
 function AHFULApp() {
   return (
-    <GoogleOAuthProvider clientId={import.meta.env.REACT_APP_GOOGLE_CLIENT_ID}>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <Router>
         <Routes>
           <Route element={<Layout/>}>
             <Route path="/" element={<Home/>}/>
-            <Route path="/CreateTemplate" element={<CreateTemplate/>}/>
+            <Route path="/Workout" element={<Workout/>}/>
             <Route path="/ExerciseLogger" element={<ExerciseLogger/>}/>
             <Route path="/ExploreWorkout" element={<ExploreWorkouts/>}/>
             <Route path="/FoodLog" element={<FoodLog/>}/>

@@ -3,7 +3,11 @@ from google.auth.transport import requests
 
 ##THIS IS SKELETON NEED TO VERIFY
 
-class signInDriver:
+#Services & Drivers know how to implement business Logic related to the Route operations.  Intermediate between Routes and Objects.  Ensures validations and rules are applied before Calling Objects to interact with DB
+
+#Initalizes Google packages. 
+
+class SignInDriver:
     def __init__(self, GOOGLE_CLIENT_ID: str):
         self.client_id: str = GOOGLE_CLIENT_ID
 
