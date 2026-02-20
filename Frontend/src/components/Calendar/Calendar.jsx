@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import useCalendar from "./useCalendar";
+import UseCalendar from "./UseCalendar";
 import { AnimatePresence, motion } from "framer-motion";
 import "./calendar.css";
 
@@ -8,7 +8,7 @@ export function Calendar({ locale }) {
   locale = locale || navigator.language;
 
   const { year, month, weekdays, cells, isToday, startOfMonth, goNext, goPrevious } =
-    useCalendar(new Date(), locale);
+    UseCalendar(new Date(), locale);
 
   const monthFormatter = useMemo(() => {
     return new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" });
