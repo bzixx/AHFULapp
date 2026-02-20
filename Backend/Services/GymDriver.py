@@ -1,4 +1,4 @@
-from dataModels.GymObject import GymObject
+from DataModels.GymObject import GymObject
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
