@@ -1,0 +1,102 @@
+.calendar-container {
+  width: 50%;
+  min-width: 200px;
+  padding: 16px;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.calendar-title {
+  font-size: 18px;
+  font-weight: 600;
+  user-select: none;
+}
+
+.calendar-button {
+  padding: 8px 12px;
+  border-radius: 16px;
+  border: 1px solid #f3f4f6;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.calendar-button:hover {
+  background: #f3f4f6;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-weight: 500;
+  padding: 4px 0;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  aspect-ratio: 1 / 1;
+  border-radius: 16px;
+  user-select: none;
+  transition: background 0.15s ease;
+  cursor: default;
+}
+
+.calendar-cell.current {
+  background: white;
+}
+
+.calendar-cell.other {
+  background: #f3f4f6;
+  opacity: 0.7;
+}
+
+.calendar-cell:not(.today):hover {
+  background: #f3f4f6;
+}
+
+.calendar-cell.today {
+  box-shadow: 0 0 0 2px #60a5fa;
+}
+
+.calendar-day-today {
+  font-weight: 700;
+}
+
+.calendar-today-badge {
+  position: absolute;
+  top: -6px;
+  right: 4px;
+
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 6px;
+
+  background: rgba(96, 165, 250, 0.9);
+  color: white;
+}
