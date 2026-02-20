@@ -8,6 +8,8 @@ from Services.SignInDriver import SignInDriver
 #Routes/Blueprints Imports
 from APIRoutes.UserRoutes import userRouteBlueprint #[Local] Import User API routes as a Flask Blueprint
 from APIRoutes.WorkoutRoutes import workoutRouteBlueprint
+from APIRoutes.GymRoutes import gymRouteBlueprint
+from APIRoutes.FoodRoutes import foodRouteBlueprint
 from APIRoutes.SwaggerRoutes import swaggerUIBlueprint
 from APIRoutes.SignInRoutes import signInRouteBlueprint
 
@@ -21,14 +23,19 @@ def create_app():
     app.AHFULSignInDriver = SignInDriver(os.getenv("GOOGLE_CLIENT_ID"))
 
     #Register App Routes and Blueprints
-    app.register_blueprint(userRouteBlueprint)
-    app.register_blueprint(workoutRouteBlueprint)
+    api_prefix = "/Backend"
+    app.register_blueprint(userRouteBlueprint, url_prefix=api_prefix + userRouteBlueprint.url_prefix)
+    app.register_blueprint(workoutRouteBlueprint, url_prefix=api_prefix + workoutRouteBlueprint.url_prefix)
+    app.register_blueprint(gymRouteBlueprint, url_prefix=api_prefix + gymRouteBlueprint.url_prefix)
+    app.register_blueprint(foodRouteBlueprint, url_prefix=api_prefix + foodRouteBlueprint.url_prefix)
     app.register_blueprint(swaggerUIBlueprint)
     app.register_blueprint(signInRouteBlueprint)
 
+
     # Enable CORS - includes CloudFront production URL and custom domain
     allowed_origins = [
-        'http://localhost:5173'
+        'http://localhost:5173',
+        'http://127.0.0.1:5000'
     ]
 
     CORS(app, origins=allowed_origins, supports_credentials=True)

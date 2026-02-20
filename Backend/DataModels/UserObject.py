@@ -30,17 +30,3 @@ class UserObject:
         user_data["role"] = 0
         result = userCollection.insert_one(user_data)
         return str(result.inserted_id)
-
-    # Not correct
-    @staticmethod
-    def update(user_id, updates):
-        updateResults = userCollection.update_one(
-            {"_id": ObjectId(user_id)},
-            {"$set": updates}
-        )
-        if not updateResults:
-            raise "Failed to updated from Object"
-
-    @staticmethod
-    def delete(user_id):
-        userCollection.delete_one({"_id": ObjectId(user_id)})
