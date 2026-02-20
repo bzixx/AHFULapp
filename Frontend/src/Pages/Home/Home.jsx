@@ -1,6 +1,7 @@
 import React from "react";
 import "./Home.css";
 import "../../SiteStyles.css";
+import { Calendar } from "../../Components/Calendar/Calendar";
 export function Home() {
     return (
         <main className="gym-landing-root">
