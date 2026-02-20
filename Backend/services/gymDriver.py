@@ -1,4 +1,4 @@
-from dataModels.gymObject import gymObject
+from dataModels.GymObject import GymObject
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -13,7 +13,7 @@ class GymDriver:
     @staticmethod
     def get_all_gyms():
         try:
-            gyms = gymObject.find_all()
+            gyms = GymObject.find_all()
             return gyms, None
         except Exception as e:
             return None, str(e)
@@ -21,7 +21,7 @@ class GymDriver:
     @staticmethod
     def get_gym_by_id(id):
         try:
-            gym = gymObject.find_by_id(id)
+            gym = GymObject.find_by_id(id)
             if not gym:
                 return None, "Gym not found"
             return gym, None
@@ -42,7 +42,7 @@ class GymDriver:
         }
 
         try:
-            response = gymObject.create(gym_data)
+            response = GymObject.create(gym_data)
             return response, None
         except Exception as e:
             return None, str(e)
