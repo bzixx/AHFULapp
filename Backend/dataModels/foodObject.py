@@ -3,28 +3,28 @@ from bson import ObjectId
 from services.MongoDriver import getMongoDatabase
 
 ahfulAppDataDB = getMongoDatabase()
-gymCollection = ahfulAppDataDB['gym']
+foodCollection = ahfulAppDataDB['food']
 
-class gymObject:
+class foodObject:
     # ── Helpers ────────────────────────────────────────────────────────────────
     @staticmethod
-    def _serialize(gym):
+    def _serialize(food):
         """Convert MongoDB document to JSON-safe dict."""
-        if gym:
-            gym["_id"] = str(gym["_id"])
-        return gym
+        if food:
+            food["_id"] = str(food["_id"])
+        return food
 
     # ── Reads ──────────────────────────────────────────────────────────────────
     def find_all():
-        gyms = gymCollection.find()
-        return [gymObject._serialize(g) for g in gyms]
+        food = foodCollection.find()
+        return [foodObject._serialize(g) for g in food]
 
-    def find_by_id(id):
-        gym = gymCollection.find_one({"_id": ObjectId(id)})
-        return gymObject._serialize(gym)
+    def find_by_user(id):
+        food = foodCollection.find_one({"userId": id})
+        return foodObject._serialize(food)
 
     # ── Writes ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def create(gym_data):
-        result = gymCollection.insert_one(gym_data)
+    def create(food_data):
+        result = foodCollection.insert_one(food_data)
         return str(result.inserted_id)

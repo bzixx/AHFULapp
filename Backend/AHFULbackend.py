@@ -1,6 +1,8 @@
 from flask import Flask, current_app, send_from_directory #Import Main Flask application class
 from apiRoutes.userRoutes import userRouteBlueprint #[Local] Import User API routes as a Flask Blueprint
 from apiRoutes.workoutRoutes import workoutRouteBlueprint
+from apiRoutes.gymRoutes import gymRouteBlueprint
+from apiRoutes.foodRoutes import foodRouteBlueprint
 from flask_swagger_ui import get_swaggerui_blueprint
 import os
 from dotenv import load_dotenv
@@ -14,7 +16,9 @@ def create_app():
 
     app.register_blueprint(userRouteBlueprint)
     app.register_blueprint(workoutRouteBlueprint)
-    
+    app.register_blueprint(gymRouteBlueprint)
+    app.register_blueprint(foodRouteBlueprint)
+
     @app.route('/swagger.json')
     def swagger_json():
         return send_from_directory(os.path.dirname(os.path.abspath(__file__)), 'swagger.json')

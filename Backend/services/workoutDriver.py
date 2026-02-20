@@ -42,7 +42,7 @@ class WorkoutDriver:
     @staticmethod
     def create_workout(email, gymId, title, startTime, endTime):
         # Validate required fields
-        if (not email) or (not startTime):
+        if (not email) or (startTime is None):
             return None, "You are missing an email or startTime. Please fix, then attempt to create workout again"
 
         workout_data = {
