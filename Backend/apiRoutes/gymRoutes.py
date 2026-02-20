@@ -17,6 +17,7 @@ def get_all_gyms():
 @gymRouteBlueprint.route("/<gym_id>", methods=["GET"])
 def get_gym(gym_id):
     gym, error = GymDriver.get_gym_by_id(gym_id)
+    gym, error = GymDriver.get_gym_by_id(gym_id)
     if error:
         return jsonify({"error": error}), 404
     return jsonify(gym), 200

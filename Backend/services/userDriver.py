@@ -27,6 +27,16 @@ class UserDriver:
             return user, None
         except Exception as e:
             return None, str(e)
+        
+    @staticmethod
+    def get_user_by_email(email):
+        try:
+            user = userObject.find_by_email(email)
+            if not user:
+                return None, "User not found"
+            return user, None
+        except Exception as e:
+            return None, str(e)
 
     @staticmethod
     def register_user(name, email, password, role):
@@ -57,6 +67,28 @@ class UserDriver:
             return email, None
         except Exception as e:
             return None, str(e)
+        
+    
+    def update_user_info(self, updated_user_info: dict):
+        document_id = updated_user_info.get("_id")
+        result = super().update_document(document_id, updated_user_info, False)
+        return { "updated_count": result }
+    
+    def update_document(self, document_id, update_data, include_updated_at = True):
+        try:
+            db = self.DB_PROVIDER()
+            # Remove _id from update_data if present
+            update_data.pop('_id', None)
+            # Add updated timestamp
+            update_data['updated_at'] = datetime.now(timezone.utc)
+            result = db[self.COLLECTION_NAME].update_one(
+                {"_id": ObjectId(document_id)},
+                {"$set": update_data}
+            )
+            return result.modified_count
+        except Exception as e:
+            print(f"Database error: {e}")
+            return 0
 
     @staticmethod
     def authenticate_user(email, password):

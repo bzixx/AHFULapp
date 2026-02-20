@@ -1,24 +1,31 @@
 from flask import Flask, current_app, send_from_directory #Import Main Flask application class
+import os # Import Function from os to get .env variables
+from flask import Flask #Import Main Flask application class
+
+#Services/Drivers Imports
+from services.UserDriver import UserDriver #[Local] Import UserDriver for user DB operations
+from services.signInDriver import signInDriver
+
+#Routes/Blueprints Imports
 from apiRoutes.userRoutes import userRouteBlueprint #[Local] Import User API routes as a Flask Blueprint
 from apiRoutes.workoutRoutes import workoutRouteBlueprint
 from apiRoutes.gymRoutes import gymRouteBlueprint
 from apiRoutes.foodRoutes import foodRouteBlueprint
-from flask_swagger_ui import get_swaggerui_blueprint
-import os
-from dotenv import load_dotenv
+from apiRoutes.SwaggerRoutes import SwaggerUIBlueprint, SWAGGER_URL
 
+#Main AHFUL APP Backend Entry Point.
 def create_app():
     # Create Flask application instance we will use to run the Backend server and handle requests
+    #FUN FACT: __name__ is a special variable that is the name of this file.
     app = Flask(__name__)
 
-    # Load environment variables from .env file At Main Level
-    load_dotenv()
+    #Make an Appwade SignInDriver to reference later 
+    app.AHFULsignInDriver = signInDriver(os.getenv("GOOGLE_CLIENT_ID"))
 
+    #Register App Routes and Blueprints
     app.register_blueprint(userRouteBlueprint)
     app.register_blueprint(workoutRouteBlueprint)
-    app.register_blueprint(gymRouteBlueprint)
-    app.register_blueprint(foodRouteBlueprint)
-
+    
     @app.route('/swagger.json')
     def swagger_json():
         return send_from_directory(os.path.dirname(os.path.abspath(__file__)), 'swagger.json')
@@ -26,7 +33,7 @@ def create_app():
     SWAGGER_URL = '/swagger'            # URL for exposing Swagger UI
     API_URL = '/swagger.json'
 
-    swaggerui_bp = get_swaggerui_blueprint(
+    swaggerui_bp = SwaggerUIBlueprint(
         SWAGGER_URL,
         API_URL,
         config={
@@ -37,15 +44,6 @@ def create_app():
 
     return app
 
-# Define a route for the root URL ("/") that returns a simple "Hello, World!" message when accessed
-# @current_app.route("/")
-# def hello_world():
-#     return "<h1>Hello, World!</h1><h3>Welcome to the AHFUL Backend Server.</h3> <p>It's great here.</p>"
-
-#Test route to check if we can connect to MongoDB, will return the result of the returns a success message if successful
-# @app.route("/testdb")
-# def do_DB_test():
-#     # return mongoDriver()
 
 
 

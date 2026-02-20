@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.services.exercise_service import ExerciseService
+from services.ExerciseDriver import ExerciseDriver
 
 exercise_bp = Blueprint("exercises", __name__)
 

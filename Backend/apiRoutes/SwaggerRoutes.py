@@ -1,11 +1,25 @@
-{
+from flask import jsonify # Use Flask to import Python Code as JSON
+from flask_swagger_ui import get_swaggerui_blueprint
+
+SWAGGER_URL = '/APIDocs'            # URL for exposing Swagger UI
+API_URL = 'http://localhost:5000/APIDocs/swagger.json'
+
+SwaggerUIBlueprint = get_swaggerui_blueprint(SWAGGER_URL,API_URL, config={'app_name': "AHFUL Users API"})
+
+@SwaggerUIBlueprint.route('/swagger.json', methods=["GET"])
+def swagger_json():
+    return jsonify(swaggerConfig)
+
+
+
+swaggerConfig = {
   "openapi": "3.0.3",
   "info": {
     "title": "AHFUL Users API",
     "version": "1.0.0"
   },
   "servers": [
-    { "url": "/" }
+    { "url": "/Backend" }
   ],
   "paths": {
 
@@ -50,7 +64,7 @@
           {
             "name": "email",
             "in": "path",
-            "required": true,
+            "required": "true",
             "description": "Email address of the user",
             "schema": { "type": "string", "format": "email" }
           }
@@ -101,7 +115,7 @@
         "summary": "Register a new user",
         "tags": ["Users"],
         "requestBody": {
-          "required": true,
+          "required": "true",
           "content": {
             "application/json": {
               "schema": {
@@ -155,7 +169,7 @@
         "summary": "Authenticate a user",
         "tags": ["Users"],
         "requestBody": {
-          "required": true,
+          "required": "true",
           "content": {
             "application/json": {
               "schema": {
@@ -258,7 +272,7 @@
           {
             "name": "email",
             "in": "path",
-            "required": true,
+            "required": "true",
             "description": "Email address of the user",
             "schema": { "type": "string", "format": "email" }
           }
@@ -310,7 +324,7 @@
           {
             "name": "id",
             "in": "path",
-            "required": true,
+            "required": "true",
             "description": "id of the workout",
             "schema": { "type": "string"}
           }
@@ -354,7 +368,7 @@
         "summary": "Create a new workout",
         "tags": ["Workout"],
         "requestBody": {
-          "required": true,
+          "required": "true",
           "content": {
             "application/json": {
               "schema": {
@@ -708,6 +722,8 @@
         }
       }
     }
-
   }
 }
+    
+
+
