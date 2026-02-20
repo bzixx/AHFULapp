@@ -473,7 +473,7 @@ swaggerConfig = {
           {
             "name": "gym_id",
             "in": "path",
-            "required": true,
+            "required": "true",
             "description": "The id of the gym (Mongo ObjectId as string)",
             "schema": { "type": "string" }
           }
@@ -520,7 +520,7 @@ swaggerConfig = {
         "summary": "Create a new gym",
         "tags": ["Gym"],
         "requestBody": {
-          "required": true,
+          "required": "true",
           "content": {
             "application/json": {
               "schema": {
@@ -623,7 +623,7 @@ swaggerConfig = {
           {
             "name": "userId",
             "in": "path",
-            "required": true,
+            "required": "true",
             "description": "The user id associated with the foods",
             "schema": { "type": "string" }
           }
@@ -674,7 +674,7 @@ swaggerConfig = {
         "summary": "Create a new food entry",
         "tags": ["Food"],
         "requestBody": {
-          "required": true,
+          "required": "true",
           "content": {
             "application/json": {
               "schema": {
