@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.FoodDriver import FoodDriver
+from Services.FoodDriver import FoodDriver
 
 foodRouteBlueprint = Blueprint("food", __name__, url_prefix="/AHFULfood")
 

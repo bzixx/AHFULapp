@@ -1,19 +1,14 @@
-from dataModels.workoutObject import workoutObject
+from DataModels.WorkoutObject import WorkoutObject
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
-
-# The UserDriver is responsible for implementing the business logic related to user operations.
-#  It acts as an intermediary between the API routes and the data models, 
-# ensuring that all necessary validations and rules are applied before interacting with 
-# the database.
+#Services & Drivers know how to implement business Logic related to the Route operations.  Intermediate between Routes and Objects.  Ensures validations and rules are applied before Calling Objects to interact with DB
 
 class WorkoutDriver:
 
     @staticmethod
     def get_all_workouts():
         try:
-            workouts = workoutObject.find_all()
+            workouts = WorkoutObject.find_all()
             return workouts, None
         except Exception as e:
             return None, str(e)
@@ -21,7 +16,7 @@ class WorkoutDriver:
     @staticmethod
     def get_workout_by_id(id):
         try:
-            workout = workoutObject.find_by_id(id)
+            workout = WorkoutObject.find_by_id(id)
             if not workout:
                 return None, "Workout not found"
             return workout, None
@@ -32,7 +27,7 @@ class WorkoutDriver:
     def get_workouts_by_email(email):
         print(email)
         try:
-            workout = workoutObject.find_by_email(email)
+            workout = WorkoutObject.find_by_email(email)
             if not workout:
                 return None, "Workout not found"
             return workout, None
@@ -54,7 +49,7 @@ class WorkoutDriver:
         }
 
         try:
-            response = workoutObject.create(workout_data)
+            response = WorkoutObject.create(workout_data)
             return response, None
         except Exception as e:
             return None, str(e)

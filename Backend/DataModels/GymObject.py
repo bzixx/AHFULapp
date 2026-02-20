@@ -1,11 +1,11 @@
-#So the models are essentially the database access layer — they know how to talk to MongoDB but have no idea what business rules exist
+#DataModel & Objects are essentially the Database Access Layer -- They know how to talk to Mongo DB Collection and that is it. 
 from bson import ObjectId
-from services.MongoDriver import getMongoDatabase
+from Services.MongoDriver import getMongoDatabase
 
 ahfulAppDataDB = getMongoDatabase()
 gymCollection = ahfulAppDataDB['gym']
 
-class gymObject:
+class GymObject:
     # ── Helpers ────────────────────────────────────────────────────────────────
     @staticmethod
     def _serialize(gym):
@@ -17,11 +17,11 @@ class gymObject:
     # ── Reads ──────────────────────────────────────────────────────────────────
     def find_all():
         gyms = gymCollection.find()
-        return [gymObject._serialize(g) for g in gyms]
+        return [GymObject._serialize(g) for g in gyms]
 
     def find_by_id(id):
         gym = gymCollection.find_one({"_id": ObjectId(id)})
-        return gymObject._serialize(gym)
+        return GymObject._serialize(gym)
 
     # ── Writes ─────────────────────────────────────────────────────────────────
     @staticmethod

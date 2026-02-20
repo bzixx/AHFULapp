@@ -1,17 +1,15 @@
 from flask import Flask, current_app, send_from_directory #Import Main Flask application class
 import os # Import Function from os to get .env variables
-from flask import Flask #Import Main Flask application class
+from flask_cors import CORS #Import Main Flask application class
 
 #Services/Drivers Imports
-from services.UserDriver import UserDriver #[Local] Import UserDriver for user DB operations
-from services.signInDriver import signInDriver
+from Services.SignInDriver import SignInDriver
 
 #Routes/Blueprints Imports
-from apiRoutes.userRoutes import userRouteBlueprint #[Local] Import User API routes as a Flask Blueprint
-from apiRoutes.workoutRoutes import workoutRouteBlueprint
-from apiRoutes.gymRoutes import gymRouteBlueprint
-from apiRoutes.foodRoutes import foodRouteBlueprint
-from apiRoutes.SwaggerRoutes import SwaggerUIBlueprint, SWAGGER_URL
+from APIRoutes.UserRoutes import userRouteBlueprint #[Local] Import User API routes as a Flask Blueprint
+from APIRoutes.WorkoutRoutes import workoutRouteBlueprint
+from APIRoutes.SwaggerRoutes import swaggerUIBlueprint
+from APIRoutes.SignInRoutes import signInRouteBlueprint
 
 #Main AHFUL APP Backend Entry Point.
 def create_app():
@@ -20,28 +18,25 @@ def create_app():
     app = Flask(__name__)
 
     #Make an Appwade SignInDriver to reference later 
-    app.AHFULsignInDriver = signInDriver(os.getenv("GOOGLE_CLIENT_ID"))
+    app.AHFULSignInDriver = SignInDriver(os.getenv("GOOGLE_CLIENT_ID"))
 
     #Register App Routes and Blueprints
     app.register_blueprint(userRouteBlueprint)
     app.register_blueprint(workoutRouteBlueprint)
-    
-    @app.route('/swagger.json')
-    def swagger_json():
-        return send_from_directory(os.path.dirname(os.path.abspath(__file__)), 'swagger.json')
-    
-    SWAGGER_URL = '/swagger'            # URL for exposing Swagger UI
-    API_URL = '/swagger.json'
+    app.register_blueprint(swaggerUIBlueprint)
+    app.register_blueprint(signInRouteBlueprint)
 
-    swaggerui_bp = SwaggerUIBlueprint(
-        SWAGGER_URL,
-        API_URL,
-        config={
-            'app_name': "AHFUL Users API"
-        }
-    )
-    app.register_blueprint(swaggerui_bp, url_prefix=SWAGGER_URL)
+    # Enable CORS - includes CloudFront production URL and custom domain
+    allowed_origins = [
+        'http://localhost:5173'
+    ]
 
+    CORS(app, origins=allowed_origins, supports_credentials=True)
+    
+    #Print an list of all Route maps on the AHFUL App after startup.
+    print(app.url_map)
+
+    #Return AHFUL
     return app
 
 

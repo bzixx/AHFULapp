@@ -1,30 +1,34 @@
-#So the models are essentially the database access layer — they know how to talk to MongoDB but have no idea what business rules exist
+#DataModel & Objects are essentially the Database Access Layer -- They know how to talk to Mongo DB Collection and that is it. 
 from bson import ObjectId
-from services.MongoDriver import getMongoDatabase
+from Services.MongoDriver import getMongoDatabase
 
 ahfulAppDataDB = getMongoDatabase()
-gymCollection = ahfulAppDataDB['gym']
+workoutCollection = ahfulAppDataDB['workout']
 
-class gymObject:
+class WorkoutObject:
     # ── Helpers ────────────────────────────────────────────────────────────────
     @staticmethod
-    def _serialize(gym):
+    def _serialize(workout):
         """Convert MongoDB document to JSON-safe dict."""
-        if gym:
-            gym["_id"] = str(gym["_id"])
-        return gym
+        if workout:
+            workout["_id"] = str(workout["_id"])
+        return workout
 
     # ── Reads ──────────────────────────────────────────────────────────────────
     def find_all():
-        gyms = gymCollection.find()
-        return [gymObject._serialize(g) for g in gyms]
+        workout = workoutCollection.find()
+        return [WorkoutObject._serialize(w) for w in workout]
 
     def find_by_id(id):
-        gym = gymCollection.find_one({"_id": ObjectId(id)})
-        return gymObject._serialize(gym)
+        workout = workoutCollection.find_one({"_id": ObjectId(id)})
+        return WorkoutObject._serialize(workout)
+    
+    def find_by_email(email):
+        workout = workoutCollection.find({"userEmail": email})
+        return [WorkoutObject._serialize(w) for w in workout]
 
     # ── Writes ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def create(gym_data):
-        result = gymCollection.insert_one(gym_data)
+    def create(workout_data):
+        result = workoutCollection.insert_one(workout_data)
         return str(result.inserted_id)
