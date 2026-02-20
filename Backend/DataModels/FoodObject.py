@@ -1,11 +1,11 @@
 #So the models are essentially the database access layer — they know how to talk to MongoDB but have no idea what business rules exist
 from bson import ObjectId
-from services.MongoDriver import getMongoDatabase
+from Services.MongoDriver import getMongoDatabase
 
 ahfulAppDataDB = getMongoDatabase()
 foodCollection = ahfulAppDataDB['food']
 
-class foodObject:
+class FoodObject:
     # ── Helpers ────────────────────────────────────────────────────────────────
     @staticmethod
     def _serialize(food):
@@ -17,11 +17,11 @@ class foodObject:
     # ── Reads ──────────────────────────────────────────────────────────────────
     def find_all():
         food = foodCollection.find()
-        return [foodObject._serialize(g) for g in food]
+        return [FoodObject._serialize(g) for g in food]
 
     def find_by_user(id):
-        food = foodCollection.find_one({"userId": id})
-        return foodObject._serialize(food)
+        food = foodCollection.find({"userId": id})
+        return [FoodObject._serialize(g) for g in food]
 
     # ── Writes ─────────────────────────────────────────────────────────────────
     @staticmethod
