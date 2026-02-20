@@ -3,15 +3,14 @@ from flask_swagger_ui import get_swaggerui_blueprint  #Import swagger from Pytho
 
 swaggerAHFULDocsURL = '/APIDocs'                              # URL for exposing Swagger UI
 configDocURL = 'http://localhost:5000/APIDocs/swagger.json'   #URL for the Backend Configuration for the UI
-appNameconfig={'app_name': "AHFUL Users API"}                 #Header App Name to display in UI
+appNameconfig={'app_name': "AHFUL Users API",'tagsSorter': 'alpha','operationsSorter': 'method'}                 #Header App Name to display in UI
 
-swaggerUIBlueprint = get_swaggerui_blueprint(swaggerAHFULDocsURL,configDocURL, appNameconfig)
+swaggerUIBlueprint = get_swaggerui_blueprint(swaggerAHFULDocsURL, configDocURL, appNameconfig)
 
 # ── GET Rotue to Return the Local Swagger API Config ────────────────────────────────────────────────────────────
 @swaggerUIBlueprint.route('/swagger.json', methods=["GET"])
 def swagger_json():
     return jsonify(swaggerConfig)
-
 
 #All Local Swagger API Docs Config is setup here:
 swaggerConfig = {
@@ -103,127 +102,6 @@ swaggerConfig = {
                   "type": "object",
                   "properties": {
                     "error": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/AHFULusers/register": {
-      "post": {
-        "summary": "Register a new user",
-        "tags": ["Users"],
-        "requestBody": {
-          "required": "true",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["name", "email", "password", "role"],
-                "properties": {
-                  "name": { "type": "string", "example": "Jane Doe" },
-                  "email": { "type": "string", "format": "email", "example": "jane@example.com" },
-                  "password": { "type": "string", "format": "password", "example": "P@ssw0rd!" },
-                  "role": { "type": "int", "example": "0" }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "User created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "email": { "type": "string", "format": "email" },
-                    "message": { "type": "string", "example": "User created successfully" }
-                  },
-                  "required": ["email", "message"]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input or registration error",
-            "content": {
-              "application/json": {
-                "schema": { 
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/AHFULusers/login": {
-      "post": {
-        "summary": "Authenticate a user",
-        "tags": ["Users"],
-        "requestBody": {
-          "required": "true",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["email", "password"],
-                "properties": {
-                  "email": { "type": "string", "format": "email", "example": "jane@example.com" },
-                  "password": { "type": "string", "format": "password", "example": "P@ssw0rd!" }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Login successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": ["email", "message"],
-                  "properties": {
-                    "email": { "type": "string", "format": "email", "example": "jane@example.com" },
-                    "message": { "type": "string", "example": "Login successful" }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "No data provided or invalid request body",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": ["error"],
-                  "properties": {
-                    "error": { "type": "string", "example": "No data provided" }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": ["error"],
-                  "properties": {
-                    "error": { "type": "string", "example": "Invalid email or password" }
                   }
                 }
               }

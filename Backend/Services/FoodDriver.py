@@ -1,4 +1,4 @@
-from dataModels.foodObject import foodObject
+from DataModels.FoodObject import FoodObject
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -13,7 +13,7 @@ class FoodDriver:
     @staticmethod
     def get_all_food():
         try:
-            food = foodObject.find_all()
+            food = FoodObject.find_all()
             return food, None
         except Exception as e:
             return None, str(e)
@@ -21,7 +21,7 @@ class FoodDriver:
     @staticmethod
     def get_food_by_user(id):
         try:
-            food = foodObject.find_by_user(id)
+            food = FoodObject.find_by_user(id)
             if not food:
                 return None, "Food not found"
             return food, None
@@ -44,7 +44,7 @@ class FoodDriver:
         }
 
         try:
-            response = foodObject.create(food_data)
+            response = FoodObject.create(food_data)
             return response, None
         except Exception as e:
             return None, str(e)
