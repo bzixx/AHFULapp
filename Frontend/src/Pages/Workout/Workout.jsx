@@ -2,7 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 
 import "./Workout.css";
 import "../../SiteStyles.css";
-export function Workout() {
+export function Workout({
+    trigger = undefined,
+    setTrigger = undefined,
+}) {
+
   /* Variables */
   const exercisesRef = useRef([
     { name: "Pushups", reps: 15, sets: 3, weight: "0", completed: false },
@@ -23,9 +27,13 @@ export function Workout() {
     { name: "Run", reps: "-", sets: "-", weight: "0", completed: false },
   ]);
 
+  const [open, setOpen] = useState(Boolean(trigger));
   const [exercises, setExercises] = useState(exercisesRef.current);
   const [isRunning, setIsRunning] = useState(false);
   const [time, setTime] = useState(0);
+  const [exerciseName, setExerciseToAdd] = useState("");
+  const [refresh, setRefresh] = useState(0);
+
 
   /* Functions */
 
@@ -48,6 +56,39 @@ export function Workout() {
       return updated;
     });
   };
+
+  useEffect(() => {
+    if (typeof trigger !== "undefined") {
+        setOpen(Boolean(trigger));
+    }
+  }, [trigger]);
+
+  const toggle = () => {
+      if (typeof setTrigger === "function") {
+          setTrigger(!trigger);
+      } else {
+          setOpen((s) => !s);
+      }
+  };
+
+  const addExerciseToWorkout = (e) => {
+    e.preventDefault();
+
+    if (!exerciseName.trim()) return;
+
+    exercisesRef.current.push({
+      name: exerciseName,
+      reps: "-",
+      sets: "-",
+      weight: "0",
+      completed: false,
+    });
+
+    setExerciseToAdd("");       // clear input
+    setRefresh(r => r + 1);    // force re-render
+  };
+
+    
 
   /* Timer Functions */
   useEffect(() => {
@@ -79,94 +120,116 @@ export function Workout() {
     <div className="page-layout">
       <div className="left-column"></div>
       <div className="center-column">
-        <div className="workout-page">
-          <div className="workout-card">
-            <div className="workout-title">
-              <h1>'WorkoutName'</h1>
-            </div>
-
-            <div className="workout-grid">
-              <div className="cell header">Exercise</div>
-              <div className="cell header">Reps</div>
-              <div className="cell header">Sets</div>
-              <div className="cell header">Weight</div>
-              <div className="cell header">Completed</div>
-              <div className="cell header"></div>
-
-              {exercises.map((ex, i) => (
-                <React.Fragment key={i}>
-                  <div className="cell">{ex.name}</div>
-
-                  <div className="cell">
-                    {ex.completed ? (
-                      ex.reps
-                    ) : (
-                      <input
-                        type="number"
-                        value={ex.reps}
-                        onChange={(e) => updateField(i, "reps", e.target.value)}
-                      />
-                    )}
-                  </div>
-
-                  <div className="cell">
-                    {ex.completed ? (
-                      ex.sets
-                    ) : (
-                      <input
-                        type="number"
-                        value={ex.sets}
-                        onChange={(e) => updateField(i, "sets", e.target.value)}
-                      />
-                    )}
-                  </div>
-
-                  <div className="cell">
-                    {ex.completed ? (
-                      ex.weight
-                    ) : (
-                      <input
-                        type="text"
-                        value={ex.weight}
-                        onChange={(e) =>
-                          updateField(i, "weight", e.target.value)
-                        }
-                      />
-                    )}
-                  </div>
-
-                  <div className="cell">
-                    <input
-                      type="checkbox"
-                      checked={ex.completed}
-                      onChange={() => {
-                        toggleCompleted(i);
-                      }}
-                    />
-                  </div>
-
-                  <div className="cell">
-                    <button
-                      className="delete-button"
-                      onClick={() => removeWorkout(i)}
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </React.Fragment>
-              ))}
-            </div>
+        <div className="workout-card">
+          <div className="workout-title">
+            <h1>At-Home Workout</h1>
           </div>
-          <div className="workout-footer">
-            <div className="workout-timer">{formatTime(time)}</div>
 
-            <button className="workout-button" onClick={toggleTimer}>
-              {isRunning ? "End" : "Start"}
+          <div className="workout-grid">
+            <div className="cell header">Exercise</div>
+            <div className="cell header">Reps</div>
+            <div className="cell header">Sets</div>
+            <div className="cell header">Weight</div>
+            <div className="cell header">Completed</div>
+            <div className="cell header"></div>
+            {exercises.map((ex, i) => (
+              <React.Fragment key={i}>
+                <div className="cell">{ex.name}</div>
+
+                <div className="cell">
+                  {ex.completed ? (
+                    ex.reps
+                  ) : (
+                    <input
+                      type="number"
+                      value={ex.reps}
+                      onChange={(e) => updateField(i, "reps", e.target.value)}
+                    />
+                  )}
+                </div>
+
+                <div className="cell">
+                  {ex.completed ? (
+                    ex.sets
+                  ) : (
+                    <input
+                      type="number"
+                      value={ex.sets}
+                      onChange={(e) => updateField(i, "sets", e.target.value)}
+                    />
+                  )}
+                </div>
+
+                <div className="cell">
+                  {ex.completed ? (
+                    ex.weight
+                  ) : (
+                    <input
+                      type="text"
+                      value={ex.weight}
+                      onChange={(e) =>
+                        updateField(i, "weight", e.target.value)
+                      }
+                    />
+                  )}
+                </div>
+
+                <div className="cell">
+                  <input
+                    type="checkbox"
+                    checked={ex.completed}
+                    onChange={() => {
+                      toggleCompleted(i);
+                    }}
+                  />
+                </div>
+
+                <div className="cell">
+                  <button
+                    className="delete-button"
+                    onClick={() => removeWorkout(i)}
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </React.Fragment>
+            ))}
+          </div>
+          <div className="workout-actions">
+            <div className="add-exercise-text">Add Exercise</div>
+            <button 
+              className="add-exercise-btn"
+              onClick={toggle}
+            >
+              ➕
             </button>
           </div>
         </div>
+        <div className="workout-footer">
+          <div className="workout-timer">{formatTime(time)}</div>
+
+          <button className="workout-button" onClick={toggleTimer}>
+            {isRunning ? "Stop Timer" : "Start Timer"}
+          </button>
+        </div>
       </div>
-      <div className="right-column"></div>
+      <div className="right-column">
+            
+        <div className={`add-exercise ${open ? "open" : "closed"}`}>
+          <div className="add-exercise-title">
+            <h1>Add workout</h1>
+          </div>
+          <form onSubmit={addExerciseToWorkout}>
+            <input
+              type="text"
+              placeholder="Search for exercises by name"
+              value={exerciseName}
+              onChange={(e) => setExerciseToAdd(e.target.value)}
+            />
+          </form>
+        </div>
+
+      </div>
     </div>
   );
 }
