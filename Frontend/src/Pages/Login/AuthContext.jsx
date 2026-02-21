@@ -92,10 +92,29 @@ export const AHFULAuthProvider = ({ children }) => {
   };
 
   // Logout function
-  const context_logout = () => {
-    //backend_logout();
-    //    localStorage.removeItem('user_data');
-    //setIsLoggedIn(false);
+  const context_logout = async() => {
+    //Define POST URL for Later
+    const backendPOSTURL = `http://localhost:5000/sign-in/logout`;
+
+    //Try to Get LocalStorage Cookie for data
+      try{
+      let userData = localStorage.getItem("user_data");
+      let parsedData = JSON.parse(userData);
+      }catch(error){
+        //Catch Sppoky Errors that should never occur because you shouldnt log out before login
+        console.log("👻")
+      }
+    
+      // POST response Object to BACKEND API ROUTE for processing.
+      const backendResponse = await fetch(backendPOSTURL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json',},
+      body: JSON.stringify({ logout_email: parsedData.email }),
+      credentials: 'include',
+  });
+
+    localStorage.removeItem('user_data');
+    setIsLoggedIn(false);
   };
 
   return (
