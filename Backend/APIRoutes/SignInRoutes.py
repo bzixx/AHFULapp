@@ -59,16 +59,22 @@ def google_login():
     #UserDriver.create_session(routeUserObject)
     return jsonify({"message": "Login successful", "user_info": routeUserObject}), 200
 
-#TODO:
 # ── POST Log Out ────────────────────────────────────────────────────────────
-# @signInRouteBlueprint.route('/logout', methods=['POST'])
-# def logout():
-#     session_service: SessionService = current_app.session_service
-#     session_service.remove_session()
-#     return jsonify({"message": "Logout successful"}), 200
+@signInRouteBlueprint.route('/logout', methods=['POST'])
+def logout():
+    postAuthData = request.get_json()
 
-#To convert time back. 
-#datetime.fromtimestamp(1771630398)
+    email = postAuthData.get("logout_email")
+
+    if not (postAuthData or email):
+        return jsonify({"message": "Logout failed"}), 400
+
+
+    routeUserObject, error = UserDriver.get_user_by_email(email)
+    routeUserObject["last_login_expire"] = 0
+    UserDriver.update_user_info(dataToBeUpdated=routeUserObject)
+
+    return jsonify({"message": "Logout successful"}), 200
 
 #── GET whoami (Logged in or not) ────────────────────────────────────────────────────────────
 @signInRouteBlueprint.route('/whoami', methods=['POST'])
