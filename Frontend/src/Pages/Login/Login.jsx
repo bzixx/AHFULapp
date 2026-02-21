@@ -1,10 +1,44 @@
-import React from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import "../../SiteStyles.css";
+import { useEffect } from "react";
 
 export function Login() {
+
+      useEffect(() => {
+        // On initial load, check that the Local Stoage Item is still valid and has not expired.
+        try{
+            let userData = localStorage.getItem("user_data");
+            let parsedData = JSON.parse(userData);
+            let cookieGoesStaleAt = 0;
+
+            if(parsedData){
+                cookieGoesStaleAt = parsedData.last_login_expire
+
+            }
+
+            let currTime = Math.floor(Date.now() / 1000)
+
+            console.log("cookieGoesStaleAt", cookieGoesStaleAt)
+            console.log("currTime", currTime)
+            
+
+            if (currTime > cookieGoesStaleAt){
+                localStorage.removeItem("user_data")
+
+            }
+
+        }catch(error){
+            console.log("Re-AuthNeeded? : ", error)
+        }
+
+        //If Expired Require Authentication again
+        //POST TO WHO AM I the current Token in Local Storage from the user.
+        //This Is Taken Care of in Backend Check as well :)
+        //Front End handles logic to remove from local stoage if found to be expired. 
+      }, []);
+
     // Variables
     const navigate = useNavigate();
 
@@ -19,6 +53,8 @@ export function Login() {
 
         //Find ID Token from Google Success Response
         const googleButtonIdToken = response?.credential;
+        const googleCSFR = response?.g_csrf_token;
+        const googleButtonClientID = response?.client_id;
 
         //Check IDToken Not Null
         if (googleButtonIdToken) {
@@ -31,7 +67,7 @@ export function Login() {
             });
 
             //Get User_info From BACKEND response to cache cookie
-            const frontendUserInfo = backendResponse.user_info;
+
 
             //TODO SetUser or Cache Cookie or use hook or Create Session
             //setUser(frontendUserInfo)
@@ -41,6 +77,12 @@ export function Login() {
             
             if (contentType && contentType.includes('application/json')) {
                 backendUserData = await backendResponse.json();
+                const frontendUserInfo = backendUserData.user_info;
+                console.log("BackendUserData: ", backendUserData)
+                console.log("FrontendUserInfo: ", frontendUserInfo)
+
+                localStorage.setItem("user_data", JSON.stringify(frontendUserInfo));
+
             } else {
                 backendUserData = await backendResponse.text();
             }
