@@ -6,7 +6,6 @@ userRouteBlueprint = Blueprint("users", __name__, url_prefix="/AHFULusers")
 # ── GET all users ─────────────────────────────────────────────────────────────
 @userRouteBlueprint.route("/", methods=["GET"])
 def get_all_users():
-    print("Hey")
     users, error = UserDriver.get_all_users()
     if error:
         return jsonify({"error": error}), 500
