@@ -176,6 +176,57 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 
+/* Add Exercise Form */
+
+.dropdown-wrapper { 
+  position: relative;
+  width: 100%; 
+}
+
+.dropdown {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 100%;
+  margin-top: 4px;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #f0f0f0;
+}
+
+.add-exercise-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.add-btn {
+  padding: 10px 14px;
+  width: 50%;
+  background: white;
+  color: black;
+  border: 2px solid #000; /* consistent black border */
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.add-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+
 /* Delete Button */
 .delete-button {
   display: flex;
@@ -195,6 +246,7 @@ body {
   background-color: #f0f0f0;
 }
 
+/* Add Exercise Pop Up Button */
 .add-exercise-btn {
   color: white;
   border: 2px solid #000; /* consistent black border */
