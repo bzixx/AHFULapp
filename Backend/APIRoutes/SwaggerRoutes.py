@@ -3,15 +3,14 @@ from flask_swagger_ui import get_swaggerui_blueprint  #Import swagger from Pytho
 
 swaggerAHFULDocsURL = '/APIDocs'                              # URL for exposing Swagger UI
 configDocURL = 'http://localhost:5000/APIDocs/swagger.json'   #URL for the Backend Configuration for the UI
-appNameconfig={'app_name': "AHFUL Users API"}                 #Header App Name to display in UI
+appNameconfig={'app_name': "AHFUL Users API",'tagsSorter': 'alpha','operationsSorter': 'method'}                 #Header App Name to display in UI
 
-swaggerUIBlueprint = get_swaggerui_blueprint(swaggerAHFULDocsURL,configDocURL, appNameconfig)
+swaggerUIBlueprint = get_swaggerui_blueprint(swaggerAHFULDocsURL, configDocURL, appNameconfig)
 
 # ── GET Rotue to Return the Local Swagger API Config ────────────────────────────────────────────────────────────
 @swaggerUIBlueprint.route('/swagger.json', methods=["GET"])
 def swagger_json():
     return jsonify(swaggerConfig)
-
 
 #All Local Swagger API Docs Config is setup here:
 swaggerConfig = {
@@ -103,127 +102,6 @@ swaggerConfig = {
                   "type": "object",
                   "properties": {
                     "error": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/AHFULusers/register": {
-      "post": {
-        "summary": "Register a new user",
-        "tags": ["Users"],
-        "requestBody": {
-          "required": "true",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["name", "email", "password", "role"],
-                "properties": {
-                  "name": { "type": "string", "example": "Jane Doe" },
-                  "email": { "type": "string", "format": "email", "example": "jane@example.com" },
-                  "password": { "type": "string", "format": "password", "example": "P@ssw0rd!" },
-                  "role": { "type": "int", "example": "0" }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "User created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "email": { "type": "string", "format": "email" },
-                    "message": { "type": "string", "example": "User created successfully" }
-                  },
-                  "required": ["email", "message"]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input or registration error",
-            "content": {
-              "application/json": {
-                "schema": { 
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/AHFULusers/login": {
-      "post": {
-        "summary": "Authenticate a user",
-        "tags": ["Users"],
-        "requestBody": {
-          "required": "true",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["email", "password"],
-                "properties": {
-                  "email": { "type": "string", "format": "email", "example": "jane@example.com" },
-                  "password": { "type": "string", "format": "password", "example": "P@ssw0rd!" }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Login successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": ["email", "message"],
-                  "properties": {
-                    "email": { "type": "string", "format": "email", "example": "jane@example.com" },
-                    "message": { "type": "string", "example": "Login successful" }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "No data provided or invalid request body",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": ["error"],
-                  "properties": {
-                    "error": { "type": "string", "example": "No data provided" }
-                  }
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": ["error"],
-                  "properties": {
-                    "error": { "type": "string", "example": "Invalid email or password" }
                   }
                 }
               }
@@ -408,6 +286,311 @@ swaggerConfig = {
             "content": {
               "application/json": {
                 "schema": { 
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    
+    "/AHFULgym/": {
+      "get": {
+        "summary": "Get all gyms",
+        "tags": ["Gym"],
+        "responses": {
+          "200": {
+            "description": "A list of gyms",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" },
+                      "title": { "type": "string", "example": "Downtown Fitness" },
+                      "address": { "type": "string", "example": "123 Main St, Anytown, USA" },
+                      "cost": { "type": "number", "example": 49.99 },
+                      "link": { "type": "string", "format": "uri", "example": "https://examplegym.com" }
+                    },
+                    "required": ["_id", "title", "address"]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    
+    "/AHFULgym/{gym_id}": {
+      "get": {
+        "summary": "Get gym by id",
+        "tags": ["Gym"],
+        "parameters": [
+          {
+            "name": "gym_id",
+            "in": "path",
+            "required": "true",
+            "description": "The id of the gym (Mongo ObjectId as string)",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gym found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" },
+                    "title": { "type": "string", "example": "Downtown Fitness" },
+                    "address": { "type": "string", "example": "123 Main St, Anytown, USA" },
+                    "cost": { "type": "number", "example": 49.99 },
+                    "link": { "type": "string", "format": "uri", "example": "https://examplegym.com" }
+                  },
+                  "required": ["_id", "title", "address"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Gym not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    
+    "/AHFULgym/create": {
+      "post": {
+        "summary": "Create a new gym",
+        "tags": ["Gym"],
+        "requestBody": {
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "address"],
+                "properties": {
+                  "title": { "type": "string", "example": "Downtown Fitness" },
+                  "address": { "type": "string", "example": "123 Main St, Anytown, USA" },
+                  "cost": { "type": "number", "example": 49.99 },
+                  "link": { "type": "string", "format": "uri", "example": "https://examplegym.com" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Gym created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "gym_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" },
+                    "message": { "type": "string", "example": "Gym created" }
+                  },
+                  "required": ["gym_id", "message"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or creation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    
+    "/AHFULfood/": {
+      "get": {
+        "summary": "Get all foods",
+        "tags": ["Food"],
+        "responses": {
+          "200": {
+            "description": "A list of foods",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
+                      "userId": { "type": "string", "example": "abc123" },
+                      "name": { "type": "string", "example": "Apple" },
+                      "calsPerServing": { "type": "number", "example": 95 },
+                      "servings": { "type": "number", "example": 1 },
+                      "type": { "type": "string", "example": "Lunch" },
+                      "time": { "type": "integer", "example": 1708473600 }
+                    },
+                    "required": ["_id", "userId", "name", "calsPerServing", "servings", "time"]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULfood/{userId}": {
+      "get": {
+        "summary": "Get foods by userId",
+        "tags": ["Food"],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": "true",
+            "description": "The user id associated with the foods",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Foods for the specified user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
+                      "userId": { "type": "string", "example": "abc123" },
+                      "name": { "type": "string", "example": "Apple" },
+                      "calsPerServing": { "type": "number", "example": 95 },
+                      "servings": { "type": "number", "example": 1 },
+                      "type": { "type": "string", "example": "Lunch" },
+                      "time": { "type": "integer", "example": 1708473600 }
+                    },
+                    "required": ["_id", "userId", "name", "calsPerServing", "servings", "time"]
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Foods not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULfood/create": {
+      "post": {
+        "summary": "Create a new food entry",
+        "tags": ["Food"],
+        "requestBody": {
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["userId", "name", "calsPerServing", "servings", "time"],
+                "properties": {
+                  "userId": { "type": "string", "example": "abc123" },
+                  "name": { "type": "string", "example": "Apple" },
+                  "calsPerServing": { "type": "number", "example": 95 },
+                  "servings": { "type": "number", "example": 1 },
+                  "type": { "type": "string", "example": "Lunch" },
+                  "time": { "type": "integer", "example": 1708473600 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Food created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "food_id": { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
+                    "message": { "type": "string", "example": "Food created" }
+                  },
+                  "required": ["food_id", "message"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or creation error",
+            "content": {
+              "application/json": {
+                "schema": {
                   "type": "object",
                   "properties": {
                     "error": { "type": "string" }
