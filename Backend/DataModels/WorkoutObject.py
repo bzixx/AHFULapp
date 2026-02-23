@@ -1,4 +1,5 @@
-#DataModel & Objects are essentially the Database Access Layer -- They know how to talk to Mongo DB Collection and that is it. 
+# DataModel & Objects are essentially the Database Access Layer
+# They know how to talk to Mongo DB Collection and that is it. 
 from bson import ObjectId
 from Services.MongoDriver import getMongoDatabase
 
