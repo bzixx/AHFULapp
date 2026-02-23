@@ -235,7 +235,6 @@ export function Workout({
                   setExerciseName(e.target.value);
                   setShowDropdown(true);
                 }}
-
               />
 
               {showDropdown && exerciseName && (
@@ -259,12 +258,9 @@ export function Workout({
                 </div>
               )}
             </div>
-
             <button className="add-btn" type="submit">Add</button>
           </form>
-
         </div>
-
       </div>
     </div>
   );
