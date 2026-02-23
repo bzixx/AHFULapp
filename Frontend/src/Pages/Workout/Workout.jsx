@@ -10,28 +10,33 @@ export function Workout({
   /* Variables */
   const exercisesRef = useRef([
     { name: "Pushups", reps: 15, sets: 3, weight: "0", completed: false },
-    {
-      name: "Pullups",
-      reps: 8,
-      sets: 4,
-      weight: "Full backpack",
-      completed: false,
-    },
-    {
-      name: "Squats",
-      reps: 20,
-      sets: 3,
-      weight: "45 lbs",
-      completed: false,
-    },
+    { name: "Pullups", reps: 8, sets: 4, weight: "Full backpack", completed: false },
+    { name: "Squats", reps: 20, sets: 3, weight: "45 lbs", completed: false },
     { name: "Run", reps: "-", sets: "-", weight: "0", completed: false },
   ]);
 
+  const [exerciseList, setExerciseList] = useState([
+    "Push Ups",
+    "Pull Ups",
+    "Squats",
+    "Bench Press",
+    "Deadlift",
+    "Overhead Press",
+    "Bicep Curls",
+    "Tricep Dips",
+    "Lunges",
+    "Plank",
+    "Burpees",
+    "Running"
+  ]);
+
+
+  const [showDropdown, setShowDropdown] = useState(false);
   const [open, setOpen] = useState(Boolean(trigger));
   const [exercises, setExercises] = useState(exercisesRef.current);
   const [isRunning, setIsRunning] = useState(false);
   const [time, setTime] = useState(0);
-  const [exerciseName, setExerciseToAdd] = useState("");
+  const [exerciseName, setExerciseName] = useState("");
   const [refresh, setRefresh] = useState(0);
 
 
@@ -84,7 +89,7 @@ export function Workout({
       completed: false,
     });
 
-    setExerciseToAdd("");       // clear input
+    setExerciseName("");       // clear input
     setRefresh(r => r + 1);    // force re-render
   };
 
@@ -219,14 +224,45 @@ export function Workout({
           <div className="add-exercise-title">
             <h1>Add workout</h1>
           </div>
-          <form onSubmit={addExerciseToWorkout}>
-            <input
-              type="text"
-              placeholder="Search for exercises by name"
-              value={exerciseName}
-              onChange={(e) => setExerciseToAdd(e.target.value)}
-            />
+
+          <form onSubmit={addExerciseToWorkout} className="add-exercise-form">
+            <div className="dropdown-wrapper">
+              <input
+                type="text"
+                placeholder="Search exercises..."
+                value={exerciseName}
+                onChange={(e) => {
+                  setExerciseName(e.target.value);
+                  setShowDropdown(true);
+                }}
+
+              />
+
+              {showDropdown && exerciseName && (
+                <div className="dropdown">
+                  {exerciseList
+                    .filter(name =>
+                      name.toLowerCase().includes(exerciseName.toLowerCase())
+                    )
+                    .map((name, i) => (
+                      <div
+                        key={i}
+                        className="dropdown-item"
+                        onClick={() => {
+                          setExerciseName(name);
+                          setShowDropdown(false);
+                        }}
+                      >
+                        {name}
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+
+            <button className="add-btn" type="submit">Add</button>
           </form>
+
         </div>
 
       </div>
