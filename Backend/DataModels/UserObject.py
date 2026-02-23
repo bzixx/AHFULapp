@@ -1,4 +1,5 @@
-#DataModel & Objects are essentially the Database Access Layer -- They know how to talk to Mongo DB Collection and that is it. 
+# DataModel & Objects are essentially the Database Access Layer
+# They know how to talk to Mongo DB Collection and that is it. 
 from bson import ObjectId
 from Services.MongoDriver import getMongoDatabase
 
@@ -30,8 +31,8 @@ class UserObject:
         user_data["role"] = 0
         result = userCollection.insert_one(user_data)
         return str(result.inserted_id)
-
-    # Not correct
+    
+     # Not tested
     @staticmethod
     def update(user_id, updates):
         updateResults = userCollection.update_one(
@@ -40,7 +41,8 @@ class UserObject:
         )
         if not updateResults:
             raise "Failed to updated from Object"
-
+        
+    # Not tested    
     @staticmethod
     def delete(user_id):
         userCollection.delete_one({"_id": ObjectId(user_id)})
