@@ -1,3 +1,5 @@
+//@author Jonathan Torrence
+
 import React, {useState } from "react";
 import "./FoodLog.css";
 import "../../SiteStyles.css";
@@ -241,6 +243,19 @@ export function FoodLog() {
                         {timePeriod === 'monthly' && 'Monthly Summary'}
                         {timePeriod === 'yearly' && 'Yearly Summary'}
                     </h2>
+
+                    <div className="calorie-totals">
+                      <div className="total-display">
+                        <span className="label">Total Calories:</span>
+                        <span className="value">
+                            {timePeriod === 'daily' && totalCalories}
+                            {timePeriod === 'weekly' && weeklyTotal}
+                            {timePeriod === 'monthly' && monthlyTotal}
+                            {timePeriod === 'yearly' && yearlyTotal}
+                        </span>
+                      </div>
+                    </div>
+
                     </div>
                     <div className="food-count">
                         <span className="label">Items Logged:</span>
