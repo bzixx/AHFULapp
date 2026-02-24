@@ -1,10 +1,17 @@
-import React from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import "../../SiteStyles.css";
+import { useEffect } from "react";
+import { AHFULAuthProvider } from './AuthContext.jsx';
+import { use_ahful_auth } from './AuthContext.jsx';
+
+
 
 export function Login() {
+
+      const {isLoggedIn, context_login } = use_ahful_auth();
+
     // Variables
     const navigate = useNavigate();
 
@@ -14,46 +21,8 @@ export function Login() {
     }
 
     const handleGoogleSuccess = async (response) => {
-        //URL to send POST to later
-        const backendPOSTURL = `http://localhost:5000/sign-in/google-login`;
+        context_login(response)
 
-        //Find ID Token from Google Success Response
-        const googleButtonIdToken = response?.credential;
-
-        //Check IDToken Not Null
-        if (googleButtonIdToken) {
-            // POST response Object to BACKEND API ROUTE
-            const backendResponse = await fetch(backendPOSTURL, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json',},
-                body: JSON.stringify({ token: googleButtonIdToken }),
-                credentials: 'include',
-            });
-
-            //Get User_info From BACKEND response to cache cookie
-            const frontendUserInfo = backendResponse.user_info;
-
-            //TODO SetUser or Cache Cookie or use hook or Create Session
-            //setUser(frontendUserInfo)
-            
-            const contentType = backendResponse.headers.get('content-type');
-            let backendUserData = null;
-            
-            if (contentType && contentType.includes('application/json')) {
-                backendUserData = await backendResponse.json();
-            } else {
-                backendUserData = await backendResponse.text();
-            }
-
-            if (!backendResponse.ok) {
-                const message = backendUserData?.error || backendResponse.statusText;
-                throw new Error(`AHFUL Frontend API response error (${backendResponse.status}): ${message}`);
-            }
-
-            return backendUserData;
-        }
-
-        console.error("AHFUL Login failed");
     };
 
     const handleGoogleFailure = (error) => {

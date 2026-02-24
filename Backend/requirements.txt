@@ -27,7 +27,6 @@ pyasn1==0.6.1 #- ASN.1 types and codecs (used by google-auth)
 pyasn1_modules==0.4.2 #- ASN.1 protocol modules
 rsa==4.9.1 #- RSA encryption implementation
 
-dotenv==0.9.9  #- Loads environment variables from a .env file for configuration management
 python-dateutil==2.9.0.post0 #- Provides extensions to the standard datetime module (used for date parsing/manipulation)
 
 #Web Framework & Core API Libraries
