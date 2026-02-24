@@ -17,6 +17,16 @@ class UserDriver:
             return users, None
         except Exception as e:
             return None, str(e)
+        
+    @staticmethod
+    def get_user_by_id(id):
+        try:
+            user = UserObject.find_by_id(id)
+            if not user:
+                return None, "User not found"
+            return user, None
+        except Exception as e:
+            return None, str(e)
 
     @staticmethod
     def get_user_by_email(email):
