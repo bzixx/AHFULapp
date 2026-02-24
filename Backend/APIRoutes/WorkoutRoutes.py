@@ -13,10 +13,9 @@ def get_all_workouts():
     return jsonify(workouts), 200
 
 # ── GET all workouts for a specific user ──────────────────────────────────────
-@workoutRouteBlueprint.route("/<email>", methods=["GET"])
-def get_workouts_by_user(email):
-    print(email)
-    workouts, error = WorkoutDriver.get_workouts_by_email(email=email)
+@workoutRouteBlueprint.route("/<userId>", methods=["GET"])
+def get_workouts_by_user(userId):
+    workouts, error = WorkoutDriver.get_workouts_by_user(userId=userId)
     if error:
         return jsonify({"error": error}), 500
     return jsonify(workouts), 200
@@ -37,7 +36,7 @@ def create_workout():
         return jsonify({"error": "No data provided"}), 400
 
     workout_id, error = WorkoutDriver.create_workout(
-        email=data.get("email"),
+        userId=data.get("userId"),
         title=data.get("title"),
         gymId=data.get("gymId"),
         startTime=data.get("startTime"),

@@ -10,6 +10,7 @@ from APIRoutes.UserRoutes import userRouteBlueprint #[Local] Import User API rou
 from APIRoutes.WorkoutRoutes import workoutRouteBlueprint
 from APIRoutes.GymRoutes import gymRouteBlueprint
 from APIRoutes.FoodRoutes import foodRouteBlueprint
+from APIRoutes.PersonalExRoutes import personalExRouteBlueprint
 from APIRoutes.SwaggerRoutes import swaggerUIBlueprint
 from APIRoutes.SignInRoutes import signInRouteBlueprint
 from APIRoutes.ExerciseRoutes import exerciseRouteBlueprint
@@ -30,6 +31,7 @@ def create_app():
     app.register_blueprint(workoutRouteBlueprint, url_prefix=api_prefix + workoutRouteBlueprint.url_prefix)
     app.register_blueprint(gymRouteBlueprint, url_prefix=api_prefix + gymRouteBlueprint.url_prefix)
     app.register_blueprint(foodRouteBlueprint, url_prefix=api_prefix + foodRouteBlueprint.url_prefix)
+    app.register_blueprint(personalExRouteBlueprint, url_prefix=api_prefix + personalExRouteBlueprint.url_prefix)
     app.register_blueprint(swaggerUIBlueprint)
     app.register_blueprint(signInRouteBlueprint)
     app.register_blueprint(exerciseRouteBlueprint)

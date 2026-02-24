@@ -20,6 +20,10 @@ class UserObject:
     def find_all():
         users = userCollection.find()
         return [UserObject._serialize(u) for u in users]
+    
+    def find_by_id(id):
+        user = userCollection.find_one({"_id": ObjectId(id)})
+        return UserObject._serialize(user)
 
     def find_by_email(email):
         user = userCollection.find_one({"email": email})

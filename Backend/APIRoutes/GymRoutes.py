@@ -24,7 +24,7 @@ def get_gym(gym_id):
 
 
 # ── CREATE gym ────────────────────────────────────────────────────────────────
-@gymRouteBlueprint.route("create/", methods=["POST"])
+@gymRouteBlueprint.route("/create", methods=["POST"])
 def create_gym():
     data = request.get_json()
     if not data:

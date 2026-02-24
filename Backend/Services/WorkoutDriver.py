@@ -2,6 +2,10 @@
 #   Intermediate between Routes and Objects.  Ensures validations and rules are applied before 
 #   Calling Objects to interact with DB
 from DataModels.WorkoutObject import WorkoutObject
+from DataModels.UserObject import UserObject
+from DataModels.GymObject import GymObject
+from bson import ObjectId, errors as bson_errors
+
 
 # The WorkoutDriver is responsible for implementing the business logic related to workout operations.
 #   It acts as an intermediary between the API routes and the data models, 
@@ -28,10 +32,9 @@ class WorkoutDriver:
             return None, str(e)
         
     @staticmethod
-    def get_workouts_by_email(email):
-        print(email)
+    def get_workouts_by_user(userId):
         try:
-            workout = WorkoutObject.find_by_email(email)
+            workout = WorkoutObject.find_by_user(userId)
             if not workout:
                 return None, "Workout not found"
             return workout, None
@@ -39,14 +42,37 @@ class WorkoutDriver:
             return None, str(e)
 
     @staticmethod
-    def create_workout(email, gymId, title, startTime, endTime):
+    def create_workout(userId, gymId, title, startTime, endTime):
         # Validate required fields
-        if (not email) or (startTime is None):
-            return None, "You are missing an email or startTime. Please fix, then attempt to create workout again"
+        if (not userId) or (startTime is None):
+            return None, "You are missing a userId or startTime. Please fix, then attempt to create workout again"
+        
+        # Convert IDs safely
+        try:
+            user_oid = ObjectId(str(userId))
+        except (bson_errors.InvalidId, TypeError, ValueError):
+            return None, "Invalid userId format; must be a 24-hex string"
+   
+        if gymId is not None:
+            try:
+                gym_oid = ObjectId(str(gymId))
+            except (bson_errors.InvalidId, TypeError, ValueError):
+                return None, "Invalid gymId format; must be a 24-hex string"
+
+        # Ensure the user exists
+        user = UserObject.find_by_id(userId)
+        if not user:
+            return None, "User not found"
+
+        # Ensure the gym exists if provided
+        if gym_oid is not None:
+            gym = GymObject.find_by_id(gymId)
+            if not gym:
+                return None, "Gym not found"
 
         workout_data = {
-            "userEmail": email,
-            "gymId": gymId,
+            "userId": ObjectId(userId),
+            "gymId": ObjectId(gymId),
             "title": title,
             "startTime": startTime,
             "endTime": endTime
