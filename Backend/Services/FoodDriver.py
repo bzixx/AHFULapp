@@ -2,6 +2,8 @@
 #   Intermediate between Routes and Objects.  Ensures validations and rules are applied before 
 #   Calling Objects to interact with DB
 from DataModels.FoodObject import FoodObject
+from DataModels.UserObject import UserObject
+from bson import ObjectId, errors as bson_errors
 
 # The FoodDriver is responsible for implementing the business logic related to food operations.
 #  It acts as an intermediary between the API routes and the data models, 
@@ -32,6 +34,17 @@ class FoodDriver:
         # Validate required fields
         if (not userId) or (not name) or (not calsPerServing) or (not servings) or (not type) or (not time):
             return None, "You are missing a value. Please fix, then attempt to create food again"
+
+        # Convert IDs safely
+        try:
+            user_oid = ObjectId(str(userId))
+        except (bson_errors.InvalidId, TypeError, ValueError):
+            return None, "Invalid userId format; must be a 24-hex string"
+        
+        # Ensure the user exists
+        user = UserObject.find_by_id(userId)
+        if not user:
+            return None, "User not found"
 
         food_data = {
             "userId": userId,

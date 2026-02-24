@@ -111,6 +111,309 @@ swaggerConfig = {
       }
     },
 
+    "/AHFULusers/id/{id}": {
+      "get": {
+        "summary": "Get user by id",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": "true",
+            "description": "User id of the user",
+            "schema": { "type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found",
+            
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                    "email": { "type": "string", "format": "email", "example": "jane@example.com" },
+                    "name": { "type": "string", "example": "Jane Doe" },
+                    "password": {
+                      "type": "string",
+                      "example": "scrypt:32768:8:1$Hp6N4Svxx8qtF6Eg$7b80288755977aeecb541720c2dd77a1d27b85aee23d905b7e4990f8f776d491082e928817269610897c77e82e2acc04fe2c04cd94dce3aebf5ff9ea44673319"
+                    },
+                    "role": { "type": "integer", "example": 0 }
+                  },
+                "required": ["_id", "email", "name", "password", "role"]
+                }
+              }
+            }
+
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": { 
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    
+    "/AHFULpersonalEx/": {
+        "get": {
+          "summary": "Get all personal exercises",
+          "tags": ["PersonalEx"],
+          "responses": {
+            "200": {
+              "description": "A list of personal exercises",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id":        { "type": "string", "example": "698d07b26e5117c22dd7772e" },
+                        "exerciseId":{ "type": "string", "example": "698d0bc06e5117c22dd7774b" },
+                        "workoutId": { "type": "string", "example": "699d05d8f1677119323250bc" },
+                        "userId":    { "type": "string", "example": "699d0093795741a59fe13616" },
+                        "reps":      { "type": "integer", "example": 1 },
+                        "sets":      { "type": "integer", "example": 1 },
+                        "weight":    { "type": "string",  "example": "1" },
+                        "duration":  { "type": "number",  "example": 0 },
+                        "distance":  { "type": "string",  "example": "0" },
+                        "complete":  { "type": "boolean", "example": True }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "/AHFULpersonalEx/{userId}": {
+        "get": {
+          "summary": "Get all personal exercises for a specific user",
+          "tags": ["PersonalEx"],
+          "parameters": [
+            {
+              "name": "userId",
+              "in": "path",
+              "required": True,
+              "description": "User ObjectId",
+              "schema": { "type": "string", "example": "699d0093795741a59fe13616" }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "A list of personal exercises for the user",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id":        { "type": "string", "example": "698d07b26e5117c22dd7772e" },
+                        "exerciseId":{ "type": "string", "example": "698d0bc06e5117c22dd7774b" },
+                        "workoutId": { "type": "string", "example": "699d05d8f1677119323250bc" },
+                        "userId":    { "type": "string", "example": "699d0093795741a59fe13616" },
+                        "reps":      { "type": "integer", "example": 1 },
+                        "sets":      { "type": "integer", "example": 1 },
+                        "weight":    { "type": "string",  "example": "1" },
+                        "duration":  { "type": "number",  "example": 0 },
+                        "distance":  { "type": "string",  "example": "0" },
+                        "complete":  { "type": "boolean", "example": True }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "/AHFULpersonalEx/workout/{workoutId}": {
+        "get": {
+          "summary": "Get all personal exercises for a specific workout",
+          "tags": ["PersonalEx"],
+          "parameters": [
+            {
+              "name": "workoutId",
+              "in": "path",
+              "required": True,
+              "description": "Workout ObjectId",
+              "schema": { "type": "string", "example": "699d05d8f1677119323250bc" }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "A list of personal exercises for the workout",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id":        { "type": "string", "example": "698d07b26e5117c22dd7772e" },
+                        "exerciseId":{ "type": "string", "example": "698d0bc06e5117c22dd7774b" },
+                        "workoutId": { "type": "string", "example": "699d05d8f1677119323250bc" },
+                        "userId":    { "type": "string", "example": "699d0093795741a59fe13616" },
+                        "reps":      { "type": "integer", "example": 1 },
+                        "sets":      { "type": "integer", "example": 1 },
+                        "weight":    { "type": "string",  "example": "1" },
+                        "duration":  { "type": "number",  "example": 0 },
+                        "distance":  { "type": "string",  "example": "0" },
+                        "complete":  { "type": "boolean", "example": True }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "/AHFULpersonalEx/id/{id}": {
+        "get": {
+          "summary": "Get a single personal exercise by id",
+          "tags": ["PersonalEx"],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": True,
+              "description": "Personal exercise document ObjectId",
+              "schema": { "type": "string", "example": "698d07b26e5117c22dd7772e" }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Personal exercise found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "_id":        { "type": "string", "example": "698d07b26e5117c22dd7772e" },
+                      "exerciseId":{ "type": "string", "example": "698d0bc06e5117c22dd7774b" },
+                      "workoutId": { "type": "string", "example": "699d05d8f1677119323250bc" },
+                      "userId":    { "type": "string", "example": "699d0093795741a59fe13616" },
+                      "reps":      { "type": "integer", "example": 1 },
+                      "sets":      { "type": "integer", "example": 1 },
+                      "weight":    { "type": "string",  "example": "1" },
+                      "duration":  { "type": "number",  "example": 0 },
+                      "distance":  { "type": "string",  "example": "0" },
+                      "complete":  { "type": "boolean", "example": True }
+                    },
+                    "required": ["_id", "userId"]
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Personal exercise not found",
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "/AHFULpersonalEx/create": {
+        "post": {
+          "summary": "Create a personal exercise",
+          "tags": ["PersonalEx"],
+          "requestBody": {
+            "required": True,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["userId"],
+                  "properties": {
+                    "userId":    { "type": "string", "description": "User ObjectId", "example": "699d0093795741a59fe13616" },
+                    "exerciseId":{ "type": "string", "description": "Exercise ObjectId (if applicable)", "example": "698d0bc06e5117c22dd7774b" },
+                    "workoutId": { "type": "string", "description": "Workout ObjectId (if applicable)",  "example": "699d05d8f1677119323250bc" },
+                    "reps":      { "type": "integer", "example": 1 },
+                    "sets":      { "type": "integer", "example": 1 },
+                    "weight":    { "type": "string",  "example": "135" },
+                    "duration":  { "type": "number",  "example": 0 },
+                    "distance":  { "type": "string",  "example": "0" },
+                    "complete":  { "type": "boolean", "example": True }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Personal exercise created",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "personal_ex_id": { "type": "string", "example": "698d07b26e5117c22dd7772e" },
+                      "message": { "type": "string", "example": "Personal Ex created" }
+                    },
+                    "required": ["personal_ex_id", "message"]
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid input or creation error",
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
+                }
+              }
+            }
+          }
+        }
+      },
+
+
     "/AHFULworkout/": {
       "get": {
         "summary": "Get all workouts",
@@ -144,17 +447,17 @@ swaggerConfig = {
       }
     },
 
-    "/AHFULworkout/{email}": {
+    "/AHFULworkout/{userId}": {
       "get": {
-        "summary": "Get workouts by user email",
+        "summary": "Get workouts by user id",
         "tags": ["Workout"],
         "parameters": [
           {
-            "name": "email",
+            "name": "userId",
             "in": "path",
             "required": "true",
-            "description": "Email address of the user",
-            "schema": { "type": "string", "format": "email" }
+            "description": "User Id of the user",
+            "schema": { "type": "string"}
           }
         ],
         "responses": {
@@ -167,9 +470,9 @@ swaggerConfig = {
                   "type": "object",
                   "properties": {
                     "_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
-                    "email": { "type": "string", "format": "email", "example": "anEmail@email.com" },
+                    "userId": { "type": "string", "format": "email", "example": "anEmail@email.com" },
                     "title": { "type": "string", "example": "Daily workout" },
-                    "gymId": { "type": "integer", "example": 0 },
+                    "gymId": { "type": "string", "example": 0 },
                     "startTime": { "type": "integer", "example": 0 },
                     "endTime": { "type": "integer", "example": 0 }
                   },
@@ -256,8 +559,8 @@ swaggerConfig = {
                 "required": ["email", "start_time"],
                 "properties": {
                   "title": { "type": "string", "example": "A workout" },
-                  "email": { "type": "string", "format": "email", "example": "jane@example.com" },
-                  "gymId": { "type": "int", "example": "0" },
+                  "userId": { "type": "string", "example": "699d0093795741a59fe13616" },
+                  "gymId": { "type": "string", "example": "699d022c795741a59fe1361f" },
                   "startTime": { "type": "int", "example": "0" },
                   "endTime": { "type": "int", "example": "0" }
                 }
