@@ -4,7 +4,7 @@ from Services.PersonalExDriver import PersonalExDriver
 personalExRouteBlueprint = Blueprint("personalEx", __name__, url_prefix="/AHFULpersonalEx")
 
 
-# ── GET all personalExs (supports ?user_id=abc for filtering by user) ────────────
+# ── GET all personalExs ────────────
 @personalExRouteBlueprint.route("/", methods=["GET"])
 def get_all_personal_exs():
     personalExs, error = PersonalExDriver.get_all_personal_exs()
