@@ -1,9 +1,12 @@
 .calendar-container {
-  width: 50%;
+  position: fixed;
+  top: 10%;
+  right: 2%;
+  width: 40%;
   min-width: 200px;
   padding: 16px;
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: sans-serif;
 }
 
 .calendar-header {
@@ -37,8 +40,9 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
-  font-size: 12px;
-  color: #6b7280;
+  font-size: 14px;
+  font-weight: bold;
+  color: black;
   margin-bottom: 4px;
 }
 
@@ -52,10 +56,10 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
+  justify-items: center;
 }
 
 .calendar-cell {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -77,7 +81,7 @@
 }
 
 .calendar-cell:not(.today):hover {
-  background: #f3f4f6;
+  background: rgba(128, 128, 128, 0.5);
 }
 
 .calendar-cell.today {
@@ -99,4 +103,9 @@
 
   background: rgba(96, 165, 250, 0.9);
   color: white;
+}
+.calendar-cell.selected {
+  background-color: rgba(128, 128, 128, 0.5);
+  font-weight: bold;
+  border: 3px solid black;
 }

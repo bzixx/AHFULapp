@@ -1,18 +1,46 @@
 import { useMemo } from "react";
 import UseCalendar from "./UseCalendar";
+import { useSelector, useDispatch } from "react-redux";
 import { AnimatePresence, motion } from "framer-motion";
 import "./calendar.css";
+import { setSelectedDate, clearSelectedDate } from "./CalendarSlicer"; 
 
 export function Calendar({ locale }) {
-  // Default to the user's browser locale if none is provided
   locale = locale || navigator.language;
 
-  const { year, month, weekdays, cells, isToday, startOfMonth, goNext, goPrevious } =
-    UseCalendar(new Date(), locale);
+  const { 
+    year, 
+    month, 
+    weekdays, 
+    cells, 
+    isToday, 
+    startOfMonth, 
+    goNext, 
+    goPrevious 
+  } = UseCalendar(new Date(), locale);
+
+  const dispatch = useDispatch();
+  
+  // Read selected date from Redux (single source of truth)
+  const selectedDate = useSelector((state) => state.calendar.selectedDate);
+  
+  const selectedDateStr = selectedDate ? new Date(selectedDate).toISOString().slice(0, 10) : null;
 
   const monthFormatter = useMemo(() => {
     return new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" });
   }, [locale]);
+
+  const handleDateClick = (date) => {
+    if (!date || isNaN(date.getTime())) return;
+    
+    const dateStr = date.toISOString();
+    dispatch(setSelectedDate(dateStr));
+  };
+
+  const clearSelection = () => {
+    dispatch(clearSelectedDate());
+  };
+  //will use later
 
   return (
     <div className="calendar-container">
@@ -23,11 +51,11 @@ export function Calendar({ locale }) {
         <div className="calendar-title">
           {monthFormatter.format(new Date(year, month, 1))}
         </div>
-
         <button className="calendar-button" onClick={goNext}>
           Next →
         </button>
       </div>
+
       <div className="calendar-weekdays">
         {weekdays.map((dayName) => (
           <div key={dayName} className="calendar-weekday">
@@ -35,29 +63,52 @@ export function Calendar({ locale }) {
           </div>
         ))}
       </div>
+
       <AnimatePresence mode="wait">
         <motion.div
-          key={`${startOfMonth.getFullYear()}-${startOfMonth.getMonth()}`} 
-          initial={{ opacity: 0, y: 8 }} 
-          animate={{ opacity: 1, y: 0 }} 
+          key={`${startOfMonth.getFullYear()}-${startOfMonth.getMonth()}`}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.15 }}
           className="calendar-grid"
         >
-          {cells.map(({ date, currentMonth }) => {
+          {cells.map(({ date, currentMonth }, index) => {
+            // Guard against invalid date objects
+            if (!(date instanceof Date) || isNaN(date.getTime())) {
+              return (
+                <div 
+                  key={`invalid-${index}`} 
+                  className="calendar-cell other"
+                >
+                  —
+                </div>
+              );
+            }
+
             const todayCell = isToday(date);
+            const dateStr = date.toISOString().slice(0, 10);
+            const isSelected = selectedDateStr === dateStr;
 
             let cellClass = "calendar-cell";
-            cellClass += currentMonth ? " current" : " other"; // Current month or leading/trailing day
-            if (todayCell) cellClass += " today"; // Highlight today's date
+            if (currentMonth) {
+              cellClass += " current";
+            } else {
+              cellClass += " other";
+            }
+            if (todayCell) cellClass += " today";
+            if (isSelected) cellClass += " selected";
 
             return (
               <div
                 key={date.toISOString()}
                 className={cellClass}
-                title={date.toDateString()}
+                title={date.toLocaleDateString()}
+                onClick={() => handleDateClick(date)}
               >
-                <span className={todayCell ? "calendar-day-today" : ""}>{date.getDate()}</span>
+                <span className={todayCell ? "calendar-day-today" : ""}>
+                  {date.getDate()}
+                </span>
                 {todayCell && <span className="calendar-today-badge">today</span>}
               </div>
             );
