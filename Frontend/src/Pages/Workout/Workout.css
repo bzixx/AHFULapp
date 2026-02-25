@@ -78,7 +78,7 @@ body {
   text-align: center; /* centers the numbers */
 }
 
-.workout-button {
+.workout-timer-button {
   font-size: 1.1rem;
   font-weight: bold;
   padding: 6px 12px;
@@ -90,49 +90,67 @@ body {
   text-align: center;
 }
 
-/* Add Exercise container */
-
-.add-exercise-title {
-  text-align: center;
-  font-size: 12px;
-}
-
-.add-exercise {
+.workout-actions {
   display: flex;
-  flex-direction: column;
-  background: #e1d9bc;
-  border: 3px solid #000000;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin: 0;
-  width: 300px;
-  height: 200px;
-}
-.add-exercise.closed {
-  display: none;
-}
-.add-exercise a {
-  text-decoration: none;
-  color: black;
-  font-size: 14px;
-}
-.add-exercise a:hover {
-  color: #007bff;
+  justify-content: space-between;
+  align-items: center; /* vertically centers text + button */
+  gap: 0.5rem; /* space between text and button */
+  margin-top: 0.5rem; /* optional spacing from content above */
 }
 
-.add-exercise input[type="text"] {
-  width: 100%;
-  padding: 0.6rem 0.75rem;
-  font-size: 1rem;
-  color: #000; /* ensures typed text is visible */
-  background-color: #fff; /* clean white search field */
-  border: 2px solid #333; /* visible border */
-  border-radius: 8px;
-  outline: none;
+.workout-actions-right-side{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center; /* vertically centers text + button */
+  gap: 0.5rem; /* space between text and button */
 }
 
-.add-exercise input[type="text"]:focus {
-  border-color: #3a9ea3; /* matches your theme */
+.workout-actions-left-side{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center; /* vertically centers text + button */
+  gap: 0.5rem; /* space between text and button */
+}
+
+.workout-submit-button {
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 6px 12px;
+  background: #f5f5f5;
+  border: 2px solid #000;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 80px;
+  text-align: center;
+}
+
+/* Add Exercise Pop Up Button */
+.workout-add-exercise-btn {
+  color: white;
+  border: 2px solid #000; /* consistent black border */
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.workout-add-exercise-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.workout-add-exercise-btn:active {
+  transform: scale(0.95);
+}
+
+.workout-add-exercise-text {
+  font-size: large;
+  font-weight: bold;
+  justify-content: right;
 }
 
 /* AI Grid css */
@@ -176,21 +194,63 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 
+/* Add Exercise container */
+
+.add-exercise {
+  display: flex;
+  flex-direction: column;
+  background: #e1d9bc;
+  border: 3px solid #000000;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 0;
+  width: 300px;
+  height: 125px;
+}
+.add-exercise.closed {
+  display: none;
+}
+.add-exercise a {
+  text-decoration: none;
+  color: black;
+  font-size: 14px;
+}
+.add-exercise a:hover {
+  color: #007bff;
+}
+
+.add-exercise input[type="text"] {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  color: #000; /* ensures typed text is visible */
+  background-color: #fff; /* clean white search field */
+  border: 2px solid #333; /* visible border */
+  border-radius: 8px;
+  outline: none;
+}
+
+.add-exercise input[type="text"]:focus {
+  border-color: #3a9ea3; /* matches your theme */
+}
+
 /* Add Exercise Form */
 
 .dropdown-wrapper { 
   position: relative;
-  width: 100%; 
+  max-width: 100%;
+  margin-top: 10px;
 }
 
 .dropdown {
   position: absolute;
   background: white;
+  top: 100%;
   border: 1px solid #ccc;
   border-radius: 6px;
   width: 100%;
   margin-top: 4px;
-  max-height: 150px;
+  max-height: 120px;
   overflow-y: auto;
   z-index: 10;
 }
@@ -212,6 +272,8 @@ body {
 }
 
 .add-btn {
+  font-size: 1.1rem;
+  font-weight: bold;
   padding: 10px 14px;
   width: 50%;
   background: white;
@@ -244,41 +306,4 @@ body {
 
 .delete-button:hover {
   background-color: #f0f0f0;
-}
-
-/* Add Exercise Pop Up Button */
-.add-exercise-btn {
-  color: white;
-  border: 2px solid #000; /* consistent black border */
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.add-exercise-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-}
-
-.add-exercise-btn:active {
-  transform: scale(0.95);
-}
-
-.add-exercise-text {
-  font-size: large;
-  font-weight: bold;
-  justify-content: right;
-}
-
-.workout-actions {
-  display: flex;
-  justify-content: flex-end; /* pushes both items to the right */
-  align-items: center; /* vertically centers text + button */
-  gap: 0.5rem; /* space between text and button */
-  margin-top: 0.5rem; /* optional spacing from content above */
 }
