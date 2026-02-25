@@ -26,12 +26,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Show repo files (debug)
+        run: |
+          pwd
+          ls -la
+          echo "---- AHFULapp ----"
+          ls -la AHFULapp || true
+          echo "---- Backend ----"
+          ls -la AHFULapp/Backend || true
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
       - name: Install dependencies
+        working-directory: AHFULapp/Backend
         run: |
           python -m pip install --upgrade pip
           pip install -r AHFULapp/Backend/requirements.txt
