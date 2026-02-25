@@ -33,7 +33,7 @@ jobs:
           echo "---- AHFULapp ----"
           ls -la AHFULapp || true
           echo "---- Backend ----"
-          ls -la AHFULapp/Backend || true
+          ls -la Backend || true
 
       - name: Set up Python
         uses: actions/setup-python@v5
