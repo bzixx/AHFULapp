@@ -1,3 +1,5 @@
+/* @author Jonathan Torrence */
+
 .food-log-container {
     padding: 2rem;
     max-width: 1200px;
@@ -78,6 +80,32 @@
     color: #bdc3c7;
 }
 
+/* Search Box */
+.search-box {
+    width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e0e6ed;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    font-family: inherit;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.search-input::placeholder {
+    color: #bdc3c7;
+}
+
 /* Buttons */
 .btn-add {
     padding: 0.75rem 1.5rem;
@@ -145,6 +173,37 @@
     font-size: 1.75rem;
     font-weight: 700;
     color: #667eea;
+}
+
+.calorie-totals {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.total-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.total-display .label {
+    font-weight: 600;
+    color: white;
+    font-size: 1.1rem;
+}
+
+.total-display .value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    padding-left: 1rem;
 }
 
 /* Logged Foods Section */
