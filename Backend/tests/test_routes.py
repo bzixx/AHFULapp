@@ -30,3 +30,15 @@ def test_find_gym_by_id():
     assert gym.get("cost") == 49.99
     assert gym.get("link") == "https://examplegym.com"
 
+    # Give a bad gymId
+    bad_oid = "699cff88400d9d43a32e924"
+    gym, err = GymDriver.get_gym_by_id(bad_oid)
+
+    if err is not None:
+        print(gym, err)
+
+    assert gym is not None
+    assert False
+
+    
+
