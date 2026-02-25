@@ -77,7 +77,7 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/Backend
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
-        run: pytest -q
+        run: pytest -s -q
 
       - name: Show app process (if failed)
         if: failure()
