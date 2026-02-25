@@ -31,9 +31,20 @@ jobs:
           pwd
           ls -la
           echo "---- AHFULapp ----"
-          ls -la AHFULapp || true
+          ls -la || true
           echo "---- Backend ----"
           ls -la Backend || true
+
+      
+      - name: Verify requirements.txt exists at correct repo location
+        run: |
+          echo "Working dir: $(pwd)"
+          if [ ! -f Backend/requirements.txt ]; then
+            echo "Backend/requirements.txt not found at repo root!" >&2
+            exit 1
+          fi
+          echo "Backend/requirements.txt found"
+
 
       - name: Set up Python
         uses: actions/setup-python@v5
