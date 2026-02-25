@@ -12,8 +12,8 @@ jobs:
 
     env:
       # Your app reads these to connect to Mongo
-      MONGO_URI: ${{ secrets.MONGO_URI }}
-      MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+      MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      MONGODB_NAME: ${{ secrets.MONGODB_NAME }}
       # Known doc id to verify a GET-by-id route
       EXISTING_DOC_ID: ${{ secrets.EXISTING_DOC_ID }}
 
@@ -34,7 +34,6 @@ jobs:
           ls -la || true
           echo "---- Backend ----"
           ls -la Backend || true
-
       
       - name: Verify requirements.txt exists at correct repo location
         run: |
@@ -44,7 +43,6 @@ jobs:
             exit 1
           fi
           echo "Backend/requirements.txt found"
-
 
       - name: Set up Python
         uses: actions/setup-python@v5
