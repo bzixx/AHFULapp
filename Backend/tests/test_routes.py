@@ -37,8 +37,9 @@ def test_find_gym_by_id():
     if err is not None:
         print(gym, err)
 
-    assert gym is not None
-    assert False
+    bad_err_code = "\'" + bad_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    assert gym is None
+    assert err == bad_err_code
 
     
 
