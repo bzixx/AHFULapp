@@ -2,6 +2,7 @@
 import os
 import requests
 from bson import ObjectId
+from Services.GymDriver import GymDriver
 
 
 def test_wont_fail():
