@@ -13,6 +13,6 @@ def test_wont_pass():
 
 def test_find_gym_by_id():
     oid = "699cff88400d9d43a32e924d"
-    gym = GymDriver.get_workout_by_id(oid)
+    gym = GymDriver.get_gym_by_id(oid)
     print(gym)
     assert gym is not None
