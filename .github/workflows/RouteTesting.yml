@@ -20,7 +20,7 @@ jobs:
       # Flask app config
       FLASK_APP: Backend/AHFULbackend.py
       FLASK_ENV: testing
-      PORT: 5001
+      PORT: 5000
 
     steps:
       - name: Checkout
