@@ -55,7 +55,20 @@ def test_find_gym_by_id():
     
     # Assertions
     assert gym is None
-    assert err == inv_err_code
-    assert False
-    
+    assert err == inv_err_code    
 
+def test_create_gym():
+    # Give a valid gymId
+    oid = "699cff88400d9d43a32e924d"
+    title = "A test Gym"
+    address = "Hell"
+    cost = 0
+    link = "www.testgym.com"
+    response, err = GymDriver.create_gym(title, address, cost, link)
+    
+    print(response)
+
+    if err is not None:
+        print(response, err)
+
+    assert False
