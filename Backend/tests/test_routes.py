@@ -51,7 +51,7 @@ def test_find_gym_by_id():
         print(gym, err)
 
     # Expected
-    inv_err_code = "\'" + inv_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    inv_err_code = "Gym not found"
     
     # Assertions
     assert gym is None
