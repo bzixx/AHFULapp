@@ -3,6 +3,32 @@
   box-sizing: border-box;
 }
 
+@media (max-width: 480px) {
+  .page-layout {
+    grid-template-columns: 1fr; /* collapse to single column */
+  }
+  
+  .center-column {
+    padding-top: 20px;
+  }
+
+  .workout-title h1 {
+    font-size: 32px;
+  }
+
+  .workout-timer,
+  .workout-timer-button {
+    min-width: 60px;
+    padding: 4px 8px;
+    font-size: 1rem;
+  }
+
+  .workout-footer {
+    justify-content: center;
+    gap: 1rem;
+  }
+}
+
 html,
 body {
   margin: 0;
@@ -12,7 +38,7 @@ body {
 
 .page-layout {
   display: grid;
-  grid-template-columns: 1fr 600px 1fr; /* left | center | right */
+  grid-template-columns: 1fr minmax(0, 600px) 1fr; /* left | center | right */
   width: 100%;
   min-height: 100vh;
 }
@@ -39,8 +65,10 @@ body {
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin: 0;
-  width: 600px;
-  height: 500px;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  max-height: 80vh;
   overflow-y: auto;
 }
 
@@ -61,33 +89,37 @@ body {
 }
 
 .workout-footer {
-  width: 600px; /* match card width */
+  width: 100%;
+  max-width: 600px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-top: 16px;
 }
+
+.workout-timer-box {
+  width: 120px;        /* identical width */
+  height: 48px;        /* identical height */
+  padding: 0;          /* padding removed so height stays exact */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f5f5f5;
+  border: 2px solid #000;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
 
 .workout-timer {
   font-size: 1.4rem;
   font-weight: bold;
-  padding: 6px 12px;
-  background: #f5f5f5;
-  border: 2px solid #000;
-  border-radius: 6px;
-  min-width: 80px; /* keeps it from stretching */
-  text-align: center; /* centers the numbers */
 }
 
 .workout-timer-button {
   font-size: 1.1rem;
   font-weight: bold;
-  padding: 6px 12px;
-  background: #f5f5f5;
-  border: 2px solid #000;
-  border-radius: 6px;
   cursor: pointer;
-  min-width: 80px; /* keeps it visually balanced with the timer */
-  text-align: center;
 }
 
 .workout-actions {

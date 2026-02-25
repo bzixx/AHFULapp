@@ -231,9 +231,9 @@ export function Workout({
           </div>
         </div>
         <div className="workout-footer">
-          <div className="workout-timer">{formatTime(time)}</div>
+          <div className="workout-timer-box workout-timer">{formatTime(time)}</div>
 
-          <button className="workout-timer-button" onClick={toggleTimer}>
+          <button className="workout-timer-box workout-timer-button" onClick={toggleTimer}>
             {isRunning ? "Stop Timer" : "Start Timer"}
           </button>
         </div>
