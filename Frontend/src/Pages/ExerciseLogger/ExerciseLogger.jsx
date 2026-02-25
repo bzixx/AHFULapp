@@ -1,6 +1,9 @@
 import React from "react";
 import "./ExerciseLogger.css";
 import "../../SiteStyles.css";
+import { Calendar } from "../../components/Calendar/Calendar";
 export function ExerciseLogger() {
-    return <h1>ExerciseLogger</h1>
+    return(
+        <Calendar />
+    )
 }
