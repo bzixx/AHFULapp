@@ -23,7 +23,7 @@ def get_food_by_user(user_id):
 
 
 # ── CREATE food ────────────────────────────────────────────────────────────────
-@foodRouteBlueprint.route("create/", methods=["POST"])
+@foodRouteBlueprint.route("/create", methods=["POST"])
 def create_food():
     data = request.get_json()
     if not data:
