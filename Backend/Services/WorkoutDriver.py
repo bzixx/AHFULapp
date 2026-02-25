@@ -1,8 +1,12 @@
+#Services & Drivers know how to implement business Logic related to the Route operations.  
+#   Intermediate between Routes and Objects.  Ensures validations and rules are applied before 
+#   Calling Objects to interact with DB
 from DataModels.WorkoutObject import WorkoutObject
-from werkzeug.security import generate_password_hash, check_password_hash
 
-#Services & Drivers know how to implement business Logic related to the Route operations.  Intermediate between Routes and Objects.  Ensures validations and rules are applied before Calling Objects to interact with DB
-
+# The WorkoutDriver is responsible for implementing the business logic related to workout operations.
+#   It acts as an intermediary between the API routes and the data models, 
+#   ensuring that all necessary validations and rules are applied before interacting with 
+#   the database.
 class WorkoutDriver:
 
     @staticmethod
@@ -37,7 +41,7 @@ class WorkoutDriver:
     @staticmethod
     def create_workout(email, gymId, title, startTime, endTime):
         # Validate required fields
-        if (not email) or (not startTime):
+        if (not email) or (startTime is None):
             return None, "You are missing an email or startTime. Please fix, then attempt to create workout again"
 
         workout_data = {

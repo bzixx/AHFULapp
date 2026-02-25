@@ -1,31 +1,32 @@
-#DataModel & Objects are essentially the Database Access Layer -- They know how to talk to Mongo DB Collection and that is it. 
+# DataModel & Objects are essentially the Database Access Layer
+# They know how to talk to Mongo DB Collection and that is it. 
 from bson import ObjectId
 from Services.MongoDriver import getMongoDatabase
 
 ahfulAppDataDB = getMongoDatabase()
-workoutCollection = ahfulAppDataDB['gym']
+workoutCollection = ahfulAppDataDB['workout']
 
-class GymObject:
+class WorkoutObject:
     # ── Helpers ────────────────────────────────────────────────────────────────
     @staticmethod
-    def _serialize(gym):
+    def _serialize(workout):
         """Convert MongoDB document to JSON-safe dict."""
-        if gym:
-            gym["_id"] = str(gym["_id"])
-        return gym
+        if workout:
+            workout["_id"] = str(workout["_id"])
+        return workout
 
     # ── Reads ──────────────────────────────────────────────────────────────────
     def find_all():
         workout = workoutCollection.find()
-        return [GymObject._serialize(w) for w in workout]
+        return [WorkoutObject._serialize(w) for w in workout]
 
     def find_by_id(id):
         workout = workoutCollection.find_one({"_id": ObjectId(id)})
-        return GymObject._serialize(workout)
+        return WorkoutObject._serialize(workout)
     
     def find_by_email(email):
         workout = workoutCollection.find({"userEmail": email})
-        return [GymObject._serialize(w) for w in workout]
+        return [WorkoutObject._serialize(w) for w in workout]
 
     # ── Writes ─────────────────────────────────────────────────────────────────
     @staticmethod
