@@ -18,3 +18,10 @@ def get_user(email):
     if error:
         return jsonify({"error": error}), 404
     return jsonify(user), 200
+
+@userRouteBlueprint.route("/id/<id>", methods=["GET"])
+def get_user_id(id):
+    user, error = UserDriver.get_user_by_id(id)
+    if error:
+        return jsonify({"error": error}), 404
+    return jsonify(user), 200

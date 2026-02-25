@@ -4,34 +4,39 @@ from bson import ObjectId
 from Services.MongoDriver import getMongoDatabase
 
 ahfulAppDataDB = getMongoDatabase()
-workoutCollection = ahfulAppDataDB['workout']
+personalExCollection = ahfulAppDataDB['personalExercise']
 
-class WorkoutObject:
+class PersonalExObject:
     # ── Helpers ────────────────────────────────────────────────────────────────
     @staticmethod
-    def _serialize(workout):
+    def _serialize(personalEx):
         """Convert MongoDB document to JSON-safe dict."""
-        if workout:
-            workout["_id"] = str(workout["_id"])
-            workout["userId"] = str(workout["userId"])
-            workout["gymId"] = str(workout["gymId"])
-        return workout
+        if personalEx:
+            personalEx["_id"] = str(personalEx["_id"])
+            personalEx["userId"] = str(personalEx["userId"])
+            personalEx["workoutId"] = str(personalEx["workoutId"])
+            personalEx["exerciseId"] = str(personalEx["exerciseId"])
+        return personalEx
 
     # ── Reads ──────────────────────────────────────────────────────────────────
     def find_all():
-        workout = workoutCollection.find()
-        return [WorkoutObject._serialize(w) for w in workout]
+        personalEx = personalExCollection.find()
+        return [PersonalExObject._serialize(w) for w in personalEx]
 
     def find_by_id(id):
-        workout = workoutCollection.find_one({"_id": ObjectId(id)})
-        return WorkoutObject._serialize(workout)
+        personalEx = personalExCollection.find_one({"_id": ObjectId(id)})
+        return PersonalExObject._serialize(personalEx)
     
     def find_by_user(userId):
-        workout = workoutCollection.find({"userId": ObjectId(userId)})
-        return [WorkoutObject._serialize(w) for w in workout]
+        personalEx = personalExCollection.find({"userId": ObjectId(userId)})
+        return [PersonalExObject._serialize(w) for w in personalEx]
+    
+    def find_by_workout(workoutId):
+        personalEx = personalExCollection.find({"workoutId": ObjectId(workoutId)})
+        return [PersonalExObject._serialize(w) for w in personalEx]
 
     # ── Writes ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def create(workout_data):
-        result = workoutCollection.insert_one(workout_data)
+    def create(personalEx_data):
+        result = personalExCollection.insert_one(personalEx_data)
         return str(result.inserted_id)
