@@ -13,17 +13,16 @@ def test_wont_fail():
 
 
 def test_find_gym_by_id():
+    # Give a valid gymId
     oid = "699cff88400d9d43a32e924d"
     gym, err = GymDriver.get_gym_by_id(oid)
 
     if err is not None:
         print(gym, err)
 
-    # Basic assertions
+    # Assertions
     assert err is None
     assert gym is not None
-
-    # Assert values
     assert gym.get("_id") == oid
     assert gym.get("title") == "Downtown Fitness"
     assert gym.get("address") == "123 Main St, Anytown, USA"
@@ -37,9 +36,26 @@ def test_find_gym_by_id():
     if err is not None:
         print(gym, err)
 
+    # Expected
     bad_err_code = "\'" + bad_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    
+    # Assertions
     assert gym is None
     assert err == bad_err_code
 
+    # Give an invalid gymId
+    inv_oid = "000000000000000000000000"
+    gym, err = GymDriver.get_gym_by_id(inv_oid)
+
+    if err is not None:
+        print(gym, err)
+
+    # Expected
+    inv_err_code = "\'" + inv_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    
+    # Assertions
+    assert gym is None
+    assert err == inv_err_code
+    assert False
     
 
