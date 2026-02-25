@@ -58,6 +58,14 @@ jobs:
           # test deps (if not already in requirements)
           pip install pytest requests
 
+        
+      - name: Debug PYTHONPATH and imports
+        run: |
+          python -c "import sys, pprint; pprint.pp(sys.path)"
+          python -c "import importlib; print('Can import Services:', bool(importlib.util.find_spec('Services')))"
+          python -c "import importlib; print('Can import Backend.Services:', bool(importlib.util.find_spec('Backend.Services')))"
+
+
       - name: Start Flask app (background)
         run: |
           # If your app requires importing create_app(), FLASK_APP above should point to it
@@ -76,7 +84,10 @@ jobs:
           done
 
       - name: Run integration tests
-        working-directory: Backend
+        env:
+          PYTHONPATH: ${{ github.workspace }}/Backend
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+
         run: pytest -q
 
       - name: Show app process (if failed)
