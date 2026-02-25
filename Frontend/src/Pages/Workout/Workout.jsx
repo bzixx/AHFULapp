@@ -38,6 +38,8 @@ export function Workout({
   const [time, setTime] = useState(0);
   const [exerciseName, setExerciseName] = useState("");
   const [refresh, setRefresh] = useState(0);
+  const [pendingExercises, setPendingExercises] = useState([]);
+
 
 
   /* Functions */
@@ -85,19 +87,23 @@ export function Workout({
   const addExerciseToWorkout = (e) => {
     e.preventDefault();
 
-    if (!exerciseName.trim()) return;
+    if (pendingExercises.length === 0) return;
 
-    exercisesRef.current.push({
-      name: exerciseName,
-      reps: "-",
-      sets: "-",
-      weight: "0",
-      completed: false,
+    pendingExercises.forEach(name => {
+      exercisesRef.current.push({
+        name,
+        reps: "-",
+        sets: "-",
+        weight: "0",
+        completed: false,
+      });
     });
 
+    setPendingExercises([]);   // clear the list
     setExerciseName("");       // clear input
-    setRefresh(r => r + 1);    // force re-render
+    setRefresh(r => r + 1);    // re-render
   };
+
 
     
 
@@ -257,7 +263,9 @@ export function Workout({
                         key={i}
                         className="dropdown-item"
                         onClick={() => {
-                          setExerciseName(name);
+                          // Add to list
+                          setPendingExercises(prev => [...prev, name]);
+                          setExerciseName("");
                           setShowDropdown(false);
                         }}
                       >
@@ -267,9 +275,31 @@ export function Workout({
                 </div>
               )}
             </div>
-            {/* TODO make adding exercises a list so you can add 
-              them all at once and display name and muscle group */}
-            <button className="add-btn" type="submit">Add Exercise</button>
+
+            {/* Display the list of exercises being added */}
+            {/* TODO: Show muscle group too or PR */}
+            <div className="pending-list">
+              {pendingExercises.map((ex, i) => (
+                <div key={i} className="pending-item">
+                  <span>{ex}</span>
+                  <button
+                    type="button"
+                    className="remove-btn"
+                    onClick={() =>
+                      setPendingExercises(prev =>
+                        prev.filter((_, idx) => idx !== i)
+                      )
+                    }
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+
+          <div className="add-btn-wrapper">
+            <button className="add-btn" type="submit">Add Exercises</button>
+          </div>
           </form>
         </div>
       </div>

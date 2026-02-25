@@ -205,7 +205,7 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin: 0;
   width: 300px;
-  height: 125px;
+  height: 275px;
 }
 .add-exercise.closed {
   display: none;
@@ -268,14 +268,21 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 100%;
   gap: 10px;
+}
+.add-btn-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: auto; /* pushes it to the bottom */ 
+  padding-bottom: 10px; /* optional spacing */
 }
 
 .add-btn {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: bold;
   padding: 10px 14px;
-  width: 50%;
+  width: 100%;
   background: white;
   color: black;
   border: 2px solid #000; /* consistent black border */
@@ -287,6 +294,40 @@ body {
   transform: scale(1.08);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
 }
+
+.pending-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #000;
+  border-radius: 6px;
+  background-color: white;
+  gap: 6px;
+  max-height: 125px;
+  width: 90%;
+  overflow-y: auto
+}
+
+.pending-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  font-weight: bold;
+}
+
+.remove-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 6px;
+}
+
+.remove-btn:hover {
+  color: red;
+}
+
 
 
 /* Delete Button */
