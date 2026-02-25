@@ -62,7 +62,7 @@ def test_create_gym():
     oid = "699cff88400d9d43a32e924d"
     title = "A test Gym"
     address = "Hell"
-    cost = 0
+    cost = 0.0
     link = "www.testgym.com"
     response, err = GymDriver.create_gym(title, address, cost, link)
     
