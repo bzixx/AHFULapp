@@ -1,11 +1,12 @@
-#DataModel & Objects are essentially the Database Access Layer -- They know how to talk to Mongo DB Collection and that is it. 
+# DataModel & Objects are essentially the Database Access Layer
+# They know how to talk to Mongo DB Collection and that is it. 
 from bson import ObjectId
 from Services.MongoDriver import getMongoDatabase
 
 ahfulAppDataDB = getMongoDatabase()
-muscleGroupCollection = ahfulAppDataDB['muscleGroup']
+gymCollection = ahfulAppDataDB['gym']
 
-class MuscleGroupObject:
+class GymObject:
     # ── Helpers ────────────────────────────────────────────────────────────────
     @staticmethod
     def _serialize(gym):
@@ -16,19 +17,15 @@ class MuscleGroupObject:
 
     # ── Reads ──────────────────────────────────────────────────────────────────
     def find_all():
-        workout = muscleGroupCollection.find()
-        return [MuscleGroupObject._serialize(w) for w in workout]
+        gyms = gymCollection.find()
+        return [GymObject._serialize(g) for g in gyms]
 
     def find_by_id(id):
-        workout = muscleGroupCollection.find_one({"_id": ObjectId(id)})
-        return MuscleGroupObject._serialize(workout)
-    
-    def find_by_email(email):
-        workout = muscleGroupCollection.find({"userEmail": email})
-        return [MuscleGroupObject._serialize(w) for w in workout]
+        gym = gymCollection.find_one({"_id": ObjectId(id)})
+        return GymObject._serialize(gym)
 
     # ── Writes ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def create(workout_data):
-        result = muscleGroupCollection.insert_one(workout_data)
+    def create(gym_data):
+        result = gymCollection.insert_one(gym_data)
         return str(result.inserted_id)

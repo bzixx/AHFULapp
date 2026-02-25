@@ -1,34 +1,30 @@
-#DataModel & Objects are essentially the Database Access Layer -- They know how to talk to Mongo DB Collection and that is it. 
-from bson import ObjectId
+# DataModel & Objects are essentially the Database Access Layer
+# They know how to talk to Mongo DB Collection and that is it. 
 from Services.MongoDriver import getMongoDatabase
 
 ahfulAppDataDB = getMongoDatabase()
-workoutCollection = ahfulAppDataDB['workout']
+foodCollection = ahfulAppDataDB['food']
 
-class WorkoutObject:
+class FoodObject:
     # ── Helpers ────────────────────────────────────────────────────────────────
     @staticmethod
-    def _serialize(workout):
+    def _serialize(food):
         """Convert MongoDB document to JSON-safe dict."""
-        if workout:
-            workout["_id"] = str(workout["_id"])
-        return workout
+        if food:
+            food["_id"] = str(food["_id"])
+        return food
 
     # ── Reads ──────────────────────────────────────────────────────────────────
     def find_all():
-        workout = workoutCollection.find()
-        return [WorkoutObject._serialize(w) for w in workout]
+        food = foodCollection.find()
+        return [FoodObject._serialize(g) for g in food]
 
-    def find_by_id(id):
-        workout = workoutCollection.find_one({"_id": ObjectId(id)})
-        return WorkoutObject._serialize(workout)
-    
-    def find_by_email(email):
-        workout = workoutCollection.find({"userEmail": email})
-        return [WorkoutObject._serialize(w) for w in workout]
+    def find_by_user(id):
+        food = foodCollection.find({"userId": id})
+        return [FoodObject._serialize(g) for g in food]
 
     # ── Writes ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def create(workout_data):
-        result = workoutCollection.insert_one(workout_data)
+    def create(food_data):
+        result = foodCollection.insert_one(food_data)
         return str(result.inserted_id)

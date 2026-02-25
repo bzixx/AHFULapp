@@ -1,7 +1,6 @@
-from flask import Flask #Import Main Flask application class
-from flask_cors import CORS
-from os import getenv # Import Function from os to get .env variables
-from flask import Flask #Import Main Flask application class
+from flask import Flask, current_app, send_from_directory #Import Main Flask application class
+import os # Import Function from os to get .env variables
+from flask_cors import CORS #Import Main Flask application class
 
 #Services/Drivers Imports
 from Services.SignInDriver import SignInDriver
@@ -9,6 +8,8 @@ from Services.SignInDriver import SignInDriver
 #Routes/Blueprints Imports
 from APIRoutes.UserRoutes import userRouteBlueprint #[Local] Import User API routes as a Flask Blueprint
 from APIRoutes.WorkoutRoutes import workoutRouteBlueprint
+from APIRoutes.GymRoutes import gymRouteBlueprint
+from APIRoutes.FoodRoutes import foodRouteBlueprint
 from APIRoutes.SwaggerRoutes import swaggerUIBlueprint
 from APIRoutes.SignInRoutes import signInRouteBlueprint
 
@@ -19,17 +20,23 @@ def create_app():
     app = Flask(__name__)
 
     #Make an Appwade SignInDriver to reference later 
-    app.AHFULSignInDriver = SignInDriver(getenv("GOOGLE_CLIENT_ID"))
+    app.AHFULSignInDriver = SignInDriver(os.getenv("GOOGLE_CLIENT_ID"))
 
     #Register App Routes and Blueprints
-    app.register_blueprint(userRouteBlueprint)
-    app.register_blueprint(workoutRouteBlueprint)
+    api_prefix = "/Backend"
+    #Swagger routes add prefix to match server url
+    app.register_blueprint(userRouteBlueprint, url_prefix=api_prefix + userRouteBlueprint.url_prefix)
+    app.register_blueprint(workoutRouteBlueprint, url_prefix=api_prefix + workoutRouteBlueprint.url_prefix)
+    app.register_blueprint(gymRouteBlueprint, url_prefix=api_prefix + gymRouteBlueprint.url_prefix)
+    app.register_blueprint(foodRouteBlueprint, url_prefix=api_prefix + foodRouteBlueprint.url_prefix)
     app.register_blueprint(swaggerUIBlueprint)
     app.register_blueprint(signInRouteBlueprint)
 
+
     # Enable CORS - includes CloudFront production URL and custom domain
     allowed_origins = [
-        'http://localhost:5173'
+        'http://localhost:5173',
+        'http://127.0.0.1:5173'
     ]
 
     CORS(app, origins=allowed_origins, supports_credentials=True)

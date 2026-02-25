@@ -48,7 +48,7 @@ Backend/
 
 All Users:
 1. Navigate to the Backend 
-2. Create or Locate a .env file
+2. Create or Locate a .env file in the Root of Backend/ Dir
 3. See AHFUL Teams Secrets Channel to copy and paste Backend .env Secrets Post.
 4. Ensure MONGODB_URI is Present in your .env
 5. Ensure MONGODB_DB is Present in your .env
