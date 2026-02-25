@@ -1,7 +1,7 @@
 
 import os
 import requests
-from bson import ObjectId
+from bson import ObjectId, errors as bson_errors
 from Services.GymDriver import GymDriver
 
 
@@ -65,10 +65,28 @@ def test_create_gym():
     cost = 0.0
     link = "www.testgym.com"
     response, err = GymDriver.create_gym(title, address, cost, link)
-    
-    print(response)
 
     if err is not None:
         print(response, err)
 
-    assert False
+    # Check if response is valid id
+    try:
+        responseObj = ObjectId(str(response))
+    except (bson_errors.InvalidId, TypeError, ValueError):
+        assert(False)
+
+    # Give created gymId
+    gym, err = GymDriver.get_gym_by_id(response)
+
+    if err is not None:
+        print(gym, err)
+
+    # Assertions
+    assert err is None
+    assert gym is not None
+    assert gym.get("_id") == response
+    assert gym.get("title") == "A test Gym"
+    assert gym.get("address") == "Hell"
+    assert gym.get("cost") == 0.0
+    assert gym.get("link") == "www.testgym.com"
+    
