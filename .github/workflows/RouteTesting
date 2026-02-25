@@ -3,7 +3,7 @@ name: Route Integration (App + Mongo via App Only)
 on:
   push:
     branches:
-      - ETURANY_ROUTE_TESTING
+      - "**"
   pull_request:
 
 jobs:
