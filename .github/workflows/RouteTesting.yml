@@ -76,7 +76,7 @@ jobs:
           done
 
       - name: Run integration tests
-        run: pytest -q
+        run: pytest Backend/tests -q
 
       - name: Show app process (if failed)
         if: failure()
