@@ -1,8 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-
 import { AHFULAuthProvider } from './Pages/Login/AuthContext.jsx';
-
 import { Workout } from "./Pages/Workout/Workout.jsx";
 import { ExerciseLogger } from "./Pages/ExerciseLogger/ExerciseLogger.jsx";
 import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
@@ -14,7 +12,7 @@ import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.j
 import { Profile } from "./Pages/Profile/Profile.jsx";
 import { TOS } from "./Pages/TOS/TOS.jsx";
 import { WorkoutHistory } from "./Pages/WorkoutHistory/WorkoutHistory.jsx";
-import { Layout } from "./Layout.jsx"
+import { Layout } from "./Layout.jsx" 
 import "./siteStyles.css";
 
 function AHFULApp() {
