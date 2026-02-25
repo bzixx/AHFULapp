@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import "./CalendarTodo.css";
 
-export function CalendarTodoItem() {
+export function CalendarFoodTodoItem() {
   const selectedDate = useSelector((state) => state.calendar.selectedDate);
   const locale = navigator.language || "en-US";
   const dateFormatter = new Intl.DateTimeFormat(locale, {
@@ -10,9 +10,10 @@ export function CalendarTodoItem() {
     month: "long",
     day: "numeric",
   });
+  const todaysDate = new Date();
 
   const selectedDateStr = selectedDate ? 
-  dateFormatter.format(new Date(selectedDate)) 
+  dateFormatter.format(new Date(selectedDate))
   : "No date selected";
 
   return (
@@ -28,8 +29,8 @@ export function CalendarTodoItem() {
         </tbody>
       </table>
 
-      <Link to="/Workout" className="workout-button">
-      Start Workout
+      <Link to="/FoodLog" className="workout-button">
+      Log Food!
       </Link>
     </div>
   );
