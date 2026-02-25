@@ -9,8 +9,8 @@ export function Workout({
 
   /* Variables */
   const exercisesRef = useRef([
-    { name: "Pushups", reps: 15, sets: 3, weight: "0", completed: false },
-    { name: "Pullups", reps: 8, sets: 4, weight: "Full backpack", completed: false },
+    { name: "Push Ups", reps: 15, sets: 3, weight: "0", completed: false },
+    { name: "Pull Ups", reps: 8, sets: 4, weight: "Full backpack", completed: false },
     { name: "Squats", reps: 20, sets: 3, weight: "45 lbs", completed: false },
     { name: "Run", reps: "-", sets: "-", weight: "0", completed: false },
   ]);
@@ -61,6 +61,12 @@ export function Workout({
       return updated;
     });
   };
+
+  const handleSubmit = () => {
+    console.log("Submitted workout!");
+    // TODO: Update the workout by grabbing the workout id and user id
+  };
+
 
   useEffect(() => {
     if (typeof trigger !== "undefined") {
@@ -201,30 +207,33 @@ export function Workout({
             ))}
           </div>
           <div className="workout-actions">
-            <div className="add-exercise-text">Add Exercise</div>
-            <button 
-              className="add-exercise-btn"
-              onClick={toggle}
-            >
-              ➕
-            </button>
+            <div className="workout-actions-left-side">
+              <button 
+                className="workout-add-exercise-btn"
+                onClick={toggle}
+              >
+                ➕
+              </button>
+              <div className="workout-add-exercise-text">Add Exercise</div>
+            </div>
+
+            <div className="workout-actions-right-side">
+              <button className="workout-submit-button" onClick={handleSubmit}>
+              Submit
+              </button>
+            </div>
           </div>
         </div>
         <div className="workout-footer">
           <div className="workout-timer">{formatTime(time)}</div>
 
-          <button className="workout-button" onClick={toggleTimer}>
+          <button className="workout-timer-button" onClick={toggleTimer}>
             {isRunning ? "Stop Timer" : "Start Timer"}
           </button>
         </div>
       </div>
       <div className="right-column">
-            
         <div className={`add-exercise ${open ? "open" : "closed"}`}>
-          <div className="add-exercise-title">
-            <h1>Add workout</h1>
-          </div>
-
           <form onSubmit={addExerciseToWorkout} className="add-exercise-form">
             <div className="dropdown-wrapper">
               <input
@@ -258,7 +267,9 @@ export function Workout({
                 </div>
               )}
             </div>
-            <button className="add-btn" type="submit">Add</button>
+            {/* TODO make adding exercises a list so you can add 
+              them all at once and display name and muscle group */}
+            <button className="add-btn" type="submit">Add Exercise</button>
           </form>
         </div>
       </div>
