@@ -4,7 +4,7 @@ import "./Navbar.css";
 export function Navbar({ minHeight }) {
   return (
     <nav className="navbar">
-      <Link to="/">Home</Link>
+      <Link to="/">Dashboard</Link>
       <Link to="/Login">Login</Link>
     </nav>
   );
