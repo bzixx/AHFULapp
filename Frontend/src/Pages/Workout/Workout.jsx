@@ -8,12 +8,13 @@ export function Workout({
 }) {
 
   /* Variables */
-  const exercisesRef = useRef([
+  const [exercises, setExercises] = useState([
     { name: "Push Ups", reps: 15, sets: 3, weight: "0", completed: false },
     { name: "Pull Ups", reps: 8, sets: 4, weight: "Full backpack", completed: false },
     { name: "Squats", reps: 20, sets: 3, weight: "45 lbs", completed: false },
     { name: "Run", reps: "-", sets: "-", weight: "0", completed: false },
   ]);
+
 
   const [exerciseList, setExerciseList] = useState([
     "Push Ups",
@@ -33,11 +34,9 @@ export function Workout({
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [open, setOpen] = useState(Boolean(trigger));
-  const [exercises, setExercises] = useState(exercisesRef.current);
   const [isRunning, setIsRunning] = useState(false);
   const [time, setTime] = useState(0);
   const [exerciseName, setExerciseName] = useState("");
-  const [refresh, setRefresh] = useState(0);
   const [pendingExercises, setPendingExercises] = useState([]);
 
 
@@ -45,16 +44,18 @@ export function Workout({
   /* Functions */
 
   /* Exercise Functions */
-  const removeWorkout = (index) => {
-    setExercises((prev) => prev.filter((_, i) => i !== index));
-  };
 
   const toggleCompleted = (index) => {
-    exercisesRef.current[index].completed =
-      !exercisesRef.current[index].completed;
-
-    setExercises([...exercisesRef.current]); // force re-render
+    setExercises(prev => {
+      const updated = [...prev];
+      updated[index] = {
+        ...updated[index],
+        completed: !updated[index].completed
+      };
+      return updated;
+    });
   };
+
 
   const updateField = (index, field, value) => {
     setExercises((prev) => {
@@ -84,28 +85,30 @@ export function Workout({
       }
   };
 
+  const removeWorkout = (index) => {
+    setExercises(prev => prev.filter((_, i) => i !== index));
+  };
+
+
   const addExerciseToWorkout = (e) => {
     e.preventDefault();
 
     if (pendingExercises.length === 0) return;
 
-    pendingExercises.forEach(name => {
-      exercisesRef.current.push({
+    setExercises(prev => [
+      ...prev,
+      ...pendingExercises.map(name => ({
         name,
-        reps: "-",
-        sets: "-",
+        reps: 0,
+        sets: 0,
         weight: "0",
         completed: false,
-      });
-    });
+      }))
+    ]);
 
-    setPendingExercises([]);   // clear the list
-    setExerciseName("");       // clear input
-    setRefresh(r => r + 1);    // re-render
+    setPendingExercises([]);
+    setExerciseName("");
   };
-
-
-    
 
   /* Timer Functions */
   useEffect(() => {
