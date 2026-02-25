@@ -1,15 +1,14 @@
 
 import os
 import requests
+from bson import ObjectId
+from Backend.Services.MongoDriver import getMongoDatabase
 
-BASE = f"http://127.0.0.1:5000"
+ahfulAppDataDB = getMongoDatabase()
+gymCollection = ahfulAppDataDB['gym']
 
-def test_get_personal_ex_by_id():
-    doc_id = "698d07b26e5117c22dd7772e"
-    
-    url = f"{BASE}/AHFULpersonalEx/id/{doc_id}"
-    resp = requests.get(url, timeout=15)
-
-    assert resp.status_code == 200
-    data = resp.json()
-    assert data["_id"] == doc_id
+def test_get_gym_by_id():
+    doc_id = "699cff88400d9d43a32e924d"
+    gym = gymCollection.find_one({"_id": ObjectId(doc_id)})
+    print(gym)
+    assert gym is not None
