@@ -1,108 +1,166 @@
 /* CSS made in tandem with AI */
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-html, body {
-    margin: 0;
-    padding: 0;
-    min-height: 100%;
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
 }
 
 .page-layout {
-    display: grid;
-    grid-template-columns: 1fr 600px 1fr; /* left | center | right */
-    width: 100%;
-    min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 600px 1fr; /* left | center | right */
+  width: 100%;
+  min-height: 100vh;
 }
 
 .left-column,
 .right-column {
-    /* empty for now */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 80px;
 }
 
 .center-column {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 40px;
 }
-
-
-
-.workout-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 40px;
-}
-
 
 .workout-card {
-    background: #E1D9BC;
-    border: 3px solid #000000;
-    padding: 8px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    margin: 0;
-    width: 600px;
-    height: 500px;
-    overflow-y: auto;
+  background: #e1d9bc;
+  border: 3px solid #000000;
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 0;
+  width: 600px;
+  height: 500px;
+  overflow-y: auto;
 }
 
 .workout-title {
-    text-align: center;
-    margin-bottom: 50px;
+  text-align: center;
+  margin-bottom: 50px;
 }
 
 .workout-title h1 {
-    font-size: 48px;
-    margin-bottom: 0;   
-    line-height: 1.1;   
+  font-size: 48px;
+  margin-bottom: 0;
+  line-height: 1.1;
 }
 
 .workout-title p {
-    margin: 0;          
-    line-height: 1.2;   
+  margin: 0;
+  line-height: 1.2;
 }
 
 .workout-footer {
-    width: 600px;             /* match card width */
-    display: flex;
-    justify-content: space-between;
-    margin-top: 16px;
+  width: 600px; /* match card width */
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
 }
 
 .workout-timer {
-    font-size: 1.4rem;
-    font-weight: bold;
-    padding: 6px 12px;
-    background: #f5f5f5;
-    border: 2px solid #000;
-    border-radius: 6px;
-    min-width: 80px;          /* keeps it from stretching */
-    text-align: center;   /* centers the numbers */
+  font-size: 1.4rem;
+  font-weight: bold;
+  padding: 6px 12px;
+  background: #f5f5f5;
+  border: 2px solid #000;
+  border-radius: 6px;
+  min-width: 80px; /* keeps it from stretching */
+  text-align: center; /* centers the numbers */
 }
 
-.workout-button {
-    font-size: 1.1rem;
-    font-weight: bold;
-    padding: 6px 12px;
-    background: #f5f5f5;
-    border: 2px solid #000;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100px;          /* keeps it visually balanced with the timer */
-    text-align: center;
+.workout-timer-button {
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 6px 12px;
+  background: #f5f5f5;
+  border: 2px solid #000;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 80px; /* keeps it visually balanced with the timer */
+  text-align: center;
+}
+
+.workout-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* vertically centers text + button */
+  gap: 0.5rem; /* space between text and button */
+  margin-top: 0.5rem; /* optional spacing from content above */
+}
+
+.workout-actions-right-side{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center; /* vertically centers text + button */
+  gap: 0.5rem; /* space between text and button */
+}
+
+.workout-actions-left-side{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center; /* vertically centers text + button */
+  gap: 0.5rem; /* space between text and button */
+}
+
+.workout-submit-button {
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 6px 12px;
+  background: #f5f5f5;
+  border: 2px solid #000;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 80px;
+  text-align: center;
+}
+
+/* Add Exercise Pop Up Button */
+.workout-add-exercise-btn {
+  color: white;
+  border: 2px solid #000; /* consistent black border */
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.workout-add-exercise-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.workout-add-exercise-btn:active {
+  transform: scale(0.95);
+}
+
+.workout-add-exercise-text {
+  font-size: large;
+  font-weight: bold;
+  justify-content: right;
 }
 
 /* AI Grid css */
 .workout-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr) 0.33fr;
-  max-height: 300px;
+  max-height: 275px;
   overflow-y: auto;
   border: 2px solid #333;
-  background: linear-gradient(0deg, #3A9EA3, #E1D9BC);
+  background: linear-gradient(0deg, #3a9ea3, #f5f5f5);
 }
 
 .cell {
@@ -124,27 +182,169 @@ html, body {
   border-right: none;
 }
 
-.header { 
-    font-weight: bold;
-    border-bottom: 2px solid #333;
-    background-color: #E1D9BC
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+
+  font-weight: bold;
+  border-bottom: 2px solid #333;
+  background-color: #f5f5f5;
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 }
+
+/* Add Exercise container */
+
+.add-exercise {
+  display: flex;
+  flex-direction: column;
+  background: #e1d9bc;
+  border: 3px solid #000000;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 0;
+  width: 300px;
+  height: 275px;
+}
+.add-exercise.closed {
+  display: none;
+}
+.add-exercise a {
+  text-decoration: none;
+  color: black;
+  font-size: 14px;
+}
+.add-exercise a:hover {
+  color: #007bff;
+}
+
+.add-exercise input[type="text"] {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  color: #000; /* ensures typed text is visible */
+  background-color: #fff; /* clean white search field */
+  border: 2px solid #333; /* visible border */
+  border-radius: 8px;
+  outline: none;
+}
+
+.add-exercise input[type="text"]:focus {
+  border-color: #3a9ea3; /* matches your theme */
+}
+
+/* Add Exercise Form */
+
+.dropdown-wrapper { 
+  position: relative;
+  max-width: 100%;
+  margin-top: 10px;
+}
+
+.dropdown {
+  position: absolute;
+  background: white;
+  top: 100%;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 100%;
+  margin-top: 4px;
+  max-height: 120px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #f0f0f0;
+}
+
+.add-exercise-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  gap: 10px;
+}
+.add-btn-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: auto; /* pushes it to the bottom */ 
+  padding-bottom: 10px; /* optional spacing */
+}
+
+.add-btn {
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 10px 14px;
+  width: 100%;
+  background: white;
+  color: black;
+  border: 2px solid #000; /* consistent black border */
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.add-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.pending-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #000;
+  border-radius: 6px;
+  background-color: white;
+  gap: 6px;
+  max-height: 125px;
+  width: 90%;
+  overflow-y: auto
+}
+
+.pending-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  font-weight: bold;
+}
+
+.remove-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 6px;
+}
+
+.remove-btn:hover {
+  color: red;
+}
+
+
 
 /* Delete Button */
 .delete-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: transparent;
-    border: none;
-    border-radius: 50%;
-    height: 30px;
-    width: 30px;
-    cursor: pointer;
-    font-size: 18px;
-    transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background-color 0.2s ease;
 }
 
 .delete-button:hover {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
