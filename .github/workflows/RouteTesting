@@ -1,0 +1,68 @@
+name: Route Integration (App + Mongo via App Only)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      # Your app reads these to connect to Mongo
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+      MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+      # Known doc id to verify a GET-by-id route
+      EXISTING_DOC_ID: ${{ secrets.EXISTING_DOC_ID }}
+
+      # Flask app config
+      FLASK_APP: AHFULapp/Backend/AHFULbackend.py
+      FLASK_ENV: testing
+      PORT: 5001
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r AHFULapp/Backend/requirements.txt
+          # test deps (if not already in requirements)
+          pip install pytest requests
+
+      - name: Start Flask app (background)
+        run: |
+          # If your app requires importing create_app(), FLASK_APP above should point to it
+          flask run --port $PORT &
+          echo $! > flask_pid.txt
+
+      - name: Wait for app to start
+        run: |
+          for i in {1..60}; do
+            if nc -z 127.0.0.1 $PORT; then
+              echo "App is up on $PORT"
+              break
+            fi
+            echo "Waiting for Flask to start..."
+            sleep 1
+          done
+
+      - name: Run integration tests
+        run: pytest -q
+
+      - name: Show app process (if failed)
+        if: failure()
+        run: ps aux | grep flask || true
+
+      - name: Stop Flask
+        if: always()
+        run: |
+          if [ -f flask_pid.txt ]; then
+            kill $(cat flask_pid.txt) || true
+          fi
