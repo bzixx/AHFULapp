@@ -751,6 +751,81 @@ swaggerConfig = {
     },
 
     
+    "/AHFULgym/{gym_id}": {
+      "delete": {
+        "summary": "Delete gym by id",
+        "tags": ["Gym"],
+        "parameters": [
+          {
+            "name": "gym_id",
+            "in": "path",
+            "required": True,
+            "description": "The id of the gym (Mongo ObjectId as string)",
+            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gym deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Gym deleted" },
+                    "gym_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+                  },
+                  "required": ["message", "gym_id"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Gym not found or already deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Gym not found or already deleted" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id format or missing id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "You must provide a gym id to delete" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
     "/AHFULfood/": {
       "get": {
         "summary": "Get all foods",
