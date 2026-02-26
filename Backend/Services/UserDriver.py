@@ -39,16 +39,6 @@ class UserDriver:
             return None, str(e)
         
     @staticmethod
-    def get_user_by_email(email):
-        try:
-            user = UserObject.find_by_email(email)
-            if not user:
-                return None, "User not found"
-            return user, None
-        except Exception as e:
-            return None, str(e)
-        
-    @staticmethod
     def create_user(userJSONObject):
         UserObject.create(userJSONObject)
     
