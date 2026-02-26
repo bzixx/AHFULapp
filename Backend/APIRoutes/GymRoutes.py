@@ -39,3 +39,16 @@ def create_gym():
     if error:
         return jsonify({"error": error}), 400
     return jsonify({"gym_id": gym_id, "message": "Gym created"}), 201
+
+
+# ── DELETE gym ────────────────────────────────────────────────────────────────
+@gymRouteBlueprint.route("/<gym_id>", methods=["DELETE"])
+def delete_gym(gym_id):
+    if not gym_id:
+        return jsonify({"error": "You must provide a gym id to delete"}), 400
+
+    response, error = GymDriver.delete_gym(gym_id)
+    if error:
+        return jsonify({"error": error}), 400
+    return jsonify({"message": "Gym deleted", "gym_id": response}), 200
+
