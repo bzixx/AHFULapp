@@ -63,19 +63,19 @@ def test_create_gym():
     address = "Hell"
     cost = 0.0
     link = "www.testgym.com"
-    response, err = GymDriver.create_gym(title, address, cost, link)
+    responseId, err = GymDriver.create_gym(title, address, cost, link)
 
     if err is not None:
         print(response, err)
 
     # Check if response is valid id
     try:
-        responseObj = ObjectId(str(response))
+        responseObj = ObjectId(str(responseId))
     except (bson_errors.InvalidId, TypeError, ValueError):
         assert(False)
 
     # Give created gymId
-    gym, err = GymDriver.get_gym_by_id(response)
+    gym, err = GymDriver.get_gym_by_id(responseId)
 
     if err is not None:
         print(gym, err)
@@ -83,16 +83,16 @@ def test_create_gym():
     # Assertions
     assert err is None
     assert gym is not None
-    assert gym.get("_id") == response
+    assert gym.get("_id") == responseId
     assert gym.get("title") == "A test Gym, you shouldnt see this"
     assert gym.get("address") == "Hell"
     assert gym.get("cost") == 0.0
     assert gym.get("link") == "www.testgym.com"
 
     # Delete created gym
-    response, err = GymDriver.delete_gym(response)
+    response, err = GymDriver.delete_gym(responseId)
     if err is not None:
         print(response, err)
     # Assertions
-    assert response == True
+    assert response == responseId
     
