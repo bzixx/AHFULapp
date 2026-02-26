@@ -60,7 +60,7 @@ def test_find_gym_by_id():
 def test_create_gym():
     # Give a valid gymId
     oid = "699cff88400d9d43a32e924d"
-    title = "A test Gym"
+    title = "A test Gym, you shouldnt see this"
     address = "Hell"
     cost = 0.0
     link = "www.testgym.com"
@@ -85,7 +85,7 @@ def test_create_gym():
     assert err is None
     assert gym is not None
     assert gym.get("_id") == response
-    assert gym.get("title") == "A test Gym"
+    assert gym.get("title") == "A test Gym, you shouldnt see this"
     assert gym.get("address") == "Hell"
     assert gym.get("cost") == 0.0
     assert gym.get("link") == "www.testgym.com"

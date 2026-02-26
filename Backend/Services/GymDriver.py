@@ -45,3 +45,19 @@ class GymDriver:
             return response, None
         except Exception as e:
             return None, str(e)
+        
+        
+    @staticmethod
+    def delete_gym(id):
+        # Validate input
+        if not id:
+            return None, "You must provide a gym id to delete"
+
+        try:
+            response = GymObject.delete(id)
+            if not response:
+                # Either not found, or already removed
+                return None, "Gym not found or already deleted"
+            return response, None
+        except Exception as e:
+            return None, str(e)
