@@ -159,7 +159,7 @@ def test_find_user_by_email():
 
     # Give an empty email
     inv_email = ""
-    user, err = UserDriver.get_user_by_id(inv_email)
+    user, err = UserDriver.get_user_by_email(inv_email)
 
     if err is not None:
         print(user, err)
