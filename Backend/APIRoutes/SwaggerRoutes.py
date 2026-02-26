@@ -751,7 +751,7 @@ swaggerConfig = {
     },
 
     
-    "/AHFULgym/{gym_id}": {
+    "/AHFULgym/delete/{gym_id}": {
       "delete": {
         "summary": "Delete gym by id",
         "tags": ["Gym"],

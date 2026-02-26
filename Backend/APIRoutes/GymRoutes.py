@@ -42,7 +42,7 @@ def create_gym():
 
 
 # ── DELETE gym ────────────────────────────────────────────────────────────────
-@gymRouteBlueprint.route("/<gym_id>", methods=["DELETE"])
+@gymRouteBlueprint.route("/delete/<gym_id>", methods=["DELETE"])
 def delete_gym(gym_id):
     if not gym_id:
         return jsonify({"error": "You must provide a gym id to delete"}), 400
