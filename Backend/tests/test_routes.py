@@ -171,6 +171,6 @@ def test_find_user_by_email():
     assert user is None
     assert err == inv_err_code
     
-# TODO    
+# TO DO    
 # def test_create_user():
 #     pass
