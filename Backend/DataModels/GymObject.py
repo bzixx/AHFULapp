@@ -33,4 +33,4 @@ class GymObject:
     @staticmethod
     def delete(id):
         result = gymCollection.delete_one({"_id": ObjectId(id)})
-        return result.deleted_count == 1
+        return str((result.deleted_count == 1) * id)

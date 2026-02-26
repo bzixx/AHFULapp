@@ -59,7 +59,6 @@ def test_find_gym_by_id():
 
 def test_create_gym():
     # Give a valid gymId
-    oid = "699cff88400d9d43a32e924d"
     title = "A test Gym, you shouldnt see this"
     address = "Hell"
     cost = 0.0
@@ -89,4 +88,11 @@ def test_create_gym():
     assert gym.get("address") == "Hell"
     assert gym.get("cost") == 0.0
     assert gym.get("link") == "www.testgym.com"
+
+    # Delete created gym
+    response, err = GymDriver.delete_gym(response)
+    if err is not None:
+        print(response, err)
+    # Assertions
+    assert response == True
     
