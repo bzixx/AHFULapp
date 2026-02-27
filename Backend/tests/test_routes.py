@@ -51,7 +51,7 @@ def test_find_gym_by_id():
     assert gym is None
     assert err == inv_err_code    
 
-def test_create_gym():
+def test_create_delete_gym():
     # Give a valid gymId
     title = "A test Gym, you shouldnt see this"
     address = "Hell"
@@ -272,7 +272,7 @@ def test_find_food_by_user():
     assert food is None
     assert err == inv_err_code
 
-def test_create_food():
+def test_create_delete_food():
     # Give a valid gymId
     userId = "699d0093795741a59fe13616"
     name = "Lettuce"
@@ -303,10 +303,10 @@ def test_create_food():
     assert food.get("_id") == responseId
     assert food.get("userId") == "699d0093795741a59fe13616"
     assert food.get("name") == "Lettuce"
-    assert food.get("calsPerServing") == 0
-    assert food.get("servings") == 99
+    assert food.get("calsPerServing") == "0"
+    assert food.get("servings") == "99"
     assert food.get("type") == "Snack"
-    assert food.get("time") == 0
+    assert food.get("time") == "0"
 
     # Delete created gym
     response, err = FoodDriver.delete_food(responseId)
