@@ -282,6 +282,8 @@ def test_create_delete_food():
     time = 0
     responseId, err = FoodDriver.create_food(userId, name, calsPerServing, servings, type, time)
 
+    print("responseId: " + responseId)
+
     if err is not None:
         print(responseId, err)
 
@@ -303,10 +305,10 @@ def test_create_delete_food():
     assert food.get("_id") == responseId
     assert food.get("userId") == "699d0093795741a59fe13616"
     assert food.get("name") == "Lettuce"
-    assert food.get("calsPerServing") == "0"
+    assert food.get("calsPerServing") == 0
     assert food.get("servings") == 99
     assert food.get("type") == "Snack"
-    assert food.get("time") == "0"
+    assert food.get("time") == 0
 
     # Delete created gym
     response, err = FoodDriver.delete_food(responseId)
