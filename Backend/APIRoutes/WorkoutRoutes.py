@@ -45,3 +45,14 @@ def create_workout():
     if error:
         return jsonify({"error": error}), 400
     return jsonify({"workout_id": workout_id, "message": "Workout created"}), 201
+
+# ── DELETE workout ────────────────────────────────────────────────────────────────
+@workoutRouteBlueprint.route("/delete/<workout_id>", methods=["DELETE"])
+def delete_workout(workout_id):
+    if not workout_id:
+        return jsonify({"error": "You must provide a workout id to delete"}), 400
+
+    response, error = WorkoutDriver.delete_workout(workout_id)
+    if error:
+        return jsonify({"error": error}), 400
+    return jsonify({"message": "Workout deleted", "workout_id": response}), 200

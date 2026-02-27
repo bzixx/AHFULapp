@@ -108,3 +108,18 @@ class PersonalExDriver:
             return response, None
         except Exception as e:
             return None, str(e)
+        
+    @staticmethod
+    def delete_personal_ex(id):
+        # Validate input
+        if not id:
+            return None, "You must provide a personal ex id to delete"
+
+        try:
+            response = PersonalExObject.delete(id)
+            if not response:
+                # Either not found, or already removed
+                return None, "Personal ex not found or already deleted"
+            return response, None
+        except Exception as e:
+            return None, str(e)
