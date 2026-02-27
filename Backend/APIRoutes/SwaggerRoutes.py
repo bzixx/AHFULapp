@@ -1025,6 +1025,81 @@ swaggerConfig = {
           }
         }
       }
+    },
+
+    "/AHFULfood/delete/{food_d}": {
+      "delete": {
+        "summary": "Delete food by id",
+        "tags": ["Food"],
+        "parameters": [
+          {
+            "name": "food_id",
+            "in": "path",
+            "required": True,
+            "description": "The id of the food (Mongo ObjectId as string)",
+            "schema": { "type": "string", "example": "698d039a6e5117c22dd6661d" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Food deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Food deleted" },
+                    "gym_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+                  },
+                  "required": ["message", "food_id"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Food not found or already deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Food not found or already deleted" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id format or missing id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "You must provide a food id to delete" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
