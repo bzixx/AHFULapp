@@ -276,7 +276,7 @@ def test_create_delete_food():
     # Give a valid gymId
     userId = "699d0093795741a59fe13616"
     name = "Lettuce"
-    calsPerServing = "0"
+    calsPerServing = 0
     servings = 99
     type = "Snack"
     time = 0
