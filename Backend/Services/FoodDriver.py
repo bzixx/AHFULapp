@@ -42,7 +42,7 @@ class FoodDriver:
     @staticmethod
     def create_food(userId, name, calsPerServing, servings, type, time):
         # Validate required fields
-        if (not userId) or (not name) or (not calsPerServing) or (not servings) or (not type) or (not time):
+        if (not userId) or (not name) or (calsPerServing is None) or (not servings) or (not type) or (time is None):
             return None, "You are missing a value. Please fix, then attempt to create food again"
 
         # Convert IDs safely
