@@ -21,6 +21,12 @@ def get_food_by_user(user_id):
         return jsonify({"error": error}), 404
     return jsonify(food), 200
 
+@foodRouteBlueprint.route("/id/<id>", methods=["GET"])
+def get_food_by_id(id):
+    food, error = FoodDriver.get_food_by_id(id)
+    if error:
+        return jsonify({"error": error}), 404
+    return jsonify(food), 200
 
 # ── CREATE food ────────────────────────────────────────────────────────────────
 @foodRouteBlueprint.route("/create", methods=["POST"])
