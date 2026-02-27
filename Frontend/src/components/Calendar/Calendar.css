@@ -7,6 +7,13 @@
   padding: 16px;
   box-sizing: border-box;
   font-family: sans-serif;
+  z-index: 9999;
+
+  background-color: #e1d9bc;
+  border: 4px solid black;
+  border-radius: 16px;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+  overflow: hidden;
 }
 
 .calendar-header {
@@ -14,6 +21,10 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
+  padding: 4px 8px;
+  border-bottom: 2px solid black;
+  background-color: #e1d9bc;
+  border-radius: 12px;
 }
 
 .calendar-title {
@@ -25,15 +36,15 @@
 .calendar-button {
   padding: 8px 12px;
   border-radius: 16px;
-  border: 1px solid #f3f4f6;
-  background: white;
+  border: 1px solid black;
+  background: #f0e6c2;
   font-size: 14px;
   cursor: pointer;
   transition: background 0.2s ease;
 }
 
 .calendar-button:hover {
-  background: #f3f4f6;
+  background: #e6d9a5;
 }
 
 .calendar-weekdays {
@@ -48,7 +59,7 @@
 
 .calendar-weekday {
   text-align: center;
-  font-weight: 500;
+  font-weight: bold;
   padding: 4px 0;
 }
 
@@ -64,47 +75,46 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 16px;
+  aspect-ratio: 1/1;
+  width: 100%;
+  border-radius: 8px;
   user-select: none;
   transition: background 0.15s ease;
-  cursor: default;
-}
-
-.calendar-cell.current {
-  background: white;
+  cursor: pointer;
+  background-color: #e1d9bc;
+  border: 2px solid black;
 }
 
 .calendar-cell.other {
-  background: #f3f4f6;
+  background-color: #d8cfa7;
   opacity: 0.7;
 }
 
-.calendar-cell:not(.today):hover {
-  background: rgba(128, 128, 128, 0.5);
-}
-
 .calendar-cell.today {
-  box-shadow: 0 0 0 2px #60a5fa;
+  box-shadow: 0 0 0 2.5px rgba(96, 165, 250, 0.9);
 }
 
-.calendar-day-today {
-  font-weight: 700;
+.calendar-cell.selected {
+  background-color: rgba(128, 128, 128, 0.5);
+  font-weight: bold;
+  border: 3px solid black;
 }
 
 .calendar-today-badge {
   position: absolute;
   top: -6px;
   right: 4px;
-
   font-size: 10px;
   padding: 2px 4px;
   border-radius: 6px;
-
   background: rgba(96, 165, 250, 0.9);
   color: white;
 }
-.calendar-cell.selected {
-  background-color: rgba(128, 128, 128, 0.5);
-  font-weight: bold;
-  border: 3px solid black;
+
+.calendar-day-today {
+  font-weight: 700;
+}
+
+.calendar-cell:not(.today):hover {
+  background: rgba(128, 128, 128, 0.3);
 }
