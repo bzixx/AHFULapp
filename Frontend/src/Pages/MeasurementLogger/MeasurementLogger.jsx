@@ -1,3 +1,4 @@
+//@Author Jonathan Torrence
 import React, { useState, useEffect } from "react";
 import "./MeasurementLogger.css";
 import "../../SiteStyles.css";
