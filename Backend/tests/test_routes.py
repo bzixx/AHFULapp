@@ -6,6 +6,8 @@ from Services.GymDriver import GymDriver
 from Services.UserDriver import UserDriver
 from Services.FoodDriver import FoodDriver
 
+# Gym
+
 def test_find_gym_by_id():
     # Give a valid gymId
     oid = "699cff88400d9d43a32e924d"
@@ -89,6 +91,8 @@ def test_create_delete_gym():
         print(response, err)
     # Assertions
     assert response == responseId
+
+# User
 
 def test_find_user_by_id():
     # Give a valid gymId
@@ -175,6 +179,8 @@ def test_find_user_by_email():
 # TO DO    
 # def test_create_user():
 #     pass
+
+# Food
 
 def test_find_food_by_id():
     # Give a valid gymId
@@ -316,3 +322,7 @@ def test_create_delete_food():
         print(response, err)
     # Assertions
     assert response == responseId
+
+# Workout
+
+# Personal Ex

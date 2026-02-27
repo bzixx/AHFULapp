@@ -58,7 +58,7 @@ def create_personal_ex():
         return jsonify({"error": error}), 400
     return jsonify({"personal_ex_id": personal_ex_id, "message": "Personal Ex created"}), 201
 
-# ── DELETE workout ────────────────────────────────────────────────────────────────
+# ── DELETE personalEx ────────────────────────────────────────────────────────────────
 @personalExRouteBlueprint.route("/delete/<personal_ex_id>", methods=["DELETE"])
 def delete_personal_ex(personal_ex_id):
     if not personal_ex_id:
