@@ -83,3 +83,18 @@ class WorkoutDriver:
             return response, None
         except Exception as e:
             return None, str(e)
+        
+    @staticmethod
+    def delete_workout(id):
+        # Validate input
+        if not id:
+            return None, "You must provide a workout id to delete"
+
+        try:
+            response = WorkoutObject.delete(id)
+            if not response:
+                # Either not found, or already removed
+                return None, "Workout not found or already deleted"
+            return response, None
+        except Exception as e:
+            return None, str(e)
