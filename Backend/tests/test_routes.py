@@ -60,7 +60,7 @@ def test_create_gym():
     responseId, err = GymDriver.create_gym(title, address, cost, link)
 
     if err is not None:
-        print(response, err)
+        print(responseId, err)
 
     # Check if response is valid id
     try:
@@ -283,7 +283,7 @@ def test_create_food():
     responseId, err = FoodDriver.create_food(userId, name, calsPerServing, servings, type, time)
 
     if err is not None:
-        print(response, err)
+        print(responseId, err)
 
     # Check if response is valid id
     try:
