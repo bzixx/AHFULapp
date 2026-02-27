@@ -7,7 +7,7 @@ export function Layout() {
             <Navbar/>
             <MenuButton/>
             <main style={{ 
-                background: "linear-gradient(0deg, #30364F, #3cb6b6)",
+                background: "#FFF7F2",
                 minHeight: "90vh",
                 display: "flex"
              }}>

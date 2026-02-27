@@ -2,6 +2,6 @@ body {
   margin: 0;
   font-family: system-ui, -apple-system, sans-serif;
   padding: 20px;
-  background: linear-gradient(0deg, #30364F, #3cb6b6); 
+  background: #FFF7F2; 
   min-height: 100vh;
 }

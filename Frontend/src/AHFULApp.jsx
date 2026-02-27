@@ -1,20 +1,18 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-
 import { AHFULAuthProvider } from './Pages/Login/AuthContext.jsx';
-
 import { Workout } from "./Pages/Workout/Workout.jsx";
 import { ExerciseLogger } from "./Pages/ExerciseLogger/ExerciseLogger.jsx";
 import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
 import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
-import { Home } from "./Pages/Home/Home.jsx";
+import { Home } from "./Pages/Dashboard/Dashboard.jsx";
 import { Login } from "./Pages/Login/Login.jsx";
 import { Map } from "./Pages/map/map.jsx";
 import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
 import { Profile } from "./Pages/Profile/Profile.jsx";
 import { TOS } from "./Pages/TOS/TOS.jsx";
 import { WorkoutHistory } from "./Pages/WorkoutHistory/WorkoutHistory.jsx";
-import { Layout } from "./Layout.jsx"
+import { Layout } from "./Layout.jsx" 
 import "./siteStyles.css";
 
 function AHFULApp() {
