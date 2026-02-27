@@ -13,6 +13,7 @@ class FoodObject:
         """Convert MongoDB document to JSON-safe dict."""
         if food:
             food["_id"] = str(food["_id"])
+            food["userId"] = str(food["userId"])
         return food
 
     # ── Reads ──────────────────────────────────────────────────────────────────
