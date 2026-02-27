@@ -271,3 +271,46 @@ def test_find_food_by_user():
     # Assertions
     assert food is None
     assert err == inv_err_code
+
+def test_create_food():
+    # Give a valid gymId
+    userId = "699d0093795741a59fe13616"
+    name = "Lettuce"
+    calsPerServing = "0"
+    servings = 99
+    type = "Snack"
+    time = 0
+    responseId, err = FoodDriver.create_food(userId, name, calsPerServing, servings, type, time)
+
+    if err is not None:
+        print(response, err)
+
+    # Check if response is valid id
+    try:
+        responseObj = ObjectId(str(responseId))
+    except (bson_errors.InvalidId, TypeError, ValueError):
+        assert(False)
+
+    # Give created gymId
+    food, err = FoodDriver.get_food_by_id(responseId)
+
+    if err is not None:
+        print(food, err)
+
+    # Assertions
+    assert err is None
+    assert food is not None
+    assert food.get("_id") == responseId
+    assert food.get("userId") == "699d0093795741a59fe13616"
+    assert food.get("name") == "Lettuce"
+    assert food.get("calsPerServing") == 0
+    assert food.get("servings") == 99
+    assert food.get("type") == "Snack"
+    assert food.get("time") == 0
+
+    # Delete created gym
+    response, err = FoodDriver.delete_food(responseId)
+    if err is not None:
+        print(response, err)
+    # Assertions
+    assert response == responseId
