@@ -21,7 +21,7 @@ def google_login():
 
     token = postAuthData.get("token")
     if not token:
-        return jsonify({"error": "No token provided to the Backend.  You cannot login with something to login with.  What is this? Anarchy?"}), 400
+        return jsonify({"error": "No token provided to the Backend.  You cannot login without something to login with.  What is this? Anarchy?"}), 400
 
     # verify JWT
     decodedUserInfo: dict = routeSignInDriver.verify_google_token(token)
@@ -32,6 +32,7 @@ def google_login():
     tokenBits = token[-32:] 
 
     # Check if user already exists, else create new user_info document
+    #TODO: Look at this because i checks based on email. 
     routeUserObject, error = UserDriver.get_user_by_email(decodedUserInfo.get("email"))
     if not routeUserObject:
         routeUserObject = UserDriver.create_user({

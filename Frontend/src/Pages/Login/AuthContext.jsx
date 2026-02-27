@@ -81,7 +81,7 @@ export const AHFULAuthProvider = ({ children }) => {
             }
         }
 
-        console.error("AHFUL context_login Complete");
+        console.log("AHFUL context_login Completed successfully.");
 
          setIsLoggedIn(true)
 

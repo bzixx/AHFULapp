@@ -12,6 +12,7 @@ from APIRoutes.GymRoutes import gymRouteBlueprint
 from APIRoutes.FoodRoutes import foodRouteBlueprint
 from APIRoutes.SwaggerRoutes import swaggerUIBlueprint
 from APIRoutes.SignInRoutes import signInRouteBlueprint
+from APIRoutes.ExerciseRoutes import exerciseRouteBlueprint
 
 #Main AHFUL APP Backend Entry Point.
 def create_app():
@@ -31,6 +32,7 @@ def create_app():
     app.register_blueprint(foodRouteBlueprint, url_prefix=api_prefix + foodRouteBlueprint.url_prefix)
     app.register_blueprint(swaggerUIBlueprint)
     app.register_blueprint(signInRouteBlueprint)
+    app.register_blueprint(exerciseRouteBlueprint)
 
 
     # Enable CORS - includes CloudFront production URL and custom domain
