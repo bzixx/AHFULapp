@@ -197,7 +197,7 @@ def test_find_food_by_id():
 
     # Give a bad userId
     bad_oid = "699d0f5f888d8f649698307"
-    food, err = FoodDriver.get_food_by_id(oid)
+    food, err = FoodDriver.get_food_by_id(bad_oid)
 
     if err is not None:
         print(food, err)
@@ -226,9 +226,9 @@ def test_find_food_by_id():
 def test_find_food_by_user():
     # Give a valid email
     userId = "699d0093795741a59fe13616"
-    food, err = FoodDriver.get_food_by_user(userId)
+    foods, err = FoodDriver.get_food_by_user(userId)
 
-    print(food)
+    food = next((item for item in foods if item["_id"] == "699d0f5f888d8f649698307e"), None)
 
     if err is not None:
         print(food, err)
