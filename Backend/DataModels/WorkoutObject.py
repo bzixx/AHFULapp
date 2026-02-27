@@ -35,3 +35,8 @@ class WorkoutObject:
     def create(workout_data):
         result = workoutCollection.insert_one(workout_data)
         return str(result.inserted_id)
+    
+    @staticmethod
+    def delete(id):
+        result = workoutCollection.delete_one({"_id": ObjectId(id)})
+        return str((result.deleted_count == 1) * id)

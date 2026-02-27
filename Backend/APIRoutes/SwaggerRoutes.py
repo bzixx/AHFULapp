@@ -413,6 +413,81 @@ swaggerConfig = {
         }
       },
 
+      "/AHFULpersonalEx/delete/{personal_ex_id}": {
+      "delete": {
+        "summary": "Delete personal ex by id",
+        "tags": ["PersonalEx"],
+        "parameters": [
+          {
+            "name": "personal_ex_id",
+            "in": "path",
+            "required": True,
+            "description": "The id of the personal ex (Mongo ObjectId as string)",
+            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Personal ex deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Personal ex deleted" },
+                    "gym_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+                  },
+                  "required": ["message", "personal_ex_id"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Personal ex not found or already deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Personal ex not found or already deleted" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id format or missing id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "You must provide a personal ex id to delete" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
     "/AHFULworkout/": {
       "get": {
         "summary": "Get all workouts",
@@ -592,6 +667,81 @@ swaggerConfig = {
                   "properties": {
                     "error": { "type": "string" }
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULworkout/delete/{workout_id}": {
+      "delete": {
+        "summary": "Delete workout by id",
+        "tags": ["Workout"],
+        "parameters": [
+          {
+            "name": "workout_id",
+            "in": "path",
+            "required": True,
+            "description": "The id of the workout (Mongo ObjectId as string)",
+            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workout deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Workout deleted" },
+                    "gym_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+                  },
+                  "required": ["message", "workout_id"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Workout not found or already deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Workout not found or already deleted" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id format or missing id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "You must provide a workout id to delete" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  },
+                  "required": ["error"]
                 }
               }
             }
