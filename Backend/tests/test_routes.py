@@ -222,12 +222,13 @@ def test_find_food_by_id():
     # Assertions
     assert food is None
     assert err == inv_err_code
-    assert False
 
 def test_find_food_by_user():
     # Give a valid email
     userId = "699d0093795741a59fe13616"
     food, err = FoodDriver.get_food_by_user(userId)
+
+    print(food)
 
     if err is not None:
         print(food, err)
@@ -270,4 +271,3 @@ def test_find_food_by_user():
     # Assertions
     assert food is None
     assert err == inv_err_code
-    assert False
