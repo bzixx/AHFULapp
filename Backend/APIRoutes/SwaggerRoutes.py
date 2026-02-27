@@ -1027,7 +1027,7 @@ swaggerConfig = {
       }
     },
 
-    "/AHFULfood/delete/{food_d}": {
+    "/AHFULfood/delete/{food_id}": {
       "delete": {
         "summary": "Delete food by id",
         "tags": ["Food"],
