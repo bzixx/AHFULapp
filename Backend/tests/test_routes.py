@@ -315,4 +315,4 @@ def test_create_delete_food():
     if err is not None:
         print(response, err)
     # Assertions
-    assert response == responseId 699d0f5f888d8f649698307
+    assert response == responseId
