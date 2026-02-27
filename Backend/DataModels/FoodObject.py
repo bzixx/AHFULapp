@@ -1,5 +1,6 @@
 # DataModel & Objects are essentially the Database Access Layer
 # They know how to talk to Mongo DB Collection and that is it. 
+from bson import ObjectId
 from Services.MongoDriver import getMongoDatabase
 
 ahfulAppDataDB = getMongoDatabase()
@@ -18,6 +19,10 @@ class FoodObject:
     def find_all():
         food = foodCollection.find()
         return [FoodObject._serialize(g) for g in food]
+    
+    def find_by_id(id):
+        food = foodCollection.find_one({"_id": ObjectId(id)})
+        return FoodObject._serialize(food)
 
     def find_by_user(id):
         food = foodCollection.find({"userId": id})

@@ -28,6 +28,16 @@ class FoodDriver:
             return food, None
         except Exception as e:
             return None, str(e)
+        
+    @staticmethod
+    def get_food_by_id(id):
+        try:
+            food = FoodObject.find_by_id(id)
+            if not food:
+                return None, "Food not found"
+            return food, None
+        except Exception as e:
+            return None, str(e)
 
     @staticmethod
     def create_food(userId, name, calsPerServing, servings, type, time):
