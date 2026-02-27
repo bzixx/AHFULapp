@@ -59,7 +59,7 @@ body {
 }
 
 .workout-card {
-  background: #e1d9bc;
+  background: linear-gradient(90deg,#c3cfe2, #f5f7fa, #c3cfe2);
   border: 3px solid #000000;
   padding: 8px;
   border-radius: 8px;
@@ -104,7 +104,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f5f5f5;
+  background: linear-gradient(90deg,#c3cfe2, #f5f7fa, #c3cfe2);
   border: 2px solid #000;
   border-radius: 6px;
   box-sizing: border-box;
@@ -158,7 +158,7 @@ body {
 
 /* Add Exercise Pop Up Button */
 .workout-add-exercise-btn {
-  color: white;
+  color: #f5f5f5;
   border: 2px solid #000; /* consistent black border */
   border-radius: 50%;
   width: 32px;
@@ -192,7 +192,7 @@ body {
   max-height: 275px;
   overflow-y: auto;
   border: 2px solid #333;
-  background: linear-gradient(0deg, #3a9ea3, #f5f5f5);
+  background: linear-gradient(0deg, #FFF7F2, #f5f5f5);
 }
 
 .cell {
@@ -231,7 +231,7 @@ body {
 .add-exercise {
   display: flex;
   flex-direction: column;
-  background: #e1d9bc;
+  background: linear-gradient(90deg,#c3cfe2, #f5f7fa, #c3cfe2);
   border: 3px solid #000000;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -248,7 +248,7 @@ body {
   font-size: 14px;
 }
 .add-exercise a:hover {
-  color: #007bff;
+  color: #c3cfe2;
 }
 
 .add-exercise input[type="text"] {
@@ -263,7 +263,7 @@ body {
 }
 
 .add-exercise input[type="text"]:focus {
-  border-color: #3a9ea3; /* matches your theme */
+  border-color: #c3cfe2; /* matches your theme */
 }
 
 /* Add Exercise Form */
@@ -293,7 +293,7 @@ body {
 }
 
 .dropdown-item:hover {
-  background: #f0f0f0;
+  background: #f5f5f5;
 }
 
 .add-exercise-form {
@@ -333,7 +333,7 @@ body {
   flex-direction: column;
   border: 2px solid #000;
   border-radius: 6px;
-  background-color: white;
+  background-color: #f5f5f5;
   gap: 6px;
   max-height: 125px;
   width: 90%;
@@ -378,5 +378,5 @@ body {
 }
 
 .delete-button:hover {
-  background-color: #f0f0f0;
+  background-color: #f5f5f5;
 }
