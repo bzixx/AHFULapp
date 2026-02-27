@@ -226,7 +226,7 @@ def test_find_food_by_id():
 
 def test_find_food_by_user():
     # Give a valid email
-    userId = "test@email.com"
+    userId = "699d0093795741a59fe13616"
     food, err = FoodDriver.get_food_by_user(userId)
 
     if err is not None:
