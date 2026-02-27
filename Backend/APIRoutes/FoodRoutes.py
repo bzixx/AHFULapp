@@ -46,3 +46,14 @@ def create_food():
     if error:
         return jsonify({"error": error}), 400
     return jsonify({"food_id": food_id, "message": "food created"}), 201
+
+# ── DELETE gym ────────────────────────────────────────────────────────────────
+@foodRouteBlueprint.route("/delete/<food_id>", methods=["DELETE"])
+def delete_food(food_id):
+    if not food_id:
+        return jsonify({"error": "You must provide a food id to delete"}), 400
+
+    response, error = FoodDriver.delete_food(food_id)
+    if error:
+        return jsonify({"error": error}), 400
+    return jsonify({"message": "Food deleted", "food_id": response}), 200

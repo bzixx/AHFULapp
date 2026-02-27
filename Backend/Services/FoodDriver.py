@@ -70,3 +70,18 @@ class FoodDriver:
             return response, None
         except Exception as e:
             return None, str(e)
+        
+    @staticmethod
+    def delete_food(id):
+        # Validate input
+        if not id:
+            return None, "You must provide a food id to delete"
+
+        try:
+            response = FoodObject.delete(id)
+            if not response:
+                # Either not found, or already removed
+                return None, "Food not found or already deleted"
+            return response, None
+        except Exception as e:
+            return None, str(e)
