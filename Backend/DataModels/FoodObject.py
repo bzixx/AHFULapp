@@ -25,7 +25,7 @@ class FoodObject:
         return FoodObject._serialize(food)
 
     def find_by_user(id):
-        food = foodCollection.find({"userId": id})
+        food = foodCollection.find({"userId": ObjectId(id)})
         return [FoodObject._serialize(g) for g in food]
 
     # ── Writes ─────────────────────────────────────────────────────────────────
