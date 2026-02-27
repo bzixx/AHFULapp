@@ -413,6 +413,80 @@ swaggerConfig = {
         }
       },
 
+      "/AHFULpersonalEx/delete/{personal_ex_id}": {
+      "delete": {
+        "summary": "Delete personal ex by id",
+        "tags": ["PersonalEx"],
+        "parameters": [
+          {
+            "name": "personal_ex_id",
+            "in": "path",
+            "required": True,
+            "description": "The id of the personal ex (Mongo ObjectId as string)",
+            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Personal ex deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Personal ex deleted" },
+                    "gym_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+                  },
+                  "required": ["message", "personal_ex_id"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Personal ex not found or already deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Personal ex not found or already deleted" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id format or missing id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "You must provide a personal ex id to delete" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
 
     "/AHFULworkout/": {
       "get": {
@@ -601,6 +675,80 @@ swaggerConfig = {
       }
     },
 
+    "/AHFULworkout/delete/{workout_id}": {
+      "delete": {
+        "summary": "Delete workout by id",
+        "tags": ["Workout"],
+        "parameters": [
+          {
+            "name": "workout_id",
+            "in": "path",
+            "required": True,
+            "description": "The id of the workout (Mongo ObjectId as string)",
+            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workout deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Workout deleted" },
+                    "gym_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+                  },
+                  "required": ["message", "workout_id"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Workout not found or already deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Workout not found or already deleted" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id format or missing id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "You must provide a workout id to delete" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     
     "/AHFULgym/": {
       "get": {
@@ -644,7 +792,6 @@ swaggerConfig = {
         }
       }
     },
-
     
     "/AHFULgym/{gym_id}": {
       "get": {
@@ -694,7 +841,6 @@ swaggerConfig = {
         }
       }
     },
-
     
     "/AHFULgym/create": {
       "post": {
@@ -749,8 +895,82 @@ swaggerConfig = {
         }
       }
     },
-
     
+    "/AHFULgym/delete/{gym_id}": {
+      "delete": {
+        "summary": "Delete gym by id",
+        "tags": ["Gym"],
+        "parameters": [
+          {
+            "name": "gym_id",
+            "in": "path",
+            "required": True,
+            "description": "The id of the gym (Mongo ObjectId as string)",
+            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gym deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Gym deleted" },
+                    "gym_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+                  },
+                  "required": ["message", "gym_id"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Gym not found or already deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Gym not found or already deleted" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id format or missing id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "You must provide a gym id to delete" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
     "/AHFULfood/": {
       "get": {
         "summary": "Get all foods",
@@ -850,6 +1070,57 @@ swaggerConfig = {
       }
     },
 
+    "/AHFULfood/id/{id}": {
+      "get": {
+        "summary": "Get food by id",
+        "tags": ["Food"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": "true",
+            "description": "Food id",
+            "schema": { "type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Food found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                      "_id": { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
+                      "userId": { "type": "string", "example": "abc123" },
+                      "name": { "type": "string", "example": "Apple" },
+                      "calsPerServing": { "type": "number", "example": 95 },
+                      "servings": { "type": "number", "example": 1 },
+                      "type": { "type": "string", "example": "Lunch" },
+                      "time": { "type": "integer", "example": 1708473600 }
+                    },
+                    "required": ["_id", "userId", "name", "calsPerServing", "servings", "time"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Food not found",
+            "content": {
+              "application/json": {
+                "schema": { 
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
     "/AHFULfood/create": {
       "post": {
         "summary": "Create a new food entry",
@@ -898,6 +1169,81 @@ swaggerConfig = {
                   "properties": {
                     "error": { "type": "string" }
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULfood/delete/{food_id}": {
+      "delete": {
+        "summary": "Delete food by id",
+        "tags": ["Food"],
+        "parameters": [
+          {
+            "name": "food_id",
+            "in": "path",
+            "required": True,
+            "description": "The id of the food (Mongo ObjectId as string)",
+            "schema": { "type": "string", "example": "698d039a6e5117c22dd6661d" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Food deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Food deleted" },
+                    "gym_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+                  },
+                  "required": ["message", "food_id"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Food not found or already deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Food not found or already deleted" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id format or missing id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "You must provide a food id to delete" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  },
+                  "required": ["error"]
                 }
               }
             }

@@ -40,3 +40,8 @@ class PersonalExObject:
     def create(personalEx_data):
         result = personalExCollection.insert_one(personalEx_data)
         return str(result.inserted_id)
+    
+    @staticmethod
+    def delete(id):
+        result = personalExCollection.delete_one({"_id": ObjectId(id)})
+        return str((result.deleted_count == 1) * id)

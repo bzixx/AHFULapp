@@ -57,3 +57,14 @@ def create_personal_ex():
     if error:
         return jsonify({"error": error}), 400
     return jsonify({"personal_ex_id": personal_ex_id, "message": "Personal Ex created"}), 201
+
+# ── DELETE personalEx ────────────────────────────────────────────────────────────────
+@personalExRouteBlueprint.route("/delete/<personal_ex_id>", methods=["DELETE"])
+def delete_personal_ex(personal_ex_id):
+    if not personal_ex_id:
+        return jsonify({"error": "You must provide a personal ex id to delete"}), 400
+
+    response, error = PersonalExDriver.delete_personal_ex(personal_ex_id)
+    if error:
+        return jsonify({"error": error}), 400
+    return jsonify({"message": "Personal ex deleted", "personal_ex_id": response}), 200
