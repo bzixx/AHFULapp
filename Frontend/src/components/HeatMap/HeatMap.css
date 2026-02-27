@@ -1,0 +1,7 @@
+.heatmap-container{
+    display: flex;
+    top: 30%;
+    left : 10%;
+    position: fixed;
+    border: black solid 4px;
+}
