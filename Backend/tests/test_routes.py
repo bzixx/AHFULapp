@@ -304,7 +304,7 @@ def test_create_delete_food():
     assert food.get("userId") == "699d0093795741a59fe13616"
     assert food.get("name") == "Lettuce"
     assert food.get("calsPerServing") == "0"
-    assert food.get("servings") == "99"
+    assert food.get("servings") == 99
     assert food.get("type") == "Snack"
     assert food.get("time") == "0"
 
