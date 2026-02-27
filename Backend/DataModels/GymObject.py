@@ -29,3 +29,8 @@ class GymObject:
     def create(gym_data):
         result = gymCollection.insert_one(gym_data)
         return str(result.inserted_id)
+    
+    @staticmethod
+    def delete(id):
+        result = gymCollection.delete_one({"_id": ObjectId(id)})
+        return str((result.deleted_count == 1) * id)

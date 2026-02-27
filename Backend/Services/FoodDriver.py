@@ -28,11 +28,21 @@ class FoodDriver:
             return food, None
         except Exception as e:
             return None, str(e)
+        
+    @staticmethod
+    def get_food_by_id(id):
+        try:
+            food = FoodObject.find_by_id(id)
+            if not food:
+                return None, "Food not found"
+            return food, None
+        except Exception as e:
+            return None, str(e)
 
     @staticmethod
     def create_food(userId, name, calsPerServing, servings, type, time):
         # Validate required fields
-        if (not userId) or (not name) or (not calsPerServing) or (not servings) or (not type) or (not time):
+        if (not userId) or (not name) or (calsPerServing is None) or (not servings) or (not type) or (time is None):
             return None, "You are missing a value. Please fix, then attempt to create food again"
 
         # Convert IDs safely
@@ -57,6 +67,21 @@ class FoodDriver:
 
         try:
             response = FoodObject.create(food_data)
+            return response, None
+        except Exception as e:
+            return None, str(e)
+        
+    @staticmethod
+    def delete_food(id):
+        # Validate input
+        if not id:
+            return None, "You must provide a food id to delete"
+
+        try:
+            response = FoodObject.delete(id)
+            if not response:
+                # Either not found, or already removed
+                return None, "Food not found or already deleted"
             return response, None
         except Exception as e:
             return None, str(e)
