@@ -282,11 +282,11 @@ def test_create_delete_food():
     time = 0
     responseId, err = FoodDriver.create_food(userId, name, calsPerServing, servings, type, time)
 
-    print("responseId: " + responseId)
+    print("***", responseId, err)
 
     if err is not None:
         print(responseId, err)
-
+        
     # Check if response is valid id
     try:
         responseObj = ObjectId(str(responseId))
@@ -315,4 +315,4 @@ def test_create_delete_food():
     if err is not None:
         print(response, err)
     # Assertions
-    assert response == responseId
+    assert response == responseId 699d0f5f888d8f649698307
