@@ -34,3 +34,8 @@ class FoodObject:
     def create(food_data):
         result = foodCollection.insert_one(food_data)
         return str(result.inserted_id)
+
+    @staticmethod
+    def delete(id):
+        result = foodCollection.delete_one({"_id": ObjectId(id)})
+        return str((result.deleted_count == 1) * id)
