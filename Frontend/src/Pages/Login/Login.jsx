@@ -6,11 +6,20 @@ import { GoogleLogin } from "@react-oauth/google";
 
 export function Login() {
 
-    const {isLoggedIn, context_login } = use_ahful_auth();
+    const {isLoggedIn, context_login, context_logout } = use_ahful_auth();
+
+    if (isLoggedIn) {
+        document.getElementById("LoggedInStatus").innerText = "Logged in successfully! Check Local Storage!";
+        document.getElementById("LoggedInStatus").appendChild(document.createElement("br"));
+
+        const button = document.createElement("button");
+            button.innerText = "Logout";
+            button.addEventListener("click", () => {context_logout(); document.getElementById("LoggedInStatus").innerText = "Logged out successfully!";});
+        document.getElementById("LoggedInStatus").appendChild(button);
+    }
 
     const handleGoogleSuccess = async (response) => {
         context_login(response)
-
     };
 
     const handleGoogleFailure = (error) => {
@@ -69,6 +78,8 @@ export function Login() {
                         onSuccess={handleGoogleSuccess}
                         onError={handleGoogleFailure}
                     />
+                </div>
+                <div id="LoggedInStatus">
                 </div>
             </div>
         </div>

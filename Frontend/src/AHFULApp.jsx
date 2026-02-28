@@ -20,8 +20,8 @@ import "./siteStyles.css";
 function AHFULApp() {
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <AHFULAuthProvider>
-        <Router>
+      <Router>
+        <AHFULAuthProvider>
           <Routes>
             <Route element={<Layout/>}>
               <Route path="/" element={<Home/>}/>
@@ -37,8 +37,8 @@ function AHFULApp() {
               <Route path="/WorkoutHistory" element={<WorkoutHistory/>}/>
             </Route>
           </Routes>
-        </Router>
-      </AHFULAuthProvider>
+        </AHFULAuthProvider>  
+      </Router>
     </GoogleOAuthProvider>
   )
 }
