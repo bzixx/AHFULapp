@@ -4,13 +4,33 @@ from http.client import HTTPSConnection
 import json
 
 #External API Host for ExerciseDB API
-EXERSICEDB_HOST = "exercisedbv2.ascendapi.com"
+EXERSICEDB_HOST = "www.exercisedb.dev"
+#Define Headers for Extnerla API
+EXERSICEDB_HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", "Accept": "application/json"}
+
 
 class ExerciseDriver:
 
     def get_all_exercises():
         try:
-            exercises = ExerciseObject.find_all()
+            #Define Connection and Endpoint for External API
+            dbConnection =  HTTPSConnection(EXERSICEDB_HOST)
+            apiEndpoint = "/api/v1/exercises"
+
+            #Make API Request to External API
+            dbConnection.request("GET", apiEndpoint, headers=EXERSICEDB_HEADERS)
+
+            #Assign Response from External API to Variable
+            apiResponse = dbConnection.getresponse()
+
+            #Read Response Data and Decode it from bytes to string, then Load it as JSON to get a workable dict
+            data = apiResponse.read()                   # bytes  → b'{"success":true...}'
+            decodedData = data.decode("utf-8")          # string → '{"success":true...}'
+            workableData = json.loads(decodedData)      # dict   → {"success": True, "data": [...]}
+            externalExercises = workableData["data"]
+            internalExercises = ExerciseObject.find_all()
+
+            exercises = internalExercises + externalExercises
             return exercises, None
         except Exception as e:
             return None, str(e)
@@ -18,15 +38,12 @@ class ExerciseDriver:
     #Search exercises by name using external API and internal DB, then combine results
     def search_exercises(searchString):
         try:
-            #Define Headers for Extnerla API
-            headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", "Accept": "application/json"}
-            
             #Define Connection and Endpoint for External API
             dbConnection =  HTTPSConnection(EXERSICEDB_HOST)
-            apiEndpoint = "/api/v1/exercises/search?search=" + searchString
+            apiEndpoint = "/api/v1/exercises/search?q=" + searchString
 
             #Make API Request to External API
-            dbConnection.request("GET", apiEndpoint, headers=headers)
+            dbConnection.request("GET", apiEndpoint, headers=EXERSICEDB_HEADERS)
 
             #Assign Response from External API to Variable
             apiResponse = dbConnection.getresponse()
