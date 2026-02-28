@@ -9,7 +9,7 @@ import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
 import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
 import { Home } from "./Pages/Home/Home.jsx";
 import { Login } from "./Pages/Login/Login.jsx";
-import { Map } from "./Pages/map/map.jsx";
+import { Map } from "./Pages/Map/Map.jsx";
 import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
 import { Profile } from "./Pages/Profile/Profile.jsx";
 import { TOS } from "./Pages/TOS/TOS.jsx";

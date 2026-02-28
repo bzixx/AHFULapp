@@ -1,24 +1,12 @@
-import { GoogleLogin } from "@react-oauth/google";
-import { useNavigate } from "react-router-dom";
 import "./Login.css";
-import "../../SiteStyles.css";
-import { useEffect } from "react";
-import { AHFULAuthProvider } from './AuthContext.jsx';
 import { use_ahful_auth } from './AuthContext.jsx';
+import { GoogleLogin } from "@react-oauth/google";
 
 
 
 export function Login() {
 
-      const {isLoggedIn, context_login } = use_ahful_auth();
-
-    // Variables
-    const navigate = useNavigate();
-
-    // Functions
-    function goHome(){
-        navigate("/");
-    }
+    const {isLoggedIn, context_login } = use_ahful_auth();
 
     const handleGoogleSuccess = async (response) => {
         context_login(response)
