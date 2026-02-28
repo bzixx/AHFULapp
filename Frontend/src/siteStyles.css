@@ -2,6 +2,8 @@ body {
   margin: 0;
   font-family: system-ui, -apple-system, sans-serif;
   padding: 20px;
+    background: #FFF7F2; 
+    min-height: 100vh;
 
   
 }
@@ -12,4 +14,6 @@ main{
   min-width: 100vw;
   background: "#FFF7F2";
   display: flex;
+}
+
 }
