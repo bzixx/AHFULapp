@@ -9,13 +9,18 @@ export function Login() {
     const {isLoggedIn, context_login, context_logout } = use_ahful_auth();
 
     if (isLoggedIn) {
-        document.getElementById("LoggedInStatus").innerText = "Logged in successfully! Check Local Storage!";
-        document.getElementById("LoggedInStatus").appendChild(document.createElement("br"));
+        const tempText = document.getElementById("LoggedInStatus")
+        if (tempText) {
+            tempText.innerText = "Logged in successfully! Check Local Storage!";
+        }
 
         const button = document.createElement("button");
             button.innerText = "Logout";
             button.addEventListener("click", () => {context_logout(); document.getElementById("LoggedInStatus").innerText = "Logged out successfully!";});
-        document.getElementById("LoggedInStatus").appendChild(button);
+            
+        if (tempText) {
+            tempText.appendChild(button);
+        }
     }
 
     const handleGoogleSuccess = async (response) => {

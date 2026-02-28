@@ -1,6 +1,6 @@
 .explore-root {
 	padding: 24px;
-	color: #f4f6f8;
+	color: black;
 }
 
 .explore-header {
@@ -42,7 +42,7 @@
 
 .exercise-instructions {
 	margin-top: 8px;
-	color: rgba(255,255,255,0.85);
+	color: black;
 }
 
 .explore-empty,
