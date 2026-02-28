@@ -9,6 +9,7 @@ body {
 main{
   min-height: 100vh;
   /* min-width: 100vw; */
-  background: linear-gradient(0deg, #30364F, #3cb6b6);
+  min-width: 100vw;
+  background: "#FFF7F2";
   display: flex;
 }
