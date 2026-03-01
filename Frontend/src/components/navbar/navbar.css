@@ -1,12 +1,45 @@
-.navbar a {
+.navbar a,
+.sidebar a {
   color: white;
   text-decoration: none;
   font-size: 1rem;
-  transition: color 0.3s ease;
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.08s ease;
+  display: block; /* make the whole area clickable */
+  padding: 8px 10px;
+  border-radius: 8px;
 }
 
-.navbar a:hover {
-  color: #cccccc;
+/* Hover shows a subtle highlighted section */
+.navbar a:hover,
+.sidebar a:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Keep visited links visually consistent with unvisited links */
+.navbar a:visited,
+.sidebar a:visited {
+  color: inherit;
+}
+
+/* Provide an obvious visible state while clicking or when focused (keyboard users) */
+.navbar a:active,
+.sidebar a:active,
+.navbar a:focus,
+.sidebar a:focus {
+  outline: none;
+  background-color: #fff2d9; /* warm highlight */
+  color: #1e1e2e; /* dark text for contrast */
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* If you later switch Links to NavLink from react-router, aria-current="page" will persistently mark the active page */
+.sidebar a[aria-current="page"] {
+  background-color: #ffe6b3;
+  color: #111;
+  font-weight: 800;
 }
 
 .sidebar {
@@ -16,5 +49,5 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }

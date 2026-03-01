@@ -5,6 +5,7 @@ export function Navbar({ minHeight }) {
   return (
     <nav className="sidebar">
       <Link to="/">Home</Link>
+      <Link to="/Dashboard">Dashboard</Link>
       <Link to="/Login">Login</Link>
       <Link to="/Workout">Workout</Link>
       <Link to="/ExerciseLogger">Exercise Logger</Link>

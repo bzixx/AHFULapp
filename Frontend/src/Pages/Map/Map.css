@@ -1,0 +1,27 @@
+.Map {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.map-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  /* give the container a height so the MapContainer can fill it if inline style omitted */
+  min-height: 50vh;
+}
+
+/* Make leaflet controls readable against app background */
+.leaflet-container {
+  background: #eaeaea;
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+@media (max-width: 720px) {
+  .map-container {
+    padding: 0 12px;
+    min-height: 40vh;
+  }
+}

@@ -5,7 +5,8 @@ import { Workout } from "./Pages/Workout/Workout.jsx";
 import { ExerciseLogger } from "./Pages/ExerciseLogger/ExerciseLogger.jsx";
 import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
 import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
-import { Home } from "./Pages/Dashboard/Dashboard.jsx";
+import { Home } from "./Pages/Home/Home.jsx";
+import { Dashboard } from "./Pages/Dashboard/Dashboard.jsx";
 import { Login } from "./Pages/Login/Login.jsx";
 import { Map } from "./Pages/Map/Map.jsx";
 import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
@@ -23,6 +24,7 @@ function AHFULApp() {
           <Routes>
             <Route element={<Layout/>}>
               <Route path="/" element={<Home/>}/>
+              <Route path="/Dashboard" element={<Dashboard/>}/>
               <Route path="/Workout" element={<Workout/>}/>
               <Route path="/ExerciseLogger" element={<ExerciseLogger/>}/>
               <Route path="/ExploreWorkout" element={<ExploreWorkouts/>}/>

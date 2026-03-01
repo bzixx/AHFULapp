@@ -1,0 +1,98 @@
+.explore-root {
+	padding: 24px;
+	color: black;
+}
+
+.explore-header {
+	display: flex;
+	justify-content: space-between;
+	.explore-root {
+		padding: 24px;
+		color: #111; /* dark text for the light site background */
+	}
+
+	.explore-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 16px;
+	}
+
+	.explore-header h1 {
+		margin: 0;
+		font-size: 32px;
+		line-height: 1.05;
+	}
+
+	/* Primary action button matches site pattern (white bg, black border) */
+	.refresh-btn {
+		background: #ffffff;
+		color: #111;
+		border: 2px solid #000;
+		padding: 8px 12px;
+		border-radius: 6px;
+		cursor: pointer;
+		font-weight: 700;
+	}
+
+	.refresh-btn:disabled {
+		opacity: 0.6;
+		cursor: default;
+	}
+
+	.exercise-list {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	/* Each exercise uses the same card style used elsewhere in the app */
+	.exercise-item {
+		background: linear-gradient(90deg,#fff,#f7f7f7);
+		border: 2px solid #000;
+		padding: 14px;
+		border-radius: 8px;
+		box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+	}
+
+	.exercise-main {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		gap: 12px;
+	}
+
+	.exercise-name {
+		font-weight: 800;
+		color: #111;
+		font-size: 18px;
+	}
+
+	.exercise-meta {
+		color: rgba(0,0,0,0.6);
+		font-size: 13px;
+	}
+
+	.exercise-instructions {
+		margin-top: 8px;
+		color: rgba(0,0,0,0.8);
+		white-space: pre-wrap;
+	}
+
+	.explore-empty,
+	.explore-loading,
+	.explore-error {
+		padding: 16px;
+		background: #fff8f3;
+		border: 1px solid rgba(0,0,0,0.06);
+		border-radius: 8px;
+	}
+
+	@media (max-width: 720px) {
+		.explore-root {
+			padding: 12px;
+		}
+		.explore-header h1 {
+			font-size: 24px;
+		}
+	}
