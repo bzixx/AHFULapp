@@ -3,7 +3,7 @@ import "./Home.css";
 import "../../SiteStyles.css";
 export function Home() {
     return (
-        <main className="gym-landing-root">
+        <main className="gym-landing-root home-root">
 
         <section className="hero">
             <div className="hero-content">
