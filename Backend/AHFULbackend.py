@@ -25,13 +25,12 @@ def create_app():
     app.AHFULSignInDriver = SignInDriver(os.getenv("GOOGLE_CLIENT_ID"))
 
     #Register App Routes and Blueprints
-    api_prefix = "/Backend"
     #Swagger routes add prefix to match server url
-    app.register_blueprint(userRouteBlueprint, url_prefix=api_prefix + userRouteBlueprint.url_prefix)
-    app.register_blueprint(workoutRouteBlueprint, url_prefix=api_prefix + workoutRouteBlueprint.url_prefix)
-    app.register_blueprint(gymRouteBlueprint, url_prefix=api_prefix + gymRouteBlueprint.url_prefix)
-    app.register_blueprint(foodRouteBlueprint, url_prefix=api_prefix + foodRouteBlueprint.url_prefix)
-    app.register_blueprint(personalExRouteBlueprint, url_prefix=api_prefix + personalExRouteBlueprint.url_prefix)
+    app.register_blueprint(userRouteBlueprint)
+    app.register_blueprint(workoutRouteBlueprint)
+    app.register_blueprint(gymRouteBlueprint)
+    app.register_blueprint(foodRouteBlueprint)
+    app.register_blueprint(personalExRouteBlueprint)
     app.register_blueprint(swaggerUIBlueprint)
     app.register_blueprint(signInRouteBlueprint)
     app.register_blueprint(exerciseRouteBlueprint)

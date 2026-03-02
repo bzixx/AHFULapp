@@ -20,7 +20,7 @@ swaggerConfig = {
     "version": "1.0.0"
   },
   "servers": [
-    { "url": "/Backend" }
+    { "url": "localhost:5000" }
   ],
   "paths": {
 
