@@ -31,7 +31,7 @@ def create_gym():
         return jsonify({"error": "No data provided"}), 400
 
     gym_id, error = GymDriver.create_gym(
-        title=data.get("title"),
+        name=data.get("name"),
         address=data.get("address"),
         cost=data.get("cost"),
         link=data.get("link"),
