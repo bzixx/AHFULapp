@@ -6,7 +6,7 @@ from time import time
 from math import trunc
 
 # Used to group views
-signInRouteBlueprint = Blueprint('auth', __name__, url_prefix='/AUHFULauth')
+signInRouteBlueprint = Blueprint('auth', __name__, url_prefix='/AHFULauth')
 
 # ── POST Login with Google Auth ────────────────────────────────────────────────────────────
 @signInRouteBlueprint.route('/google-login', methods=['POST'])
