@@ -20,7 +20,7 @@ def test_find_gym_by_id():
     assert err is None
     assert gym is not None
     assert gym.get("_id") == oid
-    assert gym.get("title") == "Downtown Fitness"
+    assert gym.get("name") == "Downtown Fitness"
     assert gym.get("address") == "123 Main St, Anytown, USA"
     assert gym.get("cost") == 49.99
     assert gym.get("link") == "https://examplegym.com"
@@ -80,7 +80,7 @@ def test_create_delete_gym():
     assert err is None
     assert gym is not None
     assert gym.get("_id") == responseId
-    assert gym.get("title") == "A test Gym, you shouldnt see this"
+    assert gym.get("name") == "A test Gym, you shouldnt see this"
     assert gym.get("address") == "Hell"
     assert gym.get("cost") == 0.0
     assert gym.get("link") == "www.testgym.com"
