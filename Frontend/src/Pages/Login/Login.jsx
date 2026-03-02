@@ -1,28 +1,30 @@
-import { GoogleLogin } from "@react-oauth/google";
-import { useNavigate } from "react-router-dom";
 import "./Login.css";
-import "../../SiteStyles.css";
-import { useEffect } from "react";
-import { AHFULAuthProvider } from './AuthContext.jsx';
 import { use_ahful_auth } from './AuthContext.jsx';
+import { GoogleLogin } from "@react-oauth/google";
 
 
 
 export function Login() {
 
-      const {isLoggedIn, context_login } = use_ahful_auth();
+    const {isLoggedIn, context_login, context_logout } = use_ahful_auth();
 
-    // Variables
-    const navigate = useNavigate();
+    if (isLoggedIn) {
+        const tempText = document.getElementById("LoggedInStatus")
+        if (tempText) {
+            tempText.innerText = "Logged in successfully! Check Local Storage!";
+        }
 
-    // Functions
-    function goHome(){
-        navigate("/");
+        const button = document.createElement("button");
+            button.innerText = "Logout";
+            button.addEventListener("click", () => {context_logout(); document.getElementById("LoggedInStatus").innerText = "Logged out successfully!";});
+            
+        if (tempText) {
+            tempText.appendChild(button);
+        }
     }
 
     const handleGoogleSuccess = async (response) => {
         context_login(response)
-
     };
 
     const handleGoogleFailure = (error) => {
@@ -81,6 +83,8 @@ export function Login() {
                         onSuccess={handleGoogleSuccess}
                         onError={handleGoogleFailure}
                     />
+                </div>
+                <div id="LoggedInStatus">
                 </div>
             </div>
         </div>
