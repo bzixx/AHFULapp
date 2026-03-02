@@ -6,7 +6,7 @@ from time import time
 from math import trunc
 
 # Used to group views
-signInRouteBlueprint = Blueprint('Sign-In', __name__, url_prefix='/sign-in')
+signInRouteBlueprint = Blueprint('auth', __name__, url_prefix='/AUHFULauth')
 
 # ── POST Login with Google Auth ────────────────────────────────────────────────────────────
 @signInRouteBlueprint.route('/google-login', methods=['POST'])
@@ -21,7 +21,7 @@ def google_login():
 
     token = postAuthData.get("token")
     if not token:
-        return jsonify({"error": "No token provided to the Backend.  You cannot login with something to login with.  What is this? Anarchy?"}), 400
+        return jsonify({"error": "No token provided to the Backend.  You cannot login without something to login with.  What is this? Anarchy?"}), 400
 
     # verify JWT
     decodedUserInfo: dict = routeSignInDriver.verify_google_token(token)
@@ -32,6 +32,7 @@ def google_login():
     tokenBits = token[-32:] 
 
     # Check if user already exists, else create new user_info document
+    #TODO: Look at this because i checks based on email. 
     routeUserObject, error = UserDriver.get_user_by_email(decodedUserInfo.get("email"))
     if not routeUserObject:
         routeUserObject = UserDriver.create_user({
@@ -58,6 +59,57 @@ def google_login():
     # Create session with routeUserObject
     #UserDriver.create_session(routeUserObject)
     return jsonify({"message": "Login successful", "user_info": routeUserObject}), 200
+
+# ── POST Login with Snapchat Auth ────────────────────────────────────────────────────────────
+@signInRouteBlueprint.route('/snapchat-login', methods=['POST'])
+def snapchat_login():
+    postAuthData = request.get_json()
+    if not postAuthData:
+        return jsonify({"error": "No authentication data provided"}), 400
+    print("Logging in with AHFUL Snapchat Auth")
+
+    routeSignInDriver: SignInDriver = current_app.AHFULSignInDriver
+
+    token = postAuthData.get("token")
+    # if not token:
+    #     return jsonify({"error": "No token provided to the Backend.  You cannot login without something to login with.  What is this? Anarchy?"}), 400
+
+    # # verify JWT
+    # decodedUserInfo: dict = routeSignInDriver.verify_google_token(token)
+    # print(decodedUserInfo)
+    # if not decodedUserInfo:
+    #     return jsonify({"error": "Invalid token provided to Backend.  Dont come in here with Sloppily Copied Keys."}), 401
+
+    # tokenBits = token[-32:] 
+
+    # # Check if user already exists, else create new user_info document
+    # #TODO: Look at this because i checks based on email. 
+    # routeUserObject, error = UserDriver.get_user_by_email(decodedUserInfo.get("email"))
+    # if not routeUserObject:
+    #     routeUserObject = UserDriver.create_user({
+    #         "name": decodedUserInfo.get("name"),
+    #         "email": decodedUserInfo.get("email"),
+    #         "picture": decodedUserInfo.get("picture"),
+    #         "last_login_time": trunc(time()),
+    #         "last_login_expire" : decodedUserInfo.get("exp"),
+    #         "magic_bits" : tokenBits
+    #     })
+    # else: 
+        
+    #     # Update last login time
+    #     routeUserObject['last_login_time'] = trunc(time())
+    #     routeUserObject["last_login_expire"] = decodedUserInfo.get("exp")
+    #     routeUserObject['magic_bits'] = tokenBits
+
+    #     UserDriver.update_user_info(dataToBeUpdated=routeUserObject)
+
+    # # USE TOKEN IN POSTMAN TO SEE IF COOKIE GETS SET
+    # print(f'START OF TOKEN: \n{token}')
+    # print('END OF TOKEN\n')
+
+    # # Create session with routeUserObject
+    # #UserDriver.create_session(routeUserObject)
+    # return jsonify({"message": "Login successful", "user_info": routeUserObject}), 200
 
 # ── POST Log Out ────────────────────────────────────────────────────────────
 @signInRouteBlueprint.route('/logout', methods=['POST'])

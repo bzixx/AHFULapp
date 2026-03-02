@@ -1,0 +1,31 @@
+/* Home page styles: ensure high-contrast black text for the landing page */
+
+.home-root, .gym-landing-root {
+  color: #111; /* dark text for the site's light background */
+}
+
+.home-root h1, .home-root h2, .home-root h3 {
+  color: #111;
+}
+
+.home-root p, .home-root a, .home-root li, .home-root span {
+  color: #111;
+}
+
+/* Keep CTA styles from GymLanding but ensure text contrast */
+.gym-landing-root .primary-cta {
+  background: #0b8a84;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.gym-landing-root .secondary-cta {
+  color: #111;
+  padding: 10px 16px;
+  margin-left: 12px;
+  text-decoration: none;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.08);
+}

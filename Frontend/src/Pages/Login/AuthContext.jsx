@@ -1,9 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const AuthContext = createContext();
 
 export const AHFULAuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const location = useLocation();
 
   // Check session on app load
   useEffect(() => {
@@ -35,13 +37,13 @@ export const AHFULAuthProvider = ({ children }) => {
     //POST TO WHO AM I the current Token in Local Storage from the user.
     //This Is Taken Care of in Backend Check as well :)
     //Front End handles logic to remove from local stoage if found to be expired. 
-  }, []);
+  }, [location]);
 
   // context_login function - called after Google OAuth success
   const context_login = async (response) => {
     try{
         //URL to send POST to later
-        const backendPOSTURL = `http://localhost:5000/sign-in/google-login`;
+        const backendPOSTURL = `http://localhost:5000/AHFULauth/google-login`;
 
         //Find ID Token, and maybe details from Google Success Response
         const googleButtonIdToken = response?.credential;
@@ -81,7 +83,7 @@ export const AHFULAuthProvider = ({ children }) => {
             }
         }
 
-        console.error("AHFUL context_login Complete");
+        console.log("AHFUL context_login Completed successfully.");
 
          setIsLoggedIn(true)
 
@@ -94,27 +96,29 @@ export const AHFULAuthProvider = ({ children }) => {
   // Logout function
   const context_logout = async() => {
     //Define POST URL for Later
-    const backendPOSTURL = `http://localhost:5000/sign-in/logout`;
+    const backendPOSTURL = `http://localhost:5000/AHFULauth/logout`;
 
     //Try to Get LocalStorage Cookie for data
       try{
-      let userData = localStorage.getItem("user_data");
-      let parsedData = JSON.parse(userData);
-      }catch(error){
-        //Catch Sppoky Errors that should never occur because you shouldnt log out before login
-        console.log("👻")
-      }
-    
-      // POST response Object to BACKEND API ROUTE for processing.
-      const backendResponse = await fetch(backendPOSTURL, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json',},
-      body: JSON.stringify({ logout_email: parsedData.email }),
-      credentials: 'include',
-  });
+        let userData = localStorage.getItem("user_data");
+        let parsedData = JSON.parse(userData);
 
-    localStorage.removeItem('user_data');
-    setIsLoggedIn(false);
+        // POST response Object to BACKEND API ROUTE for processing.
+        const backendResponse = await fetch(backendPOSTURL, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json',},
+          body: JSON.stringify({ logout_email: parsedData.email }),
+          credentials: 'include',
+        });
+
+        localStorage.removeItem('user_data');
+        setIsLoggedIn(false);
+
+
+      }catch(error){
+        //Catch Spooky Errors that should never occur because you shouldnt log out before login
+        console.log("👻, ", error)
+      }
   };
 
   return (

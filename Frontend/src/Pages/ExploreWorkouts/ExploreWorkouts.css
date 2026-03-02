@@ -1,0 +1,54 @@
+.explore-root {
+	padding: 24px;
+	color: black;
+}
+
+.explore-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 12px;
+}
+
+.refresh-btn {
+	background: #0b8a84;
+	color: white;
+	border: none;
+	padding: 8px 12px;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+.exercise-list {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.exercise-item {
+	background: rgba(255,255,255,0.03);
+	padding: 12px;
+	border-radius: 8px;
+}
+
+.exercise-name {
+	font-weight: 700;
+}
+
+.exercise-meta {
+	color: rgba(255,255,255,0.7);
+	font-size: 13px;
+}
+
+.exercise-instructions {
+	margin-top: 8px;
+	color: black;
+}
+
+.explore-empty,
+.explore-loading,
+.explore-error {
+	padding: 18px;
+	background: rgba(0,0,0,0.2);
+	border-radius: 8px;
+}
