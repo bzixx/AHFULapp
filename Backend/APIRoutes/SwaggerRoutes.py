@@ -750,7 +750,7 @@ swaggerConfig = {
       }
     },
     
-    "/AHFULgym/": {
+    "/AHFULgyms/": {
       "get": {
         "summary": "Get all gyms",
         "tags": ["Gym"],
@@ -793,7 +793,7 @@ swaggerConfig = {
       }
     },
     
-    "/AHFULgym/{gym_id}": {
+    "/AHFULgyms/{gym_id}": {
       "get": {
         "summary": "Get gym by id",
         "tags": ["Gym"],
@@ -842,7 +842,7 @@ swaggerConfig = {
       }
     },
     
-    "/AHFULgym/create": {
+    "/AHFULgyms/create": {
       "post": {
         "summary": "Create a new gym",
         "tags": ["Gym"],
@@ -896,7 +896,7 @@ swaggerConfig = {
       }
     },
     
-    "/AHFULgym/delete/{gym_id}": {
+    "/AHFULgyms/delete/{gym_id}": {
       "delete": {
         "summary": "Delete gym by id",
         "tags": ["Gym"],

@@ -43,7 +43,7 @@ export const AHFULAuthProvider = ({ children }) => {
   const context_login = async (response) => {
     try{
         //URL to send POST to later
-        const backendPOSTURL = `http://localhost:5000/sign-in/google-login`;
+        const backendPOSTURL = `http://localhost:5000/AHFULauth/google-login`;
 
         //Find ID Token, and maybe details from Google Success Response
         const googleButtonIdToken = response?.credential;
@@ -96,7 +96,7 @@ export const AHFULAuthProvider = ({ children }) => {
   // Logout function
   const context_logout = async() => {
     //Define POST URL for Later
-    const backendPOSTURL = `http://localhost:5000/sign-in/logout`;
+    const backendPOSTURL = `http://localhost:5000/AHFULauth/logout`;
 
     //Try to Get LocalStorage Cookie for data
       try{

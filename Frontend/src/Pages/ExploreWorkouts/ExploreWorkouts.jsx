@@ -17,7 +17,7 @@ export function ExploreWorkouts() {
     setError(null);
     try {
       // Use a relative path so the dev server proxy (if configured) will forward to backend.
-      const res = await fetch("http://localhost:5000/exercises");
+      const res = await fetch("http://localhost:5000/AHFULexercises");
 
       if (!res.ok) {
         // Provide a clearer error including body text when possible
@@ -33,7 +33,7 @@ export function ExploreWorkouts() {
       const data = await res.json();
 
       // Helpful debug output (visible in browser console) when something odd happens
-      console.debug("/exercises response:", data);
+      console.debug("/AHFULexercises response:", data);
 
       // Normalize common envelope patterns to an array
       let list = [];
@@ -45,7 +45,7 @@ export function ExploreWorkouts() {
         list = data.results;
       } else {
         // Not an array; keep empty but log for debugging
-        console.warn("Unexpected /exercises response shape, expected array or {data: [...]}:", data);
+        console.warn("Unexpected /AHFULexercises response shape, expected array or {data: [...]}:", data);
         list = [];
       }
 

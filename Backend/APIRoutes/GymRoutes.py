@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from Services.GymDriver import GymDriver
 
-gymRouteBlueprint = Blueprint("gym", __name__, url_prefix="/AHFULgym")
+gymRouteBlueprint = Blueprint("gym", __name__, url_prefix="/AHFULgyms")
 
 
 # ── GET all gyms ────────────────────────────

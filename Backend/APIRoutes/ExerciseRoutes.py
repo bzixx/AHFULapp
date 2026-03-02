@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from Services.ExerciseDriver import ExerciseDriver
 
-exerciseRouteBlueprint = Blueprint("exercises", __name__,  url_prefix='/exercises')
+exerciseRouteBlueprint = Blueprint("exercises", __name__,  url_prefix='/AHFULexercises')
 
 
 # ── GET all exercises (supports ?muscle_group=chest&difficulty=beginner) ──────
