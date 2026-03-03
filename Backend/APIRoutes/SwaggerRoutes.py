@@ -2,7 +2,7 @@ from flask import jsonify                             # Use Flask to import Pyth
 from flask_swagger_ui import get_swaggerui_blueprint  #Import swagger from Python Package.
 
 swaggerAHFULDocsURL = '/APIDocs'                              # URL for exposing Swagger UI
-configDocURL = 'http://localhost:5000/APIDocs/swagger.json'   #URL for the Backend Configuration for the UI
+configDocURL = '/APIDocs/swagger.json'   #URL for the Backend Configuration for the UI
 appNameconfig={'app_name': "AHFUL Users API",'tagsSorter': 'alpha','operationsSorter': 'method'}                 #Header App Name to display in UI
 
 swaggerUIBlueprint = get_swaggerui_blueprint(swaggerAHFULDocsURL, configDocURL, appNameconfig)
@@ -20,7 +20,7 @@ swaggerConfig = {
     "version": "1.0.0"
   },
   "servers": [
-    { "url": "localhost:5000" }
+    { "url": "/" }
   ],
   "paths": {
 
