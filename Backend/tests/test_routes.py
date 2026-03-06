@@ -296,7 +296,8 @@ def test_find_personal_ex_by_workout():
     if err is not None:
         print(exs, err)
     
-    filtered = [d for d in exs if d.get("_id") == oid]
+    pe_oid = "69ab5596dc5dee4f518a01cd"
+    filtered = [d for d in exs if d.get("_id") == pe_oid]
 
     assert len(filtered) == 1
     assert filtered[0]["_id"] == oid
