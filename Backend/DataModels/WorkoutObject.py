@@ -16,8 +16,14 @@ class WorkoutObject:
             workout["userId"] = str(workout["userId"])
             workout["gymId"] = str(workout["gymId"])
         return workout
+    
+    # ── Create ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def create(workout_data):
+        result = workoutCollection.insert_one(workout_data)
+        return str(result.inserted_id)
 
-    # ── Reads ──────────────────────────────────────────────────────────────────
+    # ── Read ──────────────────────────────────────────────────────────────────
     def find_all():
         workout = workoutCollection.find()
         return [WorkoutObject._serialize(w) for w in workout]
@@ -30,12 +36,7 @@ class WorkoutObject:
         workout = workoutCollection.find({"userId": ObjectId(userId)})
         return [WorkoutObject._serialize(w) for w in workout]
 
-    # ── Writes ─────────────────────────────────────────────────────────────────
-    @staticmethod
-    def create(workout_data):
-        result = workoutCollection.insert_one(workout_data)
-        return str(result.inserted_id)
-    
+    # ── Delete ──────────────────────────────────────────────────────────────────
     @staticmethod
     def delete(id):
         result = workoutCollection.delete_one({"_id": ObjectId(id)})

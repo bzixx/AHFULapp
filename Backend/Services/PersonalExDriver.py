@@ -6,51 +6,12 @@ from DataModels.UserObject import UserObject
 from DataModels.WorkoutObject import WorkoutObject
 from bson import ObjectId, errors as bson_errors
 
-
 # The PersonalExDriver is responsible for implementing the business logic related to personalEx operations.
 #   It acts as an intermediary between the API routes and the data models, 
 #   ensuring that all necessary validations and rules are applied before interacting with 
 #   the database.
 class PersonalExDriver:
-
-    @staticmethod
-    def get_all_personal_exs():
-        try:
-            personalExs = PersonalExObject.find_all()
-            return personalExs, None
-        except Exception as e:
-            return None, str(e)
-
-    @staticmethod
-    def get_personal_ex_by_id(id):
-        try:
-            personalEx = PersonalExObject.find_by_id(id)
-            if not personalEx:
-                return None, "PersonalEx not found"
-            return personalEx, None
-        except Exception as e:
-            return None, str(e)
-        
-    @staticmethod
-    def get_personal_exs_by_user(userId):
-        try:
-            personalEx = PersonalExObject.find_by_user(userId)
-            if not personalEx:
-                return None, "PersonalEx not found"
-            return personalEx, None
-        except Exception as e:
-            return None, str(e)
-        
-    @staticmethod
-    def get_personal_exs_by_workout(workoutId):
-        try:
-            personalEx = PersonalExObject.find_by_workout(workoutId)
-            if not personalEx:
-                return None, "PersonalEx not found"
-            return personalEx, None
-        except Exception as e:
-            return None, str(e)
-
+    # ── Create ─────────────────────────────────────────────────────────────────
     @staticmethod
     def create_personal_ex(userId, exerciseId, workoutId, reps, sets, weight, duration, distance, complete):
         # Validate required fields
@@ -109,6 +70,46 @@ class PersonalExDriver:
         except Exception as e:
             return None, str(e)
         
+    # ── Read ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def get_all_personal_exs():
+        try:
+            personalExs = PersonalExObject.find_all()
+            return personalExs, None
+        except Exception as e:
+            return None, str(e)
+
+    @staticmethod
+    def get_personal_ex_by_id(id):
+        try:
+            personalEx = PersonalExObject.find_by_id(id)
+            if not personalEx:
+                return None, "PersonalEx not found"
+            return personalEx, None
+        except Exception as e:
+            return None, str(e)
+        
+    @staticmethod
+    def get_personal_exs_by_user(userId):
+        try:
+            personalEx = PersonalExObject.find_by_user(userId)
+            if not personalEx:
+                return None, "PersonalEx not found"
+            return personalEx, None
+        except Exception as e:
+            return None, str(e)
+        
+    @staticmethod
+    def get_personal_exs_by_workout(workoutId):
+        try:
+            personalEx = PersonalExObject.find_by_workout(workoutId)
+            if not personalEx:
+                return None, "PersonalEx not found"
+            return personalEx, None
+        except Exception as e:
+            return None, str(e)
+
+    # ── Delete ─────────────────────────────────────────────────────────────────
     @staticmethod
     def delete_personal_ex(id):
         # Validate input

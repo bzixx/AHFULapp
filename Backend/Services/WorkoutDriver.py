@@ -12,35 +12,7 @@ from bson import ObjectId, errors as bson_errors
 #   ensuring that all necessary validations and rules are applied before interacting with 
 #   the database.
 class WorkoutDriver:
-
-    @staticmethod
-    def get_all_workouts():
-        try:
-            workouts = WorkoutObject.find_all()
-            return workouts, None
-        except Exception as e:
-            return None, str(e)
-
-    @staticmethod
-    def get_workout_by_id(id):
-        try:
-            workout = WorkoutObject.find_by_id(id)
-            if not workout:
-                return None, "Workout not found"
-            return workout, None
-        except Exception as e:
-            return None, str(e)
-        
-    @staticmethod
-    def get_workouts_by_user(userId):
-        try:
-            workout = WorkoutObject.find_by_user(userId)
-            if not workout:
-                return None, "Workout not found"
-            return workout, None
-        except Exception as e:
-            return None, str(e)
-
+    # ── Create ─────────────────────────────────────────────────────────────────
     @staticmethod
     def create_workout(userId, gymId, title, startTime, endTime):
         # Validate required fields
@@ -84,6 +56,36 @@ class WorkoutDriver:
         except Exception as e:
             return None, str(e)
         
+    # ── Read ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def get_all_workouts():
+        try:
+            workouts = WorkoutObject.find_all()
+            return workouts, None
+        except Exception as e:
+            return None, str(e)
+
+    @staticmethod
+    def get_workout_by_id(id):
+        try:
+            workout = WorkoutObject.find_by_id(id)
+            if not workout:
+                return None, "Workout not found"
+            return workout, None
+        except Exception as e:
+            return None, str(e)
+        
+    @staticmethod
+    def get_workouts_by_user(userId):
+        try:
+            workout = WorkoutObject.find_by_user(userId)
+            if not workout:
+                return None, "Workout not found"
+            return workout, None
+        except Exception as e:
+            return None, str(e)
+        
+    # ── Delete ─────────────────────────────────────────────────────────────────    
     @staticmethod
     def delete_workout(id):
         # Validate input
