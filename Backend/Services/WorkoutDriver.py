@@ -89,6 +89,16 @@ class WorkoutDriver:
         except Exception as e:
             return None, str(e)
         
+    @staticmethod
+    def get_templates(userId):
+        try:
+            templates = WorkoutObject.find_templates(userId)
+            if not templates:
+                return None, "Templates not found"
+            return templates, None
+        except Exception as e:
+            return None, str(e)
+        
     # ── Delete ─────────────────────────────────────────────────────────────────    
     @staticmethod
     def delete_workout(id):

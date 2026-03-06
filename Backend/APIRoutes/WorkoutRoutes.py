@@ -19,6 +19,14 @@ def get_workouts_by_user(userId):
         return jsonify({"error": error}), 500
     return jsonify(workouts), 200
 
+# ── GET all templates for a specific user ──────────────────────────────────────
+@workoutRouteBlueprint.route("/templates/<userId>", methods=["GET"])
+def get_templates(userId):
+    workouts, error = WorkoutDriver.get_templates(userId)
+    if error:
+        return jsonify({"error": error}), 500
+    return jsonify(workouts), 200
+
 # ── GET single workout ────────────────────────────────────────────────────────
 @workoutRouteBlueprint.route("/id/<id>", methods=["GET"])
 def get_workout(id):
