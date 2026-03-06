@@ -282,7 +282,7 @@ def test_find_personal_ex_by_id():
         print(ex, err)
 
     # Expected
-    inv_err_code = "Personal ex not found"
+    inv_err_code = "PersonalEx not found"
     
     # Assertions
     assert ex is None
