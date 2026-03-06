@@ -362,7 +362,6 @@ swaggerConfig = {
                 "properties": {
                   "user_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
                   "deactivator_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
-                  "reason": { "type": "string", "example": "Violation of terms" }
                 },
                 "required": ["user_id", "deactivator_id"]
               }
