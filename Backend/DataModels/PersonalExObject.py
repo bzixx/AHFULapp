@@ -17,8 +17,14 @@ class PersonalExObject:
             personalEx["workoutId"] = str(personalEx["workoutId"])
             personalEx["exerciseId"] = str(personalEx["exerciseId"])
         return personalEx
+    
+    # ── Create ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def create(personalEx_data):
+        result = personalExCollection.insert_one(personalEx_data)
+        return str(result.inserted_id)
 
-    # ── Reads ──────────────────────────────────────────────────────────────────
+    # ── Read ──────────────────────────────────────────────────────────────────
     def find_all():
         personalEx = personalExCollection.find()
         return [PersonalExObject._serialize(w) for w in personalEx]
@@ -34,13 +40,8 @@ class PersonalExObject:
     def find_by_workout(workoutId):
         personalEx = personalExCollection.find({"workoutId": ObjectId(workoutId)})
         return [PersonalExObject._serialize(w) for w in personalEx]
-
-    # ── Writes ─────────────────────────────────────────────────────────────────
-    @staticmethod
-    def create(personalEx_data):
-        result = personalExCollection.insert_one(personalEx_data)
-        return str(result.inserted_id)
     
+    # ── Delete ──────────────────────────────────────────────────────────────────
     @staticmethod
     def delete(id):
         result = personalExCollection.delete_one({"_id": ObjectId(id)})
