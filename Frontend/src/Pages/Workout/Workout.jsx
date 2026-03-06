@@ -77,14 +77,6 @@ export function Workout({
     }
   }, [trigger]);
 
-  const toggle = () => {
-      if (typeof setTrigger === "function") {
-          setTrigger(!trigger);
-      } else {
-          setOpen((s) => !s);
-      }
-  };
-
   const removeWorkout = (index) => {
     setExercises(prev => prev.filter((_, i) => i !== index));
   };
@@ -136,9 +128,41 @@ export function Workout({
     return `${h}:${m}:${s}`;
   };
 
+  /////////////////////////////////////////////////////////////////////////////////////////
+  /* Initial Page Load */
+  /////////////////////////////////////////////////////////////////////////////////////////
+
+
+  // Test id: user_id: 699d0093795741a59fe13616
+  const userId = "699d0093795741a59fe13616";
+
+  useEffect(() => {
+    async function getWorkout() {
+      try {
+        const res = await fetch(`http://localhost:5000/AHFULworkout/${userId}`);
+        const data = await res.json();
+        console.log("Workout for user:", data);
+      } catch (err) {
+        console.error("Error fetching workout:", err);
+      }
+    }
+
+    getWorkout();
+  }, []);
+
+
+
+
   return (
     <div className="page-layout">
-      <div className="left-column"></div>
+      <div className="left-column">
+        <div className="template-container">
+          <form onSubmit={addExerciseToWorkout} className="apply-template">
+            
+          </form>
+        </div>
+      </div>
+      
       <div className="center-column">
         <div className="workout-card">
           <div className="workout-title">
@@ -217,15 +241,8 @@ export function Workout({
           </div>
           <div className="workout-actions">
             <div className="workout-actions-left-side">
-              <button 
-                className="workout-add-exercise-btn"
-                onClick={toggle}
-              >
-                ➕
-              </button>
-              <div className="workout-add-exercise-text">Add Exercise</div>
-            </div>
 
+            </div>
             <div className="workout-actions-right-side">
               <button className="workout-submit-button" onClick={handleSubmit}>
               Submit
@@ -235,14 +252,14 @@ export function Workout({
         </div>
         <div className="workout-footer">
           <div className="workout-timer-box workout-timer">{formatTime(time)}</div>
-
           <button className="workout-timer-box workout-timer-button" onClick={toggleTimer}>
             {isRunning ? "Stop Timer" : "Start Timer"}
           </button>
         </div>
       </div>
+
       <div className="right-column">
-        <div className={`add-exercise ${open ? "open" : "closed"}`}>
+        <div className="add-exercise">
           <form onSubmit={addExerciseToWorkout} className="add-exercise-form">
             <div className="dropdown-wrapper">
               <input
