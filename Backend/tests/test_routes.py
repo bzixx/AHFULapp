@@ -288,6 +288,62 @@ def test_find_personal_ex_by_id():
     assert ex is None
     assert err == inv_err_code 
 
+def test_find_personal_ex_by_workout():
+    # Give a valid _id
+    oid = "699d05d8f1677119323250bc"
+    exs, err = PersonalExDriver.get_personal_exs_by_workout(oid)
+
+    if err is not None:
+        print(exs, err)
+    
+    filtered = [d for d in exs if d.get("_id") == oid]
+
+    assert len(filtered) == 1
+    assert filtered[0]["_id"] == oid
+
+    # Assertions
+    assert err is None
+    assert filtered[0] is not None
+    assert filtered[0].get("_id") == oid
+    assert filtered[0].get("complete") == False
+    assert filtered[0].get("distance") == "0"
+    assert filtered[0].get("duration") == 120
+    assert filtered[0].get("exerciseId") == "69ab3627a819c7ed3f7fcab1"
+    assert filtered[0].get("reps") == 0
+    assert filtered[0].get("sets") == 0
+    assert filtered[0].get("userId") == "699d0093795741a59fe13616"
+    assert filtered[0].get("weight") == "150"
+    assert filtered[0].get("workoutId") == "699d05d8f1677119323250bc"
+
+    # Give a bad _id
+    bad_oid = "699d05d8f1677119323250b"
+    exs, err = PersonalExDriver.get_personal_exs_by_workout(bad_oid)
+
+    if err is not None:
+        print(exs, err)
+
+    # Expected
+    bad_err_code = "\'" + bad_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    
+    # Assertions
+    assert exs is None
+    assert err == bad_err_code
+
+    # Give an invalid _id
+    inv_oid = "000000000000000000000000"
+    exs, err = PersonalExDriver.get_personal_exs_by_workout(inv_oid)
+
+    if err is not None:
+        print(exs, err)
+
+    # Expected
+    inv_err_code = "PersonalEx not found"
+    
+    # Assertions
+    assert exs is None
+    assert err == inv_err_code 
+
+
 # User
 
 def test_find_user_by_id():
