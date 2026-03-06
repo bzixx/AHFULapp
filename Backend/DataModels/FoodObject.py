@@ -16,7 +16,13 @@ class FoodObject:
             food["userId"] = str(food["userId"])
         return food
 
-    # ── Reads ──────────────────────────────────────────────────────────────────
+    # ── Create ──────────────────────────────────────────────────────────────────
+    @staticmethod
+    def create(food_data):
+        result = foodCollection.insert_one(food_data)
+        return str(result.inserted_id)
+
+    # ── Read ──────────────────────────────────────────────────────────────────
     def find_all():
         food = foodCollection.find()
         return [FoodObject._serialize(g) for g in food]
@@ -29,12 +35,7 @@ class FoodObject:
         food = foodCollection.find({"userId": ObjectId(id)})
         return [FoodObject._serialize(g) for g in food]
 
-    # ── Writes ─────────────────────────────────────────────────────────────────
-    @staticmethod
-    def create(food_data):
-        result = foodCollection.insert_one(food_data)
-        return str(result.inserted_id)
-
+    # ── Delete ─────────────────────────────────────────────────────────────────
     @staticmethod
     def delete(id):
         result = foodCollection.delete_one({"_id": ObjectId(id)})

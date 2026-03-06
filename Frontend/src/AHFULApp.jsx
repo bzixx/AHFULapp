@@ -1,6 +1,6 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { AHFULAuthProvider } from './Pages/Login/AuthContext.jsx';
 import { Workout } from "./Pages/Workout/Workout.jsx";
 import { ExerciseLogger } from "./Pages/ExerciseLogger/ExerciseLogger.jsx";
 import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
@@ -14,35 +14,45 @@ import { Profile } from "./Pages/Profile/Profile.jsx";
 import { TOS } from "./Pages/TOS/TOS.jsx";
 import { WorkoutHistory } from "./Pages/WorkoutHistory/WorkoutHistory.jsx";
 import { Layout } from "./Layout.jsx" 
-import "./siteStyles.css";
+import "./SiteStyles.css";
+
 
 function AHFULApp() {
+
+  // Example: detect page changes and refresh a value when the route changes.
+  // This component is rendered inside a <Router> (see `main.jsx`), so useLocation works here.
+  const location = useLocation();
+  const [pageChangeCount, setPageChangeCount] = useState(0);
+
+  useEffect(() => {
+    // increment a counter every time the pathname changes — replace with your refresh logic
+    setPageChangeCount((c) => c + 1);
+    // console.log("route changed to", location.pathname);
+  }, [location.pathname]);
+
+
 
 
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <Router>
-        <AHFULAuthProvider>
-          <Routes>
-            <Route element={<Layout/>}>
-              <Route path="/" element={<Home/>}/>
-              <Route path="/Dashboard" element={<Dashboard/>}/>
-              <Route path="/Workout" element={<Workout/>}/>
-              <Route path="/ExerciseLogger" element={<ExerciseLogger/>}/>
-              <Route path="/ExploreWorkout" element={<ExploreWorkouts/>}/>
-              <Route path="/FoodLog" element={<FoodLog/>}/>
-              <Route path="/Login" element={<Login/>}/>
-              <Route path="/Map" element={<Map/>}/>
-              <Route path="/MeasurementLogger" element={<MeasurementLogger/>}/>
-              <Route path="/Profile" element={<Profile/>}/>
-              <Route path="/TOS" element={<TOS/>}/>
-              <Route path="/WorkoutHistory" element={<WorkoutHistory/>}/>
-            </Route>
-          </Routes>
-        </AHFULAuthProvider>  
-      </Router>
+      <Routes>
+        <Route element={<Layout/>}>
+          <Route path="/" element={<Home/>}/>
+          <Route path="/Dashboard" element={<Dashboard/>}/>
+          <Route path="/Workout" element={<Workout/>}/>
+          <Route path="/ExerciseLogger" element={<ExerciseLogger/>}/>
+          <Route path="/ExploreWorkout" element={<ExploreWorkouts/>}/>
+          <Route path="/FoodLog" element={<FoodLog/>}/>
+          <Route path="/Login" element={<Login/>}/>
+          <Route path="/Map" element={<Map/>}/>
+          <Route path="/MeasurementLogger" element={<MeasurementLogger/>}/>
+          <Route path="/Profile" element={<Profile/>}/>
+          <Route path="/TOS" element={<TOS/>}/>
+          <Route path="/WorkoutHistory" element={<WorkoutHistory/>}/>
+        </Route>
+      </Routes>
     </GoogleOAuthProvider>
-  )
+  );
 }
 
 export default AHFULApp

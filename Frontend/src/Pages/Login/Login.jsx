@@ -1,43 +1,115 @@
 import "./Login.css";
-import {useState, useEffect} from "react";
-import { useDispatch } from "react-redux";
-import { setAuth } from "./AuthSlicer.jsx";
-import { use_ahful_auth } from './AuthContext.jsx';
 import { GoogleLogin } from "@react-oauth/google";
 
 
 
 export function Login() {
 
-    const {isLoggedIn, context_login, context_logout } = use_ahful_auth();
+    //TODO: FIX WHEN USING REDUX
+    // if (isLoggedIn) {
+    //     const tempText = document.getElementById("LoggedInStatus")
+    //     if (tempText) {
+    //         tempText.innerText = "Logged in successfully! Check Local Storage!";
+    //     }
 
-    if (isLoggedIn) {
-        const tempText = document.getElementById("LoggedInStatus")
-        if (tempText) {
-            tempText.innerText = "Logged in successfully! Check Local Storage!";
-        }
-
-        const button = document.createElement("button");
-            button.innerText = "Logout";
-            button.addEventListener("click", () => {context_logout(); document.getElementById("LoggedInStatus").innerText = "Logged out successfully!";});
+    //     const button = document.createElement("button");
+    //         button.innerText = "Logout";
+    //         button.addEventListener("click", () => {context_logout(); document.getElementById("LoggedInStatus").innerText = "Logged out successfully!";});
             
-        if (tempText) {
-            tempText.appendChild(button);
+    //     if (tempText) {
+    //         tempText.appendChild(button);
+    //     }
+    // }
+
+    // Logout function
+    const context_logout = async() => {
+        //Define POST URL for Later
+        const backendPOSTURL = `http://localhost:5000/AHFULauth/logout`;
+
+        //Try to Get LocalStorage Cookie for data
+        try{
+            let userData = localStorage.getItem("user_data");
+            let parsedData = JSON.parse(userData);
+
+            // POST response Object to BACKEND API ROUTE for processing.
+            const backendResponse = await fetch(backendPOSTURL, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json',},
+                body: JSON.stringify({ logout_email: parsedData.email }),
+                credentials: 'include',
+            });
+
+            localStorage.removeItem('user_data');
+            //TODO: UPDATE REDUX
+            //setIsLoggedIn(false);
+
+
+        }catch(error){
+            //Catch Spooky Errors that should never occur because you shouldnt log out before login
+            console.log("👻, ", error)
         }
-    }
+    };
 
     const handleGoogleSuccess = async (response) => {
-        context_login(response)
+        try{
+            //URL to send POST to later
+            const backendPOSTURL = `http://localhost:5000/AHFULauth/google-login`;
+
+            //Find ID Token, and maybe details from Google Success Response
+            const googleButtonIdToken = response?.credential;
+            const googleCSFR = response?.g_csrf_token;
+            const googleButtonClientID = response?.client_id;
+
+            //Check IDToken Not Null
+            if (googleButtonIdToken) {
+                // POST response Object to BACKEND API ROUTE for processing.
+                const backendResponse = await fetch(backendPOSTURL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json',},
+                    body: JSON.stringify({ token: googleButtonIdToken }),
+                    credentials: 'include',
+                });
+                
+                //Explicit check over response from server
+                const contentType = backendResponse.headers.get('content-type');
+                let backendUserData = null;
+                
+                //If it exisits and the content type mathces, then set the frontendUserInfo variable
+                //Also Sotre it to local Storage
+                if (contentType && contentType.includes('application/json')) {
+                    backendUserData = await backendResponse.json();
+                    const frontendUserInfo = backendUserData.user_info;
+                    localStorage.setItem("user_data", JSON.stringify(frontendUserInfo));
+
+                } else {
+                    //If its not JSON try to parse it into text. 
+                    backendUserData = await backendResponse.text();
+                }
+
+                //Error Handeling for if Backend Logic reported Failed to Frontend
+                if (!backendResponse.ok) {
+                    const message = backendUserData?.error || backendResponse.statusText;
+                    throw new Error(`AHFUL Frontend API response error (${backendResponse.status}): ${message}`);
+                }
+            }
+
+            console.log("AHFUL context_login Completed successfully.");
+
+            //UPDATE REDUX
+            // setIsLoggedIn(true)
+
+        }catch (error){
+        console.log("AHFUL Error in context_login Func Catch.  Not sure how you got here. ")
+        console.log("Disabled Loading due to Error" )
+    }    
     };
 
     const handleGoogleFailure = (error) => {
         console.error("AHFUL Google Login failed:", error);
     };
-    const dispatch = useDispatch();
-    const 
-    useEffect(() => {
-    
-    } , [dispatch]);
+
+
+
     //TODO
     // async function logout() {
     //     const url = `${API_BASE_URL}/logout`;

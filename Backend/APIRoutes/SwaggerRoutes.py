@@ -65,7 +65,7 @@ swaggerConfig = {
           {
             "name": "email",
             "in": "path",
-            "required": "true",
+            "required": True,
             "description": "Email address of the user",
             "schema": { "type": "string", "format": "email" }
           }
@@ -119,7 +119,7 @@ swaggerConfig = {
           {
             "name": "id",
             "in": "path",
-            "required": "true",
+            "required": True,
             "description": "User id of the user",
             "schema": { "type": "string"}
           }
@@ -165,6 +165,234 @@ swaggerConfig = {
       }
     },
 
+    "/AHFULusers/add/roll/id/": {
+      "post": {
+        "summary": "Add role to user by id",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                  "adder_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                  "role": { "type": "string", "example": "Admin" }
+                },
+                "required": ["user_id", "adder_id", "role"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role added; updated user returned",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Adder does not have permission" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULusers/add/roll/email/": {
+      "post": {
+        "summary": "Add role to user by email",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_email": { "type": "string", "format": "email", "example": "jane@example.com" },
+                  "adder_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                  "role": { "type": "string", "example": "Gym Owner" }
+                },
+                "required": ["user_email", "adder_id", "role"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role added; updated user returned",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Provided role is unidentified" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULusers/remove/roll/id/": {
+      "post": {
+        "summary": "Remove role from user by id",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                  "remover_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                  "role": { "type": "string", "example": "Admin" }
+                },
+                "required": ["user_id", "remover_id", "role"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role removed; updated user returned",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Remover does not have permission" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULusers/remove/roll/email/": {
+      "post": {
+        "summary": "Remove role from user by email",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_email": { "type": "string", "format": "email", "example": "jane@example.com" },
+                  "remover_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                  "role": { "type": "string", "example": "Gym Owner" }
+                },
+                "required": ["user_email", "remover_id", "role"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role removed; updated user returned",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "User not found" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULusers/deactivate/id/": {
+      "post": {
+        "summary": "Deactivate user by id",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                  "deactivator_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                },
+                "required": ["user_id", "deactivator_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User deactivated; updated user returned",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Deactivator does not have permission" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     
     "/AHFULpersonalEx/": {
         "get": {
@@ -488,6 +716,298 @@ swaggerConfig = {
       }
     },
 
+    
+      "/AHFULexercises/": {
+        "get": {
+          "summary": "Get all exercises",
+          "tags": ["Exercises"],
+          "responses": {
+            "200": {
+              "description": "A list of exercises",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id":          { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
+                        "name":         { "type": "string", "example": "Dumbbell Bench Press" },
+                        "muscle_group": { "type": "string", "example": "Chest" },
+                        "difficulty":   { "type": "string", "example": "Intermediate" },
+                        "equipment":    { "type": "string", "example": "Dumbbells, Flat Bench" },
+                        "instructions": { "type": "string", "example": "Lie on a flat bench with a dumbbell in each hand..." },
+                        "type":         { "type": "string", "example": "Strength" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "/AHFULexercises/id/{exercise_id}": {
+        "get": {
+          "summary": "Get a single exercise by id",
+          "tags": ["Exercises"],
+          "parameters": [
+            {
+              "name": "exercise_id",
+              "in": "path",
+              "required": True,
+              "description": "Exercise ObjectId",
+              "schema": { "type": "string", "example": "698d0bc06e5117c22dd7774b" }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Exercise found",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "_id":          { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
+                      "name":         { "type": "string", "example": "Dumbbell Row" },
+                      "muscle_group": { "type": "string", "example": "Back" },
+                      "difficulty":   { "type": "string", "example": "Beginner" },
+                      "equipment":    { "type": "string", "example": "Dumbbells, Bench" },
+                      "instructions": { "type": "string", "example": "Support one knee and hand on a bench..." },
+                      "type":         { "type": "string", "example": "Strength" }
+                    },
+                    "required": ["_id", "name"]
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Exercise not found",
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "/AHFULexercises/search": {
+        "get": {
+          "summary": "Search exercises",
+          "tags": ["Exercises"],
+          "parameters": [
+            {
+              "name": "search",
+              "in": "query",
+              "required": True,
+              "description": "Free-text search query",
+              "schema": { "type": "string", "example": "dumbbell" }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Matching exercises",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "_id":          { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
+                        "name":         { "type": "string", "example": "Incline Dumbbell Bench Press" },
+                        "muscle_group": { "type": "string", "example": "Chest" },
+                        "difficulty":   { "type": "string", "example": "Intermediate" },
+                        "equipment":    { "type": "string", "example": "Dumbbells, Incline Bench" },
+                        "instructions": { "type": "string", "example": "Set bench to 30–45°, press dumbbells upward..." },
+                        "type":         { "type": "string", "example": "Strength" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Missing or invalid search query",
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object", "properties": { "error": { "type": "string", "example": "No search query provided" } } }
+                }
+              }
+            },
+            "404": {
+              "description": "No results or search error",
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "/AHFULexercises/create": {
+        "post": {
+          "summary": "Create an exercise",
+          "tags": ["Exercises"],
+          "requestBody": {
+            "required": True,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["name"],
+                  "properties": {
+                    "name":         { "type": "string", "description": "Exercise name", "example": "Barbell Back Squat" },
+                    "muscle_group": { "type": "string", "description": "Primary muscle group", "example": "Legs" },
+                    "difficulty":   { "type": "string", "description": "Difficulty level", "example": "Intermediate" },
+                    "equipment":    { "type": "string", "description": "Equipment required", "example": "Barbell, Squat Rack" },
+                    "instructions": { "type": "string", "description": "Step-by-step instructions", "example": "Position the barbell across your traps..." },
+                    "type":         { "type": "string", "description": "Exercise category/type", "example": "Strength" }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Exercise created",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "exercise_id": { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
+                      "message":     { "type": "string", "example": "Exercise created" }
+                    },
+                    "required": ["exercise_id", "message"]
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid input or creation error",
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "/AHFULexercises/delete/{exercise_id}": {
+        "delete": {
+          "summary": "Delete an exercise by id",
+          "tags": ["Exercises"],
+          "parameters": [
+            {
+              "name": "exercise_id",
+              "in": "path",
+              "required": True,
+              "description": "The id of the exercise (Mongo ObjectId as string)",
+              "schema": { "type": "string", "example": "698d0bc06e5117c22dd7774b" }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Exercise deleted successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message":     { "type": "string", "example": "Exercise deleted successfully" },
+                      "exercise_id": { "type": "string", "example": "698d0bc06e5117c22dd7774b" }
+                    },
+                    "required": ["message", "exercise_id"]
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid id format or missing id",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": { "type": "string", "example": "You must provide an exercise id to delete" }
+                    },
+                    "required": ["error"]
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Exercise not found or already deleted",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": { "type": "string", "example": "Exercise not found or already deleted" }
+                    },
+                    "required": ["error"]
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Server error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": { "type": "string" }
+                    },
+                    "required": ["error"]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+
     "/AHFULworkout/": {
       "get": {
         "summary": "Get all workouts",
@@ -529,7 +1049,7 @@ swaggerConfig = {
           {
             "name": "userId",
             "in": "path",
-            "required": "true",
+            "required": True,
             "description": "User Id of the user",
             "schema": { "type": "string"}
           }
@@ -581,7 +1101,7 @@ swaggerConfig = {
           {
             "name": "id",
             "in": "path",
-            "required": "true",
+            "required": True,
             "description": "id of the workout",
             "schema": { "type": "string"}
           }
@@ -625,7 +1145,7 @@ swaggerConfig = {
         "summary": "Create a new workout",
         "tags": ["Workout"],
         "requestBody": {
-          "required": "true",
+          "required": True,
           "content": {
             "application/json": {
               "schema": {
@@ -801,7 +1321,7 @@ swaggerConfig = {
           {
             "name": "gym_id",
             "in": "path",
-            "required": "true",
+            "required": True,
             "description": "The id of the gym (Mongo ObjectId as string)",
             "schema": { "type": "string" }
           }
@@ -847,7 +1367,7 @@ swaggerConfig = {
         "summary": "Create a new gym",
         "tags": ["Gym"],
         "requestBody": {
-          "required": "true",
+          "required": True,
           "content": {
             "application/json": {
               "schema": {
@@ -1024,7 +1544,7 @@ swaggerConfig = {
           {
             "name": "userId",
             "in": "path",
-            "required": "true",
+            "required": True,
             "description": "The user id associated with the foods",
             "schema": { "type": "string" }
           }
@@ -1078,7 +1598,7 @@ swaggerConfig = {
           {
             "name": "id",
             "in": "path",
-            "required": "true",
+            "required": True,
             "description": "Food id",
             "schema": { "type": "string"}
           }
@@ -1126,7 +1646,7 @@ swaggerConfig = {
         "summary": "Create a new food entry",
         "tags": ["Food"],
         "requestBody": {
-          "required": "true",
+          "required": True,
           "content": {
             "application/json": {
               "schema": {
