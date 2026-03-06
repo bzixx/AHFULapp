@@ -64,6 +64,22 @@ class UserObject:
         updated = userCollection.find_one({"_id": ObjectId(user_id)})
         return UserObject._serialize(updated)
     
+    @staticmethod
+    def deactivate_by_id(user_id):
+        result = userCollection.update_one(
+            {"_id": ObjectId(user_id)},
+            {
+                "$set": {
+                    "deactivated": True,
+                    "updated_at": datetime.now()
+                }
+            }
+        )
+        if result.matched_count == 0:
+            return None
+        updated = userCollection.find_one({"_id": ObjectId(user_id)})
+        return UserObject._serialize(updated)
+    
     # ── Untested ──────────────────────────────────────────────────────────────────
     #Not tested
     @staticmethod

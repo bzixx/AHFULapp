@@ -74,3 +74,16 @@ def remove_role_by_email():
     if err: 
         return jsonify({"error": err}), 404
     return jsonify(res), 200
+
+
+# ── DEACTIVATE user by id ─────────────────────────────────────────────────────
+@userRouteBlueprint.route("/deactivate/id/", methods=["POST"])
+def deactivate_user_by_id():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    res, err = UserDriver.deactivate_user_by_id(data.get("user_id"), data.get("deactivator_id"))
+    if err:
+        return jsonify({"error": err}), 404
+    return jsonify(res), 200

@@ -348,6 +348,52 @@ swaggerConfig = {
         }
       }
     },
+
+    "/AHFULusers/deactivate/id/": {
+      "post": {
+        "summary": "Deactivate user by id",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                  "deactivator_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                  "reason": { "type": "string", "example": "Violation of terms" }
+                },
+                "required": ["user_id", "deactivator_id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User deactivated; updated user returned",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Deactivator does not have permission" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     
     "/AHFULpersonalEx/": {
         "get": {
