@@ -11,7 +11,7 @@ from bson import ObjectId, errors as bson_errors
 #   the database.
 class UserDriver:
     # ── Helper ─────────────────────────────────────────────────────────────────
-    valid_roles = ["User", "Gym Owner", "Admin", "Developer"]
+    valid_roles = ["User", "Gym Owner", "Personal trainer", "Event Coordinator", "Admin", "Developer"]
     @staticmethod
     def _validate_role(role):
         role = (role or "").strip()
