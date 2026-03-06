@@ -250,7 +250,7 @@ def test_find_personal_ex_by_id():
     assert err is None
     assert ex is not None
     assert ex.get("_id") == oid
-    assert ex.get("complete") == "false"
+    assert ex.get("complete") == False
     assert ex.get("distance") == "0"
     assert ex.get("duration") == 120
     assert ex.get("exerciseId") == "69ab3627a819c7ed3f7fcab1"
