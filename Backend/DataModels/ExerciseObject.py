@@ -1,5 +1,5 @@
-#DataModel & Objects are essentially the Database Access Layer -- They know how to talk to Mongo DB Collection and that is it. 
-
+# DataModel & Objects are essentially the Database Access Layer
+# They know how to talk to Mongo DB Collection and that is it. 
 from bson import ObjectId
 from Services.MongoDriver import getMongoDatabase
 
@@ -15,7 +15,13 @@ class ExerciseObject:
             gym["_id"] = str(gym["_id"])
         return gym
 
-    # ── Reads ──────────────────────────────────────────────────────────────────
+    # ── Create ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def create(workout_data):
+        result = ExerciseCollection.insert_one(workout_data)
+        return str(result.inserted_id)
+
+    # ── Read ──────────────────────────────────────────────────────────────────
     def find_all():
         workout = ExerciseCollection.find()
         return [ExerciseObject._serialize(w) for w in workout]
@@ -27,9 +33,10 @@ class ExerciseObject:
     def find_by_email(email):
         workout = ExerciseCollection.find({"userEmail": email})
         return [ExerciseObject._serialize(w) for w in workout]
-
-    # ── Writes ─────────────────────────────────────────────────────────────────
+    
+    # ── Delete ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def create(workout_data):
-        result = ExerciseCollection.insert_one(workout_data)
-        return str(result.inserted_id)
+    def delete(id):
+        result = ExerciseCollection.delete_one({"_id": ObjectId(id)})
+        return str((result.deleted_count == 1) * id)
+    

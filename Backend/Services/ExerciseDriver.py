@@ -2,6 +2,7 @@
 from DataModels.ExerciseObject import ExerciseObject
 from http.client import HTTPSConnection
 import json
+from urllib.parse import urlencode
 
 #External API Host for ExerciseDB API
 EXERSICEDB_HOST = "www.exercisedb.dev"
@@ -40,7 +41,10 @@ class ExerciseDriver:
         try:
             #Define Connection and Endpoint for External API
             dbConnection =  HTTPSConnection(EXERSICEDB_HOST)
-            apiEndpoint = "/api/v1/exercises/search?q=" + searchString
+            
+            # Properly encode the query string
+            query = urlencode({"q": searchString})  # e.g., q=bench+press+chest+dumbbell
+            apiEndpoint = f"/api/v1/exercises/search?{query}"
 
             #Make API Request to External API
             dbConnection.request("GET", apiEndpoint, headers=EXERSICEDB_HEADERS)
@@ -74,37 +78,48 @@ class ExerciseDriver:
             return None, "Invalid JSON response: " + str(e)
         except Exception as e:
             return None, str(e)
+        
+    @staticmethod
+    def get_exercise_by_id(id):
+        try:
+            exercise = ExerciseObject.find_by_id(id)
+            if not exercise:
+                return None, "Exercise not found"
+            return exercise, None
+        except Exception as e:
+            return None, str(e)
 
-    def create_exercise(name, muscle_group, difficulty, equipment, instructions):
+    def create_exercise(name, body_part, difficulty, equipment, instructions, type):
         try:
             exercise_data = {
                 "name": name,
-                "muscle_group": muscle_group,
+                "body_part": body_part,
                 "difficulty": difficulty,
                 "equipment": equipment,
-                "instructions": instructions
+                "instructions": instructions,
+                "type": type
             }
             exercise_id = ExerciseObject.create(exercise_data)
             return exercise_id, None
         except Exception as e:
             return None, str(e)
 
-    def update_exercise(exercise_id, update_data):
-        try:
-            existing_exercise = ExerciseObject.find_by_id(exercise_id)
-            if not existing_exercise:
-                return False, "Exercise not found"
+    # def update_exercise(exercise_id, update_data):
+    #     try:
+    #         existing_exercise = ExerciseObject.find_by_id(exercise_id)
+    #         if not existing_exercise:
+    #             return False, "Exercise not found"
 
-            # Update fields
-            for key in ["name", "muscle_group", "difficulty", "equipment", "instructions"]:
-                if key in update_data:
-                    existing_exercise[key] = update_data[key]
+    #         # Update fields
+    #         for key in ["name", "body_part", "difficulty", "equipment", "instructions", "type"]:
+    #             if key in update_data:
+    #                 existing_exercise[key] = update_data[key]
 
-            # Save updated exercise
-            ExerciseObject.update(exercise_id, existing_exercise)
-            return True, None
-        except Exception as e:
-            return False, str(e)
+    #         # Save updated exercise
+    #         ExerciseObject.update(exercise_id, existing_exercise)
+    #         return True, None
+    #     except Exception as e:
+    #         return False, str(e)
         
     def delete_exercise(exercise_id):
         try:

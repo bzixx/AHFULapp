@@ -3,8 +3,7 @@ from Services.WorkoutDriver import WorkoutDriver
 
 workoutRouteBlueprint = Blueprint("workouts", __name__, url_prefix="/AHFULworkout")
 
-
-# ── GET all workouts (supports ?user_id=abc for filtering by user) ────────────
+# ── GET all workouts ──────────────────────────────────────
 @workoutRouteBlueprint.route("/", methods=["GET"])
 def get_all_workouts():
     workouts, error = WorkoutDriver.get_all_workouts()
@@ -15,7 +14,7 @@ def get_all_workouts():
 # ── GET all workouts for a specific user ──────────────────────────────────────
 @workoutRouteBlueprint.route("/<userId>", methods=["GET"])
 def get_workouts_by_user(userId):
-    workouts, error = WorkoutDriver.get_workouts_by_user(userId=userId)
+    workouts, error = WorkoutDriver.get_workouts_by_user(userId)
     if error:
         return jsonify({"error": error}), 500
     return jsonify(workouts), 200
@@ -42,6 +41,7 @@ def create_workout():
         startTime=data.get("startTime"),
         endTime=data.get("endTime"),
     )
+    
     if error:
         return jsonify({"error": error}), 400
     return jsonify({"workout_id": workout_id, "message": "Workout created"}), 201
