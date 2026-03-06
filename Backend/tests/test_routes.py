@@ -409,7 +409,7 @@ def test_create_delete_personal_ex():
     sets = 0
     userId = "699d0093795741a59fe13616"
     weight = 600
-    responseId, err = PersonalExDriver.create_personal_ex(completed, distance, duration, exerciseId, reps, sets, userId, weight, workoutId)
+    responseId, err = PersonalExDriver.create_personal_ex(userId, exerciseId, workoutId, reps, sets, weight, duration, distance, completed)
 
     if err is not None:
         print(responseId, err)
