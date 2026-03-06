@@ -12,7 +12,6 @@ from bson import ObjectId, errors as bson_errors
 class FoodDriver:
     # ── Helper ─────────────────────────────────────────────────────────────────
     @staticmethod
-    @staticmethod
     def _validate_obj_id(id, name):
         try:
             return ObjectId(str(id)), None
