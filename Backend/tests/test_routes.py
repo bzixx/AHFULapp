@@ -300,7 +300,6 @@ def test_find_personal_ex_by_workout():
     filtered = [d for d in exs if d.get("_id") == pe_oid]
 
     assert len(filtered) == 1
-    assert filtered[0]["_id"] == oid
 
     # Assertions
     assert err is None
