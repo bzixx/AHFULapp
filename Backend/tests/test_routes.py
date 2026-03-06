@@ -398,6 +398,53 @@ def test_find_personal_ex_by_user():
     assert exs is None
     assert err == inv_err_code 
 
+def test_create_delete_personal_ex():
+    # Give a valid gymId
+    completed = False
+    distance = "0"
+    duration = 240
+    exerciseId = "69ab3627a819c7ed3f7fcab1"
+    reps = 0
+    sets = 0
+    userId = "699d0093795741a59fe13616"
+    weight = 600
+    responseId, err = PersonalExDriver.create_personal_ex(completed, distance, duration, exerciseId, reps, sets, userId, weight)
+
+    if err is not None:
+        print(responseId, err)
+
+    # Check if response is valid id
+    try:
+        responseObj = ObjectId(str(responseId))
+    except (bson_errors.InvalidId, TypeError, ValueError):
+        assert(False)
+
+    # Give created gymId
+    personalEx, err = PersonalExDriver.get_personal_ex_by_id(responseId)
+
+    if err is not None:
+        print(personalEx, err)
+
+    # Assertions
+    assert err is None
+    assert personalEx is not None
+    assert personalEx.get("_id") == responseId
+    assert personalEx.get("completed") == False
+    assert personalEx.get("distance") == "0"
+    assert personalEx.get("duration") == 240
+    assert personalEx.get("exerciseId") == "www.69ab3627a819c7ed3f7fcab1"
+    assert personalEx.get("reps") == 0
+    assert personalEx.get("sets") == 0
+    assert personalEx.get("userId") == "www.699d0093795741a59fe13616"
+    assert personalEx.get("weight") == 600
+
+    # Delete created gym
+    response, err = PersonalExDriver.delete_personal_ex(responseId)
+    if err is not None:
+        print(response, err)
+    # Assertions
+    assert response == responseId
+
 # User
 
 def test_find_user_by_id():
