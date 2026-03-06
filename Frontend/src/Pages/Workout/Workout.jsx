@@ -8,13 +8,10 @@ export function Workout({
 }) {
 
   /* Variables */
-  const [exercises, setExercises] = useState([
-    { name: "Push Ups", reps: 15, sets: 3, weight: "0", completed: false },
-    { name: "Pull Ups", reps: 8, sets: 4, weight: "Full backpack", completed: false },
-    { name: "Squats", reps: 20, sets: 3, weight: "45 lbs", completed: false },
-    { name: "Run", reps: "-", sets: "-", weight: "0", completed: false },
-  ]);
+  const [workouts, setWorkouts] = useState([]);
+  const [workout, setWorkout] = useState();
 
+  const [personalExercises, setPersonalExercises] = useState([]);
 
   const [exerciseList, setExerciseList] = useState([
     "Push Ups",
@@ -46,7 +43,7 @@ export function Workout({
   /* Exercise Functions */
 
   const toggleCompleted = (index) => {
-    setExercises(prev => {
+    setPersonalExercises(prev => {
       const updated = [...prev];
       updated[index] = {
         ...updated[index],
@@ -58,7 +55,7 @@ export function Workout({
 
 
   const updateField = (index, field, value) => {
-    setExercises((prev) => {
+    setPersonalExercises((prev) => {
       const updated = [...prev];
       updated[index][field] = value;
       return updated;
@@ -78,16 +75,15 @@ export function Workout({
   }, [trigger]);
 
   const removeWorkout = (index) => {
-    setExercises(prev => prev.filter((_, i) => i !== index));
+    setPersonalExercises(prev => prev.filter((_, i) => i !== index));
   };
-
 
   const addExerciseToWorkout = (e) => {
     e.preventDefault();
 
     if (pendingExercises.length === 0) return;
 
-    setExercises(prev => [
+    setPersonalExercises(prev => [
       ...prev,
       ...pendingExercises.map(name => ({
         name,
@@ -135,23 +131,64 @@ export function Workout({
 
   // Test id: user_id: 699d0093795741a59fe13616
   const userId = "699d0093795741a59fe13616";
+  const [workoutId, setWorkoutId] = useState("");
+  const [workoutTitle, setWorkoutTitle] = useState("");
+
+useEffect(() => {
+  async function getWorkout() {
+    try {
+      const res = await fetch(`http://localhost:5000/AHFULworkout/${userId}`);
+      const data = await res.json();
+
+      setWorkouts(data);
+      console.log(data);
+
+      // Only set workoutId if data is a non-empty array
+      if (Array.isArray(data) && data.length > 0) {
+        setWorkout(data[0])
+        setWorkoutId(data[0]._id);
+        setWorkoutTitle(data[0]["title"])
+      } else {
+        console.warn("Workout data is empty or invalid:", data);
+      }
+
+    } catch (err) {
+      console.error("Error fetching workout:", err);
+    }
+  }
+
+  getWorkout();
+}, []);
+
+
+useEffect(() => {
+  if (!workoutId) return; // prevents running on initial render
+
+  async function getPersonalEx() {
+    try {
+      console.log("Fetching personal exercises for workout:", workoutId);
+
+      const res = await fetch(`http://localhost:5000/AHFULpersonalEx/workout/${workoutId}`);
+      const data = await res.json();
+
+      setPersonalExercises(data);
+
+    } catch (err) {
+      console.error("Error fetching personal exercises:", err);
+    }
+  }
+
+  getPersonalEx();
+}, [workoutId]); // <-- runs only when workoutId changes
+
 
   useEffect(() => {
-    async function getWorkout() {
-      try {
-        const res = await fetch(`http://localhost:5000/AHFULworkout/${userId}`);
-        const data = await res.json();
-        console.log("Workout for user:", data);
-      } catch (err) {
-        console.error("Error fetching workout:", err);
-      }
-    }
+    console.log("PersonalEx state updated:", personalExercises);
+  }, [personalExercises]);
 
-    getWorkout();
-  }, []);
-
-
-
+  function unixToDate(unix) {
+    return new Date(unix * 1000).toLocaleDateString("en-US");
+  }
 
   return (
     <div className="page-layout">
@@ -162,11 +199,12 @@ export function Workout({
           </form>
         </div>
       </div>
-      
+
       <div className="center-column">
         <div className="workout-card">
           <div className="workout-title">
-            <h1>At-Home Workout</h1>
+            <h1>{workoutTitle}</h1>
+            {workout && <h2>{unixToDate(workout.startTime)}</h2>}
           </div>
 
           <div className="workout-grid">
@@ -176,9 +214,9 @@ export function Workout({
             <div className="cell header">Weight</div>
             <div className="cell header">Completed</div>
             <div className="cell header"></div>
-            {exercises.map((ex, i) => (
+            {personalExercises.map((ex, i) => (
               <React.Fragment key={i}>
-                <div className="cell">{ex.name}</div>
+                <div className="cell">{ex.exerciseId}</div>
 
                 <div className="cell">
                   {ex.completed ? (
