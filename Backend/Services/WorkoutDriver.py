@@ -12,6 +12,14 @@ from bson import ObjectId, errors as bson_errors
 #   ensuring that all necessary validations and rules are applied before interacting with 
 #   the database.
 class WorkoutDriver:
+    # ── Helper ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def _validate_obj_id(id, name):
+        try:
+            return ObjectId(str(id)), None
+        except (bson_errors.InvalidId, TypeError, ValueError):
+            return None, f"Invalid {name} format; must be a 24-hex string"
+        
     # ── Create ─────────────────────────────────────────────────────────────────
     @staticmethod
     def create_workout(userId, gymId, title, startTime, endTime):
@@ -19,17 +27,13 @@ class WorkoutDriver:
         if (not userId) or (startTime is None):
             return None, "You are missing a userId or startTime. Please fix, then attempt to create workout again"
         
-        # Convert IDs safely
-        try:
-            user_oid = ObjectId(str(userId))
-        except (bson_errors.InvalidId, TypeError, ValueError):
-            return None, "Invalid userId format; must be a 24-hex string"
-   
+        oid, err = WorkoutDriver._validate_obj_id(userId, "userId")
+        if err:
+            return None, err
         if gymId is not None:
-            try:
-                gym_oid = ObjectId(str(gymId))
-            except (bson_errors.InvalidId, TypeError, ValueError):
-                return None, "Invalid gymId format; must be a 24-hex string"
+            gym_oid, err = WorkoutDriver._validate_obj_id(gymId, "gymId")
+            if err:
+                return None, err
 
         # Ensure the user exists
         user = UserObject.find_by_id(userId)

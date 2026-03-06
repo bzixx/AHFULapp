@@ -11,6 +11,14 @@ from bson import ObjectId, errors as bson_errors
 #   ensuring that all necessary validations and rules are applied before interacting with 
 #   the database.
 class PersonalExDriver:
+    # ── Helper ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def _validate_obj_id(id, name):
+        try:
+            return ObjectId(str(id)), None
+        except (bson_errors.InvalidId, TypeError, ValueError):
+            return None, f"Invalid {name} format; must be a 24-hex string"
+
     # ── Create ─────────────────────────────────────────────────────────────────
     @staticmethod
     def create_personal_ex(userId, exerciseId, workoutId, reps, sets, weight, duration, distance, complete):
@@ -18,23 +26,15 @@ class PersonalExDriver:
         if (not userId) or (not exerciseId) or (not workoutId):
             return None, "You are missing a userId, workoutId or exerciseId. Please fix, then attempt to create personalEx again"
         
-        # Convert IDs safely
-        try:
-            user_oid = ObjectId(str(userId))
-        except (bson_errors.InvalidId, TypeError, ValueError):
-            return None, "Invalid userId format; must be a 24-hex string"
-        
-        # Convert IDs safely
-        try:
-            exercise_oid = ObjectId(str(exerciseId))
-        except (bson_errors.InvalidId, TypeError, ValueError):
-            return None, "Invalid exerciseId format; must be a 24-hex string"
-        
-        # Convert IDs safely
-        try:
-            workout_oid = ObjectId(str(workoutId))
-        except (bson_errors.InvalidId, TypeError, ValueError):
-            return None, "Invalid workoutId format; must be a 24-hex string"
+        oid, err = PersonalExDriver._validate_obj_id(userId, "userId")
+        if err:
+            return None, err
+        oid, err = PersonalExDriver._validate_obj_id(exerciseId, "exerciseId")
+        if err:
+            return None, err
+        oid, err = PersonalExDriver._validate_obj_id(workoutId, "workoutId")
+        if err:
+            return None, err
 
         # Ensure the user exists
         user = UserObject.find_by_id(userId)
