@@ -118,7 +118,6 @@ class UserDriver:
             # TODO Need further verification that adder is logged in
         except Exception as e:
             return None, str(e)
-    
         
         user = UserObject.find_by_email(user_email)
         if not user:
@@ -131,7 +130,6 @@ class UserDriver:
             return updated_user, None
         except Exception as e:
             return None, f"Failed to add role: {e}"
-        
 
     @staticmethod
     def remove_role_by_id(user_id, remover_id, role):
@@ -209,6 +207,46 @@ class UserDriver:
             return None, str(ve)
         except Exception as e:
             return None, f"Failed to remove role: {e}"
+        
+    @staticmethod
+    def deactivate_user_by_id(user_id, deactivator_id):
+        # Validate inputs
+        if not user_id:
+            return None, "user_id is required"
+        if not deactivator_id:
+            return None, "deactivator_id is required"
+
+        # Validate ObjectIds
+        oid, err = UserDriver._validate_obj_id(user_id, "user_id")
+        if err:
+            return None, err
+        oid, err = UserDriver._validate_obj_id(deactivator_id, "deactivator_id")
+        if err:
+            return None, err
+        
+        try:
+            deactivator = UserObject.find_by_id(deactivator_id)
+            if not deactivator:
+                return None, "Deactivator not found"
+            if ("Admin" not in deactivator["roles"]) and ("Developer" not in deactivator["roles"]):
+                return None, "Deactivator does not have permission"
+            # TODO Need further verification that deactivator is logged in
+        except Exception as e:
+            return None, str(e)
+        
+        user = UserObject.find_by_id(user_id)
+        if not user:
+            return None, "User not found"
+        
+        try:
+            updated_user = UserObject.deactivate_by_id(user["_id"])
+            if not updated_user:
+                return None, "User not found"
+            return updated_user, None
+        except ValueError as ve:
+            return None, str(ve)
+        except Exception as e:
+            return None, f"Failed to deactivate user: {e}"
 
     # ── Untested ─────────────────────────────────────────────────────────────────
     @staticmethod
