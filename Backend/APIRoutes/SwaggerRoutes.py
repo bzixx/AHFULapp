@@ -165,6 +165,189 @@ swaggerConfig = {
       }
     },
 
+    "/AHFULusers/add/roll/id/": {
+      "post": {
+        "summary": "Add role to user by id",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                  "adder_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                  "role": { "type": "string", "example": "Admin" }
+                },
+                "required": ["user_id", "adder_id", "role"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role added; updated user returned",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Adder does not have permission" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULusers/add/roll/email/": {
+      "post": {
+        "summary": "Add role to user by email",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_email": { "type": "string", "format": "email", "example": "jane@example.com" },
+                  "adder_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                  "role": { "type": "string", "example": "Gym Owner" }
+                },
+                "required": ["user_email", "adder_id", "role"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role added; updated user returned",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Provided role is unidentified" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULusers/remove/roll/id/": {
+      "post": {
+        "summary": "Remove role from user by id",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                  "remover_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                  "role": { "type": "string", "example": "Admin" }
+                },
+                "required": ["user_id", "remover_id", "role"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role removed; updated user returned",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Remover does not have permission" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULusers/remove/roll/email/": {
+      "post": {
+        "summary": "Remove role from user by email",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_email": { "type": "string", "format": "email", "example": "jane@example.com" },
+                  "remover_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                  "role": { "type": "string", "example": "Gym Owner" }
+                },
+                "required": ["user_email", "remover_id", "role"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role removed; updated user returned",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found or validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "User not found" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     
     "/AHFULpersonalEx/": {
         "get": {

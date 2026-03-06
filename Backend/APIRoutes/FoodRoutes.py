@@ -3,7 +3,6 @@ from Services.FoodDriver import FoodDriver
 
 foodRouteBlueprint = Blueprint("food", __name__, url_prefix="/AHFULfood")
 
-
 # ── GET all foods ────────────────────────────
 @foodRouteBlueprint.route("/", methods=["GET"])
 def get_all_food():
@@ -11,7 +10,6 @@ def get_all_food():
     if error:
         return jsonify({"error": error}), 500
     return jsonify(food), 200
-
 
 # ── GET single food ────────────────────────────────────────────────────────────
 @foodRouteBlueprint.route("/<user_id>", methods=["GET"])
@@ -43,11 +41,12 @@ def create_food():
         type=data.get("type"),
         time=data.get("time")
     )
+    
     if error:
         return jsonify({"error": error}), 400
     return jsonify({"food_id": food_id, "message": "food created"}), 201
 
-# ── DELETE gym ────────────────────────────────────────────────────────────────
+# ── DELETE food ────────────────────────────────────────────────────────────────
 @foodRouteBlueprint.route("/delete/<food_id>", methods=["DELETE"])
 def delete_food(food_id):
     if not food_id:

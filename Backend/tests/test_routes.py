@@ -180,6 +180,9 @@ def test_find_user_by_email():
 # def test_create_user():
 #     pass
 
+# def test_user_roles():
+#     pass
+
 # Food
 
 def test_find_food_by_id():

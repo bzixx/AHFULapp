@@ -10,7 +10,45 @@ from bson import ObjectId, errors as bson_errors
 # ensuring that all necessary validations and rules are applied before interacting with 
 # the database.
 class FoodDriver:
-    
+    # ── Helper ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def _validate_obj_id(id, name):
+        try:
+            oid = ObjectId(str(id))
+        except (bson_errors.InvalidId, TypeError, ValueError):
+            return None, "Invalid ", name, " format; must be a 24-hex string"
+        
+    # ── Create ─────────────────────────────────────────────────────────────────    
+    @staticmethod
+    def create_food(userId, name, calsPerServing, servings, type, time):
+        # Validate required fields
+        if (not userId) or (not name) or (calsPerServing is None) or (not servings) or (not type) or (time is None):
+            return None, "You are missing a value. Please fix, then attempt to create food again"
+
+        # Convert IDs safely
+        FoodDriver._validate_obj_id(userId)
+        
+        # Ensure the user exists
+        user = UserObject.find_by_id(userId)
+        if not user:
+            return None, "User not found"
+
+        food_data = {
+            "userId": userId,
+            "name": name,
+            "calsPerServing": calsPerServing,
+            "servings": servings,
+            "type": type,
+            "time": time
+        }
+
+        try:
+            response = FoodObject.create(food_data)
+            return response, None
+        except Exception as e:
+            return None, str(e)
+
+    # ── Read ─────────────────────────────────────────────────────────────────
     @staticmethod
     def get_all_food():
         try:
@@ -38,39 +76,9 @@ class FoodDriver:
             return food, None
         except Exception as e:
             return None, str(e)
-
-    @staticmethod
-    def create_food(userId, name, calsPerServing, servings, type, time):
-        # Validate required fields
-        if (not userId) or (not name) or (calsPerServing is None) or (not servings) or (not type) or (time is None):
-            return None, "You are missing a value. Please fix, then attempt to create food again"
-
-        # Convert IDs safely
-        try:
-            user_oid = ObjectId(str(userId))
-        except (bson_errors.InvalidId, TypeError, ValueError):
-            return None, "Invalid userId format; must be a 24-hex string"
         
-        # Ensure the user exists
-        user = UserObject.find_by_id(userId)
-        if not user:
-            return None, "User not found"
 
-        food_data = {
-            "userId": userId,
-            "name": name,
-            "calsPerServing": calsPerServing,
-            "servings": servings,
-            "type": type,
-            "time": time
-        }
-
-        try:
-            response = FoodObject.create(food_data)
-            return response, None
-        except Exception as e:
-            return None, str(e)
-        
+    # ── Delete ─────────────────────────────────────────────────────────────────
     @staticmethod
     def delete_food(id):
         # Validate input
