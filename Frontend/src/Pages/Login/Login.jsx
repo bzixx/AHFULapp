@@ -1,4 +1,7 @@
 import "./Login.css";
+import {useState, useEffect} from "react";
+import { useDispatch } from "react-redux";
+import { setAuth } from "./AuthSlicer.jsx";
 import { use_ahful_auth } from './AuthContext.jsx';
 import { GoogleLogin } from "@react-oauth/google";
 
@@ -30,7 +33,11 @@ export function Login() {
     const handleGoogleFailure = (error) => {
         console.error("AHFUL Google Login failed:", error);
     };
-
+    const dispatch = useDispatch();
+    const 
+    useEffect(() => {
+    
+    } , [dispatch]);
     //TODO
     // async function logout() {
     //     const url = `${API_BASE_URL}/logout`;
@@ -74,7 +81,7 @@ export function Login() {
                     </h3>
                 </div>
                 <div className="login-button">
-                    <GoogleLogin 
+                    <GoogleLogin
                         size="large"
                         width="200"
                         text="signin_with"
