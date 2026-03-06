@@ -430,7 +430,7 @@ def test_create_delete_personal_ex():
     assert err is None
     assert personalEx is not None
     assert personalEx.get("_id") == responseId
-    assert personalEx.get("completed") == False
+    assert personalEx.get("complete") == False
     assert personalEx.get("distance") == "0"
     assert personalEx.get("duration") == 240
     assert personalEx.get("exerciseId") == "www.69ab3627a819c7ed3f7fcab1"
