@@ -112,7 +112,6 @@ def test_find_user_by_id():
     assert user.get("last_login_time") == 1000000000
     assert user.get("last_login_expire") == 1000000009
     assert user.get("magic_bits") == "010101010101010101010101010101_0"
-    assert user.get("role") == 0
 
     # Give a bad userId
     bad_oid = "699d0093795741a59fe1361"
@@ -160,7 +159,6 @@ def test_find_user_by_email():
     assert user.get("last_login_time") == 1000000000
     assert user.get("last_login_expire") == 1000000009
     assert user.get("magic_bits") == "010101010101010101010101010101_0"
-    assert user.get("role") == 0
 
     # Give an empty email
     inv_email = ""

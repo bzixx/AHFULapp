@@ -12,11 +12,12 @@ from bson import ObjectId, errors as bson_errors
 class FoodDriver:
     # ── Helper ─────────────────────────────────────────────────────────────────
     @staticmethod
+    @staticmethod
     def _validate_obj_id(id, name):
         try:
-            oid = ObjectId(str(id))
+            return ObjectId(str(id)), None
         except (bson_errors.InvalidId, TypeError, ValueError):
-            return None, "Invalid ", name, " format; must be a 24-hex string"
+            return None, f"Invalid {name} format; must be a 24-hex string"
         
     # ── Create ─────────────────────────────────────────────────────────────────    
     @staticmethod
@@ -26,7 +27,9 @@ class FoodDriver:
             return None, "You are missing a value. Please fix, then attempt to create food again"
 
         # Convert IDs safely
-        FoodDriver._validate_obj_id(userId)
+        oid, err = FoodDriver._validate_obj_id(userId, "userid")
+        if err:
+            return None, err
         
         # Ensure the user exists
         user = UserObject.find_by_id(userId)
