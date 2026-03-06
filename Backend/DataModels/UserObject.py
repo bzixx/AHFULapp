@@ -8,7 +8,6 @@ ahfulAppDataDB = getMongoDatabase()
 userCollection = ahfulAppDataDB['user']
 
 class UserObject:
-
     # ── Helpers ────────────────────────────────────────────────────────────────
     @staticmethod
     def _serialize(user):
