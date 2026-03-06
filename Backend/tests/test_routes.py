@@ -305,7 +305,7 @@ def test_find_personal_ex_by_workout():
     # Assertions
     assert err is None
     assert filtered[0] is not None
-    assert filtered[0].get("_id") == oid
+    assert filtered[0].get("_id") == pe_oid
     assert filtered[0].get("complete") == False
     assert filtered[0].get("distance") == "0"
     assert filtered[0].get("duration") == 120
