@@ -15,7 +15,13 @@ class GymObject:
             gym["_id"] = str(gym["_id"])
         return gym
 
-    # ── Reads ──────────────────────────────────────────────────────────────────
+    # ── Create ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def create(gym_data):
+        result = gymCollection.insert_one(gym_data)
+        return str(result.inserted_id)
+
+    # ── Read ──────────────────────────────────────────────────────────────────
     def find_all():
         gyms = gymCollection.find()
         return [GymObject._serialize(g) for g in gyms]
@@ -23,13 +29,8 @@ class GymObject:
     def find_by_id(id):
         gym = gymCollection.find_one({"_id": ObjectId(id)})
         return GymObject._serialize(gym)
-
-    # ── Writes ─────────────────────────────────────────────────────────────────
-    @staticmethod
-    def create(gym_data):
-        result = gymCollection.insert_one(gym_data)
-        return str(result.inserted_id)
     
+    # ── Delete ──────────────────────────────────────────────────────────────────
     @staticmethod
     def delete(id):
         result = gymCollection.delete_one({"_id": ObjectId(id)})
