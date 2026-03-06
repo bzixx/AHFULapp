@@ -8,25 +8,7 @@ from DataModels.GymObject import GymObject
 #   ensuring that all necessary validations and rules are applied before interacting with 
 #   the database.
 class GymDriver:
-
-    @staticmethod
-    def get_all_gyms():
-        try:
-            gyms = GymObject.find_all()
-            return gyms, None
-        except Exception as e:
-            return None, str(e)
-
-    @staticmethod
-    def get_gym_by_id(id):
-        try:
-            gym = GymObject.find_by_id(id)
-            if not gym:
-                return None, "Gym not found"
-            return gym, None
-        except Exception as e:
-            return None, str(e)
-
+    # ── Create ─────────────────────────────────────────────────────────────────
     @staticmethod
     def create_gym(name, address, cost, link):
         # Validate required fields
@@ -45,8 +27,27 @@ class GymDriver:
             return response, None
         except Exception as e:
             return None, str(e)
+
+    # ── Read ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def get_all_gyms():
+        try:
+            gyms = GymObject.find_all()
+            return gyms, None
+        except Exception as e:
+            return None, str(e)
+
+    @staticmethod
+    def get_gym_by_id(id):
+        try:
+            gym = GymObject.find_by_id(id)
+            if not gym:
+                return None, "Gym not found"
+            return gym, None
+        except Exception as e:
+            return None, str(e)
         
-        
+    # ── Delete ─────────────────────────────────────────────────────────────────    
     @staticmethod
     def delete_gym(id):
         # Validate input
