@@ -3,8 +3,7 @@ from Services.ExerciseDriver import ExerciseDriver
 
 exerciseRouteBlueprint = Blueprint("exercises", __name__,  url_prefix='/AHFULexercises')
 
-
-# ── GET all exercises (supports ?muscle_group=chest&difficulty=beginner) ──────
+# ── GET all exercises ───────────────────────────────────────────────────────
 @exerciseRouteBlueprint.route("/", methods=["GET"])
 def get_all_exercises():
     # filters = {
@@ -18,16 +17,15 @@ def get_all_exercises():
         return jsonify({"error": error}), 500
     return jsonify(exercises), 200
 
-
 # ── GET single exercise ───────────────────────────────────────────────────────
-@exerciseRouteBlueprint.route("/<exercise_id>", methods=["GET"])
+@exerciseRouteBlueprint.route("id/<exercise_id>", methods=["GET"])
 def get_exercise(exercise_id):
     exercise, error = ExerciseDriver.get_exercise_by_id(exercise_id)
     if error:
         return jsonify({"error": error}), 404
     return jsonify(exercise), 200
 
-# ── GET single exercise ───────────────────────────────────────────────────────
+# ── GET exercise search ───────────────────────────────────────────────────────
 @exerciseRouteBlueprint.route("/search", methods=["GET"])
 def search_exercises():
     search_string = request.args.get("search")
@@ -39,9 +37,8 @@ def search_exercises():
         return jsonify({"error": error}), 404
     return jsonify(exercises), 200
 
-
 # ── CREATE exercise ───────────────────────────────────────────────────────────
-@exerciseRouteBlueprint.route("/", methods=["POST"])
+@exerciseRouteBlueprint.route("create/", methods=["POST"])
 def create_exercise():
     data = request.get_json()
     if not data:
@@ -49,15 +46,16 @@ def create_exercise():
 
     exercise_id, error = ExerciseDriver.create_exercise(
         name=data.get("name"),
-        muscle_group=data.get("muscle_group"),
+        body_part=data.get("body_part"),
         difficulty=data.get("difficulty"),
         equipment=data.get("equipment"),
         instructions=data.get("instructions"),
+        type=data.get("type")
     )
+    
     if error:
         return jsonify({"error": error}), 400
     return jsonify({"exercise_id": exercise_id, "message": "Exercise created"}), 201
-
 
 # ── UPDATE exercise ───────────────────────────────────────────────────────────
 @exerciseRouteBlueprint.route("/<exercise_id>", methods=["PUT"])
@@ -71,9 +69,8 @@ def update_exercise(exercise_id):
         return jsonify({"error": error}), 400
     return jsonify({"message": "Exercise updated successfully"}), 200
 
-
 # ── DELETE exercise ───────────────────────────────────────────────────────────
-@exerciseRouteBlueprint.route("/<exercise_id>", methods=["DELETE"])
+@exerciseRouteBlueprint.route("/delete/<exercise_id>", methods=["DELETE"])
 def delete_exercise(exercise_id):
     deleted, error = ExerciseDriver.delete_exercise(exercise_id)
     if error:
