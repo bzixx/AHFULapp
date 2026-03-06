@@ -82,10 +82,10 @@ class WorkoutDriver:
     @staticmethod
     def get_workouts_by_user(userId):
         try:
-            workout = WorkoutObject.find_by_user(userId)
-            if not workout:
+            workouts = WorkoutObject.find_by_user(userId)
+            if not workouts:
                 return None, "Workout not found"
-            return workout, None
+            return workouts, None
         except Exception as e:
             return None, str(e)
         

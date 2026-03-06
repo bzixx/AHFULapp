@@ -14,7 +14,7 @@ def get_all_workouts():
 # ── GET all workouts for a specific user ──────────────────────────────────────
 @workoutRouteBlueprint.route("/<userId>", methods=["GET"])
 def get_workouts_by_user(userId):
-    workouts, error = WorkoutDriver.get_workouts_by_user(userId=userId)
+    workouts, error = WorkoutDriver.get_workouts_by_user(userId)
     if error:
         return jsonify({"error": error}), 500
     return jsonify(workouts), 200

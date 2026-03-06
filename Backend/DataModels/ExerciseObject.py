@@ -33,3 +33,10 @@ class ExerciseObject:
     def find_by_email(email):
         workout = ExerciseCollection.find({"userEmail": email})
         return [ExerciseObject._serialize(w) for w in workout]
+    
+    # ── Delete ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def delete(id):
+        result = ExerciseCollection.delete_one({"_id": ObjectId(id)})
+        return str((result.deleted_count == 1) * id)
+    

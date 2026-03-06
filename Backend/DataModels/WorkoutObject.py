@@ -33,7 +33,11 @@ class WorkoutObject:
         return WorkoutObject._serialize(workout)
     
     def find_by_user(userId):
-        workout = workoutCollection.find({"userId": ObjectId(userId)})
+        workout = workoutCollection.find({
+            "userId": ObjectId(userId),
+            "template": {"$exists": False},
+            "startTime": {"$ne": 0}
+        })
         return [WorkoutObject._serialize(w) for w in workout]
 
     # ── Delete ──────────────────────────────────────────────────────────────────
