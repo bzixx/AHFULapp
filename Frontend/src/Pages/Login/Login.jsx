@@ -1,6 +1,7 @@
 import "./Login.css";
 import { GoogleLogin } from "@react-oauth/google";
-
+import { useDispatch } from "react-redux";
+import { authLogin, authLogout} from "./AuthSlice";
 
 
 export function Login() {
@@ -22,7 +23,8 @@ export function Login() {
     // }
 
     // Logout function
-    const context_logout = async() => {
+    const dispatch = useDispatch();
+    const handleGoogleLogout = async() => {
         //Define POST URL for Later
         const backendPOSTURL = `http://localhost:5000/AHFULauth/logout`;
 
@@ -42,7 +44,8 @@ export function Login() {
             localStorage.removeItem('user_data');
             //TODO: UPDATE REDUX
             //setIsLoggedIn(false);
-
+            dispatch(authLogout());
+            console.log("AHFUL Logout Completed successfully.");
 
         }catch(error){
             //Catch Spooky Errors that should never occur because you shouldnt log out before login
@@ -79,7 +82,12 @@ export function Login() {
                 if (contentType && contentType.includes('application/json')) {
                     backendUserData = await backendResponse.json();
                     const frontendUserInfo = backendUserData.user_info;
-                    localStorage.setItem("user_data", JSON.stringify(frontendUserInfo));
+                    const userString = JSON.stringify(frontendUserInfo);
+                    localStorage.setItem("user_data", userString);
+                    dispatch(authLogin(frontendUserInfo));
+                    //If we want to swap to https use below line instead.
+                    //document.cookie = `user_data=${userString}; path=/; secure; samesite=strict`;
+                    document.cookie = `user_data=${userString}; path=/; samesite=strict`;
 
                 } else {
                     //If its not JSON try to parse it into text. 
