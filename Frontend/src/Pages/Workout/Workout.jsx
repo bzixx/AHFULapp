@@ -29,6 +29,7 @@ export function Workout() {
   /*Hook to track name of the exercise being added to the workout via the dropdown */
   const [exerciseName, setExerciseName] = useState("");
   const [pendingExercises, setPendingExercises] = useState([]);
+  const [open, setOpen] = useState(false);
   const searchTimeoutRef = useRef(null);
 
   useEffect(() => {
@@ -317,15 +318,7 @@ export function Workout() {
             ))}
           </div>
           <div className="workout-actions">
-            <div className="workout-actions-left-side">
-              <button
-                className="workout-add-exercise-btn"
-                onClick={toggle_open}
-              >
-                ➕
-              </button>
-              <div className="workout-add-exercise-text">Add Exercise</div>
-            </div>
+            <div className="workout-actions-left-side"></div>
 
             <div className="workout-actions-right-side">
               <button className="workout-submit-button" onClick={handleSubmit}>
@@ -441,13 +434,20 @@ export function Workout() {
               })}
             </div>
 
-            <div className="add-btn-wrapper">
+            <div className="add-btn-wrapper" style={{display: 'flex', gap: '8px'}}>
               <button
-                className="add-btn"
+                className="workout-add-selected-button add-btn"
                 type="button"
                 onClick={() => addExerciseToWorkout()}
               >
-                Add Exercises
+                Add Selected Exercises
+              </button>
+              <button
+                className="workout-open-new-button add-btn"
+                type="button"
+                onClick={toggle_open}
+              >
+                Add New Exercise
               </button>
             </div>
           </div>
