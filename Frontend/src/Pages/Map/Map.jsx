@@ -25,51 +25,110 @@ L.Icon.Default.mergeOptions({
 export function Map() {
   const position = [44.8697, -91.9278];
   // State for the mock form & saved gyms (frontend-only)
-  const [form, setForm] = useState({ name: "", address: "", lat: position[0], lng: position[1], notes: "", type: "other" });
+  const [form, setForm] = useState({ name: "", address: "", cost: "", link: "", lat: position[0], lng: position[1], notes: "", type: "other" });
   const [savedGyms, setSavedGyms] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Load saved gyms from localStorage (mock persistence)
-  useEffect(() => {
+  const fetchGyms = async () => {
     try {
-      const raw = localStorage.getItem("mockSavedGyms");
-      if (raw) setSavedGyms(JSON.parse(raw));
-    } catch (e) {
-      console.warn("Failed to load saved gyms", e);
+      // Use a relative path so the dev server proxy (if configured) will forward to backend.
+      const res = await fetch("http://localhost:5000/AHFULgyms");
+
+      if (!res.ok) {
+        // Provide a clearer error including body text when possible
+        let bodyText = "";
+        try {
+          bodyText = await res.text();
+        } catch (e) {
+          /* ignore */
+        }
+        throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
+      }
+
+      const data = await res.json();
+
+      // Helpful debug output (visible in browser console) when something odd happens
+      console.debug("/AHFULgyms response:", data);
+
+      // Normalize common envelope patterns to an array
+      let list = [];
+      if (Array.isArray(data)) {
+        list = data;
+      } else if (data && Array.isArray(data.data)) {
+        list = data.data;
+      } else if (data && Array.isArray(data.results)) {
+        list = data.results;
+      } else {
+        // Not an array; keep empty but log for debugging
+        console.warn("Unexpected /AHFULgyms response shape, expected array or {data: [...]}:", data);
+        list = [];
+      }
+
+      setSavedGyms(list);
+    } catch (err) {
+      // Log the full error for debugging
+      console.error("Failed to fetch gyms:", err);
+      // Some Error objects (DOMExceptions) have a name and message
+      const friendly = err && err.name ? `${err.name}: ${err.message}` : String(err);
+      setError(friendly || "Unknown error");
+      setSavedGyms([]);
+    } finally {
+      setLoading(false);
     }
+
+  };
+
+
+//Load gyms from backend on mount
+  useEffect(() => {
+    fetchGyms();
   }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem("mockSavedGyms", JSON.stringify(savedGyms));
-    } catch (e) {
-      console.warn("Failed to persist saved gyms", e);
-    }
-  }, [savedGyms]);
 
   function onMapClick(mapinput) {
     setForm((f) => ({ ...f, lat: mapinput.lat, lng: mapinput.lng }));
   }
 
   function saveGym(e) {
+    //post to backend to actually save to database
     e.preventDefault();
-    const trimmedName = (form.name || "").trim();
-    if (!trimmedName) return alert("Please enter a gym name before saving.");
 
-    const gym = {
-      id: Date.now(),
-      name: trimmedName,
+    const BACKENDPOST_URL = "http://localhost:5000/AHFULgyms/create";
+    
+    const gymData = {
+      name: form.name,
       address: form.address,
-      type: form.type || "other",
-      lat: Number(form.lat),
-      lng: Number(form.lng),
+      type: form.type,
+      cost: form.cost,
+      link: form.link,
+      lat: parseFloat(form.lat),
+      lng: parseFloat(form.lng),
       notes: form.notes,
     };
-    setSavedGyms((s) => [gym, ...s]);
-    setForm({ name: "", address: "", lat: gym.lat, lng: gym.lng, notes: "", type: "other" });
+
+    console.log(JSON.stringify(gymData));
+    
+    fetch(BACKENDPOST_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(gymData),
+    })
+      .then((res) => {
+        return res.json().then((data) => {
+          console.log("Status:", res.status);
+          console.log("Response body:", data);
+          if (res.ok) {
+            fetchGyms();
+          }
+        });
+      })
+      .catch((error) => {
+        console.error("Error saving gym:", error);
+      });
   }
 
-  function removeGym(id) {
-    setSavedGyms((s) => s.filter((g) => g.id !== id));
+  function removeGym(_id) {
+    setSavedGyms((s) => s.filter((g) => g._id !== _id));
   }
 
   // Component to capture map clicks and report coordinates
@@ -81,6 +140,8 @@ export function Map() {
     });
     return null;
   }
+
+  // Note: gyms are identified by their `_id`. Locally-created gyms are prefixed with `local-`.
 
   return (
     <div className="Map page-layout">
@@ -106,16 +167,16 @@ export function Map() {
             </Marker>
 
             {/* Markers for saved gyms */}
-            {savedGyms.map((g) => (
-              <Marker key={g.id} position={[g.lat, g.lng]}>
+            {savedGyms.map((gym) => (
+              <Marker key={gym._id} position={[gym.lat, gym.lng]}>
                 <Popup>
-                  <strong>{g.name}</strong>
+                  <strong>{gym.name}</strong>
                   <br />
-                  {g.address}
-                  {g.notes ? (
+                  {gym.address}
+                  {gym.notes ? (
                     <>
                       <br />
-                      <em>{g.notes}</em>
+                      <em>{gym.notes}</em>
                     </>
                   ) : null}
                 </Popup>
@@ -143,6 +204,24 @@ export function Map() {
                 value={form.address}
                 onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
                 placeholder="Street, city"
+              />
+            </label>
+
+            <label>
+              Cost
+              <input
+                value={form.cost}
+                onChange={(e) => setForm((f) => ({ ...f, cost: e.target.value }))}
+                placeholder="Cost"
+              />
+            </label>
+
+            <label>
+              Website
+              <input
+                value={form.link}
+                onChange={(e) => setForm((f) => ({ ...f, link: e.target.value }))}
+                placeholder="link"
               />
             </label>
 
@@ -209,20 +288,25 @@ export function Map() {
 
           <div className="saved-list">
             <h3>Saved gyms</h3>
+            <div>
+              <button onClick={fetchGyms} disabled={loading} className="refresh-btn">
+                {loading ? "Refreshing..." : "Refresh"}
+              </button>
+            </div>
             {savedGyms.length === 0 ? (
               <p className="muted">No saved gyms yet.</p>
             ) : (
               <ul>
-                {savedGyms.map((g) => (
-                  <li key={g.id}>
+                {savedGyms.map((gym) => (
+                  <li key={gym._id}>
                     <div className="saved-item">
                       <div>
-                                <strong>{g.name} <span className="type-pill">{g.type === 'home' ? 'Home' : 'Other'}</span></strong>
-                                  <div className="muted small">{g.address}</div>
-                                  <div className="muted small">{g.lat.toFixed ? g.lat.toFixed(5) : g.lat}, {g.lng.toFixed ? g.lng.toFixed(5) : g.lng}</div>
+                                <strong>{gym.name} <span className="type-pill">{gym.type === 'home' ? 'Home' : 'Other'}</span></strong>
+                                  <div className="muted small">{gym.address}</div>
+                                  <div className="muted small">{gym.lat.toFixed ? gym.lat.toFixed(5) : gym.lat}, {gym.lng.toFixed ? gym.lng.toFixed(5) : gym.lng}</div>
                       </div>
                       <div className="saved-actions">
-                        <button onClick={() => removeGym(g.id)} aria-label={`Remove ${g.name}`}>Remove</button>
+                        <button onClick={() => removeGym(gym._id)} aria-label={`Remove ${gym.name}`}>Remove</button>
                       </div>
                     </div>
                   </li>
