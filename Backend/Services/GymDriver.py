@@ -10,16 +10,20 @@ from DataModels.GymObject import GymObject
 class GymDriver:
     # ── Create ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def create_gym(name, address, cost, link):
+    def create_gym(name, address, type, cost, link, lat, lng, notes):
         # Validate required fields
-        if (not name) or (not address):
-            return None, "You are missing a title or address. Please fix, then attempt to create gym again"
+        if (not name) or (not address) or (not lat) or (not lng):
+            return None, "You are missing a title or address or lat or lng. Please fix, then attempt to create gym again"
 
         gym_data = {
             "name": name,
             "address": address,
             "cost": cost,
-            "link": link
+            "link": link,
+            "lat": lat,
+            "lng": lng,
+            "notes": notes,
+            "type": type
         }
 
         try:
