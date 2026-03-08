@@ -30,6 +30,127 @@ export function Workout() {
   const [exerciseName, setExerciseName] = useState("");
   const [pendingExercises, setPendingExercises] = useState([]);
   const [open, setOpen] = useState(false);
+  const [showNewExerciseModal, setShowNewExerciseModal] = useState(false);
+
+  // Wireframe option lists for dropdowns (replace with fetch later)
+  const MUSCLES = [
+    "Chest",
+    "Back",
+    "Shoulders",
+    "Biceps",
+    "Triceps",
+    "Quadriceps",
+    "Hamstrings",
+    "Calves",
+    "Abs",
+  ];
+
+  const BODY_PARTS = ["Upper Body", "Lower Body", "Full Body", "Core"];
+
+  // Fallback equipment list (used while fetching or if fetch fails) - normalized to {value,label}
+  const EQUIPMENT_FALLBACK = [
+    { value: "None", label: "None" },
+    { value: "Dumbbell", label: "Dumbbell" },
+    { value: "Barbell", label: "Barbell" },
+    { value: "Kettlebell", label: "Kettlebell" },
+    { value: "Machine", label: "Machine" },
+    { value: "Resistance Band", label: "Resistance Band" },
+  ];
+
+  const [equipmentOptions, setEquipmentOptions] = useState(EQUIPMENT_FALLBACK);
+  const [equipmentError, setEquipmentError] = useState(null);
+
+  useEffect(() => {
+    loadEquipment();
+  }, []);
+
+
+  const [newExercise, setNewExercise] = useState({
+    name: "",
+    targetMuscles: [],
+    bodyParts: [],
+    equipment: [],
+    instructions: "",
+  });
+
+  const resetNewExercise = () =>
+    setNewExercise({ name: "", targetMuscles: [], bodyParts: [], equipment: [], instructions: "" });
+
+  const openNewExerciseModal = () => {
+    resetNewExercise();
+    setShowNewExerciseModal(true);
+  };
+
+  async function loadEquipment() {
+    setEquipmentError(null);
+    try {
+      const res = await fetch("https://www.exercisedb.dev/api/v1/equipments", {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          "Accept": "application/json",
+          // Some servers will require this header; adding it as requested.
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error(`Equipment API returned ${res.status} ${res.statusText}`);
+      }
+
+      const data = await res.json();
+      // data may be an array, or an envelope like { data: [...] }
+      let arr = data;
+      if (data && Array.isArray(data.data)) arr = data.data;
+
+      console.log("Fetched equipment data:", arr);
+
+      // Normalize to [{value,label}, ...]
+      if (arr) {
+        const normalized = arr.map((item, idx) => {
+          if (item && typeof item === "object") {
+            const value = item.id ?? item._id ?? item.value ?? item.name ?? String(idx);
+            const label = item.name ?? item.title ?? item.equipment ?? String(value);
+            return { value: String(value), label: String(label) };
+          }
+          // fallback for unexpected types
+          const v = String(item);
+          return { value: v, label: v };
+        });
+        setEquipmentOptions(normalized);
+      }
+    } catch (err) {
+      // Common failure mode is a CORS block (TypeError) or network error.
+      console.error("Failed to load equipment options:", err);
+      setEquipmentError(
+        err && err.message
+          ? `Could not load equipment list: ${err.message}`
+          : "Could not load equipment list"
+      );
+      // keep fallback list in place
+    }
+  }
+
+  const closeNewExerciseModal = () => {
+    setShowNewExerciseModal(false);
+  };
+
+  const handleNewExerciseSave = (e) => {
+    e.preventDefault();
+    if (!newExercise.name.trim()) {
+      alert("Please enter a name for the exercise");
+      return;
+    }
+
+    // For now, append to exercises list (could POST to backend later)
+    setExercises((prev) => [...prev, { ...newExercise }]);
+    closeNewExerciseModal();
+  };
+
+  const handleMultiSelectChange = (e, field) => {
+    const values = Array.from(e.target.selectedOptions, (o) => o.value);
+    setNewExercise((prev) => ({ ...prev, [field]: values }));
+  };
   const searchTimeoutRef = useRef(null);
 
   useEffect(() => {
@@ -445,7 +566,7 @@ export function Workout() {
               <button
                 className="workout-open-new-button add-btn"
                 type="button"
-                onClick={toggle_open}
+                onClick={openNewExerciseModal}
               >
                 Add New Exercise
               </button>
@@ -453,6 +574,80 @@ export function Workout() {
           </div>
         </div>
       </div>
+      {/* New Exercise Modal */}
+      {showNewExerciseModal && (
+        <div
+          className="modal-overlay"
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 2000,
+          }}
+          onClick={closeNewExerciseModal}
+        >
+          <form
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            onSubmit={handleNewExerciseSave}
+            style={{
+              background: "#fff",
+              padding: "20px",
+              borderRadius: "8px",
+              width: "480px",
+              maxWidth: "95%",
+            }}
+          >
+            <h3>Add New Exercise</h3>
+
+            <label style={{display: 'block', marginTop: 8}}>Name</label>
+            <input
+              type="text"
+              value={newExercise.name}
+              onChange={(e) => setNewExercise((p) => ({ ...p, name: e.target.value }))}
+              style={{width: '100%'}}
+            />
+
+            <label style={{display: 'block', marginTop: 8}}>Target Muscles</label>
+            <select multiple value={newExercise.targetMuscles} onChange={(e) => handleMultiSelectChange(e, 'targetMuscles')} style={{width: '100%'}}>
+              {MUSCLES.map((m) => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+
+            <label style={{display: 'block', marginTop: 8}}>Body Parts</label>
+            <select multiple value={newExercise.bodyParts} onChange={(e) => handleMultiSelectChange(e, 'bodyParts')} style={{width: '100%'}}>
+              {BODY_PARTS.map((b) => (
+                <option key={b} value={b}>{b}</option>
+              ))}
+            </select>
+
+            <label style={{display: 'block', marginTop: 8}}>Equipment</label>
+            {equipmentError && (
+              <div style={{color: 'red', marginBottom: 6}}>{equipmentError}</div>
+            )}
+            <select multiple value={newExercise.equipment} onChange={(e) => handleMultiSelectChange(e, 'equipment')} style={{width: '100%'}}>
+              {equipmentOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+
+            <label style={{display: 'block', marginTop: 8}}>Instructions</label>
+            <textarea value={newExercise.instructions} onChange={(e) => setNewExercise((p) => ({ ...p, instructions: e.target.value }))} style={{width: '100%'}} />
+
+            <div style={{display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12}}>
+              <button type="button" onClick={closeNewExerciseModal}>Cancel</button>
+              <button type="submit">Save</button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
+
+//
+
