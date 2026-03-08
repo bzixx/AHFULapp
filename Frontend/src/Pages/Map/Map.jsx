@@ -128,7 +128,21 @@ export function Map() {
   }
 
   function removeGym(_id) {
-    setSavedGyms((s) => s.filter((g) => g._id !== _id));
+    const BACKENDDELETE_URL = `http://localhost:5000/AHFULgyms/delete/${_id}`;
+
+    fetch(BACKENDDELETE_URL, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (res.ok) {
+          fetchGyms(); // Refresh the gym list after deletion
+        } else {
+          console.error("Failed to delete gym:", res.statusText);
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting gym:", error);
+      });
   }
 
   // Component to capture map clicks and report coordinates
