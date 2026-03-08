@@ -1,30 +1,82 @@
 import "./Login.css";
 import { GoogleLogin } from "@react-oauth/google";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { authLogin, authLogout} from "./AuthSlice";
 
 
 export function Login() {
 
-    //TODO: FIX WHEN USING REDUX
-    // if (isLoggedIn) {
-    //     const tempText = document.getElementById("LoggedInStatus")
-    //     if (tempText) {
-    //         tempText.innerText = "Logged in successfully! Check Local Storage!";
-    //     }
+    const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
-    //     const button = document.createElement("button");
-    //         button.innerText = "Logout";
-    //         button.addEventListener("click", () => {context_logout(); document.getElementById("LoggedInStatus").innerText = "Logged out successfully!";});
+    //Check for LocalStorage or Cookie Data.
+    const userData = localStorage.getItem("user_data");
+
+    //Define TempText for later use if userData exists
+    const tempText = document.getElementById("LoggedInStatus");
+
+    //Define Button for Logout
+    const button = document.createElement("button");
+    button.innerText = "Logout";
+    button.addEventListener("click", () => {handle_google_logout(); tempText.innerText = "Logged out successfully!";});
+
+    // If is NOT Authenticated
+    if (!isAuthenticated) {
+
+
+
+        //If LocalStorage or Cookie Data exists, parse it and update the LoggedInStatus text to show the user is logged in with their email.
+        if (userData) {
+            //TODO: Check for Expiry time with WhoAmI Route
+            // console.log(userData);
+            //Define POST URL for Later
+            const backendPOSTURL = `http://localhost:5000/AHFULauth/whoami`;
+
+            //Try to Get LocalStorage Cookie for data
+            try{
+                // // POST response Object to BACKEND API ROUTE for processing.
+                // const backendResponse = await fetch(backendPOSTURL, {
+                //     method: 'POST',
+                //     headers: {'Content-Type': 'application/json',},
+                //     body: JSON.stringify(userData),
+                //     credentials: 'include',
+                // });
+                // if (!backendResponse.ok) {
+                //     const message = `AHFUL Frontend API response error (${backendResponse.status}): ${backendResponse.statusText}`;
+                //     throw new Error(message);
+                // }else{
+                //     console.log("AHFUL WhoAmI Check Completed successfully.");
+                // }
+
+            }catch(error){
+                //Catch Spooky Errors that should never occur because you shouldnt log out before login
+                console.log("Front End Local Sotrage/Cookie WhoamI check error , ", error)
+            }
+
+            const parsedData = JSON.parse(userData);
+            if (parsedData && tempText) {
+                tempText.innerText = `Logged in as ${parsedData.email}`;
+                tempText.appendChild(button);
+
+            }
+            //If Not LocalStorage or Cookie Data
+        }else{
+            //DO NOTHING, the Google Login Button will be shown and the user can log in.
+        }
+
+
+        //IF Authenticated
+    }else {
             
-    //     if (tempText) {
-    //         tempText.appendChild(button);
-    //     }
-    // }
+        if (userData) {
+            // console.log(userData);
+            tempText.appendChild(button);
+        }
+
+    }
 
     // Logout function
     const dispatch = useDispatch();
-    const handleGoogleLogout = async() => {
+    const handle_google_logout = async() => {
         //Define POST URL for Later
         const backendPOSTURL = `http://localhost:5000/AHFULauth/logout`;
 
@@ -53,7 +105,7 @@ export function Login() {
         }
     };
 
-    const handleGoogleSuccess = async (response) => {
+    const handle_google_success = async (response) => {
         try{
             //URL to send POST to later
             const backendPOSTURL = `http://localhost:5000/AHFULauth/google-login`;
@@ -112,8 +164,8 @@ export function Login() {
     }    
     };
 
-    const handleGoogleFailure = (error) => {
-        console.error("AHFUL Google Login failed:", error);
+    const handle_google_failure = (error) => {
+        console.error("AHFUL Google Button Login failed and returned Error:", error);
     };
 
 
@@ -167,8 +219,8 @@ export function Login() {
                         text="signin_with"
                         theme="filled_black" 
                         shape="pill"
-                        onSuccess={handleGoogleSuccess}
-                        onError={handleGoogleFailure}
+                        onSuccess={handle_google_success}
+                        onError={handle_google_failure}
                     />
                 </div>
                 <div id="LoggedInStatus">
