@@ -1,66 +1,122 @@
 import React, { useState, useRef, useEffect } from "react";
-
 import "./Workout.css";
 import "../../SiteStyles.css";
-export function Workout({
-    trigger = undefined,
-    setTrigger = undefined,
-}) {
 
-  /* Variables */
-  const [exercises, setExercises] = useState([
+export function Workout() {
+  /* Hook to track state of the InProgressTable on the Workout Page, Default State has exercises */
+  const [exercisesInProgressTable, setExercisesInProgressTable] = useState([
     { name: "Push Ups", reps: 15, sets: 3, weight: "0", completed: false },
-    { name: "Pull Ups", reps: 8, sets: 4, weight: "Full backpack", completed: false },
+    {
+      name: "Pull Ups",
+      reps: 8,
+      sets: 4,
+      weight: "Full backpack",
+      completed: false,
+    },
     { name: "Squats", reps: 20, sets: 3, weight: "45 lbs", completed: false },
-    { name: "Run", reps: "-", sets: "-", weight: "0", completed: false },
+    { name: "Run", reps: "", sets: "", weight: "", completed: false },
   ]);
-
-
-  const [exerciseList, setExerciseList] = useState([
-    "Push Ups",
-    "Pull Ups",
-    "Squats",
-    "Bench Press",
-    "Deadlift",
-    "Overhead Press",
-    "Bicep Curls",
-    "Tricep Dips",
-    "Lunges",
-    "Plank",
-    "Burpees",
-    "Running"
-  ]);
-
-
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [open, setOpen] = useState(Boolean(trigger));
+  /* Hook to track state of the exercises from the DB on the Workout Page */
+  const [exercises, setExercises] = useState([]);
+  /* Hook to track state of the exercises from the DB on the Explore Workout Page */
+  const [loading, setLoading] = useState(false);
+  /* Hook to track state of the error from the DB on the Workout Page */
+  const [error, setError] = useState(null);
+  /* Hook to track state of the timer for the workout */
   const [isRunning, setIsRunning] = useState(false);
+  /* Hook to track the time elapsed during the workout */
   const [time, setTime] = useState(0);
+  /*Hook to track name of the exercise being added to the workout via the dropdown */
   const [exerciseName, setExerciseName] = useState("");
   const [pendingExercises, setPendingExercises] = useState([]);
+  const searchTimeoutRef = useRef(null);
 
-
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    };
+  }, []);
 
   /* Functions */
 
   /* Exercise Functions */
 
+  // Fetch exercises from our backend.
+  // The backend registers the blueprint at /exercises (see Backend/APIRoutes/ExerciseRoutes.py).
+  // The endpoint may return either a raw array (e.g. [ {name:...}, ... ])
+  // or an envelope like { data: [...] } or { results: [...] } depending on the backend.
+  // We try to be flexible and handle the common shapes.
+  const fetch_exercises = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Use a relative path so the dev server proxy (if configured) will forward to backend.
+      const res = await fetch("http://localhost:5000/AHFULexercises");
+
+      if (!res.ok) {
+        // Provide a clearer error including body text when possible
+        let bodyText = "";
+        try {
+          bodyText = await res.text();
+        } catch (e) {
+          /* ignore */
+        }
+        throw new Error(
+          `Server returned ${res.status} ${res.statusText} ${bodyText}`,
+        );
+      }
+
+      const data = await res.json();
+
+      // Helpful debug output (visible in browser console) when something odd happens
+      console.debug("/AHFULexercises response:", data);
+
+      // Normalize common envelope patterns to an array
+      let list = [];
+      if (Array.isArray(data)) {
+        list = data;
+      } else if (data && Array.isArray(data.data)) {
+        list = data.data;
+      } else if (data && Array.isArray(data.results)) {
+        list = data.results;
+      } else {
+        // Not an array; keep empty but log for debugging
+        console.warn(
+          "Unexpected /AHFULexercises response shape, expected array or {data: [...]}:",
+          data,
+        );
+        list = [];
+      }
+
+      setExercises(list);
+    } catch (err) {
+      // Log the full error for debugging
+      console.error("Failed to fetch exercises:", err);
+      // Some Error objects (DOMExceptions) have a name and message
+      const friendly =
+        err && err.name ? `${err.name}: ${err.message}` : String(err);
+      setError(friendly || "Unknown error");
+      setExercises([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const toggleCompleted = (index) => {
-    setExercises(prev => {
+    setExercisesInProgressTable((prev) => {
       const updated = [...prev];
       updated[index] = {
         ...updated[index],
-        completed: !updated[index].completed
+        completed: !updated[index].completed,
       };
       return updated;
     });
   };
 
-
   const updateField = (index, field, value) => {
-    setExercises((prev) => {
+    setExercisesInProgressTable((prev) => {
       const updated = [...prev];
-      updated[index][field] = value;
+      updated[index] = { ...updated[index], [field]: value };
       return updated;
     });
   };
@@ -70,44 +126,91 @@ export function Workout({
     // TODO: Update the workout by grabbing the workout id and user id
   };
 
-
+  //USE EFFECT - Fecth exercises when component mounts
   useEffect(() => {
-    if (typeof trigger !== "undefined") {
-        setOpen(Boolean(trigger));
-    }
-  }, [trigger]);
+    fetch_exercises();
+  }, []);
 
-  const toggle = () => {
-      if (typeof setTrigger === "function") {
-          setTrigger(!trigger);
-      } else {
-          setOpen((s) => !s);
-      }
+  // TOOGGLE OPEN - Toggle the dropdown for adding exercises to the workout
+  const toggle_open = () => {
+    setOpen((prev) => !prev);
   };
 
   const removeWorkout = (index) => {
-    setExercises(prev => prev.filter((_, i) => i !== index));
+    setExercisesInProgressTable((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // Helper to extract a display name whether exercises are strings or objects
+  const getExerciseName = (item) => {
+    if (!item && item !== 0) return "";
+    if (typeof item === "string") return item;
+    if (typeof item === "object") return item.name || item.title || "";
+    return String(item);
+  };
 
+  // Append selected pending exercises to the in-progress table
   const addExerciseToWorkout = (e) => {
-    e.preventDefault();
+    // allow calling from a button (no event) or a form submit event
+    if (e && typeof e.preventDefault === "function") e.preventDefault();
 
     if (pendingExercises.length === 0) return;
 
-    setExercises(prev => [
+    setExercisesInProgressTable((prev) => [
       ...prev,
-      ...pendingExercises.map(name => ({
-        name,
+      ...pendingExercises.map((name) => ({
+        name: getExerciseName(name),
         reps: 0,
         sets: 0,
         weight: "0",
         completed: false,
-      }))
+      })),
     ]);
 
     setPendingExercises([]);
     setExerciseName("");
+  };
+
+  // Search handler - calls the backend search endpoint and replaces `exercises` with results
+  const handleSearch = async (query) => {
+    const searchQuery = typeof query === "string" ? query : exerciseName;
+    if (!searchQuery) {
+      // If no query, re-fetch all exercises
+      fetch_exercises();
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(
+        `http://localhost:5000/AHFULexercises/search?search=${encodeURIComponent(searchQuery)}`,
+      );
+      if (!res.ok) {
+        let bodyText = "";
+        try {
+          bodyText = await res.text();
+        } catch (e) {}
+        throw new Error(
+          `Server returned ${res.status} ${res.statusText} ${bodyText}`,
+        );
+      }
+      const data = await res.json();
+      // Normalize to array
+      let list = [];
+      if (Array.isArray(data)) list = data;
+      else if (data && Array.isArray(data.data)) list = data.data;
+      else if (data && Array.isArray(data.results)) list = data.results;
+      else list = [];
+
+      setExercises(list);
+    } catch (err) {
+      console.error("Search failed:", err);
+      const friendly =
+        err && err.name ? `${err.name}: ${err.message}` : String(err);
+      setError(friendly || "Unknown error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   /* Timer Functions */
@@ -152,7 +255,7 @@ export function Workout({
             <div className="cell header">Weight</div>
             <div className="cell header">Completed</div>
             <div className="cell header"></div>
-            {exercises.map((ex, i) => (
+            {exercisesInProgressTable.map((ex, i) => (
               <React.Fragment key={i}>
                 <div className="cell">{ex.name}</div>
 
@@ -187,9 +290,7 @@ export function Workout({
                     <input
                       type="text"
                       value={ex.weight}
-                      onChange={(e) =>
-                        updateField(i, "weight", e.target.value)
-                      }
+                      onChange={(e) => updateField(i, "weight", e.target.value)}
                     />
                   )}
                 </div>
@@ -217,9 +318,9 @@ export function Workout({
           </div>
           <div className="workout-actions">
             <div className="workout-actions-left-side">
-              <button 
+              <button
                 className="workout-add-exercise-btn"
-                onClick={toggle}
+                onClick={toggle_open}
               >
                 ➕
               </button>
@@ -228,82 +329,128 @@ export function Workout({
 
             <div className="workout-actions-right-side">
               <button className="workout-submit-button" onClick={handleSubmit}>
-              Submit
+                Submit
               </button>
             </div>
           </div>
         </div>
         <div className="workout-footer">
-          <div className="workout-timer-box workout-timer">{formatTime(time)}</div>
+          <div className="workout-timer-box workout-timer">
+            {formatTime(time)}
+          </div>
 
-          <button className="workout-timer-box workout-timer-button" onClick={toggleTimer}>
+          <button
+            className="workout-timer-box workout-timer-button"
+            onClick={toggleTimer}
+          >
             {isRunning ? "Stop Timer" : "Start Timer"}
           </button>
         </div>
       </div>
       <div className="right-column">
         <div className={`add-exercise ${open ? "open" : "closed"}`}>
-          <form onSubmit={addExerciseToWorkout} className="add-exercise-form">
+          <div className="add-exercise-form">
             <div className="dropdown-wrapper">
               <input
                 type="text"
                 placeholder="Search exercises..."
                 value={exerciseName}
                 onChange={(e) => {
-                  setExerciseName(e.target.value);
-                  setShowDropdown(true);
+                  const v = e.target.value;
+                  setExerciseName(v);
+
+                  // Debounce search calls so we don't spam the backend while typing
+                  if (searchTimeoutRef.current)
+                    clearTimeout(searchTimeoutRef.current);
+                  searchTimeoutRef.current = setTimeout(() => {
+                    handleSearch(v);
+                  }, 300);
+                }}
+                onFocus={() => {
+                  // no-op: list is always visible
                 }}
               />
 
-              {showDropdown && exerciseName && (
-                <div className="dropdown">
-                  {exerciseList
-                    .filter(name =>
-                      name.toLowerCase().includes(exerciseName.toLowerCase())
-                    )
-                    .map((name, i) => (
+              <div className="dropdown-instructions">
+                Click an exercise to select it
+              </div>
+
+              {loading && <div className="dropdown-item">Loading...</div>}
+
+              {!loading && exercises.length === 0 && (
+                <div className="dropdown-item">No exercises found</div>
+              )}
+
+              <div className="dropdown-list">
+                {!loading &&
+                  exercises.map((item, i) => {
+                    const name = getExerciseName(item);
+                    if (
+                      exerciseName &&
+                      !name.toLowerCase().includes(exerciseName.toLowerCase())
+                    ) {
+                      return null;
+                    }
+                    const isSelected = pendingExercises.some(
+                      (p) => getExerciseName(p) === name,
+                    );
+                    return (
                       <div
-                        key={i}
-                        className="dropdown-item"
+                        key={`item-${i}`}
+                        className={`dropdown-item ${isSelected ? "selected" : ""}`}
                         onClick={() => {
-                          // Add to list
-                          setPendingExercises(prev => [...prev, name]);
-                          setExerciseName("");
-                          setShowDropdown(false);
+                          setPendingExercises((prev) => {
+                            if (prev.some((p) => getExerciseName(p) === name)) {
+                              return prev.filter(
+                                (p) => getExerciseName(p) !== name,
+                              );
+                            }
+                            return [...prev, name];
+                          });
                         }}
                       >
-                        {name}
+                        <span>{name}</span>
+                        {isSelected && <span className="check">✓</span>}
                       </div>
-                    ))}
-                </div>
-              )}
+                    );
+                  })}
+              </div>
             </div>
 
             {/* Display the list of exercises being added */}
             {/* TODO: Show muscle group too or PR */}
             <div className="pending-list">
-              {pendingExercises.map((ex, i) => (
-                <div key={i} className="pending-item">
-                  <span>{ex}</span>
-                  <button
-                    type="button"
-                    className="remove-btn"
-                    onClick={() =>
-                      setPendingExercises(prev =>
-                        prev.filter((_, idx) => idx !== i)
-                      )
-                    }
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
+              {pendingExercises.map((ex, i) => {
+                const name = getExerciseName(ex);
+                return (
+                  <div key={i} className="pending-item">
+                    <span>{name}</span>
+                    <button
+                      type="button"
+                      className="remove-btn"
+                      onClick={() =>
+                        setPendingExercises((prev) =>
+                          prev.filter((_, idx) => idx !== i),
+                        )
+                      }
+                    >
+                      ×
+                    </button>
+                  </div>
+                );
+              })}
             </div>
 
-          <div className="add-btn-wrapper">
-            <button className="add-btn" type="submit">Add Exercises</button>
+            <div className="add-btn-wrapper">
+              <button
+                className="add-btn"
+                type="button"
+                onClick={() => addExerciseToWorkout()}
+              >
+                Add Exercises
+              </button>
+            </div>
           </div>
-          </form>
         </div>
       </div>
     </div>

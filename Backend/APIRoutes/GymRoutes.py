@@ -3,7 +3,7 @@ from Services.GymDriver import GymDriver
 
 gymRouteBlueprint = Blueprint("gym", __name__, url_prefix="/AHFULgyms")
 
-# ── GET all gyms ────────────────────────────
+# ── GET all gyms ────────────────────────────────────────────────────────
 @gymRouteBlueprint.route("/", methods=["GET"])
 def get_all_gyms():
     gyms, error = GymDriver.get_all_gyms()
