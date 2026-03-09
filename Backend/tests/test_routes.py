@@ -59,7 +59,10 @@ def test_create_delete_gym():
     address = "Hell"
     cost = 0.0
     link = "www.testgym.com"
-    responseId, err = GymDriver.create_gym(name, address, cost, link)
+    lat = 15.3325
+    lng = 30.45532
+    notes = "NIGHTMARE NIGHTMARE NIGHTMARE"
+    responseId, err = GymDriver.create_gym(name, address, cost, link, lat, lng, notes)
 
     if err is not None:
         print(responseId, err)
@@ -84,6 +87,9 @@ def test_create_delete_gym():
     assert gym.get("address") == "Hell"
     assert gym.get("cost") == 0.0
     assert gym.get("link") == "www.testgym.com"
+    assert gym.get("lat") == 15.3325
+    assert gym.get ("lng") == 30.45532
+    assert gym.get ("notes") == "NIGHTMARE NIGHTMARE NIGHTMARE"
 
     # Delete created gym
     response, err = GymDriver.delete_gym(responseId)
