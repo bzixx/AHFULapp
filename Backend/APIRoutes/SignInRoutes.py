@@ -21,13 +21,13 @@ def google_login():
 
     token = postAuthData.get("token")
     if not token:
-        return jsonify({"error": "No token provided to the Backend.  You cannot login without something to login with.  What is this? Anarchy?"}), 400
+        return jsonify({"error": "No google token provided to the Backend.  You cannot login without something to login with.  What is this? Anarchy?"}), 400
 
     # verify JWT
     decodedUserInfo: dict = routeSignInDriver.verify_google_token(token)
     print(decodedUserInfo)
     if not decodedUserInfo:
-        return jsonify({"error": "Invalid token provided to Backend.  Dont come in here with Sloppily Copied Keys."}), 401
+        return jsonify({"error": "Invalid google token provided to Backend.  Dont come in here with Sloppily Copied Keys."}), 401
 
     tokenBits = token[-32:] 
 
@@ -71,8 +71,8 @@ def snapchat_login():
     routeSignInDriver: SignInDriver = current_app.AHFULSignInDriver
 
     token = postAuthData.get("token")
-    # if not token:
-    #     return jsonify({"error": "No token provided to the Backend.  You cannot login without something to login with.  What is this? Anarchy?"}), 400
+    if not token:
+        return jsonify({"error": "No snap token provided to the Backend.  You cannot login without something to login with.  What is this? Anarchy?"}), 400
 
     # # verify JWT
     # decodedUserInfo: dict = routeSignInDriver.verify_google_token(token)
