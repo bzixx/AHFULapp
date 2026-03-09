@@ -201,9 +201,13 @@ def test_create_delete_gym():
     # Give a valid gymId
     name = "A test Gym, you shouldnt see this"
     address = "Hell"
+    type = "General"
     cost = 0.0
     link = "www.testgym.com"
-    responseId, err = GymDriver.create_gym(name, address, cost, link)
+    lat = 0
+    long = 0
+    notes = "test"
+    responseId, err = GymDriver.create_gym(name, address, type, cost, link, lat, long, notes)
 
     if err is not None:
         print(responseId, err)
