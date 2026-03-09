@@ -3,8 +3,7 @@ from Services.PersonalExDriver import PersonalExDriver
 
 personalExRouteBlueprint = Blueprint("personalEx", __name__, url_prefix="/AHFULpersonalEx")
 
-
-# ── GET all personalExs ────────────
+# ── GET all personalExs ────────────────────────────────────────
 @personalExRouteBlueprint.route("/", methods=["GET"])
 def get_all_personal_exs():
     personalExs, error = PersonalExDriver.get_all_personal_exs()
@@ -54,6 +53,7 @@ def create_personal_ex():
         distance=data.get("distance"),
         complete=data.get("complete"),
     )
+    
     if error:
         return jsonify({"error": error}), 400
     return jsonify({"personal_ex_id": personal_ex_id, "message": "Personal Ex created"}), 201

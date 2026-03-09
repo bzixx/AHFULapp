@@ -8,7 +8,31 @@ from DataModels.GymObject import GymObject
 #   ensuring that all necessary validations and rules are applied before interacting with 
 #   the database.
 class GymDriver:
+    # ── Create ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def create_gym(name, address, type, cost, link, lat, lng, notes):
+        # Validate required fields
+        if (not name) or (not address) or (not lat) or (not lng):
+            return None, "You are missing a title or address or lat or lng. Please fix, then attempt to create gym again"
 
+        gym_data = {
+            "name": name,
+            "address": address,
+            "cost": cost,
+            "link": link,
+            "lat": lat,
+            "lng": lng,
+            "notes": notes,
+            "type": type
+        }
+
+        try:
+            response = GymObject.create(gym_data)
+            return response, None
+        except Exception as e:
+            return None, str(e)
+
+    # ── Read ─────────────────────────────────────────────────────────────────
     @staticmethod
     def get_all_gyms():
         try:
@@ -26,27 +50,8 @@ class GymDriver:
             return gym, None
         except Exception as e:
             return None, str(e)
-
-    @staticmethod
-    def create_gym(name, address, cost, link):
-        # Validate required fields
-        if (not name) or (not address):
-            return None, "You are missing a title or address. Please fix, then attempt to create gym again"
-
-        gym_data = {
-            "name": name,
-            "address": address,
-            "cost": cost,
-            "link": link
-        }
-
-        try:
-            response = GymObject.create(gym_data)
-            return response, None
-        except Exception as e:
-            return None, str(e)
         
-        
+    # ── Delete ─────────────────────────────────────────────────────────────────    
     @staticmethod
     def delete_gym(id):
         # Validate input
