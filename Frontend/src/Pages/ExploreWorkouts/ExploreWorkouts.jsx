@@ -3,8 +3,49 @@ import "./ExploreWorkouts.css";
 import "../../SiteStyles.css";
 
 export function ExploreWorkouts() {
+  const [exercises, setExercises] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
+  // Fetch exercises from our backend.
+  // The backend registers the blueprint at /exercises (see Backend/APIRoutes/ExerciseRoutes.py).
+  // The endpoint may return either a raw array (e.g. [ {name:...}, ... ])
+  // or an envelope like { data: [...] } or { results: [...] } depending on the backend.
+  // We try to be flexible and handle the common shapes.
+  const fetchExercises = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Use a relative path so the dev server proxy (if configured) will forward to backend.
+      const res = await fetch("http://localhost:5000/AHFULworkout");
 
+      //If Response is not OK, try to extract more info from the body and Throw
+      if (!res.ok) {
+        // Provide a clearer error including body text when possible
+        let bodyText = "";
+        try {
+          bodyText = await res.text();
+        } catch (e) {
+          /* ignore */
+        }
+        throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
+      }
+
+      //
+      const data = await res.json();
+      setExercises(data);
+    } catch (err) {
+
+      // Log the full error for debugging
+      console.error("Failed to fetch exercises:", err);
+      // Some Error objects (DOMExceptions) have a name and message
+      const friendly = err && err.name ? `${err.name}: ${err.message}` : String(err);
+      setError(friendly || "Unknown error");
+      setExercises([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchExercises();
@@ -13,7 +54,7 @@ export function ExploreWorkouts() {
   return (
     <div className="explore-root">
       <header className="explore-header">
-        <h1>Explore Exercises</h1>
+        <h1>Explore Workouts</h1>
         <div>
           <button onClick={fetchExercises} disabled={loading} className="refresh-btn">
             {loading ? "Refreshing..." : "Refresh"}
@@ -36,10 +77,11 @@ export function ExploreWorkouts() {
               return (
                 <div key={key} className="exercise-item">
                   <div className="exercise-main">
-                    <div className="exercise-name">{ex.name || "Untitled"}</div>
+                    <div className="exercise-name">{ex.title || "Untitled"}</div>
                     <div className="exercise-meta">
-                      {ex.muscle_group && <span>{ex.muscle_group}</span>}
-                      {ex.difficulty && <span> • {ex.difficulty}</span>}
+                      {ex.startTime && <span>Start: {ex.startTime}</span>}
+                      {ex.endTime && <span> • End: {ex.endTime}</span>}
+                      {ex.gymId && <span> • Gym: {ex.gymId}</span>}
                     </div>
                   </div>
                   {ex.instructions && <div className="exercise-instructions">{ex.instructions}</div>}
