@@ -1,4 +1,3 @@
-
 import os
 import requests
 from bson import ObjectId, errors as bson_errors
@@ -24,6 +23,9 @@ def test_find_gym_by_id():
     assert gym.get("address") == "123 Main St, Anytown, USA"
     assert gym.get("cost") == 49.99
     assert gym.get("link") == "https://examplegym.com"
+    assert gym.get("lat") == 333.00403
+    assert gym.get("lng") == 343
+    assert gym.get("notes") == "Egg :)"
 
     # Give a bad gymId
     bad_oid = "699cff88400d9d43a32e924"
