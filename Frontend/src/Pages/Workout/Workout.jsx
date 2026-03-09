@@ -64,7 +64,6 @@ export function Workout() {
     loadEquipment();
   }, []);
 
-
   const [newExercise, setNewExercise] = useState({
     name: "",
     targetMuscles: [],
@@ -74,7 +73,13 @@ export function Workout() {
   });
 
   const resetNewExercise = () =>
-    setNewExercise({ name: "", targetMuscles: [], bodyParts: [], equipment: [], instructions: "" });
+    setNewExercise({
+      name: "",
+      targetMuscles: [],
+      bodyParts: [],
+      equipment: [],
+      instructions: "",
+    });
 
   const openNewExerciseModal = () => {
     resetNewExercise();
@@ -88,14 +93,16 @@ export function Workout() {
         method: "GET",
         mode: "cors",
         headers: {
-          "Accept": "application/json",
+          Accept: "application/json",
           // Some servers will require this header; adding it as requested.
           "Content-Type": "application/json",
         },
       });
 
       if (!res.ok) {
-        throw new Error(`Equipment API returned ${res.status} ${res.statusText}`);
+        throw new Error(
+          `Equipment API returned ${res.status} ${res.statusText}`,
+        );
       }
 
       const data = await res.json();
@@ -109,8 +116,10 @@ export function Workout() {
       if (arr) {
         const normalized = arr.map((item, idx) => {
           if (item && typeof item === "object") {
-            const value = item.id ?? item._id ?? item.value ?? item.name ?? String(idx);
-            const label = item.name ?? item.title ?? item.equipment ?? String(value);
+            const value =
+              item.id ?? item._id ?? item.value ?? item.name ?? String(idx);
+            const label =
+              item.name ?? item.title ?? item.equipment ?? String(value);
             return { value: String(value), label: String(label) };
           }
           // fallback for unexpected types
@@ -125,7 +134,7 @@ export function Workout() {
       setEquipmentError(
         err && err.message
           ? `Could not load equipment list: ${err.message}`
-          : "Could not load equipment list"
+          : "Could not load equipment list",
       );
       // keep fallback list in place
     }
@@ -365,63 +374,60 @@ export function Workout() {
   /* Initial Page Load */
   /////////////////////////////////////////////////////////////////////////////////////////
 
-
   // Test id: user_id: 699d0093795741a59fe13616
   const userId = "699d0093795741a59fe13616";
+  const [workout, setWorkout] = useState("");
   const [workoutId, setWorkoutId] = useState("");
   const [workoutTitle, setWorkoutTitle] = useState("");
 
-useEffect(() => {
-  async function getWorkout() {
-    try {
-      const res = await fetch(`http://localhost:5000/AHFULworkout/${userId}`);
-      const data = await res.json();
+  useEffect(() => {
+    async function getWorkout() {
+      try {
+        const res = await fetch(`http://localhost:5000/AHFULworkout/${userId}`);
+        const data = await res.json();
 
-      setWorkouts(data);
-      console.log(data);
+        console.log(data);
 
-      // Only set workoutId if data is a non-empty array
-      if (Array.isArray(data) && data.length > 0) {
-        setWorkout(data[0])
-        setWorkoutId(data[0]._id);
-        setWorkoutTitle(data[0]["title"])
-      } else {
-        console.warn("Workout data is empty or invalid:", data);
+        // Only set workoutId if data is a non-empty array
+        if (Array.isArray(data) && data.length > 0) {
+          setWorkout(data[0]);
+          setWorkoutId(data[0]._id);
+          setWorkoutTitle(data[0]["title"]);
+        } else {
+          console.warn("Workout data is empty or invalid:", data);
+        }
+      } catch (err) {
+        console.error("Error fetching workout:", err);
       }
-
-    } catch (err) {
-      console.error("Error fetching workout:", err);
     }
-  }
 
-  getWorkout();
-}, []);
-
-
-useEffect(() => {
-  if (!workoutId) return; // prevents running on initial render
-
-  async function getPersonalEx() {
-    try {
-      console.log("Fetching personal exercises for workout:", workoutId);
-
-      const res = await fetch(`http://localhost:5000/AHFULpersonalEx/workout/${workoutId}`);
-      const data = await res.json();
-
-      setPersonalExercises(data);
-
-    } catch (err) {
-      console.error("Error fetching personal exercises:", err);
-    }
-  }
-
-  getPersonalEx();
-}, [workoutId]); // <-- runs only when workoutId changes
-
+    getWorkout();
+  }, []);
 
   useEffect(() => {
-    console.log("PersonalEx state updated:", personalExercises);
-  }, [personalExercises]);
+    if (!workoutId) return; // prevents running on initial render
+
+    async function getPersonalEx() {
+      try {
+        console.log("Fetching personal exercises for workout:", workoutId);
+
+        const res = await fetch(
+          `http://localhost:5000/AHFULpersonalEx/workout/${workoutId}`,
+        );
+        const data = await res.json();
+
+        setExercisesInProgressTable(data);
+      } catch (err) {
+        console.error("Error fetching personal exercises:", err);
+      }
+    }
+
+    getPersonalEx();
+  }, [workoutId]); // <-- runs only when workoutId changes
+
+  useEffect(() => {
+    console.log("PersonalEx state updated:", exercisesInProgressTable);
+  }, [exercisesInProgressTable]);
 
   function unixToDate(unix) {
     return new Date(unix * 1000).toLocaleDateString("en-US");
@@ -431,9 +437,10 @@ useEffect(() => {
     <div className="page-layout">
       <div className="left-column">
         <div className="template-container">
-          <form onSubmit={addExerciseToWorkout} className="apply-template">
-            
-          </form>
+          <form
+            onSubmit={addExerciseToWorkout}
+            className="apply-template"
+          ></form>
         </div>
       </div>
 
@@ -513,9 +520,7 @@ useEffect(() => {
             ))}
           </div>
           <div className="workout-actions">
-            <div className="workout-actions-left-side">
-
-            </div>
+            <div className="workout-actions-left-side"></div>
             <div className="workout-actions-right-side">
               <button className="workout-submit-button" onClick={handleSubmit}>
                 Submit
@@ -538,7 +543,7 @@ useEffect(() => {
       </div>
 
       <div className="right-column">
-        <div className={`add-exercise ${open ? "open" : "closed"}`}>
+        <div className="add-exercise">
           <div className="add-exercise-form">
             <div className="dropdown-wrapper">
               <input
@@ -564,49 +569,51 @@ useEffect(() => {
               <div className="dropdown-instructions">
                 Click an exercise to select it
               </div>
+              <div className="dropdown">
+                {loading && <div className="dropdown-item">Loading...</div>}
 
-              {loading && <div className="dropdown-item">Loading...</div>}
+                {!loading && exercises.length === 0 && (
+                  <div className="dropdown-item">No exercises found</div>
+                )}
 
-              {!loading && exercises.length === 0 && (
-                <div className="dropdown-item">No exercises found</div>
-              )}
-
-              <div className="dropdown-list">
-                {!loading &&
-                  exercises.map((item, i) => {
-                    const name = getExerciseName(item);
-                    if (
-                      exerciseName &&
-                      !name.toLowerCase().includes(exerciseName.toLowerCase())
-                    ) {
-                      return null;
-                    }
-                    const isSelected = pendingExercises.some(
-                      (p) => getExerciseName(p) === name,
-                    );
-                    return (
-                      <div
-                        key={`item-${i}`}
-                        className={`dropdown-item ${isSelected ? "selected" : ""}`}
-                        onClick={() => {
-                          setPendingExercises((prev) => {
-                            if (prev.some((p) => getExerciseName(p) === name)) {
-                              return prev.filter(
-                                (p) => getExerciseName(p) !== name,
-                              );
-                            }
-                            return [...prev, name];
-                          });
-                        }}
-                      >
-                        <span>{name}</span>
-                        {isSelected && <span className="check">✓</span>}
-                      </div>
-                    );
-                  })}
+                <div className="dropdown-item">
+                  {!loading &&
+                    exercises.map((item, i) => {
+                      const name = getExerciseName(item);
+                      if (
+                        exerciseName &&
+                        !name.toLowerCase().includes(exerciseName.toLowerCase())
+                      ) {
+                        return null;
+                      }
+                      const isSelected = pendingExercises.some(
+                        (p) => getExerciseName(p) === name,
+                      );
+                      return (
+                        <div
+                          key={`item-${i}`}
+                          className={`dropdown-item ${isSelected ? "selected" : ""}`}
+                          onClick={() => {
+                            setPendingExercises((prev) => {
+                              if (
+                                prev.some((p) => getExerciseName(p) === name)
+                              ) {
+                                return prev.filter(
+                                  (p) => getExerciseName(p) !== name,
+                                );
+                              }
+                              return [...prev, name];
+                            });
+                          }}
+                        >
+                          <span>{name}</span>
+                          {isSelected && <span className="check">✓</span>}
+                        </div>
+                      );
+                    })}
+                </div>
               </div>
             </div>
-
             {/* Display the list of exercises being added */}
             {/* TODO: Show muscle group too or PR */}
             <div className="pending-list">
@@ -631,7 +638,10 @@ useEffect(() => {
               })}
             </div>
 
-            <div className="add-btn-wrapper" style={{display: 'flex', gap: '8px'}}>
+            <div
+              className="add-btn-wrapper"
+              style={{ display: "flex", gap: "8px" }}
+            >
               <button
                 className="workout-add-selected-button add-btn"
                 type="button"
@@ -679,43 +689,87 @@ useEffect(() => {
           >
             <h3>Add New Exercise</h3>
 
-            <label style={{display: 'block', marginTop: 8}}>Name</label>
+            <label style={{ display: "block", marginTop: 8 }}>Name</label>
             <input
               type="text"
               value={newExercise.name}
-              onChange={(e) => setNewExercise((p) => ({ ...p, name: e.target.value }))}
-              style={{width: '100%'}}
+              onChange={(e) =>
+                setNewExercise((p) => ({ ...p, name: e.target.value }))
+              }
+              style={{ width: "100%" }}
             />
 
-            <label style={{display: 'block', marginTop: 8}}>Target Muscles</label>
-            <select multiple value={newExercise.targetMuscles} onChange={(e) => handleMultiSelectChange(e, 'targetMuscles')} style={{width: '100%'}}>
+            <label style={{ display: "block", marginTop: 8 }}>
+              Target Muscles
+            </label>
+            <select
+              multiple
+              value={newExercise.targetMuscles}
+              onChange={(e) => handleMultiSelectChange(e, "targetMuscles")}
+              style={{ width: "100%" }}
+            >
               {MUSCLES.map((m) => (
-                <option key={m} value={m}>{m}</option>
+                <option key={m} value={m}>
+                  {m}
+                </option>
               ))}
             </select>
 
-            <label style={{display: 'block', marginTop: 8}}>Body Parts</label>
-            <select multiple value={newExercise.bodyParts} onChange={(e) => handleMultiSelectChange(e, 'bodyParts')} style={{width: '100%'}}>
+            <label style={{ display: "block", marginTop: 8 }}>Body Parts</label>
+            <select
+              multiple
+              value={newExercise.bodyParts}
+              onChange={(e) => handleMultiSelectChange(e, "bodyParts")}
+              style={{ width: "100%" }}
+            >
               {BODY_PARTS.map((b) => (
-                <option key={b} value={b}>{b}</option>
+                <option key={b} value={b}>
+                  {b}
+                </option>
               ))}
             </select>
 
-            <label style={{display: 'block', marginTop: 8}}>Equipment</label>
+            <label style={{ display: "block", marginTop: 8 }}>Equipment</label>
             {equipmentError && (
-              <div style={{color: 'red', marginBottom: 6}}>{equipmentError}</div>
+              <div style={{ color: "red", marginBottom: 6 }}>
+                {equipmentError}
+              </div>
             )}
-            <select multiple value={newExercise.equipment} onChange={(e) => handleMultiSelectChange(e, 'equipment')} style={{width: '100%'}}>
+            <select
+              multiple
+              value={newExercise.equipment}
+              onChange={(e) => handleMultiSelectChange(e, "equipment")}
+              style={{ width: "100%" }}
+            >
               {equipmentOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
               ))}
             </select>
 
-            <label style={{display: 'block', marginTop: 8}}>Instructions</label>
-            <textarea value={newExercise.instructions} onChange={(e) => setNewExercise((p) => ({ ...p, instructions: e.target.value }))} style={{width: '100%'}} />
+            <label style={{ display: "block", marginTop: 8 }}>
+              Instructions
+            </label>
+            <textarea
+              value={newExercise.instructions}
+              onChange={(e) =>
+                setNewExercise((p) => ({ ...p, instructions: e.target.value }))
+              }
+              style={{ width: "100%" }}
+            />
 
-            <div style={{display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12}}>
-              <button type="button" onClick={closeNewExerciseModal}>Cancel</button>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 8,
+                marginTop: 12,
+              }}
+            >
+              <button type="button" onClick={closeNewExerciseModal}>
+                Cancel
+              </button>
               <button type="submit">Save</button>
             </div>
           </form>
@@ -724,6 +778,3 @@ useEffect(() => {
     </div>
   );
 }
-
-//
-
