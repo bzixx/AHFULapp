@@ -30,7 +30,7 @@ class ExerciseDriver:
             # To acces it: externalExercises = workableData["data"]
             externalExercises = workableData["data"]
 
-            internalExercises = ExerciseObject.find_all_internal()
+            internalExercises = ExerciseObject.find_all()
 
             exercises = internalExercises + externalExercises
             return exercises, None
