@@ -690,3 +690,43 @@ def test_find_template_by_user():
     # Assertions
     assert exs is None
     assert err == inv_err_code 
+
+def test_create_delete_workout():
+    # Give a valid gymId
+    gymId = "699cff88400d9d43a32e924d"
+    startTime = "1"
+    endTime = "2"
+    title = "A test workout"
+    userId = "699d0093795741a59fe13616"
+    responseId, err = WorkoutDriver.create_workout(userId, gymId, title, startTime, endTime)
+
+    if err is not None:
+        print(responseId, err)
+
+    # Check if response is valid id
+    try:
+        responseObj = ObjectId(str(responseId))
+    except (bson_errors.InvalidId, TypeError, ValueError):
+        assert(False)
+
+    # Give created workoutId
+    workout, err = WorkoutDriver.get_workout_by_id(responseId)
+
+    if err is not None:
+        print(workout, err)
+
+    # Assertions
+    assert err is None
+    assert workout is not None
+    assert workout.get("_id") == responseId
+    assert workout.get("gymId") == "699cff88400d9d43a32e924d"
+    assert workout.get("startTime") == 1
+    assert workout.get("endTime") == 2
+    assert workout.get("userId") == "699d0093795741a59fe13616"
+    
+    # Delete created gym
+    response, err = WorkoutDriver.delete_workout(responseId)
+    if err is not None:
+        print(response, err)
+    # Assertions
+    assert response == responseId
