@@ -3,6 +3,7 @@ from DataModels.ExerciseObject import ExerciseObject
 from urllib.parse import urlencode
 from http.client import HTTPSConnection
 import json
+from urllib.parse import urlencode
 
 #External API Host for ExerciseDB API
 EXERSICEDB_HOST = "www.exercisedb.dev"
