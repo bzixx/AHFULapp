@@ -17,8 +17,9 @@ export function ExploreWorkouts() {
     setError(null);
     try {
       // Use a relative path so the dev server proxy (if configured) will forward to backend.
-      const res = await fetch("http://localhost:5000/AHFULexercises");
+      const res = await fetch("http://localhost:5000/AHFULworkout");
 
+      //If Response is not OK, try to extract more info from the body and Throw
       if (!res.ok) {
         // Provide a clearer error including body text when possible
         let bodyText = "";
@@ -30,27 +31,11 @@ export function ExploreWorkouts() {
         throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
       }
 
+      //
       const data = await res.json();
-
-      // Helpful debug output (visible in browser console) when something odd happens
-      console.debug("/AHFULexercises response:", data);
-
-      // Normalize common envelope patterns to an array
-      let list = [];
-      if (Array.isArray(data)) {
-        list = data;
-      } else if (data && Array.isArray(data.data)) {
-        list = data.data;
-      } else if (data && Array.isArray(data.results)) {
-        list = data.results;
-      } else {
-        // Not an array; keep empty but log for debugging
-        console.warn("Unexpected /AHFULexercises response shape, expected array or {data: [...]}:", data);
-        list = [];
-      }
-
-      setExercises(list);
+      setExercises(data);
     } catch (err) {
+
       // Log the full error for debugging
       console.error("Failed to fetch exercises:", err);
       // Some Error objects (DOMExceptions) have a name and message
@@ -92,10 +77,11 @@ export function ExploreWorkouts() {
               return (
                 <div key={key} className="exercise-item">
                   <div className="exercise-main">
-                    <div className="exercise-name">{ex.name || "Untitled"}</div>
+                    <div className="exercise-name">{ex.title || "Untitled"}</div>
                     <div className="exercise-meta">
-                      {ex.muscle_group && <span>{ex.muscle_group}</span>}
-                      {ex.difficulty && <span> • {ex.difficulty}</span>}
+                      {ex.startTime && <span>Start: {ex.startTime}</span>}
+                      {ex.endTime && <span> • End: {ex.endTime}</span>}
+                      {ex.gymId && <span> • Gym: {ex.gymId}</span>}
                     </div>
                   </div>
                   {ex.instructions && <div className="exercise-instructions">{ex.instructions}</div>}
