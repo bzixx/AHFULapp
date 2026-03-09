@@ -6,7 +6,9 @@ export function Layout() {
     
     return (
         <>
+            {/*Getting rid of this until I add a mobile view
             <MenuButton/>
+            */}
             <main>
             <Navbar/>
 
