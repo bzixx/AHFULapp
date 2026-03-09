@@ -56,7 +56,7 @@ def create_workout():
 
 # ── CREATE template ────────────────────────────────────────────────────────────
 @workoutRouteBlueprint.route("/create/template", methods=["POST"])
-def create_workout():
+def create_template():
     data = request.get_json()
     if not data:
         return jsonify({"error": "No data provided"}), 400
