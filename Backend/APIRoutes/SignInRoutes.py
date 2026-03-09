@@ -35,10 +35,6 @@ def google_login():
     #TODO: Look at this because i checks based on email. 
     routeUserObject, error = UserDriver.get_user_by_email(decodedUserInfo.get("email"))
 
-    # Disabled user check in sign in, untested
-    if routeUserObject['deactivated'] == True:
-        return jsonify({"error": "Your account has been disabled"}), 401
-
     if not routeUserObject:
         routeUserObject = UserDriver.create_user({
             "name": decodedUserInfo.get("name"),
@@ -49,12 +45,15 @@ def google_login():
             "magic_bits" : tokenBits
         })
     else: 
-        
+        # Disabled user check in sign in, untested
+        if routeUserObject.get('deactivated', False):
+            return jsonify({"error": "Your account has been disabled"}), 401
+
         # Update last login time
         routeUserObject['last_login_time'] = trunc(time())
         routeUserObject["last_login_expire"] = decodedUserInfo.get("exp")
         routeUserObject['magic_bits'] = tokenBits
-
+        
         UserDriver.update_user_info(dataToBeUpdated=routeUserObject)
 
     # USE TOKEN IN POSTMAN TO SEE IF COOKIE GETS SET

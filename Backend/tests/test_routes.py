@@ -590,7 +590,7 @@ def test_find_workout_by_id():
     assert ex is None
     assert err == inv_err_code 
 
-def test_find_personal_ex_by_user():
+def test_find_workout_by_user():
     # Give a valid _id
     oid = "699d0093795741a59fe13616"
     exs, err = WorkoutDriver.get_workouts_by_user(oid)
@@ -630,6 +630,56 @@ def test_find_personal_ex_by_user():
     # Give an invalid _id
     inv_oid = "000000000000000000000000"
     exs, err = WorkoutDriver.get_workouts_by_user(inv_oid)
+
+    if err is not None:
+        print(exs, err)
+
+    # Expected
+    inv_err_code = "Workout not found"
+    
+    # Assertions
+    assert exs is None
+    assert err == inv_err_code 
+
+def test_find_template_by_user():
+    # Give a valid _id
+    oid = "699d0093795741a59fe13616"
+    exs, err = WorkoutDriver.get_templates(oid)
+
+    if err is not None:
+        print(exs, err)
+    
+    tp_oid = "69af2d76938739819748be48"
+    filtered = [d for d in exs if d.get("_id") == tp_oid]
+
+    assert len(filtered) == 1
+
+    # Assertions
+    assert err is None
+    assert filtered[0] is not None
+    assert filtered[0].get("_id") == tp_oid
+    assert filtered[0].get("userId") == "699d0093795741a59fe13616"
+    assert filtered[0].get("title") == "A workout template"
+    assert filtered[0].get("template") == "True"
+    assert filtered[0].get("startTime") == 0
+
+    # Give a bad _id
+    bad_oid = "699d0093795741a59fe1361"
+    exs, err = WorkoutDriver.get_templates(bad_oid)
+
+    if err is not None:
+        print(exs, err)
+
+    # Expected
+    bad_err_code = "\'" + bad_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    
+    # Assertions
+    assert exs is None
+    assert err == bad_err_code
+
+    # Give an invalid _id
+    inv_oid = "000000000000000000000000"
+    exs, err = WorkoutDriver.get_templates(inv_oid)
 
     if err is not None:
         print(exs, err)
