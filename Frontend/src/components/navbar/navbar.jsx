@@ -15,7 +15,6 @@ export function Navbar({ minHeight }) {
       <Link to="/MeasurementLogger">Measurement Logger</Link>
       <Link to="/Profile">Profile</Link>
       <Link to="/TOS">Terms of Service</Link>
-      <Link to="/WorkoutHistory">Workout History</Link>
       <a href="http://localhost:5000/APIDocs" target="_blank" rel="noreferrer">Documentation</a>
     </nav>
   );

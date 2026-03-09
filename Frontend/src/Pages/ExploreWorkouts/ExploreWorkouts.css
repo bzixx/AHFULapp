@@ -10,6 +10,28 @@
 	margin-bottom: 12px;
 }
 
+.explore-content {
+	display: flex;
+	gap: 24px;
+	align-items: flex-start;
+}
+
+.explore-left {
+	flex: 1;
+	min-width: 0;
+}
+
+.explore-right {
+	flex: 1;
+	min-width: 0;
+}
+
+@media (max-width: 768px) {
+	.explore-content {
+		flex-direction: column;
+	}
+}
+
 .refresh-btn {
 	background: #0b8a84;
 	color: white;
@@ -51,4 +73,31 @@
 	padding: 18px;
 	background: rgba(0,0,0,0.2);
 	border-radius: 8px;
+}
+
+/* Workout history chart (moved from WorkoutHistory) */
+.wh-chart-section {
+	background: #ffffff;
+	border-radius: 12px;
+	padding: 1.5rem;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	width: 100%;
+}
+
+.wh-chart-heading {
+	font-size: 1.15rem;
+	font-weight: 600;
+	margin-bottom: 1rem;
+	color: #333;
+}
+
+.wh-status {
+	text-align: center;
+	font-size: 1.1rem;
+	padding: 3rem 1rem;
+	color: #555;
+}
+
+.wh-error {
+	color: #dc3636;
 }
