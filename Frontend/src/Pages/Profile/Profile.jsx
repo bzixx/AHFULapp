@@ -92,7 +92,6 @@ export function Profile() {
       <div className="right-column" />
     </div>
   );
-
 }
 
 
