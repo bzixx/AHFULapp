@@ -14,7 +14,7 @@ class WorkoutObject:
         if workout:
             workout["_id"] = str(workout["_id"])
             workout["userId"] = str(workout["userId"])
-            if workout["gymId"] is not None:
+            if workout["gymId"]:
                 workout["gymId"] = str(workout["gymId"])
         return workout
     
