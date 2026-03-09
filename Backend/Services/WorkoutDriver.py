@@ -50,8 +50,8 @@ class WorkoutDriver:
             "userId": ObjectId(userId),
             "gymId": ObjectId(gymId),
             "title": title,
-            "startTime": startTime,
-            "endTime": endTime
+            "startTime": int(startTime),
+            "endTime": int(endTime)
         }
 
         try:
