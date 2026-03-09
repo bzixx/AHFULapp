@@ -209,6 +209,8 @@ def test_create_delete_gym():
     notes = "test"
     responseId, err = GymDriver.create_gym(name, address, type, cost, link, lat, long, notes)
 
+    print("Response: ", responseId)
+
     if err is not None:
         print(responseId, err)
 
