@@ -62,12 +62,12 @@ class WorkoutObject:
         return [WorkoutObject._serialize(w) for w in workout]
 
     def find_templates(userId):
-        workout = workoutCollection.find({
+        template = workoutCollection.find({
             "userId": ObjectId(userId),
             "template": {"$exists": True},
             "startTime": 0
         })
-        return [WorkoutObject._serialize_template(w) for w in workout]
+        return [WorkoutObject._serialize_template(t) for t in template]
 
     # ── Delete ──────────────────────────────────────────────────────────────────
     @staticmethod
