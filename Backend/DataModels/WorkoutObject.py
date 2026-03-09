@@ -16,8 +16,14 @@ class WorkoutObject:
             workout["userId"] = str(workout["userId"])
             workout["gymId"] = str(workout["gymId"])
         return workout
+    
+    # ── Create ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def create(workout_data):
+        result = workoutCollection.insert_one(workout_data)
+        return str(result.inserted_id)
 
-    # ── Reads ──────────────────────────────────────────────────────────────────
+    # ── Read ──────────────────────────────────────────────────────────────────
     def find_all():
         workout = workoutCollection.find()
         return [WorkoutObject._serialize(w) for w in workout]
@@ -27,15 +33,14 @@ class WorkoutObject:
         return WorkoutObject._serialize(workout)
     
     def find_by_user(userId):
-        workout = workoutCollection.find({"userId": ObjectId(userId)})
+        workout = workoutCollection.find({
+            "userId": ObjectId(userId),
+            "template": {"$exists": False},
+            "startTime": {"$ne": 0}
+        })
         return [WorkoutObject._serialize(w) for w in workout]
 
-    # ── Writes ─────────────────────────────────────────────────────────────────
-    @staticmethod
-    def create(workout_data):
-        result = workoutCollection.insert_one(workout_data)
-        return str(result.inserted_id)
-    
+    # ── Delete ──────────────────────────────────────────────────────────────────
     @staticmethod
     def delete(id):
         result = workoutCollection.delete_one({"_id": ObjectId(id)})
