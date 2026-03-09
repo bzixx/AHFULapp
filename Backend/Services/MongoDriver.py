@@ -9,7 +9,6 @@ import os
 # and print the names of the collections in the database and the documents in the 
 # user collection for testing purposes
 def getMongoClient():
-
     uri = os.getenv("MONGODB_URI")
 
     #Error handling for missing environment variable
@@ -31,7 +30,6 @@ def getMongoClient():
 def getMongoDatabase():
     ahfulMongoDBClient = getMongoClient()
     return ahfulMongoDBClient["appData"]
-
 
 def killMongoClient():
     # This function is a placeholder for any cleanup operations needed for the MongoDB connection

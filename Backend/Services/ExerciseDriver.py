@@ -1,46 +1,74 @@
 #Services & Drivers know how to implement business Logic related to the Route operations.  Intermediate between Routes and Objects.  Ensures validations and rules are applied before Calling Objects to interact with
 from DataModels.ExerciseObject import ExerciseObject
+from urllib.parse import urlencode
 from http.client import HTTPSConnection
 import json
 
 #External API Host for ExerciseDB API
 EXERSICEDB_HOST = "www.exercisedb.dev"
-#Define Headers for Extnerla API
+#Define Headers for External API
 EXERSICEDB_HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", "Accept": "application/json"}
-
+#Define Connection External API
+externalDBConnection =  HTTPSConnection(EXERSICEDB_HOST)
 
 class ExerciseDriver:
 
     def get_all_exercises():
         try:
-            #Define Connection and Endpoint for External API
-            dbConnection =  HTTPSConnection(EXERSICEDB_HOST)
-            apiEndpoint = "/api/v1/exercises"
-
+            #Define Endpoint for External API
+            apiEndpoint = "/api/v1/exercises?offset=0&limit=25&sortBy=name&sortOrder=desc"
             #Make API Request to External API
-            dbConnection.request("GET", apiEndpoint, headers=EXERSICEDB_HEADERS)
-
+            externalDBConnection.request("GET", apiEndpoint, headers=EXERSICEDB_HEADERS)
             #Assign Response from External API to Variable
-            apiResponse = dbConnection.getresponse()
-
+            apiResponse = externalDBConnection.getresponse()
             #Read Response Data and Decode it from bytes to string, then Load it as JSON to get a workable dict
             data = apiResponse.read()                   # bytes  → b'{"success":true...}'
             decodedData = data.decode("utf-8")          # string → '{"success":true...}'
-            workableData = json.loads(decodedData)      # dict   → {"success": True, "data": [...]}
+            workableData = json.loads(decodedData)      
+            #Workable Data Looks Like:
+            # dict   → {"success": true,"metadata": {"totalPages": 60,"totalExercises": 1500,"currentPage": 1,"previousPage": null,"nextPage": "http://www.exercisedb.dev/api/v1/exercises?offset=25&limit=25&&sortBy=name&sortOrder=desc"},"data": []}
+            # To acces it: externalExercises = workableData["data"]
             externalExercises = workableData["data"]
+
             internalExercises = ExerciseObject.find_all()
 
             exercises = internalExercises + externalExercises
             return exercises, None
         except Exception as e:
             return None, str(e)
+        
+    def get_more_exercises(currentPage):
+        try:
+            if currentPage:
+                #TODO:  right now we only go to Page 2. But Hey, Page two is better than one, right?
+                variable = "something"
+            else:
+                workableData = ExerciseObject.find_all_external()
+                metadata = workableData["metadata"]
+                next_page_url = metadata["nextPage"]
 
+            externalDBConnection.request("GET", next_page_url, headers=EXERSICEDB_HEADERS)
+            apiResponse = externalDBConnection.getresponse()
+            data = apiResponse.read()                   # bytes  → b'{"success":true...
+            decodedData = data.decode("utf-8")          # string → '{"success":true...}'
+            workableData = json.loads(decodedData)      # dict   → {"success": True,
+            externalExercises = workableData["data"]
+
+            return externalExercises, None
+        except Exception as e:
+            return None, str(e)
+
+
+        
     #Search exercises by name using external API and internal DB, then combine results
     def search_exercises(searchString):
         try:
             #Define Connection and Endpoint for External API
             dbConnection =  HTTPSConnection(EXERSICEDB_HOST)
-            apiEndpoint = "/api/v1/exercises/search?q=" + searchString
+            
+            # Properly encode the query string
+            query = urlencode({"q": searchString})  # e.g., q=bench+press+chest+dumbbell
+            apiEndpoint = f"/api/v1/exercises/search?{query}"
 
             #Make API Request to External API
             dbConnection.request("GET", apiEndpoint, headers=EXERSICEDB_HEADERS)
@@ -74,37 +102,48 @@ class ExerciseDriver:
             return None, "Invalid JSON response: " + str(e)
         except Exception as e:
             return None, str(e)
+        
+    @staticmethod
+    def get_exercise_by_id(id):
+        try:
+            exercise = ExerciseObject.find_by_id(id)
+            if not exercise:
+                return None, "Exercise not found"
+            return exercise, None
+        except Exception as e:
+            return None, str(e)
 
-    def create_exercise(name, muscle_group, difficulty, equipment, instructions):
+    def create_exercise(name, body_part, difficulty, equipment, instructions, type):
         try:
             exercise_data = {
                 "name": name,
-                "muscle_group": muscle_group,
+                "body_part": body_part,
                 "difficulty": difficulty,
                 "equipment": equipment,
-                "instructions": instructions
+                "instructions": instructions,
+                "type": type
             }
             exercise_id = ExerciseObject.create(exercise_data)
             return exercise_id, None
         except Exception as e:
             return None, str(e)
 
-    def update_exercise(exercise_id, update_data):
-        try:
-            existing_exercise = ExerciseObject.find_by_id(exercise_id)
-            if not existing_exercise:
-                return False, "Exercise not found"
+    # def update_exercise(exercise_id, update_data):
+    #     try:
+    #         existing_exercise = ExerciseObject.find_by_id(exercise_id)
+    #         if not existing_exercise:
+    #             return False, "Exercise not found"
 
-            # Update fields
-            for key in ["name", "muscle_group", "difficulty", "equipment", "instructions"]:
-                if key in update_data:
-                    existing_exercise[key] = update_data[key]
+    #         # Update fields
+    #         for key in ["name", "body_part", "difficulty", "equipment", "instructions", "type"]:
+    #             if key in update_data:
+    #                 existing_exercise[key] = update_data[key]
 
-            # Save updated exercise
-            ExerciseObject.update(exercise_id, existing_exercise)
-            return True, None
-        except Exception as e:
-            return False, str(e)
+    #         # Save updated exercise
+    #         ExerciseObject.update(exercise_id, existing_exercise)
+    #         return True, None
+    #     except Exception as e:
+    #         return False, str(e)
         
     def delete_exercise(exercise_id):
         try:
