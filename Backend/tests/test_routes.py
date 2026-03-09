@@ -685,7 +685,7 @@ def test_find_template_by_user():
         print(exs, err)
 
     # Expected
-    inv_err_code = "Workout not found"
+    inv_err_code = "Templates not found"
     
     # Assertions
     assert exs is None
