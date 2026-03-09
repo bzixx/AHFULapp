@@ -78,7 +78,7 @@ class WorkoutDriver:
         template_data = {
             "userId": ObjectId(userId),
             "title": title,
-            "template": True,
+            "template": 1,
             "startTime": int(0)
         }
 
