@@ -54,7 +54,7 @@ export function ExploreWorkouts() {
   return (
     <div className="explore-root">
       <header className="explore-header">
-        <h1>Explore Exercises</h1>
+        <h1>Explore Workouts</h1>
         <div>
           <button onClick={fetchExercises} disabled={loading} className="refresh-btn">
             {loading ? "Refreshing..." : "Refresh"}
