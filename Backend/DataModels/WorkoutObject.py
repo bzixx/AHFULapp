@@ -14,8 +14,7 @@ class WorkoutObject:
         if workout:
             workout["_id"] = str(workout["_id"])
             workout["userId"] = str(workout["userId"])
-            if workout["gymId"]:
-                workout["gymId"] = str(workout["gymId"])
+            workout["gymId"] = str(workout["gymId"])
         return workout
     
     @staticmethod
@@ -67,7 +66,7 @@ class WorkoutObject:
             "template": {"$exists": True},
             "startTime": 0
         })
-        return [WorkoutObject._serialize(t) for t in template]
+        return [WorkoutObject._serialize_template(t) for t in template]
 
     # ── Delete ──────────────────────────────────────────────────────────────────
     @staticmethod
