@@ -3,7 +3,6 @@
 from bson import ObjectId
 from Services.MongoDriver import getMongoDatabase
 
-
 ahfulAppDataDB = getMongoDatabase()
 ExerciseCollection = ahfulAppDataDB['exercise']
 
@@ -45,7 +44,6 @@ class ExerciseObject:
         """Convert MongoDB document to JSON-safe dict."""
         if gym:
             gym["_id"] = str(gym["_id"])
-<<<<<<< HEAD
         return gym
 
     # ── Create ─────────────────────────────────────────────────────────────────
@@ -54,7 +52,6 @@ class ExerciseObject:
         result = ExerciseCollection.insert_one(workout_data)
         return str(result.inserted_id)
 
-    # ── Read ──────────────────────────────────────────────────────────────────
     # ── Read ──────────────────────────────────────────────────────────────────
     @staticmethod
     def find_all():
@@ -68,11 +65,8 @@ class ExerciseObject:
     def find_by_email(email):
         workout = ExerciseCollection.find({"userEmail": email})
         return [ExerciseObject._serialize(w) for w in workout]
-    
-    # ── Delete ─────────────────────────────────────────────────────────────────
-    
+        
     # ── Update ─────────────────────────────────────────────────────────────────
-    @staticmethod
     
     # ── Delete ─────────────────────────────────────────────────────────────────
     @staticmethod
