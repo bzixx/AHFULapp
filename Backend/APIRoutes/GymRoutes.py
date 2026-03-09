@@ -3,13 +3,13 @@ from Services.GymDriver import GymDriver
 
 gymRouteBlueprint = Blueprint("gym", __name__, url_prefix="/AHFULgyms")
 
-# ── GET all gyms ────────────────────────────
+# ── GET all gyms ────────────────────────────────────────────────────────
 @gymRouteBlueprint.route("/", methods=["GET"])
 def get_all_gyms():
     gyms, error = GymDriver.get_all_gyms()
     if error:
         return jsonify({"error": error}), 500
-    return jsonify(gyms), 200
+    return gyms, 200
 
 # ── GET single gym ────────────────────────────────────────────────────────────
 @gymRouteBlueprint.route("/<gym_id>", methods=["GET"])
@@ -29,8 +29,12 @@ def create_gym():
     gym_id, error = GymDriver.create_gym(
         name=data.get("name"),
         address=data.get("address"),
+        type=data.get("type"),
         cost=data.get("cost"),
         link=data.get("link"),
+        lat=data.get("lat"),
+        lng=data.get("lng"),
+        notes=data.get("notes"),
     )
     
     if error:
