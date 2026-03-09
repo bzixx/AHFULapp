@@ -204,8 +204,8 @@ def test_create_delete_gym():
     type = "General"
     cost = 0.0
     link = "www.testgym.com"
-    lat = 0
-    long = 0
+    lat = 1
+    long = 1
     notes = "test"
     responseId, err = GymDriver.create_gym(name, address, type, cost, link, lat, long, notes)
 
