@@ -54,6 +54,22 @@ def create_workout():
         return jsonify({"error": error}), 400
     return jsonify({"workout_id": workout_id, "message": "Workout created"}), 201
 
+# ── CREATE template ────────────────────────────────────────────────────────────
+@workoutRouteBlueprint.route("/create/template", methods=["POST"])
+def create_workout():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    workout_id, error = WorkoutDriver.create_workout(
+        userId=data.get("userId"),
+        title=data.get("title")
+    )
+    
+    if error:
+        return jsonify({"error": error}), 400
+    return jsonify({"workout_id": workout_id, "message": "Workout created"}), 201
+
 # ── DELETE workout ────────────────────────────────────────────────────────────────
 @workoutRouteBlueprint.route("/delete/<workout_id>", methods=["DELETE"])
 def delete_workout(workout_id):

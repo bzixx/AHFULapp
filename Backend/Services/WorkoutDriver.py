@@ -60,6 +60,34 @@ class WorkoutDriver:
         except Exception as e:
             return None, str(e)
         
+    @staticmethod
+    def create_template(userId, title):
+        # Validate required fields
+        if (not userId):
+            return None, "You are missing a userId. Please fix, then attempt to create workout again"
+        
+        oid, err = WorkoutDriver._validate_obj_id(userId, "userId")
+        if err:
+            return None, err
+
+        # Ensure the user exists
+        user = UserObject.find_by_id(userId)
+        if not user:
+            return None, "User not found"
+
+        template_data = {
+            "userId": ObjectId(userId),
+            "title": title,
+            "template": True,
+            "startTime": int(0)
+        }
+
+        try:
+            response = WorkoutObject.create(template_data)
+            return response, None
+        except Exception as e:
+            return None, str(e)
+
     # ── Read ─────────────────────────────────────────────────────────────────
     @staticmethod
     def get_all_workouts():

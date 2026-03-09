@@ -730,3 +730,42 @@ def test_create_delete_workout():
         print(response, err)
     # Assertions
     assert response == responseId
+
+def test_create_delete_template():
+    # Give a valid gymId
+    title = "A test template"
+    userId = "699d0093795741a59fe13616"
+    responseId, err = WorkoutDriver.create_template(userId, title)
+
+    if err is not None:
+        print(responseId, err)
+
+    # Check if response is valid id
+    try:
+        responseObj = ObjectId(str(responseId))
+    except (bson_errors.InvalidId, TypeError, ValueError):
+        assert(False)
+
+    # Give created workoutId
+    templates, err = WorkoutDriver.get_templates(userId)
+
+    if err is not None:
+        print(templates, err)
+
+    filtered = [d for d in templates if d.get("_id") == responseId]
+
+    # Assertions
+    assert err is None
+    assert templates is not None
+    assert templates.get("_id") == responseId
+    assert templates.get("startTime") == 0
+    assert templates.get("userId") == "699d0093795741a59fe13616"
+    assert templates.get("title") == "A test template"
+    assert templates.get("template") == "True"
+    
+    # Delete created template
+    response, err = WorkoutDriver.delete_workout(responseId)
+    if err is not None:
+        print(response, err)
+    # Assertions
+    assert response == responseId

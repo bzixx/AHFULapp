@@ -31,6 +31,11 @@ class WorkoutObject:
     def create(workout_data):
         result = workoutCollection.insert_one(workout_data)
         return str(result.inserted_id)
+    
+    @staticmethod
+    def create_template(template_data):
+        result = workoutCollection.insert_one(template_data)
+        return str(result.inserted_id)
 
     # ── Read ──────────────────────────────────────────────────────────────────
     def find_all():
