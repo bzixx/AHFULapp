@@ -757,11 +757,11 @@ def test_create_delete_template():
     # Assertions
     assert err is None
     assert filtered is not None
-    assert filtered.get("_id") == responseId
-    assert filtered.get("startTime") == 0
-    assert filtered.get("userId") == "699d0093795741a59fe13616"
-    assert filtered.get("title") == "A test template"
-    assert filtered.get("template") == "True"
+    assert filtered[0].get("_id") == responseId
+    assert filtered[0].get("startTime") == 0
+    assert filtered[0].get("userId") == "699d0093795741a59fe13616"
+    assert filtered[0].get("title") == "A test template"
+    assert filtered[0].get("template") == "True"
     
     # Delete created template
     response, err = WorkoutDriver.delete_workout(responseId)

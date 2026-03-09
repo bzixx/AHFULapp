@@ -18,14 +18,6 @@ class WorkoutObject:
                 workout["gymId"] = str(workout["gymId"])
         return workout
     
-    @staticmethod
-    def _serialize_template(workout):
-        """Convert MongoDB document to JSON-safe dict."""
-        if workout:
-            workout["_id"] = str(workout["_id"])
-            workout["userId"] = str(workout["userId"])
-        return workout
-    
     # ── Create ─────────────────────────────────────────────────────────────────
     @staticmethod
     def create(workout_data):
@@ -67,7 +59,7 @@ class WorkoutObject:
             "template": {"$exists": True},
             "startTime": 0
         })
-        return [WorkoutObject._serialize_template(w) for w in workout]
+        return [WorkoutObject._serialize(w) for w in workout]
 
     # ── Delete ──────────────────────────────────────────────────────────────────
     @staticmethod
