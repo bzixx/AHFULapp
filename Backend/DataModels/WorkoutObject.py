@@ -14,7 +14,8 @@ class WorkoutObject:
         if workout:
             workout["_id"] = str(workout["_id"])
             workout["userId"] = str(workout["userId"])
-            workout["gymId"] = str(workout["gymId"])
+            if workout["gymId"]:
+                workout["gymId"] = str(workout["gymId"])
         return workout
     
     @staticmethod
@@ -33,11 +34,18 @@ class WorkoutObject:
 
     # ── Read ──────────────────────────────────────────────────────────────────
     def find_all():
-        workout = workoutCollection.find()
+        workout = workoutCollection.find({
+            "template": {"$exists": False},
+            "startTime": {"$ne": 0}
+        })
         return [WorkoutObject._serialize(w) for w in workout]
 
     def find_by_id(id):
-        workout = workoutCollection.find_one({"_id": ObjectId(id)})
+        workout = workoutCollection.find_one({
+            "_id": ObjectId(id),
+            "template": {"$exists": False},
+            "startTime": {"$ne": 0}
+        })
         return WorkoutObject._serialize(workout)
     
     def find_by_user(userId):

@@ -6,6 +6,7 @@ from Services.GymDriver import GymDriver
 from Services.UserDriver import UserDriver
 from Services.FoodDriver import FoodDriver
 from Services.PersonalExDriver import PersonalExDriver
+from Services.WorkoutDriver import WorkoutDriver
 
 # Food
 
@@ -541,6 +542,50 @@ def test_find_user_by_email():
 # def test_user_roles():
 #     pass
 
-
 # Workout
 
+def test_find_workout_by_id():
+    # Give a valid _id
+    oid = "69af2a4598d0f4227b25ed71"
+    ex, err = WorkoutDriver.get_workout_by_id(oid)
+
+    if err is not None:
+        print(ex, err)
+
+    # Assertions
+    assert err is None
+    assert ex is not None
+    assert ex.get("_id") == oid
+    assert ex.get("userId") == "699d0093795741a59fe13616"
+    assert ex.get("gymId") == "699cff88400d9d43a32e924d"
+    assert ex.get("title") == "A test workout"
+    assert ex.get("startTime") == 1
+    assert ex.get("endTime") == 2
+
+    # Give a bad _id
+    bad_oid = "69af2a4598d0f4227b25ed7"
+    ex, err = WorkoutDriver.get_workout_by_id(bad_oid)
+
+    if err is not None:
+        print(ex, err)
+
+    # Expected
+    bad_err_code = "\'" + bad_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    
+    # Assertions
+    assert ex is None
+    assert err == bad_err_code
+
+    # Give an invalid _id
+    inv_oid = "000000000000000000000000"
+    ex, err = WorkoutDriver.get_workout_by_id(inv_oid)
+
+    if err is not None:
+        print(ex, err)
+
+    # Expected
+    inv_err_code = "Workout not found"
+    
+    # Assertions
+    assert ex is None
+    assert err == inv_err_code 
