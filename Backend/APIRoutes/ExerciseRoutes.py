@@ -11,7 +11,8 @@ def get_initial_metadata():
         return jsonify({"error": error}), 500
     return jsonify(metadata), 200
 
-# ── GET MetaData from Page 1 ───────────────────────────────────────────────────────
+# ── POST MetaData for next page from provided currentPage ───────────────────────────────────────────────────────
+#PARAMETER search with value of "next" will go to next page Value of "prev" will go to previous page
 @exerciseRouteBlueprint.route("/metadata", methods=["POST"])
 def get_more_metadata():
     trueNext_falsePrev = request.args.get("search")
@@ -39,7 +40,8 @@ def get_initial_exercises():
         return jsonify({"error": error}), 500
     return jsonify(exercises), 200
 
-# ── GET MetaData from Page 1 ───────────────────────────────────────────────────────
+# ── POST exercises for next page from provided currentPage ───────────────────────────────────────────────────────
+#PARAMETER search with value of "next" will go to next page Value of "prev" will go to previous page
 @exerciseRouteBlueprint.route("/", methods=["POST"])
 def get_more_exercises():
     trueNext_falsePrev = request.args.get("search")
