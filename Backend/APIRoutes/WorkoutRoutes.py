@@ -70,6 +70,27 @@ def create_template():
         return jsonify({"error": error}), 400
     return jsonify({"workout_id": workout_id, "message": "Workout created"}), 201
 
+# ── UPDATE personalEx ───────────────────────────────────────────────────────────
+@workoutRouteBlueprint.route("/update/<workout>", methods=["PUT"])
+def update_personal_ex(workout_id):
+    if not workout_id:
+        return jsonify({"error": "You must provide a workout id to update"}), 400
+
+    data = request.get_json(silent=True)
+    if not data or not isinstance(data, dict):
+        return jsonify({"error": "You must provide a JSON body with at least one field to update"}), 400
+
+    # Call the driver (it already validates allowed fields & id)
+    updated, error = WorkoutDriver.update_workout(id=workout_id, updates=data)
+
+    if error:
+        err_lower = error.lower()
+        if "not found" in err_lower:
+            return jsonify({"error": error}), 404
+        return jsonify({"error": error}), 400
+    
+    return jsonify({"message": "Workout updated", "Workout": updated}), 200
+
 # ── DELETE workout ────────────────────────────────────────────────────────────────
 @workoutRouteBlueprint.route("/delete/<workout_id>", methods=["DELETE"])
 def delete_workout(workout_id):

@@ -452,6 +452,102 @@ def test_create_delete_personal_ex():
     # Assertions
     assert response == responseId
 
+    
+def test_update_personal_ex_roundtrip():
+    personal_ex_id = "69ab5596dc5dee4f518a01cd"
+
+    original, err = PersonalExDriver.get_personal_ex_by_id(personal_ex_id)
+    if err is not None:
+        print("Fetch original failed:", err)
+    assert err is None
+    assert original is not None
+    assert original.get("_id") == personal_ex_id
+
+    orig_reps      = original.get("reps")
+    orig_sets      = original.get("sets")
+    orig_weight    = original.get("weight")
+    orig_duration  = original.get("duration")
+    orig_distance  = original.get("distance")
+    orig_complete  = original.get("complete")
+
+    new_values = {
+        "reps": 999,
+        "sets": 999,
+        "weight": "999",    
+        "duration": 999,    
+        "distance": "999",  
+        "complete": True
+    }
+
+    updated, err = PersonalExDriver.update_personal_ex(id=personal_ex_id, updates=new_values)
+
+    if err is not None:
+        print("Update failed:", err)
+
+    assert err is None
+    assert updated is not None
+    assert updated.get("_id") == personal_ex_id
+
+    assert updated.get("reps") == new_values["reps"]
+    assert updated.get("sets") == new_values["sets"]
+    assert updated.get("weight") == new_values["weight"]
+    assert updated.get("duration") == new_values["duration"]
+    assert updated.get("distance") == new_values["distance"]
+    assert updated.get("complete") == new_values["complete"]
+
+    fetched_after_update, err = PersonalExDriver.get_personal_ex_by_id(personal_ex_id)
+    if err is not None:
+        print("Fetch after update failed:", err)
+    assert err is None
+    assert fetched_after_update is not None
+    assert fetched_after_update.get("_id") == personal_ex_id
+
+    # Assert values are exactly as updated
+    assert fetched_after_update.get("reps") == new_values["reps"]
+    assert fetched_after_update.get("sets") == new_values["sets"]
+    assert fetched_after_update.get("weight") == new_values["weight"]
+    assert fetched_after_update.get("duration") == new_values["duration"]
+    assert fetched_after_update.get("distance") == new_values["distance"]
+    assert fetched_after_update.get("complete") == new_values["complete"]
+
+    # 4) Restore the original values
+    restore = {
+        "reps": orig_reps,
+        "sets": orig_sets,
+        "weight": orig_weight,
+        "duration": orig_duration,
+        "distance": orig_distance,
+        "complete": orig_complete
+    }
+    restored, err = PersonalExDriver.update_personal_ex(id=personal_ex_id, updates=restore)
+    if err is not None:
+        print("Restore failed:", err)
+    assert err is None
+    assert restored is not None
+    assert restored.get("_id") == personal_ex_id
+
+    # Assert restored document reflects the original values
+    assert restored.get("reps") == orig_reps
+    assert restored.get("sets") == orig_sets
+    assert restored.get("weight") == orig_weight
+    assert restored.get("duration") == orig_duration
+    assert restored.get("distance") == orig_distance
+    assert restored.get("complete") == orig_complete
+
+    fetched_after_restore, err = PersonalExDriver.get_personal_ex_by_id(personal_ex_id)
+    if err is not None:
+        print("Fetch after restore failed:", err)
+    assert err is None
+    assert fetched_after_restore is not None
+    assert fetched_after_restore.get("_id") == personal_ex_id
+
+    assert fetched_after_restore.get("reps") == orig_reps
+    assert fetched_after_restore.get("sets") == orig_sets
+    assert fetched_after_restore.get("weight") == orig_weight
+    assert fetched_after_restore.get("duration") == orig_duration
+    assert fetched_after_restore.get("distance") == orig_distance
+    assert fetched_after_restore.get("complete") == orig_complete
+
 # User
 
 def test_find_user_by_id():
