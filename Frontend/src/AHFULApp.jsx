@@ -12,8 +12,7 @@ import { Map } from "./Pages/Map/Map.jsx";
 import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
 import { Profile } from "./Pages/Profile/Profile.jsx";
 import { TOS } from "./Pages/TOS/TOS.jsx";
-import { WorkoutHistory } from "./Pages/WorkoutHistory/WorkoutHistory.jsx";
-import { Layout } from "./Layout.jsx" 
+import { Layout } from "./Layout.jsx"
 import "./SiteStyles.css";
 
 
@@ -48,7 +47,6 @@ function AHFULApp() {
           <Route path="/MeasurementLogger" element={<MeasurementLogger/>}/>
           <Route path="/Profile" element={<Profile/>}/>
           <Route path="/TOS" element={<TOS/>}/>
-          <Route path="/WorkoutHistory" element={<WorkoutHistory/>}/>
         </Route>
       </Routes>
     </GoogleOAuthProvider>
