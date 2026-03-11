@@ -1,3 +1,5 @@
+/*Made with ai to get an idea of what I want it to look like, will revisit after we get
+a list of settings together & once global css changes are done.*/
 import { createPortal } from "react-dom";
 import { useState } from "react";
 import "./ProfileSettings.css";
