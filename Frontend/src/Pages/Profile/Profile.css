@@ -19,7 +19,6 @@
   line-height: 1.1;
 }
 
-/* Profile Picture */
 .profile-picture-section {
   display: flex;
   flex-direction: column;
@@ -46,7 +45,6 @@
   font-size: 0.95rem;
 }
 
-/* Bio Section */
 .profile-bio-section {
   background: linear-gradient(0deg, #fff7f2, #f5f5f5);
   border: 2px solid #333;
@@ -102,7 +100,6 @@
   white-space: pre-wrap;
 }
 
-/* Notifications */
 .profile-notifications-section {
   margin-top: 16px;
   text-align: center;
@@ -134,4 +131,3 @@
     height: 100px;
   }
 }
-

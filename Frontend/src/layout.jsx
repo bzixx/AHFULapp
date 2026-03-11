@@ -3,9 +3,12 @@ import { Outlet } from "react-router-dom";
 import { MenuButton } from "./components/MenuButton/MenuButton";
 
 export function Layout() {
+    
     return (
         <>
+            {/*Getting rid of this until I add a mobile view
             <MenuButton/>
+            */}
             <main>
             <Navbar/>
 
