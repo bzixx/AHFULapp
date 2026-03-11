@@ -19,6 +19,14 @@ def get_workouts_by_user(userId):
         return jsonify({"error": error}), 500
     return jsonify(workouts), 200
 
+# ── GET all templates for a specific user ──────────────────────────────────────
+@workoutRouteBlueprint.route("/templates/<userId>", methods=["GET"])
+def get_templates(userId):
+    workouts, error = WorkoutDriver.get_templates(userId)
+    if error:
+        return jsonify({"error": error}), 500
+    return jsonify(workouts), 200
+
 # ── GET single workout ────────────────────────────────────────────────────────
 @workoutRouteBlueprint.route("/id/<id>", methods=["GET"])
 def get_workout(id):
@@ -40,6 +48,22 @@ def create_workout():
         gymId=data.get("gymId"),
         startTime=data.get("startTime"),
         endTime=data.get("endTime"),
+    )
+    
+    if error:
+        return jsonify({"error": error}), 400
+    return jsonify({"workout_id": workout_id, "message": "Workout created"}), 201
+
+# ── CREATE template ────────────────────────────────────────────────────────────
+@workoutRouteBlueprint.route("/create/template", methods=["POST"])
+def create_template():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    workout_id, error = WorkoutDriver.create_workout(
+        userId=data.get("userId"),
+        title=data.get("title")
     )
     
     if error:

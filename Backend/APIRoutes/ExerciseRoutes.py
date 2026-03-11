@@ -6,12 +6,6 @@ exerciseRouteBlueprint = Blueprint("exercises", __name__,  url_prefix='/AHFULexe
 # ── GET all exercises ───────────────────────────────────────────────────────
 @exerciseRouteBlueprint.route("/", methods=["GET"])
 def get_all_exercises():
-    # filters = {
-    #     key: request.args.get(key)
-    #     for key in ["muscle_group", "difficulty", "equipment"]
-    #     if request.args.get(key)
-    # } Can implmenet this later in Dtiver If we want to. 
-    
     exercises, error = ExerciseDriver.get_all_exercises()
     if error:
         return jsonify({"error": error}), 500
