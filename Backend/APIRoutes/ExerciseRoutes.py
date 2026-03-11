@@ -39,6 +39,26 @@ def get_initial_exercises():
         return jsonify({"error": error}), 500
     return jsonify(exercises), 200
 
+# ── GET MetaData from Page 1 ───────────────────────────────────────────────────────
+@exerciseRouteBlueprint.route("/", methods=["POST"])
+def get_more_exercises():
+    trueNext_falsePrev = request.args.get("search")
+    providedPage = request.get_json()
+
+    if trueNext_falsePrev is None:
+        return jsonify({"error": "No search query provided"}), 400
+    
+    if trueNext_falsePrev == "next":
+        metadata, error = ExerciseDriver.get_next_exercises(providedPage)
+    elif trueNext_falsePrev == "prev":
+        metadata, error = ExerciseDriver.get_prev_exercises(providedPage)
+    else:
+        return jsonify({"error": "Invalid search query"}), 400
+
+    if error:
+        return jsonify({"error": error}), 500
+    return jsonify(metadata), 200
+
 # ── GET single exercise ───────────────────────────────────────────────────────
 @exerciseRouteBlueprint.route("id/<exercise_id>", methods=["GET"])
 def get_exercise(exercise_id):
