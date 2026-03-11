@@ -3,11 +3,18 @@
 from bson import ObjectId
 from Services.MongoDriver import getMongoDatabase
 
-
 ahfulAppDataDB = getMongoDatabase()
 ExerciseCollection = ahfulAppDataDB['exercise']
 
 class ExerciseObject:
+    # ── Helpers ────────────────────────────────────────────────────────────────
+    @staticmethod
+    def _serialize(exercise):
+        """Convert MongoDB document to JSON-safe dict."""
+        if exercise:
+            exercise["_id"] = str(exercise["_id"])
+        return exercise
+    
     # ── Create ─────────────────────────────────────────────────────────────────
     @staticmethod
     def create(workout_data):
@@ -29,20 +36,12 @@ class ExerciseObject:
     def find_by_email(email):
         workout = ExerciseCollection.find({"userEmail": email})
         return [ExerciseObject._serialize(w) for w in workout]
-    
-    # ── Update ─────────────────────────────────────────────────────────────────
-    @staticmethod
-    
+        
     # ── Delete ─────────────────────────────────────────────────────────────────
     @staticmethod
     def delete(id):
         result = ExerciseCollection.delete_one({"_id": ObjectId(id)})
         return str((result.deleted_count == 1) * id)
     
-        # ── Helpers ────────────────────────────────────────────────────────────────
-    @staticmethod
-    def _serialize(gym):
-        """Convert MongoDB document to JSON-safe dict."""
-        if gym:
-            gym["_id"] = str(gym["_id"])
-        return gym
+    
+        
