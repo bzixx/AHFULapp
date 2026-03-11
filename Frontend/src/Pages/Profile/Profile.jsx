@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
+import {ProfileSettingsButton} from "../../components/ProfileSettings/ProfileSettingsButton"
 import "./Profile.css";
 import "../../SiteStyles.css";
 export function Profile() {
     const [userData, setUserData] = useState({name: "", email: "", picture: ""});
     const [bio, setBio] = useState("");
     const [isEditingBio, setIsEditingBio] = useState(false);
-
     useEffect(() => {
       try {
         const stored = JSON.parse(localStorage.getItem("user_data"));
@@ -30,13 +30,14 @@ export function Profile() {
 
     return (
     <div className="page-layout">
+      <ProfileSettingsButton />
       <div className="left-column" />
       <div className="center-column">
         <div className="profile-card">
           <div className="profile-title">
             <h1>Profile</h1>
           </div>
-
+      
           {/* Profile Picture */}
           <div className="profile-picture-section">
             <img

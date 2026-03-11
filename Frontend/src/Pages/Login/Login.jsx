@@ -213,7 +213,7 @@ export function Login() {
                     </h3>
                 </div>
                 <div className="login-button">
-                    <GoogleLogin 
+                    <GoogleLogin
                         size="large"
                         width="200"
                         text="signin_with"
