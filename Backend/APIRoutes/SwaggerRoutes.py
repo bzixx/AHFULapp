@@ -717,6 +717,116 @@ swaggerConfig = {
     },
 
     
+    "/AHFULpersonalEx/update/{personal_ex_id}": {
+      "put": {
+        "summary": "Update a personal exercise",
+        "description": "Updates allowed fields of a personal exercise by id. Server treats PUT as a partial update of allowed fields.",
+        "tags": ["PersonalEx"],
+        "parameters": [
+          {
+            "name": "personal_ex_id",
+            "in": "path",
+            "required": True,
+            "description": "The id of the personal exercise (Mongo ObjectId as string)",
+            "schema": { "type": "string", "example": "698d07b26e5117c22dd7772e" }
+          }
+        ],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reps":     { "type": "integer", "example": 10 },
+                  "sets":     { "type": "integer", "example": 5 },
+                  "weight":   { "type": "string",  "example": "135" },
+                  "duration": { "type": "number",  "example": 0 },
+                  "distance": { "type": "string",  "example": "0" },
+                  "complete": { "type": "boolean", "example": True }
+                },
+                "additionalProperties": False
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Personal exercise updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Personal ex updated" },
+                    "personal_ex": {
+                      "type": "object",
+                      "properties": {
+                        "_id":        { "type": "string", "example": "698d07b26e5117c22dd7772e" },
+                        "exerciseId":{ "type": "string", "example": "698d0bc06e5117c22dd7774b" },
+                        "workoutId": { "type": "string", "example": "699d05d8f1677119323250bc" },
+                        "userId":    { "type": "string", "example": "699d0093795741a59fe13616" },
+                        "reps":      { "type": "integer", "example": 10 },
+                        "sets":      { "type": "integer", "example": 5 },
+                        "weight":    { "type": "string",  "example": "135" },
+                        "duration":  { "type": "number",  "example": 0 },
+                        "distance":  { "type": "string",  "example": "0" },
+                        "complete":  { "type": "boolean", "example": True }
+                      },
+                      "required": ["_id", "userId"]
+                    }
+                  },
+                  "required": ["message", "personal_ex"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or no valid fields to update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "You must provide a JSON body with at least one field to update" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Personal exercise not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "PersonalEx not found" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
       "/AHFULexercises/": {
         "get": {
           "summary": "Get all exercises",
@@ -1319,6 +1429,110 @@ swaggerConfig = {
         }
       }
     },
+
+    "/AHFULworkout/update/{workout_id}": {
+      "put": {
+        "summary": "Update a workout",
+        "description": "Updates allowed fields of a workout by id. Server treats PUT as a partial update of allowed fields.",
+        "tags": ["Workout"],
+        "parameters": [
+          {
+            "name": "workout_id",
+            "in": "path",
+            "required": True,
+            "description": "The id of the workout (Mongo ObjectId as string)",
+            "schema": { "type": "string", "example": "698d07b26e5117c22dd7772e" }
+          }
+        ],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "startTime":     { "type": "integer", "example": 100 },
+                  "endTime":     { "type": "integer", "example": 200 },
+                  "title":   { "type": "string",  "example": "An example workout" }
+                },
+                "additionalProperties": False
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Workout updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Workout updated" },
+                    "workout": {
+                      "type": "object",
+                      "properties": {
+                        "_id":        { "type": "string", "example": "69af2a4598d0f4227b25ed71" },
+                        "gymId":{ "type": "string", "example": "698d0bc06e5117c22dd7774b" },
+                        "userId":    { "type": "string", "example": "699d0093795741a59fe13616" },
+                        "endTime":      { "type": "integer", "example": 10 },
+                        "startTime":      { "type": "integer", "example": 5 },
+                        "title":    { "type": "string",  "example": "A workout"}
+                      },
+                      "required": ["_id", "userId"]
+                    }
+                  },
+                  "required": ["message", "workout"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or no valid fields to update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "You must provide a JSON body with at least one field to update" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Workout not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Workout not found" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
     
     "/AHFULgyms/": {
       "get": {
