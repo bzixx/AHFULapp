@@ -29,37 +29,19 @@ export function WorkoutHistory() {
     async function fetchAndAggregateWorkouts() {
       try {
         setLoading(true);
-        const userData = JSON.parse(localStorage.getItem("userData"));
+        const userData = JSON.parse(localStorage.getItem("user_data"));
 
-        let workouts;
-
-        if (!userData?.email) {
-          // ============================================================
-          // TODO: DELETE this mock data block once login feature is fixed.
-          // This allows testing the chart without being logged in.
-          // ============================================================
-          workouts = [
-            { startTime: "2026-02-02T08:00:00", endTime: "2026-02-02T09:00:00" },
-            { startTime: "2026-02-04T08:00:00", endTime: "2026-02-04T09:30:00" },
-            { startTime: "2026-02-05T08:00:00", endTime: "2026-02-05T08:45:00" },
-            { startTime: "2026-02-10T08:00:00", endTime: "2026-02-10T09:00:00" },
-            { startTime: "2026-02-12T08:00:00", endTime: "2026-02-12T09:15:00" },
-            { startTime: "2026-02-14T08:00:00", endTime: "2026-02-14T08:30:00" },
-            { startTime: "2026-02-15T08:00:00", endTime: "2026-02-15T09:00:00" },
-            { startTime: "2026-02-19T08:00:00", endTime: "2026-02-19T10:00:00" },
-            { startTime: "2026-02-21T08:00:00", endTime: "2026-02-21T09:00:00" },
-            { startTime: "2026-02-23T08:00:00", endTime: "2026-02-23T09:45:00" },
-            { startTime: "2026-02-24T08:00:00", endTime: "2026-02-24T08:50:00" },
-            { startTime: "2026-02-25T08:00:00", endTime: "2026-02-25T09:00:00" },
-          ];
-          // ============================================================
-        } else {
-          const res = await fetch(
-            `http://localhost:5000/AHFULworkout/${encodeURIComponent(userData.email)}`
-          );
-          if (!res.ok) throw new Error("Failed to fetch workouts");
-          workouts = await res.json();
+        if (!userData?._id) {
+          setWeeklyData([]);
+          setLoading(false);
+          return;
         }
+
+        const res = await fetch(
+          `http://localhost:5000/Backend/AHFULworkout/${encodeURIComponent(userData._id)}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch workouts");
+        const workouts = await res.json();
 
         if (!workouts || workouts.length === 0) {
           setWeeklyData([]);
@@ -87,7 +69,7 @@ export function WorkoutHistory() {
     if (loading) return <div className="workout-history-page"><p className="wh-status">Loading workout history...</p></div>;
     if (error) return <div className="workout-history-page"><p className="wh-status wh-error">{error}</p></div>;
     if (weeklyData.length === 0)
-      return <div className="workout-history-page"><p className="wh-stats">No workouts recorded yet.</p></div>;
+      return <div className="workout-history-page"><p className="wh-status">No workouts recorded yet.</p></div>;
 
     return (
       <div className="workout-history-page">

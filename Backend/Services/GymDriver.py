@@ -12,8 +12,8 @@ class GymDriver:
     @staticmethod
     def create_gym(name, address, type, cost, link, lat, lng, notes):
         # Validate required fields
-        if (not name) or (not address) or (not lat) or (not lng):
-            return None, "You are missing a title or address or lat or lng. Please fix, then attempt to create gym again"
+        if (not name) or (not address):
+            return None, "You are missing a name or address. Please fix, then attempt to create gym again"
 
         gym_data = {
             "name": name,

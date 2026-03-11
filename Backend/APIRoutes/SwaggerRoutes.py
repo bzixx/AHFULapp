@@ -1093,6 +1093,56 @@ swaggerConfig = {
       }
     },
 
+    "/AHFULworkout/templates/{userId}": {
+      "get": {
+        "summary": "Get templates by user id",
+        "tags": ["Workout"],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": True,
+            "description": "User Id of the user",
+            "schema": { "type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Templates found",
+            
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
+                    "userId": { "type": "string", "format": "email", "example": "anEmail@email.com" },
+                    "title": { "type": "string", "example": "Daily workout" },
+                    "startTime": { "type": "integer", "example": 0 },
+                  },
+                "required": ["_id", "email", "startTime"]
+                }
+              }
+            }
+
+          },
+          "404": {
+            "description": "Templates not found",
+            "content": {
+              "application/json": {
+                "schema": { 
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
     "/AHFULworkout/id/{id}": {
       "get": {
         "summary": "Get workout by id",

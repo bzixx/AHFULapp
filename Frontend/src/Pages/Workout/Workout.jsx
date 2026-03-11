@@ -179,7 +179,7 @@ export function Workout() {
     setError(null);
     try {
       // Use a relative path so the dev server proxy (if configured) will forward to backend.
-      const res = await fetch("http://localhost:5000/AHFULexercises");
+      const res = await fetch("http://localhost:5000/AHFULExercises");
 
       if (!res.ok) {
         // Provide a clearer error including body text when possible
