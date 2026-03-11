@@ -185,15 +185,15 @@ class ExerciseDriver:
         except Exception as e:
             return None, str(e)
 
-    def create_exercise(name, body_part, difficulty, equipment, instructions, type):
+    def create_exercise(formData):
         try:
             exercise_data = {
-                "name": name,
-                "body_part": body_part,
-                "difficulty": difficulty,
-                "equipment": equipment,
-                "instructions": instructions,
-                "type": type
+                "name": formData.get("name"),
+                "body_part": formData.get("body_part"),
+                "difficulty": formData.get("difficulty"),
+                "equipment": formData.get("equipment"),
+                "instructions": formData.get("instructions"),
+                "type": formData.get("type")
             }
             exercise_id = ExerciseObject.create(exercise_data)
             return exercise_id, None
