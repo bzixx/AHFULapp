@@ -83,7 +83,7 @@ export function Calendar({ locale }) {
                   key={`invalid-${index}`} 
                   className="calendar-cell other"
                 >
-                  —
+                  
                 </div>
               );
             }
