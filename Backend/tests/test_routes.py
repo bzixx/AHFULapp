@@ -510,7 +510,6 @@ def test_update_personal_ex_roundtrip():
     assert fetched_after_update.get("distance") == new_values["distance"]
     assert fetched_after_update.get("complete") == new_values["complete"]
 
-    # 4) Restore the original values
     restore = {
         "reps": orig_reps,
         "sets": orig_sets,
@@ -864,3 +863,78 @@ def test_create_delete_template():
         print(response, err)
     # Assertions
     assert response == responseId
+
+    
+def test_update_workout_roundtrip():
+    # Known existing document id from your tests/fixtures
+    workout_id = "69af2a4598d0f4227b25ed71"
+
+    original, err = WorkoutDriver.get_workout_by_id(workout_id)
+    if err is not None:
+        print("Fetch original failed:", err)
+    assert err is None
+    assert original is not None
+    assert original.get("_id") == workout_id
+
+    # Keep a copy of original values for roundtrip restore
+    orig_title     = original.get("title")
+    orig_startTime = original.get("startTime")
+    orig_endTime   = original.get("endTime")
+
+    new_values = {
+        "title": "Updated Workout Title",
+        "startTime": 10,
+        "endTime": 20
+    }
+    updated, err = WorkoutDriver.update_workout(id=workout_id, updates=new_values)
+    if err is not None:
+        print("Update failed:", err)
+    assert err is None
+    assert updated is not None
+    assert updated.get("_id") == workout_id
+
+    # Assert updated values persisted
+    assert updated.get("title") == new_values["title"]
+    assert updated.get("startTime") == new_values["startTime"]
+    assert updated.get("endTime") == new_values["endTime"]
+
+    fetched_after_update, err = WorkoutDriver.get_workout_by_id(workout_id)
+    if err is not None:
+        print("Fetch after update failed:", err)
+    assert err is None
+    assert fetched_after_update is not None
+    assert fetched_after_update.get("_id") == workout_id
+
+    # Assert values are exactly as updated
+    assert fetched_after_update.get("title") == new_values["title"]
+    assert fetched_after_update.get("startTime") == new_values["startTime"]
+    assert fetched_after_update.get("endTime") == new_values["endTime"]
+
+    restore_payload = {
+        "title": orig_title,
+        "startTime": orig_startTime,
+        "endTime": orig_endTime
+    }
+    restored, err = WorkoutDriver.update_workout(id=workout_id, updates=restore_payload)
+    if err is not None:
+        print("Restore failed:", err)
+    assert err is None
+    assert restored is not None
+    assert restored.get("_id") == workout_id
+
+    # Assert restored document reflects the original values
+    assert restored.get("title") == orig_title
+    assert restored.get("startTime") == orig_startTime
+    assert restored.get("endTime") == orig_endTime
+
+    fetched_after_restore, err = WorkoutDriver.get_workout_by_id(workout_id)
+    if err is not None:
+        print("Fetch after restore failed:", err)
+    assert err is None
+    assert fetched_after_restore is not None
+    assert fetched_after_restore.get("_id") == workout_id
+
+    assert fetched_after_restore.get("title") == orig_title
+    assert fetched_after_restore.get("startTime") == orig_startTime
+    assert fetched_after_restore.get("endTime") == orig_endTime
+
