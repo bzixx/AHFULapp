@@ -100,9 +100,9 @@ class ExerciseDriver:
         except Exception as e:
             return None, str(e)
         
-    def get_next_exercises(currentPage):
+    def get_next_exercises(currentMeta):
         try:
-            nextPageEndpoint = currentPage["nextPage"]
+            nextPageEndpoint = currentMeta["nextPage"]
 
             externalDBConnection.request("GET", nextPageEndpoint, headers=EXERSICEDB_HEADERS)
             apiResponse = externalDBConnection.getresponse()
@@ -115,9 +115,9 @@ class ExerciseDriver:
         except Exception as e:
             return None, str(e)
 
-    def get_prev_exercises(currentPage):
+    def get_prev_exercises(currentMeta):
         try:
-            prevPageEndpoint = currentPage["previousPage"]
+            prevPageEndpoint = currentMeta["previousPage"]
 
             externalDBConnection.request("GET", prevPageEndpoint, headers=EXERSICEDB_HEADERS)
             apiResponse = externalDBConnection.getresponse()
