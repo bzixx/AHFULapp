@@ -13,8 +13,70 @@ EXERSICEDB_HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) A
 externalDBConnection =  HTTPSConnection(EXERSICEDB_HOST)
 
 class ExerciseDriver:
+    def get_initial_metadata():
+        try:
+            #Define Endpoint for External API
+            apiEndpoint = "/api/v1/exercises?offset=0&limit=25&sortBy=name&sortOrder=desc"
+            #Make API Request to External API
+            externalDBConnection.request("GET", apiEndpoint, headers=EXERSICEDB_HEADERS)
+            #Assign Response from External API to Variable
+            apiResponse = externalDBConnection.getresponse()
+            #Read Response Data and Decode it from bytes to string, then Load it as JSON to get a workable dict
+            data = apiResponse.read()                   # bytes  → b'{"success":true...}'
+            decodedData = data.decode("utf-8")          # string → '{"success":true...}'
+            workableData = json.loads(decodedData)      
+            #Workable Data Looks Like:
+            # dict   → {"success": true,"metadata": {"totalPages": 60,"totalExercises": 1500,"currentPage": 1,"previousPage": null,"nextPage": "http://www.exercisedb.dev/api/v1/exercises?offset=25&limit=25&&sortBy=name&sortOrder=desc"},"data": []}
+            # To acces it: externalExercises = workableData["data"]
+            externalMetadata = workableData["metadata"]
 
-    def get_all_exercises():
+            return externalMetadata, None
+        except Exception as e:
+            return None, str(e)
+        
+    def get_next_metadata(currentPage):
+        try:
+            nextPageEndpoint = currentPage["nextPage"]
+
+            externalDBConnection.request("GET", nextPageEndpoint, headers=EXERSICEDB_HEADERS)
+            #Assign Response from External API to Variable
+            apiResponse = externalDBConnection.getresponse()
+            #Read Response Data and Decode it from bytes to string, then Load it as JSON to get a workable dict
+            data = apiResponse.read()                   # bytes  → b'{"success":true...}'
+            decodedData = data.decode("utf-8")          # string → '{"success":true...}'
+            workableData = json.loads(decodedData)      
+            #Workable Data Looks Like:
+            # dict   → {"success": true,"metadata": {"totalPages": 60,"totalExercises": 1500,"currentPage": 1,"previousPage": null,"nextPage": "http://www.exercisedb.dev/api/v1/exercises?offset=25&limit=25&&sortBy=name&sortOrder=desc"},"data": []}
+            # To acces it: externalExercises = workableData["data"]
+            externalMetadata = workableData["metadata"]
+
+            return externalMetadata, None
+        except Exception as e:
+            return None, str(e)
+        
+    def get_prev_metadata(currentPage):
+        try:
+            prevPageEndpoint = currentPage["previousPage"]
+
+            externalDBConnection.request("GET", prevPageEndpoint, headers=EXERSICEDB_HEADERS)
+            #Assign Response from External API to Variable
+            apiResponse = externalDBConnection.getresponse()
+            #Read Response Data and Decode it from bytes to string, then Load it as JSON to get a workable dict
+            data = apiResponse.read()                   # bytes  → b'{"success":true...}'
+            decodedData = data.decode("utf-8")          # string → '{"success":true...}'
+            workableData = json.loads(decodedData)      
+            #Workable Data Looks Like:
+            # dict   → {"success": true,"metadata": {"totalPages": 60,"totalExercises": 1500,"currentPage": 1,"previousPage": null,"nextPage": "http://www.exercisedb.dev/api/v1/exercises?offset=25&limit=25&&sortBy=name&sortOrder=desc"},"data": []}
+            # To acces it: externalExercises = workableData["data"]
+            externalMetadata = workableData["metadata"]
+
+            return externalMetadata, None
+        except Exception as e:
+            return None, str(e)
+        
+#--------------------------------------------------------------------------------------------------------------------------------------------------
+        
+    def get_initial_exercises():
         try:
             #Define Endpoint for External API
             apiEndpoint = "/api/v1/exercises?offset=0&limit=25&sortBy=name&sortOrder=desc"
@@ -38,17 +100,26 @@ class ExerciseDriver:
         except Exception as e:
             return None, str(e)
         
-    def get_more_exercises(currentPage):
+    def get_next_exercises(currentMeta):
         try:
-            if currentPage:
-                #TODO:  right now we only go to Page 2. But Hey, Page two is better than one, right?
-                variable = "something"
-            else:
-                workableData = ExerciseObject.find_all_external()
-                metadata = workableData["metadata"]
-                next_page_url = metadata["nextPage"]
+            nextPageEndpoint = currentMeta["nextPage"]
 
-            externalDBConnection.request("GET", next_page_url, headers=EXERSICEDB_HEADERS)
+            externalDBConnection.request("GET", nextPageEndpoint, headers=EXERSICEDB_HEADERS)
+            apiResponse = externalDBConnection.getresponse()
+            data = apiResponse.read()                   # bytes  → b'{"success":true...
+            decodedData = data.decode("utf-8")          # string → '{"success":true...}'
+            workableData = json.loads(decodedData)      # dict   → {"success": True,
+            externalExercises = workableData["data"]
+
+            return externalExercises, None
+        except Exception as e:
+            return None, str(e)
+
+    def get_prev_exercises(currentMeta):
+        try:
+            prevPageEndpoint = currentMeta["previousPage"]
+
+            externalDBConnection.request("GET", prevPageEndpoint, headers=EXERSICEDB_HEADERS)
             apiResponse = externalDBConnection.getresponse()
             data = apiResponse.read()                   # bytes  → b'{"success":true...
             decodedData = data.decode("utf-8")          # string → '{"success":true...}'

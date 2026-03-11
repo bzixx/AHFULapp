@@ -3,13 +3,63 @@ from Services.ExerciseDriver import ExerciseDriver
 
 exerciseRouteBlueprint = Blueprint("exercises", __name__,  url_prefix='/AHFULexercises')
 
-# ── GET all exercises ───────────────────────────────────────────────────────
+# ── GET MetaData from Page 1 ───────────────────────────────────────────────────────
+@exerciseRouteBlueprint.route("/metadata", methods=["GET"])
+def get_initial_metadata():
+    metadata, error = ExerciseDriver.get_initial_metadata()
+    if error:
+        return jsonify({"error": error}), 500
+    return jsonify(metadata), 200
+
+# ── POST MetaData for next page from provided currentPage ───────────────────────────────────────────────────────
+#PARAMETER search with value of "next" will go to next page Value of "prev" will go to previous page
+@exerciseRouteBlueprint.route("/metadata", methods=["POST"])
+def get_more_metadata():
+    trueNext_falsePrev = request.args.get("search")
+    providedPage = request.get_json()
+
+    if trueNext_falsePrev is None:
+        return jsonify({"error": "No search query provided"}), 400
+    
+    if trueNext_falsePrev == "next":
+        metadata, error = ExerciseDriver.get_next_metadata(providedPage)
+    elif trueNext_falsePrev == "prev":
+        metadata, error = ExerciseDriver.get_prev_metadata(providedPage)
+    else:
+        return jsonify({"error": "Invalid search query"}), 400
+
+    if error:
+        return jsonify({"error": error}), 500
+    return jsonify(metadata), 200
+
+# ── GET All exercises from Page 1 ───────────────────────────────────────────────────────
 @exerciseRouteBlueprint.route("/", methods=["GET"])
-def get_all_exercises():
-    exercises, error = ExerciseDriver.get_all_exercises()
+def get_initial_exercises():
+    exercises, error = ExerciseDriver.get_initial_exercises()
     if error:
         return jsonify({"error": error}), 500
     return jsonify(exercises), 200
+
+# ── POST exercises for next page from provided currentPage ───────────────────────────────────────────────────────
+#PARAMETER search with value of "next" will go to next page Value of "prev" will go to previous page
+@exerciseRouteBlueprint.route("/", methods=["POST"])
+def get_more_exercises():
+    trueNext_falsePrev = request.args.get("search")
+    providedPage = request.get_json()
+
+    if trueNext_falsePrev is None:
+        return jsonify({"error": "No search query provided"}), 400
+    
+    if trueNext_falsePrev == "next":
+        metadata, error = ExerciseDriver.get_next_exercises(providedPage)
+    elif trueNext_falsePrev == "prev":
+        metadata, error = ExerciseDriver.get_prev_exercises(providedPage)
+    else:
+        return jsonify({"error": "Invalid search query"}), 400
+
+    if error:
+        return jsonify({"error": error}), 500
+    return jsonify(metadata), 200
 
 # ── GET single exercise ───────────────────────────────────────────────────────
 @exerciseRouteBlueprint.route("id/<exercise_id>", methods=["GET"])
