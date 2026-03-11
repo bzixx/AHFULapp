@@ -71,8 +71,8 @@ def create_template():
     return jsonify({"workout_id": workout_id, "message": "Workout created"}), 201
 
 # ── UPDATE personalEx ───────────────────────────────────────────────────────────
-@workoutRouteBlueprint.route("/update/<workout>", methods=["PUT"])
-def update_personal_ex(workout_id):
+@workoutRouteBlueprint.route("/update/<workout_id>", methods=["PUT"])
+def update_workout(workout_id):
     if not workout_id:
         return jsonify({"error": "You must provide a workout id to update"}), 400
 
