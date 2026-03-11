@@ -19,7 +19,6 @@ export function Workout() {
   /*Hook to track name of the exercise being added to the workout via the dropdown */
   const [exerciseName, setExerciseName] = useState("");
   const [pendingExercises, setPendingExercises] = useState([]);
-  const [open, setOpen] = useState(false);
   const [showNewExerciseModal, setShowNewExerciseModal] = useState(false);
 
   // Wireframe option lists for dropdowns (replace with fetch later)
@@ -315,21 +314,8 @@ export function Workout() {
     fetch_exercises();
   }, []);
 
-  // TOOGGLE OPEN - Toggle the dropdown for adding exercises to the workout
-  const toggle_open = () => {
-    setOpen((prev) => !prev);
-  };
-
   const removeWorkout = (index) => {
     setExercisesInProgressTable((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  // Helper to extract a display name whether exercises are strings or objects
-  const getExerciseName = (item) => {
-    if (!item && item !== 0) return "";
-    if (typeof item === "string") return item;
-    if (typeof item === "object") return item.name || item.title || "";
-    return String(item);
   };
 
   // Append selected pending exercises to the in-progress table
