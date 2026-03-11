@@ -58,6 +58,28 @@ def create_personal_ex():
         return jsonify({"error": error}), 400
     return jsonify({"personal_ex_id": personal_ex_id, "message": "Personal Ex created"}), 201
 
+
+# ── UPDATE personalEx ───────────────────────────────────────────────────────────
+@personalExRouteBlueprint.route("/update/<personal_ex_id>", methods=["PUT"])
+def update_personal_ex(personal_ex_id):
+    if not personal_ex_id:
+        return jsonify({"error": "You must provide a personal ex id to update"}), 400
+
+    data = request.get_json(silent=True)
+    if not data or not isinstance(data, dict):
+        return jsonify({"error": "You must provide a JSON body with at least one field to update"}), 400
+
+    # Call the driver (it already validates allowed fields & id)
+    updated, error = PersonalExDriver.update_personal_ex(id=personal_ex_id, updates=data)
+
+    if error:
+        err_lower = error.lower()
+        if "not found" in err_lower:
+            return jsonify({"error": error}), 404
+        return jsonify({"error": error}), 400
+    
+    return jsonify({"message": "Personal ex updated", "personal_ex": updated}), 200
+
 # ── DELETE personalEx ────────────────────────────────────────────────────────────────
 @personalExRouteBlueprint.route("/delete/<personal_ex_id>", methods=["DELETE"])
 def delete_personal_ex(personal_ex_id):

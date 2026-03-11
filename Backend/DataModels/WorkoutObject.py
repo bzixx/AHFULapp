@@ -68,6 +68,25 @@ class WorkoutObject:
         })
         return [WorkoutObject._serialize_template(t) for t in template]
 
+    # ── Update ──────────────────────────────────────────────────────────────────
+    @staticmethod
+    def update(id, updates):
+        if not updates:
+            return None
+
+        filter_doc = {"_id": ObjectId(id)}
+        update_doc = {"$set": updates}
+
+        result = workoutCollection.update_one(filter_doc, update_doc)
+
+        # If no document matched the id, return None
+        if result.matched_count == 0:
+            return None
+
+        # Fetch and return the current state after update (serialized)
+        updated = workoutCollection.find_one(filter_doc)
+        return WorkoutObject._serialize(updated)
+
     # ── Delete ──────────────────────────────────────────────────────────────────
     @staticmethod
     def delete(id):
