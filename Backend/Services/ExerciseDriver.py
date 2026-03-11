@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 from http.client import HTTPSConnection
 import json
 from urllib.parse import urlencode
+from bson import ObjectId, errors as bson_errors
 
 #External API Host for ExerciseDB API
 EXERSICEDB_HOST = "www.exercisedb.dev"
@@ -13,6 +14,12 @@ EXERSICEDB_HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) A
 externalDBConnection =  HTTPSConnection(EXERSICEDB_HOST)
 
 class ExerciseDriver:
+    @staticmethod
+    def _validate_obj_id(id, name):
+        try:
+            return ObjectId(str(id)), None
+        except (bson_errors.InvalidId, TypeError, ValueError):
+            return None, f"Invalid {name} format; must be a 24-hex string"
 
     def get_all_exercises():
         try:
@@ -58,8 +65,6 @@ class ExerciseDriver:
             return externalExercises, None
         except Exception as e:
             return None, str(e)
-
-
         
     #Search exercises by name using external API and internal DB, then combine results
     def search_exercises(searchString):
@@ -106,13 +111,46 @@ class ExerciseDriver:
         
     @staticmethod
     def get_exercise_by_id(id):
-        try:
-            exercise = ExerciseObject.find_by_id(id)
-            if not exercise:
+        # Convert IDs safely
+        oid, err = ExerciseDriver._validate_obj_id(id, "exercise id")
+        
+        if oid:
+            try:
+                int_exercise = ExerciseObject.find_by_id(id)
+                return int_exercise, None
+            except Exception as e:
+                print(None, str(e))
+        
+        else:
+            try:
+                #Define Connection and Endpoint for External API
+                dbConnection =  HTTPSConnection(EXERSICEDB_HOST)
+            
+                # Properly encode the query string
+                apiEndpoint = f"/api/v1/exercises/{id}"
+
+                #Make API Request to External API
+                dbConnection.request("GET", apiEndpoint, headers=EXERSICEDB_HEADERS)
+
+                #Assign Response from External API to Variable
+                apiResponse = dbConnection.getresponse()
+
+                #Read Response Data and Decode it from bytes to string, then Load it as JSON to get a workable dict
+                data = apiResponse.read()                   # bytes  → b'{"success":true...}'
+                decodedData = data.decode("utf-8")          # string → '{"success":true...}'
+                workableData = json.loads(decodedData)      # dict   → {"success": True, "data": [...]}
+
+                # Extract Exercise List from External API Response
+                exercisesList = workableData["data"]
+
+                print(exercisesList)
+
+                if exercisesList:
+                    return exercisesList, None,
+                else:
+                    return None, "Exercise not found"
+            except Exception as e:
                 return None, "Exercise not found"
-            return exercise, None
-        except Exception as e:
-            return None, str(e)
 
     def create_exercise(name, body_part, difficulty, equipment, instructions, type):
         try:
