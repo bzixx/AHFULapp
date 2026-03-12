@@ -127,6 +127,37 @@ class WorkoutDriver:
         except Exception as e:
             return None, str(e)
         
+    # ── Update ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def update_workout(id, updates):
+        # Validate target id
+        if not id:
+            return None, "You must provide a personal ex id to update"
+
+        obj, err = WorkoutDriver._validate_obj_id(id, "workout_id")
+        if err:
+            return None, err
+
+        if not updates:
+            return None, "You must provide at least one field to update"
+
+        # Allowed fields to update
+        allowed_fields = {
+            "title",
+            "startTime",
+            "endTime"
+        }
+
+        # Filter only allowed fields
+        sanitized_updates = {k: v for k, v in updates.items() if k in allowed_fields}
+        
+        # Perform the update via the data model
+        updated = WorkoutObject.update(id, sanitized_updates)
+        if not updated:
+            return None, "Workout not found or no changes applied"
+        else:
+            return updated, None
+
     # ── Delete ─────────────────────────────────────────────────────────────────    
     @staticmethod
     def delete_workout(id):

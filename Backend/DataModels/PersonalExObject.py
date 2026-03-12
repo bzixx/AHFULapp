@@ -41,6 +41,25 @@ class PersonalExObject:
         personalEx = personalExCollection.find({"workoutId": ObjectId(workoutId)})
         return [PersonalExObject._serialize(w) for w in personalEx]
     
+    # ── Update ──────────────────────────────────────────────────────────────────
+    @staticmethod
+    def update(id, updates):
+        if not updates:
+            return None
+
+        filter_doc = {"_id": ObjectId(id)}
+        update_doc = {"$set": updates}
+
+        result = personalExCollection.update_one(filter_doc, update_doc)
+
+        # If no document matched the id, return None
+        if result.matched_count == 0:
+            return None
+
+        # Fetch and return the current state after update (serialized)
+        updated = personalExCollection.find_one(filter_doc)
+        return PersonalExObject._serialize(updated)
+
     # ── Delete ──────────────────────────────────────────────────────────────────
     @staticmethod
     def delete(id):
