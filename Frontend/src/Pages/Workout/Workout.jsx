@@ -1,6 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./Workout.css";
 import "../../SiteStyles.css";
+import {
+  getDefaultNewExercise,
+  formatTime as formatTimeFn,
+  loadEquipment as loadEquipmentFn,
+  fetchExercisesFromBackend,
+  searchExercises,
+  fetchWorkout,
+  fetchPersonalExercises,
+} from "../../queryFunctions";
 
 export function Workout() {
   /* Hook to track state of the InProgressTable on the Workout Page, Default State has exercises */
@@ -60,85 +69,14 @@ export function Workout() {
   const [equipmentOptions, setEquipmentOptions] = useState(EQUIPMENT_FALLBACK);
   const [equipmentError, setEquipmentError] = useState(null);
 
-  useEffect(() => {
-    loadEquipment();
-  }, []);
+  const [newExercise, setNewExercise] = useState(getDefaultNewExercise());
 
-  const [newExercise, setNewExercise] = useState({
-    name: "",
-    targetMuscles: [],
-    bodyParts: [],
-    equipment: [],
-    instructions: "",
-  });
-
-  const resetNewExercise = () =>
-    setNewExercise({
-      name: "",
-      targetMuscles: [],
-      bodyParts: [],
-      equipment: [],
-      instructions: "",
-    });
+  const resetNewExercise = () => setNewExercise(getDefaultNewExercise());
 
   const openNewExerciseModal = () => {
     resetNewExercise();
     setShowNewExerciseModal(true);
   };
-
-  async function loadEquipment() {
-    setEquipmentError(null);
-    try {
-      const res = await fetch("https://www.exercisedb.dev/api/v1/equipments", {
-        method: "GET",
-        mode: "cors",
-        headers: {
-          Accept: "application/json",
-          // Some servers will require this header; adding it as requested.
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error(
-          `Equipment API returned ${res.status} ${res.statusText}`,
-        );
-      }
-
-      const data = await res.json();
-      // data may be an array, or an envelope like { data: [...] }
-      let arr = data;
-      if (data && Array.isArray(data.data)) arr = data.data;
-
-      console.log("Fetched equipment data:", arr);
-
-      // Normalize to [{value,label}, ...]
-      if (arr) {
-        const normalized = arr.map((item, idx) => {
-          if (item && typeof item === "object") {
-            const value =
-              item.id ?? item._id ?? item.value ?? item.name ?? String(idx);
-            const label =
-              item.name ?? item.title ?? item.equipment ?? String(value);
-            return { value: String(value), label: String(label) };
-          }
-          // fallback for unexpected types
-          const v = String(item);
-          return { value: v, label: v };
-        });
-        setEquipmentOptions(normalized);
-      }
-    } catch (err) {
-      // Common failure mode is a CORS block (TypeError) or network error.
-      console.error("Failed to load equipment options:", err);
-      setEquipmentError(
-        err && err.message
-          ? `Could not load equipment list: ${err.message}`
-          : "Could not load equipment list",
-      );
-      // keep fallback list in place
-    }
-  }
 
   const closeNewExerciseModal = () => {
     setShowNewExerciseModal(false);
@@ -162,9 +100,25 @@ export function Workout() {
   };
   const searchTimeoutRef = useRef(null);
 
+  // useEffect 1: cleanup debounced search timer on unmount
   useEffect(() => {
     return () => {
       if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    };
+  }, []);
+
+  // useEffect 2: load equipment options once on mount
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const res = await loadEquipmentFn();
+      if (!mounted) return;
+      if (res && res.data) setEquipmentOptions(res.data);
+      if (res && res.error) setEquipmentError(res.error);
+    })();
+
+    return () => {
+      mounted = false;
     };
   }, []);
 
@@ -181,51 +135,11 @@ export function Workout() {
     setLoading(true);
     setError(null);
     try {
-      // Use a relative path so the dev server proxy (if configured) will forward to backend.
-      const res = await fetch("http://localhost:5000/AHFULExercises");
-
-      if (!res.ok) {
-        // Provide a clearer error including body text when possible
-        let bodyText = "";
-        try {
-          bodyText = await res.text();
-        } catch (e) {
-          /* ignore */
-        }
-        throw new Error(
-          `Server returned ${res.status} ${res.statusText} ${bodyText}`,
-        );
-      }
-
-      const data = await res.json();
-
-      // Helpful debug output (visible in browser console) when something odd happens
-      console.debug("/AHFULexercises response:", data);
-
-      // Normalize common envelope patterns to an array
-      let list = [];
-      if (Array.isArray(data)) {
-        list = data;
-      } else if (data && Array.isArray(data.data)) {
-        list = data.data;
-      } else if (data && Array.isArray(data.results)) {
-        list = data.results;
-      } else {
-        // Not an array; keep empty but log for debugging
-        console.warn(
-          "Unexpected /AHFULexercises response shape, expected array or {data: [...]}:",
-          data,
-        );
-        list = [];
-      }
-
+      const list = await fetchExercisesFromBackend();
       setExercises(list);
     } catch (err) {
-      // Log the full error for debugging
       console.error("Failed to fetch exercises:", err);
-      // Some Error objects (DOMExceptions) have a name and message
-      const friendly =
-        err && err.name ? `${err.name}: ${err.message}` : String(err);
+      const friendly = err && err.name ? `${err.name}: ${err.message}` : String(err);
       setError(friendly || "Unknown error");
       setExercises([]);
     } finally {
@@ -257,7 +171,7 @@ export function Workout() {
     // TODO: Update the workout by grabbing the workout id and user id
   };
 
-  //USE EFFECT - Fecth exercises when component mounts
+  // useEffect 3: fetch available exercises from backend on mount
   useEffect(() => {
     fetch_exercises();
   }, []);
@@ -313,26 +227,7 @@ export function Workout() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(
-        `http://localhost:5000/AHFULexercises/search?search=${encodeURIComponent(searchQuery)}`,
-      );
-      if (!res.ok) {
-        let bodyText = "";
-        try {
-          bodyText = await res.text();
-        } catch (e) {}
-        throw new Error(
-          `Server returned ${res.status} ${res.statusText} ${bodyText}`,
-        );
-      }
-      const data = await res.json();
-      // Normalize to array
-      let list = [];
-      if (Array.isArray(data)) list = data;
-      else if (data && Array.isArray(data.data)) list = data.data;
-      else if (data && Array.isArray(data.results)) list = data.results;
-      else list = [];
-
+      const list = await searchExercises(searchQuery);
       setExercises(list);
     } catch (err) {
       console.error("Search failed:", err);
@@ -345,6 +240,7 @@ export function Workout() {
   };
 
   /* Timer Functions */
+  // useEffect 4: manage workout timer interval while isRunning
   useEffect(() => {
     let interval = null;
 
@@ -363,12 +259,7 @@ export function Workout() {
     setIsRunning((r) => !r);
   };
 
-  const formatTime = (seconds) => {
-    const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
-    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
-    const s = String(seconds % 60).padStart(2, "0");
-    return `${h}:${m}:${s}`;
-  };
+  const formatTime = formatTimeFn;
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /* Initial Page Load */
@@ -380,11 +271,11 @@ export function Workout() {
   const [workoutId, setWorkoutId] = useState("");
   const [workoutTitle, setWorkoutTitle] = useState("");
 
+  // useEffect 5: fetch current workout for the user on mount
   useEffect(() => {
     async function getWorkout() {
       try {
-        const res = await fetch(`http://localhost:5000/AHFULworkout/${userId}`);
-        const data = await res.json();
+        const data = await fetchWorkout(userId);
 
         console.log(data);
 
@@ -404,6 +295,7 @@ export function Workout() {
     getWorkout();
   }, []);
 
+  // useEffect 6: fetch personal exercises when workoutId changes
   useEffect(() => {
     if (!workoutId) return; // prevents running on initial render
 
@@ -411,11 +303,7 @@ export function Workout() {
       try {
         console.log("Fetching personal exercises for workout:", workoutId);
 
-        const res = await fetch(
-          `http://localhost:5000/AHFULpersonalEx/workout/${workoutId}`,
-        );
-        const data = await res.json();
-
+        const data = await fetchPersonalExercises(workoutId);
         setExercisesInProgressTable(data);
       } catch (err) {
         console.error("Error fetching personal exercises:", err);
@@ -425,6 +313,7 @@ export function Workout() {
     getPersonalEx();
   }, [workoutId]); // <-- runs only when workoutId changes
 
+  // useEffect 7: log exercisesInProgressTable updates for debugging
   useEffect(() => {
     console.log("PersonalEx state updated:", exercisesInProgressTable);
   }, [exercisesInProgressTable]);
@@ -662,30 +551,11 @@ export function Workout() {
       </div>
       {/* New Exercise Modal */}
       {showNewExerciseModal && (
-        <div
-          className="modal-overlay"
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 2000,
-          }}
-          onClick={closeNewExerciseModal}
-        >
+        <div className="modal-overlay" onClick={closeNewExerciseModal}>
           <form
             className="modal-content"
             onClick={(e) => e.stopPropagation()}
             onSubmit={handleNewExerciseSave}
-            style={{
-              background: "#fff",
-              padding: "20px",
-              borderRadius: "8px",
-              width: "480px",
-              maxWidth: "95%",
-            }}
           >
             <h3>Add New Exercise</h3>
 
