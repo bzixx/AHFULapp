@@ -168,12 +168,14 @@ export function WorkoutLogger() {
     if (!exercisesInProgressTable.length) {
       return;
     }
+    console.log("tableexercisesInProgressTable:", exercisesInProgressTable);
 
     const ids = exercisesInProgressTable.map((ex) => ex.exerciseId);
+    console.log("ids: " + ids)
     const missing = ids.filter(
       id => !personalExNames[id] && exercises.some(ex => ex._id === id)
     );
-
+    console.log("missing: " + missing)
 
     if (missing.length === 0) {
       console.log("All names already loaded.");
@@ -192,6 +194,8 @@ export function WorkoutLogger() {
 
           results[id] = data.name;
         }
+
+        console.log("results: ", results)
 
         setPersonalExNames((prev) => {
           const merged = { ...prev, ...results };
