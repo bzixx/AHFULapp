@@ -75,6 +75,61 @@ export async function registerService() {
   }
 }
 
+//Safer check of service worker registration
+export const validateAndRegisterSW = async () => {
+  // bail out if browser doesn't support service workers
+  if (!('serviceWorker' in navigator)) {
+    console.warn('OH MY!  Are you using Netscape? Service workers not supported in this browser');
+    return null;
+  }
+
+  try {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    
+    const existingWorker = registrations.find(reg =>
+      reg.scope.includes('firebase-cloud-messaging-push-scope')
+    );
+
+    if (existingWorker) {
+      // Check what state it's actually in
+      if (existingWorker.active) {
+        console.log('SW is active and healthy, checking for updates...');
+        await existingWorker.update();
+        return existingWorker;
+      }
+
+      if (existingWorker.waiting) {
+        console.log('SW is waiting — old worker still in control');
+        // force the new one to take over immediately
+        existingWorker.waiting.postMessage({ type: 'SKIP_WAITING' });
+        return existingWorker;
+      }
+
+      if (existingWorker.installing) {
+        console.log('SW is still installing...');
+        return existingWorker;
+      }
+
+      // If we get here something is wrong — nuke it and start fresh
+      console.warn('SW found but in bad state, unregistering...');
+      await existingWorker.unregister();
+    }
+
+    // Either no SW existed or we just cleared a bad one
+    // Let Firebase re-register it fresh via getToken
+    console.log('Registering fresh service worker...');
+    const token = await getToken(messaging, {
+      vapidKey: 'YOUR_VAPID_KEY'
+    });
+
+    return token;
+
+  } catch (error) {
+    console.error('SW validation failed:', error);
+    return null;
+  }
+};
+
 onMessage(messaging, (payload) => {
   console.log('Foreground message received:', payload);
 
