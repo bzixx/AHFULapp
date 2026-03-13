@@ -163,12 +163,12 @@ def test_update_food_roundtrip():
     assert original.get("_id") == food_id
 
     # Keep a copy of original values for roundtrip restore
-    orig_userId         = original.get("userId")
-    orig_name           = original.get("name")
+    orig_userId = original.get("userId")
+    orig_name = original.get("name")
     orig_calsPerServing = original.get("calsPerServing")
-    orig_servings       = original.get("servings")
-    orig_type           = original.get("type")
-    orig_time           = original.get("time")
+    orig_servings = original.get("servings")
+    orig_type = original.get("type")
+    orig_time = original.get("time")
 
     # Sanity checks (aligns with your existing expectations)
     assert isinstance(orig_name, str)
@@ -561,8 +561,7 @@ def test_create_delete_personal_ex():
         print(response, err)
     # Assertions
     assert response == responseId
-
-    
+   
 def test_update_personal_ex_roundtrip():
     personal_ex_id = "69ab5596dc5dee4f518a01cd"
 
