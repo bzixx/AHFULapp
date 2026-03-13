@@ -46,12 +46,26 @@ export function FoodLog() {
         if (!userId) return;
         setLoading(true);
         fetch(`${API_BASE}/${userId}`)
-            .then((res) => res.ok ? res.json() : Promise.reject(res.statusText))
+            .then(async (res) => {
+                if (res.status === 404) {
+                    return [];
+                }
+
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || res.statusText || "Failed to load foods");
+                }
+
+                return res.json();
+            })
             .then((data) => {
                 const list = Array.isArray(data) ? data : [];
                 setFoods(list.map(normalizeFood));
             })
-            .catch((err) => console.error("Failed to load foods:", err))
+            .catch((err) => {
+                setFoods([]);
+                console.error("Failed to load foods:", err);
+            })
             .finally(() => setLoading(false));
     }, [userId]);
 

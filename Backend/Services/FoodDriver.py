@@ -63,8 +63,6 @@ class FoodDriver:
     def get_food_by_user(id):
         try:
             food = FoodObject.find_by_user(id)
-            if not food:
-                return None, "Food not found"
             return food, None
         except Exception as e:
             return None, str(e)
