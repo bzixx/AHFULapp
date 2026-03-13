@@ -5,6 +5,7 @@ import {
   getDefaultNewExercise,
   formatTime as formatTimeFn,
   loadEquipment as loadEquipmentFn,
+  loadTargetMuscles,
   fetchExercisesFromBackend,
   searchExercises,
   fetchWorkout,
@@ -45,18 +46,12 @@ export function WorkoutLogger() {
 
   const BODY_PARTS = ["Upper Body", "Lower Body", "Full Body", "Core"];
 
-  // Fallback equipment list (used while fetching or if fetch fails) - normalized to {value,label}
-  const EQUIPMENT_FALLBACK = [
-    { value: "None", label: "None" },
-    { value: "Dumbbell", label: "Dumbbell" },
-    { value: "Barbell", label: "Barbell" },
-    { value: "Kettlebell", label: "Kettlebell" },
-    { value: "Machine", label: "Machine" },
-    { value: "Resistance Band", label: "Resistance Band" },
-  ];
-
-  const [equipmentOptions, setEquipmentOptions] = useState(EQUIPMENT_FALLBACK);
+  const [equipmentOptions, setEquipmentOptions] = useState([]);
   const [equipmentError, setEquipmentError] = useState(null);
+
+  const [muscleOptions, setMuscleOptions] = useState([]);
+  const [muscleError, setMuscleError] = useState(null);
+
 
   const [newExercise, setNewExercise] = useState(getDefaultNewExercise());
 
@@ -104,6 +99,13 @@ export function WorkoutLogger() {
       if (!mounted) return;
       if (res && res.data) setEquipmentOptions(res.data);
       if (res && res.error) setEquipmentError(res.error);
+    })();
+
+        (async () => {
+      const res = await loadTargetMuscles();
+      if (!mounted) return;
+      if (res && res.data) setMuscleOptions(res.data);
+      if (res && res.error) setMuscleError(res.error);
     })();
 
     return () => {
@@ -607,18 +609,21 @@ export function WorkoutLogger() {
               style={{ width: "100%" }}
             />
 
-            <label style={{ display: "block", marginTop: 8 }}>
-              Target Muscles
-            </label>
+            <label style={{ display: "block", marginTop: 8 }}>Target Muscles</label>
+            {muscleError && (
+              <div style={{ color: "red", marginBottom: 6 }}>
+                {muscleError}
+              </div>
+            )}
             <select
               multiple
               value={newExercise.targetMuscles}
               onChange={(e) => handleMultiSelectChange(e, "targetMuscles")}
               style={{ width: "100%" }}
             >
-              {MUSCLES.map((m) => (
-                <option key={m} value={m}>
-                  {m}
+              {(muscleOptions || []).map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
                 </option>
               ))}
             </select>
@@ -649,7 +654,7 @@ export function WorkoutLogger() {
               onChange={(e) => handleMultiSelectChange(e, "equipment")}
               style={{ width: "100%" }}
             >
-              {equipmentOptions.map((opt) => (
+              {(equipmentOptions || []).map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
                 </option>
