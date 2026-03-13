@@ -364,13 +364,13 @@ def test_update_gym_roundtrip():
     assert original.get("_id") == gym_id
 
     # Keep original values for restore
-    orig_name    = original.get("name")
+    orig_name = original.get("name")
     orig_address = original.get("address")
-    orig_cost    = original.get("cost")
-    orig_link    = original.get("link")
-    orig_lat     = original.get("lat")
-    orig_lng     = original.get("lng")
-    orig_notes   = original.get("notes")
+    orig_cost = original.get("cost")
+    orig_link = original.get("link")
+    orig_lat = original.get("lat")
+    orig_lng = original.get("lng")
+    orig_notes = original.get("notes")
 
     # Update all allowed fields
     new_values = {
