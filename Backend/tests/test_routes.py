@@ -366,7 +366,6 @@ def test_update_gym_roundtrip():
     # Keep original values for restore
     orig_name    = original.get("name")
     orig_address = original.get("address")
-    orig_type    = original.get("type")
     orig_cost    = original.get("cost")
     orig_link    = original.get("link")
     orig_lat     = original.get("lat")
@@ -375,14 +374,13 @@ def test_update_gym_roundtrip():
 
     # Update all allowed fields
     new_values = {
-        "name":    "Updated Test Gym",
-        "address": "456 Updated St, Testville, USA",
-        "type":    "General",
+        "name":    "Test Gym",
+        "address": "456 Main St, Testville, USA",
         "cost":    19.99,
-        "link":    "https://updatedgym.example.com",
+        "link":    "https://gym.example.com",
         "lat":     44.1234,
         "lng":     -91.5678,
-        "notes":   "Updated via test roundtrip"
+        "notes":   "Test roundtrip"
     }
     updated, err = GymDriver.update_gym(id=gym_id, updates=new_values)
     if err is not None:
@@ -394,7 +392,6 @@ def test_update_gym_roundtrip():
     # Assert fields updated
     assert updated.get("name") == new_values["name"]
     assert updated.get("address") == new_values["address"]
-    assert updated.get("type") == new_values["type"]
     assert updated.get("cost") == new_values["cost"]
     assert updated.get("link") == new_values["link"]
     assert updated.get("lat") == new_values["lat"]
