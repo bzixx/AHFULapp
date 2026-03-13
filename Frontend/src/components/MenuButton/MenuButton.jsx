@@ -28,9 +28,8 @@ export function MenuButton({
             
             <div className={`menu ${open ? "open" : "closed"}`}>
                 <Link to="/FoodLog">Food Log</Link>
-                <Link to="/ExerciseLogger">Exercise Logger</Link>
                 <Link to="/ExploreWorkout">Explore Workouts</Link>
-                <Link to="/Workout">Workout</Link>
+                <Link to="/WorkoutLogger">Workout Logger</Link>
                 <Link to="/Profile">Profile</Link>
             </div>
 

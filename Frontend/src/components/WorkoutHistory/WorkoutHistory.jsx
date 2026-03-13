@@ -94,5 +94,6 @@ export function WorkoutHistory() {
           </ResponsiveContainer>
         </div>
       </div>
+      
     );
 }

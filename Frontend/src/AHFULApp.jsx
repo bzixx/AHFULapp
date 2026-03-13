@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { Workout } from "./Pages/Workout/Workout.jsx";
-import { ExerciseLogger } from "./Pages/ExerciseLogger/ExerciseLogger.jsx";
+import { WorkoutLogger } from "./Pages/WorkoutLogger/WorkoutLogger.jsx";
 import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
 import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
-import { Home } from "./Pages/Home/Home.jsx";
 import { Dashboard } from "./Pages/Dashboard/Dashboard.jsx";
 import { Login } from "./Pages/Login/Login.jsx";
 import { Map } from "./Pages/Map/Map.jsx";
@@ -36,10 +34,8 @@ function AHFULApp() {
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <Routes>
         <Route element={<Layout/>}>
-          <Route path="/" element={<Home/>}/>
-          <Route path="/Dashboard" element={<Dashboard/>}/>
-          <Route path="/Workout" element={<Workout/>}/>
-          <Route path="/ExerciseLogger" element={<ExerciseLogger/>}/>
+          <Route path="/" element={<Dashboard/>}/>
+          <Route path="/WorkoutLogger" element={<WorkoutLogger/>}/>
           <Route path="/ExploreWorkout" element={<ExploreWorkouts/>}/>
           <Route path="/FoodLog" element={<FoodLog/>}/>
           <Route path="/Login" element={<Login/>}/>
