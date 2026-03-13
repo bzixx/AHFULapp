@@ -11,6 +11,7 @@ import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.j
 import { Profile } from "./Pages/Profile/Profile.jsx";
 import { TOS } from "./Pages/TOS/TOS.jsx";
 import { Layout } from "./Layout.jsx"
+import { AuthRouteCheck } from "./AuthRouteCheck.jsx";
 import "./SiteStyles.css";
 
 
@@ -35,14 +36,36 @@ function AHFULApp() {
       <Routes>
         <Route element={<Layout/>}>
           <Route path="/" element={<Dashboard/>}/>
-          <Route path="/WorkoutLogger" element={<WorkoutLogger/>}/>
-          <Route path="/ExploreWorkout" element={<ExploreWorkouts/>}/>
-          <Route path="/FoodLog" element={<FoodLog/>}/>
+          <Route path="/WorkoutLogger" element={
+            <AuthRouteCheck>
+              <WorkoutLogger/>
+            </AuthRouteCheck>}/>
+          <Route path="/ExploreWorkout" element={
+            <AuthRouteCheck>
+              <ExploreWorkouts/>
+            </AuthRouteCheck>
+            }/>
+          <Route path="/FoodLog" element={
+            <AuthRouteCheck>
+              <FoodLog/>
+            </AuthRouteCheck>}/>
           <Route path="/Login" element={<Login/>}/>
-          <Route path="/Map" element={<Map/>}/>
-          <Route path="/MeasurementLogger" element={<MeasurementLogger/>}/>
-          <Route path="/Profile" element={<Profile/>}/>
-          <Route path="/TOS" element={<TOS/>}/>
+          <Route path="/Map" element={
+            <AuthRouteCheck>
+              <Map/>
+            </AuthRouteCheck>}/>
+          <Route path="/MeasurementLogger" element={
+            <AuthRouteCheck>
+              <MeasurementLogger/>
+            </AuthRouteCheck>}/>
+          <Route path="/Profile" element={
+            <AuthRouteCheck>
+              <Profile/>
+            </AuthRouteCheck>}/>
+          <Route path="/TOS" element={
+            <AuthRouteCheck>
+              <TOS/>
+            </AuthRouteCheck>}/>
         </Route>
       </Routes>
     </GoogleOAuthProvider>
