@@ -127,6 +127,7 @@ export function WorkoutLogger() {
     setError(null);
     try {
       const list = await fetchExercisesFromBackend();
+      console.log("Fetched exercises:", list);
       setExercises(list);
     } catch (err) {
       console.error("Failed to fetch exercises:", err);
