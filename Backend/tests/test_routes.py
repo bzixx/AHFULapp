@@ -262,9 +262,6 @@ def test_update_food_roundtrip():
 
 # Gym
 
-def passFUnc():
-    pass
-
 def test_find_gym_by_id():
     # Give a valid gymId
     oid = "699cff88400d9d43a32e924d"
