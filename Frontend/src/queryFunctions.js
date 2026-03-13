@@ -87,8 +87,8 @@ export async function loadBodyParts() {
 
     return { data: normalized };
   } catch (err) {
-    console.error("loadEquipment error:", err);
-    const msg = err && err.message ? `Could not load equipment list: ${err.message}` : "Could not load equipment list";
+    console.error("loadBodyPart error:", err);
+    const msg = err && err.message ? `Could not load body part list: ${err.message}` : "Could not load body part list";
     return { data: null, error: msg };
   }
 }

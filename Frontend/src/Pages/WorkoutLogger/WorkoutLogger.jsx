@@ -10,6 +10,7 @@ import {
   searchExercises,
   fetchWorkout,
   fetchPersonalExercises,
+  loadBodyParts,
 } from "../../queryFunctions";
 
 export function WorkoutLogger() {
@@ -48,6 +49,9 @@ export function WorkoutLogger() {
 
   const [equipmentOptions, setEquipmentOptions] = useState([]);
   const [equipmentError, setEquipmentError] = useState(null);
+  
+  const [BodyPartOptions, setBodyPartOptions] = useState([]);
+  const [BodyPartError, setBodyPartError] = useState(null);
 
   const [muscleOptions, setMuscleOptions] = useState([]);
   const [muscleError, setMuscleError] = useState(null);
@@ -101,11 +105,18 @@ export function WorkoutLogger() {
       if (res && res.error) setEquipmentError(res.error);
     })();
 
-        (async () => {
+    (async () => {
       const res = await loadTargetMuscles();
       if (!mounted) return;
       if (res && res.data) setMuscleOptions(res.data);
       if (res && res.error) setMuscleError(res.error);
+    })();
+
+    (async () => {
+      const res = await loadBodyParts();
+      if (!mounted) return;
+      if (res && res.data) setBodyPartOptions(res.data);
+      if (res && res.error) setBodyPartError(res.error);
     })();
 
     return () => {
@@ -630,15 +641,20 @@ export function WorkoutLogger() {
             </select>
 
             <label style={{ display: "block", marginTop: 8 }}>Body Parts</label>
+            {BodyPartError && (
+              <div style={{ color: "red", marginBottom: 6 }}>
+                {BodyPartError}
+              </div>
+            )}
             <select
               multiple
               value={newExercise.bodyParts}
               onChange={(e) => handleMultiSelectChange(e, "bodyParts")}
               style={{ width: "100%" }}
             >
-              {BODY_PARTS.map((b) => (
-                <option key={b} value={b}>
-                  {b}
+              {(BodyPartOptions || []).map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
                 </option>
               ))}
             </select>
