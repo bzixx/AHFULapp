@@ -2034,7 +2034,107 @@ swaggerConfig = {
           }
         }
       }
+    }, 
+
+    "/AHFULfood/update/{food_id}": {
+      "put": {
+        "summary": "Update a food entry",
+        "description": "Updates allowed fields of a food entry by id. The server treats PUT as a partial update of allowed fields.",
+        "tags": ["Food"],
+        "parameters": [
+          {
+            "name": "food_id",
+            "in": "path",
+            "required": True,
+            "description": "The id of the food entry (Mongo ObjectId as string)",
+            "schema": { "type": "string", "example": "699d0f5f888d8f649698307e" }
+          }
+        ],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name":           { "type": "string",  "example": "Banana" },
+                  "calsPerServing": { "type": "integer", "example": 105 },
+                  "servings":       { "type": "integer", "example": 2 },
+                  "type":           { "type": "string",  "example": "Snack" },
+                  "time":           { "type": "number",  "example": 1708473601 }
+                },
+                "additionalProperties": False
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Food updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id":            { "type": "string",  "example": "699d0f5f888d8f649698307e" },
+                    "userId":         { "type": "string",  "example": "699d0093795741a59fe13616" },
+                    "name":           { "type": "string",  "example": "Banana" },
+                    "calsPerServing": { "type": "integer", "example": 105 },
+                    "servings":       { "type": "integer", "example": 2 },
+                    "type":           { "type": "string",  "example": "Snack" },
+                    "time":           { "type": "number",  "example": 1708473601 }
+                  },
+                  "required": ["_id", "userId", "name", "calsPerServing", "servings", "type", "time"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or update error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "No data provided" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Food not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Food not found" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          }
+        }
+      }
     }
+
   }
 }
     

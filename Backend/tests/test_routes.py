@@ -150,6 +150,116 @@ def test_create_delete_food():
     # Assertions
     assert response == responseId
 
+def test_update_food_roundtrip():
+    # Known existing document id from your tests/fixtures
+    food_id = "699d0f5f888d8f649698307e"
+
+    # Fetch the current/original state
+    original, err = FoodDriver.get_food_by_id(food_id)
+    if err is not None:
+        print("Fetch original failed:", err)
+    assert err is None
+    assert original is not None
+    assert original.get("_id") == food_id
+
+    # Keep a copy of original values for roundtrip restore
+    orig_userId         = original.get("userId")
+    orig_name           = original.get("name")
+    orig_calsPerServing = original.get("calsPerServing")
+    orig_servings       = original.get("servings")
+    orig_type           = original.get("type")
+    orig_time           = original.get("time")
+
+    # Sanity checks (aligns with your existing expectations)
+    assert isinstance(orig_name, str)
+    assert isinstance(orig_calsPerServing, int)
+    assert isinstance(orig_servings, int)
+    assert isinstance(orig_type, str)
+    assert isinstance(orig_time, int)
+
+    # Update all allowed fields to new values
+    new_name = "Banana"
+    new_calsPerServing = 105
+    new_servings = 2
+    new_type = "Snack"
+    new_time = 1708473602 
+
+    updated, err = FoodDriver.update_food(
+        food_id=food_id,
+        name=new_name,
+        calsPerServing=new_calsPerServing,
+        servings=new_servings,
+        type=new_type,
+        time=new_time
+    )
+    if err is not None:
+        print("Update failed:", err)
+    assert err is None
+    assert updated is not None
+    assert updated.get("_id") == food_id
+
+    # Assert updated values persisted (and userId unchanged)
+    assert updated.get("userId") == orig_userId
+    assert updated.get("name") == new_name
+    assert updated.get("calsPerServing") == new_calsPerServing
+    assert updated.get("servings") == new_servings
+    assert updated.get("type") == new_type
+    assert updated.get("time") == new_time
+
+    # Re-fetch from DB to ensure it wasn't just an in-memory return
+    fetched_after_update, err = FoodDriver.get_food_by_id(food_id)
+    if err is not None:
+        print("Fetch after update failed:", err)
+    assert err is None
+    assert fetched_after_update is not None
+    assert fetched_after_update.get("_id") == food_id
+
+    # Assert values are exactly as updated
+    assert fetched_after_update.get("userId") == orig_userId
+    assert fetched_after_update.get("name") == new_name
+    assert fetched_after_update.get("calsPerServing") == new_calsPerServing
+    assert fetched_after_update.get("servings") == new_servings
+    assert fetched_after_update.get("type") == new_type
+    assert fetched_after_update.get("time") == new_time
+
+    # Restore the original values
+    restored, err = FoodDriver.update_food(
+        food_id=food_id,
+        name=orig_name,
+        calsPerServing=orig_calsPerServing,
+        servings=orig_servings,
+        type=orig_type,
+        time=orig_time
+    )
+    if err is not None:
+        print("Restore failed:", err)
+    assert err is None
+    assert restored is not None
+    assert restored.get("_id") == food_id
+
+    # Assert restored document reflects the original values
+    assert restored.get("userId") == orig_userId
+    assert restored.get("name") == orig_name
+    assert restored.get("calsPerServing") == orig_calsPerServing
+    assert restored.get("servings") == orig_servings
+    assert restored.get("type") == orig_type
+    assert restored.get("time") == orig_time
+
+    # Re-fetch to ensure final state is restored in DB
+    fetched_after_restore, err = FoodDriver.get_food_by_id(food_id)
+    if err is not None:
+        print("Fetch after restore failed:", err)
+    assert err is None
+    assert fetched_after_restore is not None
+    assert fetched_after_restore.get("_id") == food_id
+
+    assert fetched_after_restore.get("userId") == orig_userId
+    assert fetched_after_restore.get("name") == orig_name
+    assert fetched_after_restore.get("calsPerServing") == orig_calsPerServing
+    assert fetched_after_restore.get("servings") == orig_servings
+    assert fetched_after_restore.get("type") == orig_type
+    assert fetched_after_restore.get("time") == orig_time
+
 # Gym
 
 def test_find_gym_by_id():
@@ -863,8 +973,7 @@ def test_create_delete_template():
         print(response, err)
     # Assertions
     assert response == responseId
-
-    
+   
 def test_update_workout_roundtrip():
     # Known existing document id from your tests/fixtures
     workout_id = "69af2a4598d0f4227b25ed71"
