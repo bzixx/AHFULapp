@@ -14,13 +14,6 @@ EXERSICEDB_HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) A
 externalDBConnection =  HTTPSConnection(EXERSICEDB_HOST)
 
 class ExerciseDriver:
-    @staticmethod
-    def _validate_obj_id(id, name):
-        try:
-            return ObjectId(str(id)), None
-        except (bson_errors.InvalidId, TypeError, ValueError):
-            return None, f"Invalid {name} format; must be a 24-hex string"
-
     def get_initial_metadata():
         try:
             #Define Endpoint for External API
@@ -108,11 +101,26 @@ class ExerciseDriver:
         except Exception as e:
             return None, str(e)
         
-    def get_more_exercises(currentPage):
+    def get_next_exercises(currentMeta):
         try:
             nextPageEndpoint = currentMeta["nextPage"]
 
             externalDBConnection.request("GET", nextPageEndpoint, headers=EXERSICEDB_HEADERS)
+            apiResponse = externalDBConnection.getresponse()
+            data = apiResponse.read()                   # bytes  → b'{"success":true...
+            decodedData = data.decode("utf-8")          # string → '{"success":true...}'
+            workableData = json.loads(decodedData)      # dict   → {"success": True,
+            externalExercises = workableData["data"]
+
+            return externalExercises, None
+        except Exception as e:
+            return None, str(e)
+
+    def get_prev_exercises(currentMeta):
+        try:
+            prevPageEndpoint = currentMeta["previousPage"]
+
+            externalDBConnection.request("GET", prevPageEndpoint, headers=EXERSICEDB_HEADERS)
             apiResponse = externalDBConnection.getresponse()
             data = apiResponse.read()                   # bytes  → b'{"success":true...
             decodedData = data.decode("utf-8")          # string → '{"success":true...}'
@@ -211,15 +219,15 @@ class ExerciseDriver:
             except Exception as e:
                 return None, "Exercise not found"
 
-    def create_exercise(name, body_part, difficulty, equipment, instructions, type):
+    def create_exercise(formData):
         try:
             exercise_data = {
-                "name": name,
-                "body_part": body_part,
-                "difficulty": difficulty,
-                "equipment": equipment,
-                "instructions": instructions,
-                "type": type
+                "name": formData.get("name"),
+                "body_part": formData.get("body_part"),
+                "difficulty": formData.get("difficulty"),
+                "equipment": formData.get("equipment"),
+                "instructions": formData.get("instructions"),
+                "type": formData.get("type")
             }
             exercise_id = ExerciseObject.create(exercise_data)
             return exercise_id, None
