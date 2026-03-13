@@ -88,14 +88,7 @@ def create_exercise():
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
-    exercise_id, error = ExerciseDriver.create_exercise(
-        name=data.get("name"),
-        body_part=data.get("body_part"),
-        difficulty=data.get("difficulty"),
-        equipment=data.get("equipment"),
-        instructions=data.get("instructions"),
-        type=data.get("type")
-    )
+    exercise_id, error = ExerciseDriver.create_exercise(data)
     
     if error:
         return jsonify({"error": error}), 400
