@@ -213,7 +213,6 @@ class ExerciseDriver:
         print("err", err)
         
         if oid:
-            print("*")
             try:
                 int_exercise = ExerciseObject.find_by_id(id)
                 return int_exercise, None
@@ -221,7 +220,6 @@ class ExerciseDriver:
                 print(None, str(e))
         
         else:
-            print("#")
             try:
                 #Define Connection and Endpoint for External API
                 dbConnection =  HTTPSConnection(EXERSICEDB_HOST)
@@ -240,12 +238,8 @@ class ExerciseDriver:
                 decodedData = data.decode("utf-8")          # string → '{"success":true...}'
                 workableData = json.loads(decodedData)      # dict   → {"success": True, "data": [...]}
 
-                print("workableData", workableData)
-
                 # Extract Exercise List from External API Response
                 exercisesList = ExerciseDriver.normalize(workableData["data"])
-
-                print("exercisesList", exercisesList)
 
                 if exercisesList:
                     return exercisesList[0], None,
