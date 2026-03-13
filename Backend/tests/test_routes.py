@@ -352,6 +352,113 @@ def test_create_delete_gym():
     # Assertions
     assert response == responseId
 
+def test_update_gym_roundtrip():
+    gym_id = "699cff88400d9d43a32e924d"  # replace with a known existing id in your test DB
+
+    # Fetch current/original state
+    original, err = GymDriver.get_gym_by_id(gym_id)
+    if err is not None:
+        print("Fetch original gym failed:", err)
+    assert err is None
+    assert original is not None
+    assert original.get("_id") == gym_id
+
+    # Keep original values for restore
+    orig_name    = original.get("name")
+    orig_address = original.get("address")
+    orig_type    = original.get("type")
+    orig_cost    = original.get("cost")
+    orig_link    = original.get("link")
+    orig_lat     = original.get("lat")
+    orig_lng     = original.get("lng")
+    orig_notes   = original.get("notes")
+
+    # Update all allowed fields
+    new_values = {
+        "name":    "Updated Test Gym",
+        "address": "456 Updated St, Testville, USA",
+        "type":    "General",
+        "cost":    19.99,
+        "link":    "https://updatedgym.example.com",
+        "lat":     44.1234,
+        "lng":     -91.5678,
+        "notes":   "Updated via test roundtrip"
+    }
+    updated, err = GymDriver.update_gym(id=gym_id, updates=new_values)
+    if err is not None:
+        print("Update gym failed:", err)
+    assert err is None
+    assert updated is not None
+    assert updated.get("_id") == gym_id
+
+    # Assert fields updated
+    assert updated.get("name") == new_values["name"]
+    assert updated.get("address") == new_values["address"]
+    assert updated.get("type") == new_values["type"]
+    assert updated.get("cost") == new_values["cost"]
+    assert updated.get("link") == new_values["link"]
+    assert updated.get("lat") == new_values["lat"]
+    assert updated.get("lng") == new_values["lng"]
+    assert updated.get("notes") == new_values["notes"]
+
+    # Re-fetch to confirm persistence
+    fetched_after_update, err = GymDriver.get_gym_by_id(gym_id)
+    if err is not None:
+        print("Fetch after update failed:", err)
+    assert err is None
+    assert fetched_after_update is not None
+    assert fetched_after_update.get("_id") == gym_id
+
+    assert fetched_after_update.get("name") == new_values["name"]
+    assert fetched_after_update.get("address") == new_values["address"]
+    assert fetched_after_update.get("cost") == new_values["cost"]
+    assert fetched_after_update.get("link") == new_values["link"]
+    assert fetched_after_update.get("lat") == new_values["lat"]
+    assert fetched_after_update.get("lng") == new_values["lng"]
+    assert fetched_after_update.get("notes") == new_values["notes"]
+
+    # Restore original values
+    restore_payload = {
+        "name":    orig_name,
+        "address": orig_address,
+        "cost":    orig_cost,
+        "link":    orig_link,
+        "lat":     orig_lat,
+        "lng":     orig_lng,
+        "notes":   orig_notes
+    }
+    restored, err = GymDriver.update_gym(id=gym_id, updates=restore_payload)
+    if err is not None:
+        print("Restore gym failed:", err)
+    assert err is None
+    assert restored is not None
+    assert restored.get("_id") == gym_id
+
+    # Assert restored to original
+    assert restored.get("name") == orig_name
+    assert restored.get("address") == orig_address
+    assert restored.get("cost") == orig_cost
+    assert restored.get("link") == orig_link
+    assert restored.get("lat") == orig_lat
+    assert restored.get("lng") == orig_lng
+    assert restored.get("notes") == orig_notes
+
+    # Re-fetch to confirm final persistence
+    fetched_after_restore, err = GymDriver.get_gym_by_id(gym_id)
+    if err is not None:
+        print("Fetch after restore failed:", err)
+    assert err is None
+    assert fetched_after_restore is not None
+    assert fetched_after_restore.get("_id") == gym_id
+
+    assert fetched_after_restore.get("name") == orig_name
+    assert fetched_after_restore.get("address") == orig_address
+    assert fetched_after_restore.get("cost") == orig_cost
+    assert fetched_after_restore.get("link") == orig_link
+    assert fetched_after_restore.get("lat") == orig_lat
+    assert fetched_after_restore.get("lng") == orig_lng
+    assert fetched_after_restore.get("notes") == orig_notes
+
 # Personal Ex
 
 def test_find_personal_ex_by_id():

@@ -1754,6 +1754,115 @@ swaggerConfig = {
         }
       }
     },
+    
+    "/AHFULgyms/update/{gym_id}": {
+      "put": {
+        "summary": "Update a gym",
+        "description": "Updates allowed fields of a gym by id. The server treats PUT as a partial update.",
+        "tags": ["Gym"],
+        "parameters": [
+          {
+            "name": "gym_id",
+            "in": "path",
+            "required": True,
+            "description": "The id of the gym (Mongo ObjectId as string)",
+            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+          }
+        ],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name":    { "type": "string", "example": "Downtown Fitness" },
+                  "address": { "type": "string", "example": "123 Main St, Anytown, USA" },
+                  "cost":    { "type": "number", "example": 49.99 },
+                  "link":    { "type": "string", "format": "uri", "example": "https://examplegym.com" },
+                  "lat":     { "type": "number", "example": 44.876 },
+                  "lng":     { "type": "number", "example": -91.932 },
+                  "notes":   { "type": "string", "example": "24/7 access; towels included" }
+                },
+                "additionalProperties": False
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gym updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Gym updated" },
+                    "gym": {
+                      "type": "object",
+                      "properties": {
+                        "_id":     { "type": "string", "example": "698d039a6e5117c22dd7771d" },
+                        "name":    { "type": "string", "example": "Downtown Fitness" },
+                        "address": { "type": "string", "example": "123 Main St, Anytown, USA" },
+                        "cost":    { "type": "number", "example": 49.99 },
+                        "link":    { "type": "string", "format": "uri", "example": "https://examplegym.com" },
+                        "lat":     { "type": "number", "example": 44.876 },
+                        "lng":     { "type": "number", "example": -91.932 },
+                        "notes":   { "type": "string", "example": "24/7 access; towels included" }
+                      },
+                      "required": ["_id", "name", "address"]
+                    }
+                  },
+                  "required": ["message", "gym"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or no valid fields to update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "You must provide a JSON body with at least one field to update" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Gym not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Gym not found" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
 
     "/AHFULfood/": {
       "get": {

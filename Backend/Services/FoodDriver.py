@@ -79,7 +79,6 @@ class FoodDriver:
         except Exception as e:
             return None, str(e)
 
-
     # ── Update ─────────────────────────────────────────────────────────────────
     @staticmethod
     def update_food(food_id, name, calsPerServing, servings, type, time):

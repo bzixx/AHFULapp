@@ -50,6 +50,42 @@ class GymDriver:
             return gym, None
         except Exception as e:
             return None, str(e)
+    
+    # ── Update ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def update_gym(id, updates):
+        # Validate input
+        if not id:
+            return None, "You must provide a gym id to update"
+
+        if not updates or not isinstance(updates, dict):
+            return None, "You must provide at least one field to update"
+
+        # Allowed fields to update
+        allowed_fields = {
+            "name",
+            "address",
+            "cost",
+            "link",
+            "lat",
+            "lng",
+            "notes"
+        }
+
+        # Filter only allowed fields
+        sanitized_updates = {k: v for k, v in updates.items() if k in allowed_fields}
+
+        if not sanitized_updates:
+            return None, "No valid fields to update"
+
+        try:
+            updated = GymObject.update(id, sanitized_updates)
+            if not updated:
+                # Could be not found or no actual changes applied (same values)
+                return None, "Gym not found or no changes applied"
+            return updated, None
+        except Exception as e:
+            return None, str(e)
         
     # ── Delete ─────────────────────────────────────────────────────────────────    
     @staticmethod
