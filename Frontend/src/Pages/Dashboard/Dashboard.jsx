@@ -1,7 +1,7 @@
 import React from "react";
 import "./Dashboard.css";
-import { DashboardFoodTodoList } from "../../Components/DashboardComponents/DashboardComponentsTodo/DashboardFoodTodoList";
-import { DashboardWorkoutTodoList } from "../../Components/DashboardComponents/DashboardComponentsTodo/DashboardWorkoutTodoList";
+import { DashboardFoodTodoList } from "../../Components/DashboardComponents/DashboardFoodTodoList";
+import { DashboardWorkoutTodoList } from "../../Components/DashboardComponents/DashboardWorkoutTodoList";
 import { CalendarButton } from "../../Components/CalendarButton/CalendarButton";
 import { HeatMap } from "../../Components/HeatMap/HeatMap";
 import "../../SiteStyles.css";
