@@ -473,7 +473,7 @@ def test_find_personal_ex_by_id():
     assert ex.get("complete") == False
     assert ex.get("distance") == "0"
     assert ex.get("duration") == 120
-    assert ex.get("exerciseId") == "69ab3627a819c7ed3f7fcab1"
+    assert ex.get("exerciseId") == "69b4885e542988e24fee392e"
     assert ex.get("reps") == 0
     assert ex.get("sets") == 0
     assert ex.get("userId") == "699d0093795741a59fe13616"
@@ -528,7 +528,7 @@ def test_find_personal_ex_by_workout():
     assert filtered[0].get("complete") == False
     assert filtered[0].get("distance") == "0"
     assert filtered[0].get("duration") == 120
-    assert filtered[0].get("exerciseId") == "69ab3627a819c7ed3f7fcab1"
+    assert filtered[0].get("exerciseId") == "69b4885e542988e24fee392e"
     assert filtered[0].get("reps") == 0
     assert filtered[0].get("sets") == 0
     assert filtered[0].get("userId") == "699d0093795741a59fe13616"
@@ -583,7 +583,7 @@ def test_find_personal_ex_by_user():
     assert filtered[0].get("complete") == False
     assert filtered[0].get("distance") == "0"
     assert filtered[0].get("duration") == 120
-    assert filtered[0].get("exerciseId") == "69ab3627a819c7ed3f7fcab1"
+    assert filtered[0].get("exerciseId") == "69b4885e542988e24fee392e"
     assert filtered[0].get("reps") == 0
     assert filtered[0].get("sets") == 0
     assert filtered[0].get("userId") == "699d0093795741a59fe13616"
