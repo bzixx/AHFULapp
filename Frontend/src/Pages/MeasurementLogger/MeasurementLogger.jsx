@@ -1,10 +1,14 @@
 //@Author Jonathan Torrence
 import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import "./MeasurementLogger.css";
 import "../../SiteStyles.css";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
+const API_BASE = "http://localhost:5000/AHFULmeasurements";
+
 export function MeasurementLogger() {
+    const user = useSelector((state) => state.auth.user);
     const [measurements, setMeasurements] = useState([]);
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -19,6 +23,18 @@ export function MeasurementLogger() {
     const [errors, setErrors] = useState("");
     const [editingId, setEditingId] = useState(null);
 
+    const getUserId = () => {
+        if (user?._id) return user._id;
+        try {
+            const stored = JSON.parse(localStorage.getItem("user_data"));
+            return stored?._id || null;
+        } catch {
+            return null;
+        }
+    };
+
+    const userId = getUserId();
+
     const measurements_to_track = [
         {key: "chest", label: "Chest (inches)"},
         {key: "waist", label: "Waist (inches)"},
@@ -31,20 +47,33 @@ export function MeasurementLogger() {
     // Load measurements on component mount
     useEffect(() => {
         fetchMeasurements();
-    }, []);
+    }, [userId]);
 
     const fetchMeasurements = async () => {
+        if (!userId) {
+            setMeasurements([]);
+            setErrors("Please log in to manage measurements");
+            return;
+        }
+
         try {
             setLoading(true);
-            const userEmail = localStorage.getItem("userEmail"); // Get from auth
-            const response = await fetch(`/AHFULmeasurements/${userEmail}`);
+            const response = await fetch(`${API_BASE}/${userId}`);
+
+            if (response.status === 404) {
+                setMeasurements([]);
+                setErrors("");
+                return;
+            }
 
             if (!response.ok) {
-                throw new Error("Failed to fetch measurements");
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || "Failed to fetch measurements");
             }
 
             const data = await response.json();
             setMeasurements(data || []);
+            setErrors("");
         } catch (error) {
             console.error("Error fetching measurements:", error);
             setErrors("Failed to load measurements");
@@ -62,6 +91,11 @@ export function MeasurementLogger() {
         e.preventDefault();
         setErrors("");
 
+        if (!userId) {
+            setErrors("Please log in to save measurements");
+            return;
+        }
+
         // Basic validation
         if (!formData.date) {
             setErrors("Please select a date.");
@@ -76,17 +110,16 @@ export function MeasurementLogger() {
 
         try {
             setLoading(true);
-            const userEmail = localStorage.getItem("userEmail");
 
             const payload = {
-                userEmail,
+                userId,
                 ...formData,
                 date: new Date(formData.date).toISOString()
             };
 
             const endpoint = editingId
-                ? `/AHFULmeasurements/${editingId}`
-                : '/AHFULmeasurements';
+                ? `${API_BASE}/update/${editingId}`
+                : `${API_BASE}/create`;
 
             const method = editingId ? 'PUT' : 'POST';
 
@@ -99,7 +132,8 @@ export function MeasurementLogger() {
             });
 
             if (!response.ok) {
-                throw new Error("Failed to save measurement");
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error || "Failed to save measurement");
             }
 
             // Refresh measurements
@@ -127,12 +161,12 @@ export function MeasurementLogger() {
 
     const handleEditMeasurement = (measurement) => {
         setFormData({
-            chest: measurement.chest || "",
-            waist: measurement.waist || "",
-            hips: measurement.hips || "",
-            thighs: measurement.thighs || "",
-            arms: measurement.arms || "",
-            weight: measurement.weight || "",
+            chest: measurement.chest ?? "",
+            waist: measurement.waist ?? "",
+            hips: measurement.hips ?? "",
+            thighs: measurement.thighs ?? "",
+            arms: measurement.arms ?? "",
+            weight: measurement.weight ?? "",
             date: measurement.date.split('T')[0]
         });
         setEditingId(measurement._id);
@@ -143,12 +177,13 @@ export function MeasurementLogger() {
         if (window.confirm("Are you sure you want to delete this measurement?")) {
             try {
                 setLoading(true);
-                const response = await fetch(`/AHFULmeasurements/${id}`, {
+                const response = await fetch(`${API_BASE}/delete/${id}`, {
                     method: 'DELETE'
                 });
 
                 if (!response.ok) {
-                    throw new Error("Failed to delete measurement");
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.error || "Failed to delete measurement");
                 }
 
                 await fetchMeasurements();
@@ -175,15 +210,18 @@ export function MeasurementLogger() {
     };
 
     // Prepare chart data
-    const chartData = measurements.map(m => ({
-        date: new Date(m.date).toLocaleDateString(),
-        chest: m.chest ? parseFloat(m.chest) : null,
-        waist: m.waist ? parseFloat(m.waist) : null,
-        hips: m.hips ? parseFloat(m.hips) : null,
-        thighs: m.thighs ? parseFloat(m.thighs) : null,
-        arms: m.arms ? parseFloat(m.arms) : null,
-        weight: m.weight ? parseFloat(m.weight) : null
-    })).sort((a, b) => new Date(a.date) - new Date(b.date));
+    const chartData = measurements
+        .slice()
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .map((measurement) => ({
+            date: new Date(measurement.date).toLocaleDateString(),
+            chest: measurement.chest ?? null,
+            waist: measurement.waist ?? null,
+            hips: measurement.hips ?? null,
+            thighs: measurement.thighs ?? null,
+            arms: measurement.arms ?? null,
+            weight: measurement.weight ?? null
+        }));
 
     return (
         <div className="measurement-container">
