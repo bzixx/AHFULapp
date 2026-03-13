@@ -30,6 +30,25 @@ class GymObject:
         gym = gymCollection.find_one({"_id": ObjectId(id)})
         return GymObject._serialize(gym)
     
+    # ── Update ──────────────────────────────────────────────────────────────────
+    @staticmethod
+    def update(id, updates):
+        if not updates:
+            return None
+
+        filter_doc = {"_id": ObjectId(id)}
+        update_doc = {"$set": updates}
+
+        result = gymCollection.update_one(filter_doc, update_doc)
+
+        # If no document matched the id, return None
+        if result.matched_count == 0:
+            return None
+
+        # Fetch and return the current state after update (serialized)
+        updated = gymCollection.find_one(filter_doc)
+        return GymObject._serialize(updated)
+
     # ── Delete ──────────────────────────────────────────────────────────────────
     @staticmethod
     def delete(id):
