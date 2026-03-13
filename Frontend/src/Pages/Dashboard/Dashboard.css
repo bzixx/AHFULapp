@@ -51,9 +51,18 @@
 
 .gym-landing-root {
   min-height: 100vh;
-  color: #eef2f7;
+  color: #111; /* match other pages' dark text */
   display: flex;
   flex-direction: column;
+  background: #fff; /* ensure light background consistent with other pages */
+}
+
+/* Center inner content and keep a comfortable max width */
+.page-inner {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .gym-header {
@@ -94,9 +103,9 @@
 
 .hero {
   display: flex;
-  gap: 40px;
+  gap: 24px;
   align-items: center;
-  padding: 48px 64px;
+  padding: 36px 0;
 }
 
 .hero-content {
@@ -110,7 +119,7 @@
 }
 
 .lead {
-  color: rgba(255,255,255,0.85);
+  color: #333;
   max-width: 520px;
 }
 
@@ -119,14 +128,14 @@
 }
 
 .hero-visual {
-  flex: 0 0 320px;
+  flex: 0 0 220px;
   display: flex;
   justify-content: center;
 }
 
 .mock-device {
-  width: 260px;
-  height: 460px;
+  width: 200px;
+  height: 360px;
   background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
   border-radius: 20px;
   padding: 18px;
@@ -159,7 +168,68 @@
 }
 
 .features {
-  padding: 36px 64px;
+  padding: 18px 0 32px;
+}
+
+/* Dashboard widget layout */
+.dashboard-widgets {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  padding: 16px 0 64px;
+  align-items: start;
+}
+
+.dashboard-main {
+  min-width: 0;
+  padding-right: 8px;
+}
+
+.dashboard-side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-left: 8px;
+}
+
+/* Make child widgets take full width inside their containers */
+.dashboard-widgets > .dashboard-main > *,
+.dashboard-widgets > .dashboard-side > * {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Cards inside dashboard side should have consistent background and spacing */
+.dashboard-side .feature,
+.dashboard-side .mock-device,
+.dashboard-side .stat-row,
+.dashboard-side .stat,
+.dashboard-side .stat-label {
+  background: transparent;
+}
+
+/* Responsive: stack columns on small screens */
+@media (max-width: 1000px) {
+  .dashboard-widgets {
+    grid-template-columns: 1fr;
+    padding: 8px 16px 32px;
+  }
+  .hero {
+    flex-direction: column;
+    gap: 18px;
+    padding: 18px 0;
+    align-items: flex-start;
+  }
+  .hero-visual {
+    order: 2;
+  }
+}
+
+@media (max-width: 480px) {
+  .nametxt { font-size: 3.5em; }
+  .text { font-size: 2.5em; }
+  .hero-content h1 { font-size: 28px; }
+  .hero { padding: 18px; }
 }
 
 .features-grid {

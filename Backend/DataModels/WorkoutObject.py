@@ -14,8 +14,15 @@ class WorkoutObject:
         if workout:
             workout["_id"] = str(workout["_id"])
             workout["userId"] = str(workout["userId"])
-            if workout["gymId"]:
-                workout["gymId"] = str(workout["gymId"])
+            workout["gymId"] = str(workout["gymId"])
+        return workout
+    
+    @staticmethod
+    def _serialize_template(workout):
+        """Convert MongoDB document to JSON-safe dict."""
+        if workout:
+            workout["_id"] = str(workout["_id"])
+            workout["userId"] = str(workout["userId"])
         return workout
     
     # ── Create ─────────────────────────────────────────────────────────────────
@@ -54,12 +61,31 @@ class WorkoutObject:
         return [WorkoutObject._serialize(w) for w in workout]
 
     def find_templates(userId):
-        workout = workoutCollection.find({
+        template = workoutCollection.find({
             "userId": ObjectId(userId),
             "template": {"$exists": True},
             "startTime": 0
         })
-        return [WorkoutObject._serialize(w) for w in workout]
+        return [WorkoutObject._serialize_template(t) for t in template]
+
+    # ── Update ──────────────────────────────────────────────────────────────────
+    @staticmethod
+    def update(id, updates):
+        if not updates:
+            return None
+
+        filter_doc = {"_id": ObjectId(id)}
+        update_doc = {"$set": updates}
+
+        result = workoutCollection.update_one(filter_doc, update_doc)
+
+        # If no document matched the id, return None
+        if result.matched_count == 0:
+            return None
+
+        # Fetch and return the current state after update (serialized)
+        updated = workoutCollection.find_one(filter_doc)
+        return WorkoutObject._serialize(updated)
 
     # ── Delete ──────────────────────────────────────────────────────────────────
     @staticmethod

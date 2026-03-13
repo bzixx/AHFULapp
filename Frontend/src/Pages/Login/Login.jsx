@@ -7,75 +7,31 @@ import { authLogin, authLogout} from "./AuthSlice";
 export function Login() {
 
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+    const dispatch = useDispatch();
 
     //Check for LocalStorage or Cookie Data.
     const userData = localStorage.getItem("user_data");
-
-    //Define TempText for later use if userData exists
-    const tempText = document.getElementById("LoggedInStatus");
-
-    //Define Button for Logout
-    const button = document.createElement("button");
-    button.innerText = "Logout";
-    button.addEventListener("click", () => {handle_google_logout(); tempText.innerText = "Logged out successfully!";});
-
-    // If is NOT Authenticated
-    if (!isAuthenticated) {
-
-
-
-        //If LocalStorage or Cookie Data exists, parse it and update the LoggedInStatus text to show the user is logged in with their email.
-        if (userData) {
-            //TODO: Check for Expiry time with WhoAmI Route
-            // console.log(userData);
-            //Define POST URL for Later
-            const backendPOSTURL = `http://localhost:5000/AHFULauth/whoami`;
-
-            //Try to Get LocalStorage Cookie for data
-            try{
-                // // POST response Object to BACKEND API ROUTE for processing.
-                // const backendResponse = await fetch(backendPOSTURL, {
-                //     method: 'POST',
-                //     headers: {'Content-Type': 'application/json',},
-                //     body: JSON.stringify(userData),
-                //     credentials: 'include',
-                // });
-                // if (!backendResponse.ok) {
-                //     const message = `AHFUL Frontend API response error (${backendResponse.status}): ${backendResponse.statusText}`;
-                //     throw new Error(message);
-                // }else{
-                //     console.log("AHFUL WhoAmI Check Completed successfully.");
-                // }
-
-            }catch(error){
-                //Catch Spooky Errors that should never occur because you shouldnt log out before login
-                console.log("Front End Local Sotrage/Cookie WhoamI check error , ", error)
-            }
-
-            const parsedData = JSON.parse(userData);
-            if (parsedData && tempText) {
-                tempText.innerText = `Logged in as ${parsedData.email}`;
-                tempText.appendChild(button);
-
-            }
-            //If Not LocalStorage or Cookie Data
-        }else{
-            //DO NOTHING, the Google Login Button will be shown and the user can log in.
-        }
-
-
-        //IF Authenticated
-    }else {
-            
-        if (userData) {
-            // console.log(userData);
-            tempText.appendChild(button);
-        }
-
+    let parsedUser = null;
+    try {
+        parsedUser = userData ? JSON.parse(userData) : null;
+    } catch (e) {
+        // Corrupted localStorage entry — clear it
+        localStorage.removeItem("user_data");
     }
 
-    // Logout function
-    const dispatch = useDispatch();
+    // Derive the status message for the LoggedInStatus div
+    const getStatusText = () => {
+        if (isAuthenticated && parsedUser) {
+            return `Logged in as ${parsedUser.email}`;
+        }
+        if (!isAuthenticated && parsedUser) {
+            //TODO: Check for Expiry time with WhoAmI Route
+            return `Logged in as ${parsedUser.email}`;
+        }
+        return "";
+    };
+
+    const showLogoutButton = !!(parsedUser);
     const handle_google_logout = async() => {
         //Define POST URL for Later
         const backendPOSTURL = `http://localhost:5000/AHFULauth/logout`;
@@ -124,11 +80,11 @@ export function Login() {
                     body: JSON.stringify({ token: googleButtonIdToken }),
                     credentials: 'include',
                 });
-                
+
                 //Explicit check over response from server
                 const contentType = backendResponse.headers.get('content-type');
                 let backendUserData = null;
-                
+
                 //If it exisits and the content type mathces, then set the frontendUserInfo variable
                 //Also Sotre it to local Storage
                 if (contentType && contentType.includes('application/json')) {
@@ -142,7 +98,7 @@ export function Login() {
                     document.cookie = `user_data=${userString}; path=/; samesite=strict`;
 
                 } else {
-                    //If its not JSON try to parse it into text. 
+                    //If its not JSON try to parse it into text.
                     backendUserData = await backendResponse.text();
                 }
 
@@ -161,7 +117,7 @@ export function Login() {
         }catch (error){
         console.log("AHFUL Error in context_login Func Catch.  Not sure how you got here. ")
         console.log("Disabled Loading due to Error" )
-    }    
+    }
     };
 
     const handle_google_failure = (error) => {
@@ -200,7 +156,7 @@ export function Login() {
                     <h3>
                     An 'AHFUL' app is your one-stop shop for everything you need in a fitness logger.
                     </h3>
-                    
+
                     <ul>
                     <li>Record workouts</li>
                     <li>Save templates</li>
@@ -213,17 +169,21 @@ export function Login() {
                     </h3>
                 </div>
                 <div className="login-button">
-                    <GoogleLogin 
+                    <GoogleLogin
                         size="large"
                         width="200"
                         text="signin_with"
-                        theme="filled_black" 
+                        theme="filled_black"
                         shape="pill"
                         onSuccess={handle_google_success}
                         onError={handle_google_failure}
                     />
                 </div>
                 <div id="LoggedInStatus">
+                    {getStatusText()}
+                    {showLogoutButton && (
+                        <button onClick={handle_google_logout}>Logout</button>
+                    )}
                 </div>
             </div>
         </div>
