@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { Workout } from "./Pages/Workout/Workout.jsx";
-import { ExerciseLogger } from "./Pages/ExerciseLogger/ExerciseLogger.jsx";
+import { WorkoutLogger } from "./Pages/WorkoutLogger/WorkoutLogger.jsx";
 import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
 import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
 import { Dashboard } from "./Pages/Dashboard/Dashboard.jsx";
@@ -36,8 +35,7 @@ function AHFULApp() {
       <Routes>
         <Route element={<Layout/>}>
           <Route path="/" element={<Dashboard/>}/>
-          <Route path="/Workout" element={<Workout/>}/>
-          <Route path="/ExerciseLogger" element={<ExerciseLogger/>}/>
+          <Route path="/WorkoutLogger" element={<WorkoutLogger/>}/>
           <Route path="/ExploreWorkout" element={<ExploreWorkouts/>}/>
           <Route path="/FoodLog" element={<FoodLog/>}/>
           <Route path="/Login" element={<Login/>}/>

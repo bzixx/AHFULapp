@@ -5,6 +5,7 @@ import {
 import "./ExploreWorkouts.css";
 import "../../SiteStyles.css";
 import {registerService} from "../../firebase.js";
+import { Calendar } from "../../components/Calendar/Calendar";
 
 
 export function ExploreWorkouts() {
@@ -165,6 +166,7 @@ export function ExploreWorkouts() {
           </div>
         </div>
       </div>
+              <Calendar />
     </div>
   );
 }
