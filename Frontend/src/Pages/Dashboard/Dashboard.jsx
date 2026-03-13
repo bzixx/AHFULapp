@@ -73,7 +73,6 @@ export function Dashboard() {
       </main>
 
       {/* Dashboard widgets */}
-      <HeatMap />
       <CalendarButton />
       <DashboardFoodTodoList />
       <DashboardWorkoutTodoList />

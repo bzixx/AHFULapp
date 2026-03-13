@@ -6,6 +6,8 @@ import "./ExploreWorkouts.css";
 import "../../SiteStyles.css";
 import {registerService} from "../../firebase.js";
 import { Calendar } from "../../components/Calendar/Calendar";
+import { HeatMap } from "../../Components/HeatMap/HeatMap";
+
 
 
 export function ExploreWorkouts() {
@@ -164,7 +166,15 @@ export function ExploreWorkouts() {
               </ResponsiveContainer>
             )}
           </div>
+
+                  {/* Right column: workout history graph */}
+
+
         </div>
+                  <div className="explore-right">
+            <HeatMap />
+            
+          </div>
       </div>
               <Calendar />
     </div>
