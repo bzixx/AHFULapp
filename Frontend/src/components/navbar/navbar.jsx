@@ -4,7 +4,7 @@ import "./Navbar.css";
 export function Navbar({ minHeight }) {
   return (
     <nav className="sidebar">
-      <Link to="/">Home</Link>
+      {/* Home removed - Dashboard is now the root landing page */}
       <Link to="/Dashboard">Dashboard</Link>
       <Link to="/Login">Login</Link>
       <Link to="/Workout">Workout</Link>
