@@ -10,6 +10,7 @@ from APIRoutes.UserRoutes import userRouteBlueprint #[Local] Import User API rou
 from APIRoutes.WorkoutRoutes import workoutRouteBlueprint
 from APIRoutes.GymRoutes import gymRouteBlueprint
 from APIRoutes.FoodRoutes import foodRouteBlueprint
+from APIRoutes.MeasurementRoutes import measurementRouteBlueprint
 from APIRoutes.PersonalExRoutes import personalExRouteBlueprint
 from APIRoutes.SwaggerRoutes import swaggerUIBlueprint
 from APIRoutes.SignInRoutes import signInRouteBlueprint
@@ -21,7 +22,7 @@ def create_app():
     #FUN FACT: __name__ is a special variable that is the name of this file.
     app = Flask(__name__)
 
-    #Make an Appwade SignInDriver to reference later 
+    #Make an Appwade SignInDriver to reference later
     app.AHFULSignInDriver = SignInDriver(os.getenv("GOOGLE_CLIENT_ID"))
 
     #Register App Routes and Blueprints
@@ -30,6 +31,7 @@ def create_app():
     app.register_blueprint(workoutRouteBlueprint)
     app.register_blueprint(gymRouteBlueprint)
     app.register_blueprint(foodRouteBlueprint)
+    app.register_blueprint(measurementRouteBlueprint)
     app.register_blueprint(personalExRouteBlueprint)
     app.register_blueprint(swaggerUIBlueprint)
     app.register_blueprint(signInRouteBlueprint)
@@ -43,7 +45,7 @@ def create_app():
     ]
 
     CORS(app, origins=allowed_origins, supports_credentials=True)
-    
+
     #Print an list of all Route maps on the AHFUL App after startup.
     print(app.url_map)
 

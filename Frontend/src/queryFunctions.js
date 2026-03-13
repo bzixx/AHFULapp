@@ -55,6 +55,44 @@ export async function loadEquipment() {
   }
 }
 
+export async function loadBodyParts() {
+  // Returns { data: [ {value,label}, ... ] } or throws
+  try {
+    const res = await fetch("https://www.exercisedb.dev/api/v1/bodyparts", {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error(`BodyPart API returned ${res.status} ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    let arr = data;
+    if (data && Array.isArray(data.data)) arr = data.data;
+
+    const normalized = (arr || []).map((item, idx) => {
+      if (item && typeof item === "object") {
+        const value = item.id ?? item._id ?? item.value ?? item.name ?? String(idx);
+        const label = item.name ?? item.title ?? item.equipment ?? String(value);
+        return { value: String(value), label: String(label) };
+      }
+      const v = String(item);
+      return { value: v, label: v };
+    });
+
+    return { data: normalized };
+  } catch (err) {
+    console.error("loadBodyPart error:", err);
+    const msg = err && err.message ? `Could not load body part list: ${err.message}` : "Could not load body part list";
+    return { data: null, error: msg };
+  }
+}
+
 export async function loadTargetMuscles() {
   // Returns { data: [ {value,label}, ... ] } or throws
   try {
