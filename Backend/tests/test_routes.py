@@ -736,15 +736,12 @@ def test_find_user_by_email():
     
     # Assertions
     assert user is None
-    assert err == inv_err_code
-    
+    assert err == inv_err_code   
 
 def test_add_remove_role_by_id_roundtrip():
-    # Known user from your fixtures/tests
     user_id = "699f79574048f9ec8b5b0ed3"
-    adder_id = "699d0093795741a59fe13616"  # same user acts as adder/remover
-    test_role = "Admin"
-    permission_role = "Gym Owner"  # required by driver for adder/remover
+    adder_id = "699d0093795741a59fe13616"
+    test_role = "Gym Owner"
 
     # Fetch current/original state
     user, err = UserDriver.get_user_by_id(user_id)
@@ -754,7 +751,7 @@ def test_add_remove_role_by_id_roundtrip():
     assert user is not None
     assert user.get("_id") == user_id
 
-    # Add the test role via the DRIVER (permission enforced)
+    # Add the test role via the driver
     updated_user, err = UserDriver.add_role_by_id(user_id=user_id, adder_id=adder_id, role=test_role)
     if err is not None:
         print("Add role failed:", err)
@@ -768,7 +765,7 @@ def test_add_remove_role_by_id_roundtrip():
     assert fetched is not None
     assert test_role in fetched.get("roles", [])
 
-    # Remove the test role via the DRIVER
+    # Remove the test role via the driver
     updated_user, err = UserDriver.remove_role_by_id(user_id=user_id, remover_id=adder_id, role=test_role)
     if err is not None:
         print("Remove role failed:", err)
@@ -778,6 +775,47 @@ def test_add_remove_role_by_id_roundtrip():
 
     # Re-fetch and verify role removed
     fetched_after, err = UserDriver.get_user_by_id(user_id)
+    assert err is None
+    assert fetched_after is not None
+    assert test_role not in fetched_after.get("roles", [])
+
+def test_add_remove_role_by_email_roundtrip():
+    user_email = "jtboichipichipi@gmail.com"
+    adder_id = "699d0093795741a59fe13616"
+    test_role = "Gym Owner"
+
+    # Fetch current/original state
+    user, err = UserDriver.get_user_by_email(user_email)
+    if err is not None:
+        print("Fetch original user failed:", err)
+    assert err is None
+    assert user is not None
+    assert user.get("email") == user_email
+
+    # Add the test role via the driver
+    updated_user, err = UserDriver.add_role_by_email(user_email=user_email, adder_id=adder_id, role=test_role)
+    if err is not None:
+        print("Add role failed:", err)
+    assert err is None
+    assert updated_user is not None
+    assert test_role in updated_user.get("roles", [])
+
+    # Re-fetch and verify role present
+    fetched, err = UserDriver.get_user_by_email(user_email)
+    assert err is None
+    assert fetched is not None
+    assert test_role in fetched.get("roles", [])
+
+    # Remove the test role via the driver
+    updated_user, err = UserDriver.remove_role_by_email(user_email=user_email, remover_id=adder_id, role=test_role)
+    if err is not None:
+        print("Remove role failed:", err)
+    assert err is None
+    assert updated_user is not None
+    assert test_role not in updated_user.get("roles", [])
+
+    # Re-fetch and verify role removed
+    fetched_after, err = UserDriver.get_user_by_email(user_email)
     assert err is None
     assert fetched_after is not None
     assert test_role not in fetched_after.get("roles", [])
