@@ -161,9 +161,9 @@ export function WorkoutLogger() {
     });
   };
 
-  function createExerciseObject(rawName) {
+  function createPersonalExerciseObject(rawName) {
     return {
-      _id: crypto.randomUUID(), // temporary ID until backend saves it
+      _id: null, // temporary ID until backend saves it
       exerciseId: rawName, // or map this to your real exerciseId
       workoutId: workoutId, // you should have this in state/props
       userId: userId, // same here
@@ -183,7 +183,7 @@ export function WorkoutLogger() {
 
     const ids = exercisesInProgressTable.map((ex) => ex.exerciseId);
     const missing = ids.filter(
-      id => !personalExNames[id] && exercises.some(ex => ex._id === id)
+      id => !personalExNames[id] && exercises.some(ex => (ex._id ?? ex.exerciseId) === id)
     );
 
 
@@ -225,10 +225,44 @@ export function WorkoutLogger() {
     });
   };
 
-  const handleSubmit = () => {
-    console.log("Submitted workout!");
-    // TODO: Update the workout by grabbing the workout id and user id
-  };
+const handleSubmit = async () => {
+  console.log("Submitting workout...");
+
+  try {
+    // POST each exercise in parallel
+    const responses = await Promise.all(
+      exercisesInProgressTable.map(ex =>
+        fetch("http://localhost:5000/AHFULpersonalEx/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            complete: ex.complete,
+            distance: ex.distance,
+            duration: ex.duration,
+            exerciseId: ex.exerciseId,   // external or internal normalized
+            reps: ex.reps,
+            sets: ex.sets,
+            userId: ex.userId,
+            weight: ex.weight,
+            workoutId: ex.workoutId
+          })
+        })
+      )
+    );
+
+    // Check for failures
+    const failed = responses.filter(r => !r.ok);
+    if (failed.length > 0) {
+      console.error("Some exercises failed to save:", failed);
+    } else {
+      console.log("Workout saved successfully!");
+    }
+
+  } catch (err) {
+    console.error("Error submitting workout:", err);
+  }
+};
+
 
   // useEffect 3: fetch available exercises from backend on mount
   useEffect(() => {
@@ -246,7 +280,7 @@ export function WorkoutLogger() {
 
     setExercisesInProgressTable((prev) => [
       ...prev,
-      ...pendingExercises.map((name) => createExerciseObject(name)),
+      ...pendingExercises.map((name) => createPersonalExerciseObject(name)),
     ]);
 
     setPendingExercises([]);
@@ -314,8 +348,6 @@ export function WorkoutLogger() {
     async function getWorkout() {
       try {
         const data = await fetchWorkout(userId);
-
-        console.log(data);
 
         // Only set workoutId if data is a non-empty array
         if (Array.isArray(data) && data.length > 0) {
@@ -430,7 +462,7 @@ export function WorkoutLogger() {
                 <div className="cell">
                   <input
                     type="checkbox"
-                    checked={ex.completed}
+                    checked={ex.complete}
                     onChange={() => {
                       toggleCompleted(i);
                     }}
@@ -509,7 +541,7 @@ export function WorkoutLogger() {
                 {!loading &&
                   exercises.map((item, i) => {
                     const name = item.name;   // backend name
-                    const id = item._id;      // backend ID
+                    const id = item._id ?? item.exerciseId;      // backend ID
 
                     // Filter by name
                     if (
@@ -523,8 +555,7 @@ export function WorkoutLogger() {
                     const isSelected = 
                       typeof id === "string" &&
                       pendingExercises.includes(id) &&
-                      exercises.some(ex => ex._id === id);
-
+                      exercises.some(ex => (ex._id ?? ex.exerciseId) === id)
 
                     return (
                       <div
@@ -533,7 +564,7 @@ export function WorkoutLogger() {
                         onClick={() => {
                           setPendingExercises(prev => {
                             // Prevent invalid IDs from being added
-                            if (!exercises.some(ex => ex._id === id)) {
+                            if (!exercises.some(ex => (ex._id ?? ex.exerciseId) === id)) {
                               console.warn("Invalid exerciseId clicked:", id);
                               return prev;
                             }
@@ -558,7 +589,7 @@ export function WorkoutLogger() {
             <div className="pending-list">
               {pendingExercises.map((id, i) => {
                 const name = personalExNames[id] ||
-                  exercises.find(ex => ex._id === id)?.name ||
+                  exercises.find(ex => (ex._id ?? ex.exerciseId) === id)?.name ||
                   "(Unknown Exercise)";
 
                 return (
