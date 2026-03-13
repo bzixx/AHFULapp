@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./Workout.css";
+import "./WorkoutLogger.css";
 import "../../SiteStyles.css";
 import {
   getDefaultNewExercise,
@@ -11,7 +11,7 @@ import {
   fetchPersonalExercises,
 } from "../../queryFunctions";
 
-export function Workout() {
+export function WorkoutLogger() {
   const [personalExNames, setPersonalExNames] = useState({});
   /* Hook to track state of the InProgressTable on the Workout Page */
   const [exercisesInProgressTable, setExercisesInProgressTable] = useState([]);
