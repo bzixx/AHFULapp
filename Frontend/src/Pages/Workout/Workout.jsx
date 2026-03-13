@@ -12,19 +12,9 @@ import {
 } from "../../queryFunctions";
 
 export function Workout() {
-  /* Hook to track state of the InProgressTable on the Workout Page, Default State has exercises */
-  const [exercisesInProgressTable, setExercisesInProgressTable] = useState([
-    { name: "Push Ups", reps: 15, sets: 3, weight: "0", completed: false },
-    {
-      name: "Pull Ups",
-      reps: 8,
-      sets: 4,
-      weight: "Full backpack",
-      completed: false,
-    },
-    { name: "Squats", reps: 20, sets: 3, weight: "45 lbs", completed: false },
-    { name: "Run", reps: "", sets: "", weight: "", completed: false },
-  ]);
+  const [personalExNames, setPersonalExNames] = useState({});
+  /* Hook to track state of the InProgressTable on the Workout Page */
+  const [exercisesInProgressTable, setExercisesInProgressTable] = useState([]);
   /* Hook to track state of the exercises from the DB on the Workout Page */
   const [exercises, setExercises] = useState([]);
   /* Hook to track state of the exercises from the DB on the Explore Workout Page */
@@ -38,7 +28,6 @@ export function Workout() {
   /*Hook to track name of the exercise being added to the workout via the dropdown */
   const [exerciseName, setExerciseName] = useState("");
   const [pendingExercises, setPendingExercises] = useState([]);
-  const [open, setOpen] = useState(false);
   const [showNewExerciseModal, setShowNewExerciseModal] = useState(false);
 
   // Wireframe option lists for dropdowns (replace with fetch later)
@@ -158,6 +147,62 @@ export function Workout() {
     });
   };
 
+  function createExerciseObject(rawName) {
+    return {
+      _id: crypto.randomUUID(), // temporary ID until backend saves it
+      exerciseId: rawName, // or map this to your real exerciseId
+      workoutId: workoutId, // you should have this in state/props
+      userId: userId, // same here
+      complete: false,
+      reps: 0,
+      sets: 0,
+      weight: "0",
+      distance: "0",
+      duration: 0,
+    };
+  }
+
+  useEffect(() => {
+    if (!exercisesInProgressTable.length) {
+      return;
+    }
+
+    const ids = exercisesInProgressTable.map((ex) => ex.exerciseId);
+    const missing = ids.filter(
+      id => !personalExNames[id] && exercises.some(ex => ex._id === id)
+    );
+
+
+    if (missing.length === 0) {
+      console.log("All names already loaded.");
+      return;
+    }
+
+    const loadNames = async () => {
+      try {
+        const results = {};
+
+        for (const id of missing) {
+          const res = await fetch(
+            `http://localhost:5000/AHFULexercises/id/${id}`,
+          );
+          const data = await res.json();
+
+          results[id] = data.name;
+        }
+
+        setPersonalExNames((prev) => {
+          const merged = { ...prev, ...results };
+          return merged;
+        });
+      } catch (err) {
+        console.error("Error fetching exercise names:", err);
+      }
+    };
+
+    loadNames();
+  }, [exercisesInProgressTable]);
+
   const updateField = (index, field, value) => {
     setExercisesInProgressTable((prev) => {
       const updated = [...prev];
@@ -176,39 +221,18 @@ export function Workout() {
     fetch_exercises();
   }, []);
 
-  // TOOGGLE OPEN - Toggle the dropdown for adding exercises to the workout
-  const toggle_open = () => {
-    setOpen((prev) => !prev);
-  };
-
   const removeWorkout = (index) => {
     setExercisesInProgressTable((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Helper to extract a display name whether exercises are strings or objects
-  const getExerciseName = (item) => {
-    if (!item && item !== 0) return "";
-    if (typeof item === "string") return item;
-    if (typeof item === "object") return item.name || item.title || "";
-    return String(item);
-  };
-
   // Append selected pending exercises to the in-progress table
   const addExerciseToWorkout = (e) => {
-    // allow calling from a button (no event) or a form submit event
     if (e && typeof e.preventDefault === "function") e.preventDefault();
-
     if (pendingExercises.length === 0) return;
 
     setExercisesInProgressTable((prev) => [
       ...prev,
-      ...pendingExercises.map((name) => ({
-        name: getExerciseName(name),
-        reps: 0,
-        sets: 0,
-        weight: "0",
-        completed: false,
-      })),
+      ...pendingExercises.map((name) => createExerciseObject(name)),
     ]);
 
     setPendingExercises([]);
@@ -349,7 +373,9 @@ export function Workout() {
             <div className="cell header"></div>
             {exercisesInProgressTable.map((ex, i) => (
               <React.Fragment key={i}>
-                <div className="cell">{ex.exerciseId}</div>
+                <div className="cell">
+                  {personalExNames[ex.exerciseId] || "ERROR"}
+                </div>
 
                 <div className="cell">
                   {ex.completed ? (
@@ -466,48 +492,61 @@ export function Workout() {
                 )}
 
                 <div className="dropdown-item">
-                  {!loading &&
-                    exercises.map((item, i) => {
-                      const name = getExerciseName(item);
-                      if (
-                        exerciseName &&
-                        !name.toLowerCase().includes(exerciseName.toLowerCase())
-                      ) {
-                        return null;
-                      }
-                      const isSelected = pendingExercises.some(
-                        (p) => getExerciseName(p) === name,
-                      );
-                      return (
-                        <div
-                          key={`item-${i}`}
-                          className={`dropdown-item ${isSelected ? "selected" : ""}`}
-                          onClick={() => {
-                            setPendingExercises((prev) => {
-                              if (
-                                prev.some((p) => getExerciseName(p) === name)
-                              ) {
-                                return prev.filter(
-                                  (p) => getExerciseName(p) !== name,
-                                );
-                              }
-                              return [...prev, name];
-                            });
-                          }}
-                        >
-                          <span>{name}</span>
-                          {isSelected && <span className="check">✓</span>}
-                        </div>
-                      );
-                    })}
+                {!loading &&
+                  exercises.map((item, i) => {
+                    const name = item.name;   // backend name
+                    const id = item._id;      // backend ID
+
+                    // Filter by name
+                    if (
+                      exerciseName &&
+                      !name.toLowerCase().includes(exerciseName.toLowerCase())
+                    ) {
+                      return null;
+                    }
+
+                    // Check if selected
+                    const isSelected = 
+                      typeof id === "string" &&
+                      pendingExercises.includes(id) &&
+                      exercises.some(ex => ex._id === id);
+
+
+                    return (
+                      <div
+                        key={`item-${i}`}
+                        className={`dropdown-item ${isSelected ? "selected" : ""}`}
+                        onClick={() => {
+                          setPendingExercises(prev => {
+                            // Prevent invalid IDs from being added
+                            if (!exercises.some(ex => ex._id === id)) {
+                              console.warn("Invalid exerciseId clicked:", id);
+                              return prev;
+                            }
+
+                            if (prev.includes(id)) {
+                              return prev.filter(p => p !== id);
+                            }
+                            return [...prev, id];
+                          });
+                        }}
+                      >
+                        <span>{name}</span>
+                        {isSelected && <span className="check">✓</span>}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
             {/* Display the list of exercises being added */}
             {/* TODO: Show muscle group too or PR */}
             <div className="pending-list">
-              {pendingExercises.map((ex, i) => {
-                const name = getExerciseName(ex);
+              {pendingExercises.map((id, i) => {
+                const name = personalExNames[id] ||
+                  exercises.find(ex => ex._id === id)?.name ||
+                  "(Unknown Exercise)";
+
                 return (
                   <div key={i} className="pending-item">
                     <span>{name}</span>
@@ -515,8 +554,8 @@ export function Workout() {
                       type="button"
                       className="remove-btn"
                       onClick={() =>
-                        setPendingExercises((prev) =>
-                          prev.filter((_, idx) => idx !== i),
+                        setPendingExercises(prev =>
+                          prev.filter((_, idx) => idx !== i)
                         )
                       }
                     >
@@ -526,7 +565,6 @@ export function Workout() {
                 );
               })}
             </div>
-
             <div
               className="add-btn-wrapper"
               style={{ display: "flex", gap: "8px" }}
