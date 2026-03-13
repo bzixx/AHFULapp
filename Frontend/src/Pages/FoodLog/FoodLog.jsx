@@ -1,10 +1,25 @@
 //@author Jonathan Torrence
 
-import React, {useState } from "react";
+import React, {useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import "./FoodLog.css";
 import "../../SiteStyles.css";
 
+const API_BASE = "http://localhost:5000/AHFULfood";
+
 export function FoodLog() {
+    const user = useSelector((state) => state.auth.user);
+
+    // Get userId from Redux or fall back to localStorage
+    const getUserId = () => {
+        if (user?._id) return user._id;
+        try {
+            const stored = JSON.parse(localStorage.getItem("user_data"));
+            return stored?._id || null;
+        } catch { return null; }
+    };
+    const userId = getUserId();
+
     const [foods, setFoods] = useState([]);
     const [foodName, setFoodName] = useState("");
     const [calories, setCalories] = useState("");
@@ -13,14 +28,53 @@ export function FoodLog() {
     const [errors, setErrors] = useState("");
     const [timePeriod, setTimePeriod] = useState("daily");
     const [searchTerm, setSearchTerm] = useState("");
+    const [loading, setLoading] = useState(false);
 
+    // Normalize backend food document to the shape the UI expects
+    const normalizeFood = (doc) => ({
+        id: doc._id,
+        name: doc.name,
+        calories: doc.calsPerServing,
+        servings: doc.servings,
+        totalCalories: doc.calsPerServing * doc.servings,
+        mealType: doc.type,
+        timestamp: new Date(doc.time * 1000).toLocaleTimeString()
+    });
 
-    // Filter foods based on search term and meal type
+    // Fetch foods for the logged-in user on mount
+    useEffect(() => {
+        if (!userId) return;
+        setLoading(true);
+        fetch(`${API_BASE}/${userId}`)
+            .then(async (res) => {
+                if (res.status === 404) {
+                    return [];
+                }
+
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error || res.statusText || "Failed to load foods");
+                }
+
+                return res.json();
+            })
+            .then((data) => {
+                const list = Array.isArray(data) ? data : [];
+                setFoods(list.map(normalizeFood));
+            })
+            .catch((err) => {
+                setFoods([]);
+                console.error("Failed to load foods:", err);
+            })
+            .finally(() => setLoading(false));
+    }, [userId]);
+
+    // Filter foods based on search term
     const filteredFoods = foods.filter(food =>
         food.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const addFood = (e) => {
+    const addFood = async (e) => {
         e.preventDefault();
         setErrors("");
 
@@ -39,25 +93,62 @@ export function FoodLog() {
             return;
         }
 
-        const newFood = {
-            id: Date.now(),
-            name: foodName,
-            calories: parseInt(calories),
-            servings: parseInt(servings),
-            totalCalories: parseInt(calories) * parseInt(servings),
-            mealType: mealType,
-            timestamp: new Date().toLocaleTimeString()
-        };
+        // If editing, call update instead
+        if (editingId) {
+            await saveEdit();
+            return;
+        }
 
-        setFoods([...foods, newFood]);
+        try {
+            const res = await fetch(`${API_BASE}/create`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userId: userId,
+                    name: foodName,
+                    calsPerServing: parseInt(calories),
+                    servings: parseInt(servings),
+                    type: mealType,
+                    time: Math.trunc(Date.now() / 1000)
+                })
+            });
+
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                setErrors(errData.error || "Failed to add food");
+                return;
+            }
+
+            const result = await res.json();
+            // Fetch the newly created food from the server to get the full document
+            const newRes = await fetch(`${API_BASE}/id/${result.food_id}`);
+            if (newRes.ok) {
+                const newDoc = await newRes.json();
+                setFoods((prev) => [...prev, normalizeFood(newDoc)]);
+            }
+        } catch (err) {
+            setErrors("Network error — could not add food");
+            console.error(err);
+            return;
+        }
+
         setFoodName("");
         setCalories("");
         setServings("1");
         setMealType("Lunch");
     };
 
-    const removeFood = (id) => {
-        setFoods(foods.filter(food => food.id !== id));
+    const removeFood = async (id) => {
+        try {
+            const res = await fetch(`${API_BASE}/delete/${id}`, { method: "DELETE" });
+            if (!res.ok) {
+                console.error("Failed to delete food");
+                return;
+            }
+            setFoods(foods.filter(food => food.id !== id));
+        } catch (err) {
+            console.error("Network error — could not delete food", err);
+        }
     };
 
     const [editingId, setEditingId] = useState(null);
@@ -67,8 +158,8 @@ export function FoodLog() {
         setEditingId(food.id);
         setEditFood({...food});
         setFoodName(food.name);
-        setCalories(food.calories);
-        setServings(food.servings);
+        setCalories(String(food.calories));
+        setServings(String(food.servings));
         setMealType(food.mealType);
     };
 
@@ -81,20 +172,32 @@ export function FoodLog() {
         setMealType("Lunch");
     };
 
-    const saveEdit = () => {
-        const updatedFoods = foods.map(food =>
-            food.id === editingId
-            ? {
-                ...food,
-                name: foodName,
-                calories: parseInt(calories),
-                servings: parseInt(servings),
-                mealType: mealType,
-                totalCalories: parseInt(calories) * parseInt(servings)
+    const saveEdit = async () => {
+        try {
+            const res = await fetch(`${API_BASE}/update/${editingId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: foodName,
+                    calsPerServing: parseInt(calories),
+                    servings: parseInt(servings),
+                    type: mealType
+                })
+            });
+
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                setErrors(errData.error || "Failed to update food");
+                return;
             }
-            : food
-        );
-        setFoods(updatedFoods);
+
+            const updated = await res.json();
+            setFoods((prev) => prev.map((f) => f.id === editingId ? normalizeFood(updated) : f));
+        } catch (err) {
+            setErrors("Network error — could not update food");
+            console.error(err);
+            return;
+        }
         cancelEdit();
     };
 
