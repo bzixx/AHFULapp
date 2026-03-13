@@ -15,6 +15,28 @@ externalDBConnection =  HTTPSConnection(EXERSICEDB_HOST)
 
 class ExerciseDriver:
     @staticmethod
+    def normalize(items):
+        if not items:
+            return []
+
+        # If we got a single dict, wrap it in a list
+        if isinstance(items, dict):
+            items = [items]
+        elif not isinstance(items, (list, tuple)):
+            # Unknown shape; bail out safely
+            return []
+
+        out = []
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            new_item = dict(item)  # shallow copy
+            if "exerciseId" in new_item and "_id" not in new_item:
+                new_item["_id"] = new_item.pop("exerciseId")
+            out.append(new_item)
+        return out
+
+    @staticmethod
     def _validate_obj_id(id, name):
         try:
             return ObjectId(str(id)), None
@@ -36,7 +58,7 @@ class ExerciseDriver:
             #Workable Data Looks Like:
             # dict   → {"success": true,"metadata": {"totalPages": 60,"totalExercises": 1500,"currentPage": 1,"previousPage": null,"nextPage": "http://www.exercisedb.dev/api/v1/exercises?offset=25&limit=25&&sortBy=name&sortOrder=desc"},"data": []}
             # To acces it: externalExercises = workableData["data"]
-            externalMetadata = workableData["metadata"]
+            externalMetadata = ExerciseDriver.normalize(workableData["metadata"])
 
             return externalMetadata, None
         except Exception as e:
@@ -56,7 +78,7 @@ class ExerciseDriver:
             #Workable Data Looks Like:
             # dict   → {"success": true,"metadata": {"totalPages": 60,"totalExercises": 1500,"currentPage": 1,"previousPage": null,"nextPage": "http://www.exercisedb.dev/api/v1/exercises?offset=25&limit=25&&sortBy=name&sortOrder=desc"},"data": []}
             # To acces it: externalExercises = workableData["data"]
-            externalMetadata = workableData["metadata"]
+            externalMetadata = ExerciseDriver.normalize(workableData["metadata"])
 
             return externalMetadata, None
         except Exception as e:
@@ -76,7 +98,7 @@ class ExerciseDriver:
             #Workable Data Looks Like:
             # dict   → {"success": true,"metadata": {"totalPages": 60,"totalExercises": 1500,"currentPage": 1,"previousPage": null,"nextPage": "http://www.exercisedb.dev/api/v1/exercises?offset=25&limit=25&&sortBy=name&sortOrder=desc"},"data": []}
             # To acces it: externalExercises = workableData["data"]
-            externalMetadata = workableData["metadata"]
+            externalMetadata = ExerciseDriver.normalize(workableData["metadata"])
 
             return externalMetadata, None
         except Exception as e:
@@ -99,7 +121,7 @@ class ExerciseDriver:
             #Workable Data Looks Like:
             # dict   → {"success": true,"metadata": {"totalPages": 60,"totalExercises": 1500,"currentPage": 1,"previousPage": null,"nextPage": "http://www.exercisedb.dev/api/v1/exercises?offset=25&limit=25&&sortBy=name&sortOrder=desc"},"data": []}
             # To acces it: externalExercises = workableData["data"]
-            externalExercises = workableData["data"]
+            externalExercises = ExerciseDriver.normalize(workableData["data"])
 
             internalExercises = ExerciseObject.find_all()
 
@@ -108,11 +130,26 @@ class ExerciseDriver:
         except Exception as e:
             return None, str(e)
         
-    def get_more_exercises(currentPage):
+    def get_next_exercises(currentMeta):
         try:
             nextPageEndpoint = currentMeta["nextPage"]
 
             externalDBConnection.request("GET", nextPageEndpoint, headers=EXERSICEDB_HEADERS)
+            apiResponse = externalDBConnection.getresponse()
+            data = apiResponse.read()                   # bytes  → b'{"success":true...
+            decodedData = data.decode("utf-8")          # string → '{"success":true...}'
+            workableData = json.loads(decodedData)      # dict   → {"success": True,
+            externalExercises = ExerciseDriver.normalize(workableData["data"])
+
+            return externalExercises, None
+        except Exception as e:
+            return None, str(e)
+
+    def get_prev_exercises(currentMeta):
+        try:
+            prevPageEndpoint = currentMeta["previousPage"]
+
+            externalDBConnection.request("GET", prevPageEndpoint, headers=EXERSICEDB_HEADERS)
             apiResponse = externalDBConnection.getresponse()
             data = apiResponse.read()                   # bytes  → b'{"success":true...
             decodedData = data.decode("utf-8")          # string → '{"success":true...}'
@@ -147,7 +184,7 @@ class ExerciseDriver:
             workableData = json.loads(decodedData)      # dict   → {"success": True, "data": [...]}
 
             # Extract Exercise List from External API Response
-            exercisesList = workableData["data"]
+            exercisesList = ExerciseDriver.normalize(workableData["data"])
 
             #Internal search for exercises that match the search string (case-insensitive) and combine with external API results
             internalWorkableData = ExerciseObject.find_all()
@@ -172,6 +209,8 @@ class ExerciseDriver:
     def get_exercise_by_id(id):
         # Convert IDs safely
         oid, err = ExerciseDriver._validate_obj_id(id, "exercise id")
+        print("oid", oid)
+        print("err", err)
         
         if oid:
             try:
@@ -200,26 +239,24 @@ class ExerciseDriver:
                 workableData = json.loads(decodedData)      # dict   → {"success": True, "data": [...]}
 
                 # Extract Exercise List from External API Response
-                exercisesList = workableData["data"]
-
-                print(exercisesList)
+                exercisesList = ExerciseDriver.normalize(workableData["data"])
 
                 if exercisesList:
-                    return exercisesList, None,
+                    return exercisesList[0], None,
                 else:
                     return None, "Exercise not found"
             except Exception as e:
                 return None, "Exercise not found"
 
-    def create_exercise(name, body_part, difficulty, equipment, instructions, type):
+    def create_exercise(formData):
         try:
             exercise_data = {
-                "name": name,
-                "body_part": body_part,
-                "difficulty": difficulty,
-                "equipment": equipment,
-                "instructions": instructions,
-                "type": type
+                "name": formData.get("name"),
+                "body_part": formData.get("body_part"),
+                "difficulty": formData.get("difficulty"),
+                "equipment": formData.get("equipment"),
+                "instructions": formData.get("instructions"),
+                "type": formData.get("type")
             }
             exercise_id = ExerciseObject.create(exercise_data)
             return exercise_id, None
