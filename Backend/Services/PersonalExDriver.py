@@ -29,9 +29,6 @@ class PersonalExDriver:
         oid, err = PersonalExDriver._validate_obj_id(userId, "userId")
         if err:
             return None, err
-        oid, err = PersonalExDriver._validate_obj_id(exerciseId, "exerciseId")
-        if err:
-            return None, err
         oid, err = PersonalExDriver._validate_obj_id(workoutId, "workoutId")
         if err:
             return None, err
@@ -41,7 +38,7 @@ class PersonalExDriver:
         if not user:
             return None, "User not found"
         
-        # Ensure the exercise exists
+        # Ensure the exercise exists, in data base or external
         # exercise = ExerciseObject.find_by_id(exerciseId)
         # if not exercise:
         #     return None, "Exercise not found"
@@ -108,6 +105,40 @@ class PersonalExDriver:
             return personalEx, None
         except Exception as e:
             return None, str(e)
+
+    # ── Update ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def update_personal_ex(id, updates):
+        # Validate target id
+        if not id:
+            return None, "You must provide a personal ex id to update"
+
+        obj, err = PersonalExDriver._validate_obj_id(id, "personal_ex_id")
+        if err:
+            return None, err
+
+        if not updates:
+            return None, "You must provide at least one field to update"
+
+        # Allowed fields to update
+        allowed_fields = {
+            "reps",
+            "sets",
+            "weight",
+            "duration",
+            "distance",
+            "complete",
+        }
+
+        # Filter only allowed fields
+        sanitized_updates = {k: v for k, v in updates.items() if k in allowed_fields}
+        
+        # Perform the update via the data model
+        updated = PersonalExObject.update(id, sanitized_updates)
+        if not updated:
+            return None, "PersonalEx not found or no changes applied"
+        else:
+            return updated, None
 
     # ── Delete ─────────────────────────────────────────────────────────────────
     @staticmethod

@@ -1,21 +1,21 @@
 import React, { useState, useRef, useEffect } from "react";
-import "./Workout.css";
+import "./WorkoutLogger.css";
 import "../../SiteStyles.css";
+import {
+  getDefaultNewExercise,
+  formatTime as formatTimeFn,
+  loadEquipment as loadEquipmentFn,
+  loadTargetMuscles,
+  fetchExercisesFromBackend,
+  searchExercises,
+  fetchWorkout,
+  fetchPersonalExercises,
+} from "../../queryFunctions";
 
-export function Workout() {
-  /* Hook to track state of the InProgressTable on the Workout Page, Default State has exercises */
-  const [exercisesInProgressTable, setExercisesInProgressTable] = useState([
-    { name: "Push Ups", reps: 15, sets: 3, weight: "0", completed: false },
-    {
-      name: "Pull Ups",
-      reps: 8,
-      sets: 4,
-      weight: "Full backpack",
-      completed: false,
-    },
-    { name: "Squats", reps: 20, sets: 3, weight: "45 lbs", completed: false },
-    { name: "Run", reps: "", sets: "", weight: "", completed: false },
-  ]);
+export function WorkoutLogger() {
+  const [personalExNames, setPersonalExNames] = useState({});
+  /* Hook to track state of the InProgressTable on the Workout Page */
+  const [exercisesInProgressTable, setExercisesInProgressTable] = useState([]);
   /* Hook to track state of the exercises from the DB on the Workout Page */
   const [exercises, setExercises] = useState([]);
   /* Hook to track state of the exercises from the DB on the Explore Workout Page */
@@ -29,7 +29,6 @@ export function Workout() {
   /*Hook to track name of the exercise being added to the workout via the dropdown */
   const [exerciseName, setExerciseName] = useState("");
   const [pendingExercises, setPendingExercises] = useState([]);
-  const [open, setOpen] = useState(false);
   const [showNewExerciseModal, setShowNewExerciseModal] = useState(false);
 
   // Wireframe option lists for dropdowns (replace with fetch later)
@@ -47,98 +46,21 @@ export function Workout() {
 
   const BODY_PARTS = ["Upper Body", "Lower Body", "Full Body", "Core"];
 
-  // Fallback equipment list (used while fetching or if fetch fails) - normalized to {value,label}
-  const EQUIPMENT_FALLBACK = [
-    { value: "None", label: "None" },
-    { value: "Dumbbell", label: "Dumbbell" },
-    { value: "Barbell", label: "Barbell" },
-    { value: "Kettlebell", label: "Kettlebell" },
-    { value: "Machine", label: "Machine" },
-    { value: "Resistance Band", label: "Resistance Band" },
-  ];
-
-  const [equipmentOptions, setEquipmentOptions] = useState(EQUIPMENT_FALLBACK);
+  const [equipmentOptions, setEquipmentOptions] = useState([]);
   const [equipmentError, setEquipmentError] = useState(null);
 
-  useEffect(() => {
-    loadEquipment();
-  }, []);
+  const [muscleOptions, setMuscleOptions] = useState([]);
+  const [muscleError, setMuscleError] = useState(null);
 
-  const [newExercise, setNewExercise] = useState({
-    name: "",
-    targetMuscles: [],
-    bodyParts: [],
-    equipment: [],
-    instructions: "",
-  });
 
-  const resetNewExercise = () =>
-    setNewExercise({
-      name: "",
-      targetMuscles: [],
-      bodyParts: [],
-      equipment: [],
-      instructions: "",
-    });
+  const [newExercise, setNewExercise] = useState(getDefaultNewExercise());
+
+  const resetNewExercise = () => setNewExercise(getDefaultNewExercise());
 
   const openNewExerciseModal = () => {
     resetNewExercise();
     setShowNewExerciseModal(true);
   };
-
-  async function loadEquipment() {
-    setEquipmentError(null);
-    try {
-      const res = await fetch("https://www.exercisedb.dev/api/v1/equipments", {
-        method: "GET",
-        mode: "cors",
-        headers: {
-          Accept: "application/json",
-          // Some servers will require this header; adding it as requested.
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error(
-          `Equipment API returned ${res.status} ${res.statusText}`,
-        );
-      }
-
-      const data = await res.json();
-      // data may be an array, or an envelope like { data: [...] }
-      let arr = data;
-      if (data && Array.isArray(data.data)) arr = data.data;
-
-      console.log("Fetched equipment data:", arr);
-
-      // Normalize to [{value,label}, ...]
-      if (arr) {
-        const normalized = arr.map((item, idx) => {
-          if (item && typeof item === "object") {
-            const value =
-              item.id ?? item._id ?? item.value ?? item.name ?? String(idx);
-            const label =
-              item.name ?? item.title ?? item.equipment ?? String(value);
-            return { value: String(value), label: String(label) };
-          }
-          // fallback for unexpected types
-          const v = String(item);
-          return { value: v, label: v };
-        });
-        setEquipmentOptions(normalized);
-      }
-    } catch (err) {
-      // Common failure mode is a CORS block (TypeError) or network error.
-      console.error("Failed to load equipment options:", err);
-      setEquipmentError(
-        err && err.message
-          ? `Could not load equipment list: ${err.message}`
-          : "Could not load equipment list",
-      );
-      // keep fallback list in place
-    }
-  }
 
   const closeNewExerciseModal = () => {
     setShowNewExerciseModal(false);
@@ -162,9 +84,32 @@ export function Workout() {
   };
   const searchTimeoutRef = useRef(null);
 
+  // useEffect 1: cleanup debounced search timer on unmount
   useEffect(() => {
     return () => {
       if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    };
+  }, []);
+
+  // useEffect 2: load equipment options once on mount
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const res = await loadEquipmentFn();
+      if (!mounted) return;
+      if (res && res.data) setEquipmentOptions(res.data);
+      if (res && res.error) setEquipmentError(res.error);
+    })();
+
+        (async () => {
+      const res = await loadTargetMuscles();
+      if (!mounted) return;
+      if (res && res.data) setMuscleOptions(res.data);
+      if (res && res.error) setMuscleError(res.error);
+    })();
+
+    return () => {
+      mounted = false;
     };
   }, []);
 
@@ -181,51 +126,11 @@ export function Workout() {
     setLoading(true);
     setError(null);
     try {
-      // Use a relative path so the dev server proxy (if configured) will forward to backend.
-      const res = await fetch("http://localhost:5000/AHFULExercises");
-
-      if (!res.ok) {
-        // Provide a clearer error including body text when possible
-        let bodyText = "";
-        try {
-          bodyText = await res.text();
-        } catch (e) {
-          /* ignore */
-        }
-        throw new Error(
-          `Server returned ${res.status} ${res.statusText} ${bodyText}`,
-        );
-      }
-
-      const data = await res.json();
-
-      // Helpful debug output (visible in browser console) when something odd happens
-      console.debug("/AHFULexercises response:", data);
-
-      // Normalize common envelope patterns to an array
-      let list = [];
-      if (Array.isArray(data)) {
-        list = data;
-      } else if (data && Array.isArray(data.data)) {
-        list = data.data;
-      } else if (data && Array.isArray(data.results)) {
-        list = data.results;
-      } else {
-        // Not an array; keep empty but log for debugging
-        console.warn(
-          "Unexpected /AHFULexercises response shape, expected array or {data: [...]}:",
-          data,
-        );
-        list = [];
-      }
-
+      const list = await fetchExercisesFromBackend();
       setExercises(list);
     } catch (err) {
-      // Log the full error for debugging
       console.error("Failed to fetch exercises:", err);
-      // Some Error objects (DOMExceptions) have a name and message
-      const friendly =
-        err && err.name ? `${err.name}: ${err.message}` : String(err);
+      const friendly = err && err.name ? `${err.name}: ${err.message}` : String(err);
       setError(friendly || "Unknown error");
       setExercises([]);
     } finally {
@@ -244,6 +149,62 @@ export function Workout() {
     });
   };
 
+  function createExerciseObject(rawName) {
+    return {
+      _id: crypto.randomUUID(), // temporary ID until backend saves it
+      exerciseId: rawName, // or map this to your real exerciseId
+      workoutId: workoutId, // you should have this in state/props
+      userId: userId, // same here
+      complete: false,
+      reps: 0,
+      sets: 0,
+      weight: "0",
+      distance: "0",
+      duration: 0,
+    };
+  }
+
+  useEffect(() => {
+    if (!exercisesInProgressTable.length) {
+      return;
+    }
+
+    const ids = exercisesInProgressTable.map((ex) => ex.exerciseId);
+    const missing = ids.filter(
+      id => !personalExNames[id] && exercises.some(ex => ex._id === id)
+    );
+
+
+    if (missing.length === 0) {
+      console.log("All names already loaded.");
+      return;
+    }
+
+    const loadNames = async () => {
+      try {
+        const results = {};
+
+        for (const id of missing) {
+          const res = await fetch(
+            `http://localhost:5000/AHFULexercises/id/${id}`,
+          );
+          const data = await res.json();
+
+          results[id] = data.name;
+        }
+
+        setPersonalExNames((prev) => {
+          const merged = { ...prev, ...results };
+          return merged;
+        });
+      } catch (err) {
+        console.error("Error fetching exercise names:", err);
+      }
+    };
+
+    loadNames();
+  }, [exercisesInProgressTable]);
+
   const updateField = (index, field, value) => {
     setExercisesInProgressTable((prev) => {
       const updated = [...prev];
@@ -257,44 +218,23 @@ export function Workout() {
     // TODO: Update the workout by grabbing the workout id and user id
   };
 
-  //USE EFFECT - Fecth exercises when component mounts
+  // useEffect 3: fetch available exercises from backend on mount
   useEffect(() => {
     fetch_exercises();
   }, []);
-
-  // TOOGGLE OPEN - Toggle the dropdown for adding exercises to the workout
-  const toggle_open = () => {
-    setOpen((prev) => !prev);
-  };
 
   const removeWorkout = (index) => {
     setExercisesInProgressTable((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Helper to extract a display name whether exercises are strings or objects
-  const getExerciseName = (item) => {
-    if (!item && item !== 0) return "";
-    if (typeof item === "string") return item;
-    if (typeof item === "object") return item.name || item.title || "";
-    return String(item);
-  };
-
   // Append selected pending exercises to the in-progress table
   const addExerciseToWorkout = (e) => {
-    // allow calling from a button (no event) or a form submit event
     if (e && typeof e.preventDefault === "function") e.preventDefault();
-
     if (pendingExercises.length === 0) return;
 
     setExercisesInProgressTable((prev) => [
       ...prev,
-      ...pendingExercises.map((name) => ({
-        name: getExerciseName(name),
-        reps: 0,
-        sets: 0,
-        weight: "0",
-        completed: false,
-      })),
+      ...pendingExercises.map((name) => createExerciseObject(name)),
     ]);
 
     setPendingExercises([]);
@@ -313,26 +253,7 @@ export function Workout() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(
-        `http://localhost:5000/AHFULexercises/search?search=${encodeURIComponent(searchQuery)}`,
-      );
-      if (!res.ok) {
-        let bodyText = "";
-        try {
-          bodyText = await res.text();
-        } catch (e) {}
-        throw new Error(
-          `Server returned ${res.status} ${res.statusText} ${bodyText}`,
-        );
-      }
-      const data = await res.json();
-      // Normalize to array
-      let list = [];
-      if (Array.isArray(data)) list = data;
-      else if (data && Array.isArray(data.data)) list = data.data;
-      else if (data && Array.isArray(data.results)) list = data.results;
-      else list = [];
-
+      const list = await searchExercises(searchQuery);
       setExercises(list);
     } catch (err) {
       console.error("Search failed:", err);
@@ -345,6 +266,7 @@ export function Workout() {
   };
 
   /* Timer Functions */
+  // useEffect 4: manage workout timer interval while isRunning
   useEffect(() => {
     let interval = null;
 
@@ -363,12 +285,7 @@ export function Workout() {
     setIsRunning((r) => !r);
   };
 
-  const formatTime = (seconds) => {
-    const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
-    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
-    const s = String(seconds % 60).padStart(2, "0");
-    return `${h}:${m}:${s}`;
-  };
+  const formatTime = formatTimeFn;
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /* Initial Page Load */
@@ -380,11 +297,11 @@ export function Workout() {
   const [workoutId, setWorkoutId] = useState("");
   const [workoutTitle, setWorkoutTitle] = useState("");
 
+  // useEffect 5: fetch current workout for the user on mount
   useEffect(() => {
     async function getWorkout() {
       try {
-        const res = await fetch(`http://localhost:5000/AHFULworkout/${userId}`);
-        const data = await res.json();
+        const data = await fetchWorkout(userId);
 
         console.log(data);
 
@@ -404,6 +321,7 @@ export function Workout() {
     getWorkout();
   }, []);
 
+  // useEffect 6: fetch personal exercises when workoutId changes
   useEffect(() => {
     if (!workoutId) return; // prevents running on initial render
 
@@ -411,11 +329,7 @@ export function Workout() {
       try {
         console.log("Fetching personal exercises for workout:", workoutId);
 
-        const res = await fetch(
-          `http://localhost:5000/AHFULpersonalEx/workout/${workoutId}`,
-        );
-        const data = await res.json();
-
+        const data = await fetchPersonalExercises(workoutId);
         setExercisesInProgressTable(data);
       } catch (err) {
         console.error("Error fetching personal exercises:", err);
@@ -425,6 +339,7 @@ export function Workout() {
     getPersonalEx();
   }, [workoutId]); // <-- runs only when workoutId changes
 
+  // useEffect 7: log exercisesInProgressTable updates for debugging
   useEffect(() => {
     console.log("PersonalEx state updated:", exercisesInProgressTable);
   }, [exercisesInProgressTable]);
@@ -460,7 +375,9 @@ export function Workout() {
             <div className="cell header"></div>
             {exercisesInProgressTable.map((ex, i) => (
               <React.Fragment key={i}>
-                <div className="cell">{ex.exerciseId}</div>
+                <div className="cell">
+                  {personalExNames[ex.exerciseId] || "ERROR"}
+                </div>
 
                 <div className="cell">
                   {ex.completed ? (
@@ -577,48 +494,61 @@ export function Workout() {
                 )}
 
                 <div className="dropdown-item">
-                  {!loading &&
-                    exercises.map((item, i) => {
-                      const name = getExerciseName(item);
-                      if (
-                        exerciseName &&
-                        !name.toLowerCase().includes(exerciseName.toLowerCase())
-                      ) {
-                        return null;
-                      }
-                      const isSelected = pendingExercises.some(
-                        (p) => getExerciseName(p) === name,
-                      );
-                      return (
-                        <div
-                          key={`item-${i}`}
-                          className={`dropdown-item ${isSelected ? "selected" : ""}`}
-                          onClick={() => {
-                            setPendingExercises((prev) => {
-                              if (
-                                prev.some((p) => getExerciseName(p) === name)
-                              ) {
-                                return prev.filter(
-                                  (p) => getExerciseName(p) !== name,
-                                );
-                              }
-                              return [...prev, name];
-                            });
-                          }}
-                        >
-                          <span>{name}</span>
-                          {isSelected && <span className="check">✓</span>}
-                        </div>
-                      );
-                    })}
+                {!loading &&
+                  exercises.map((item, i) => {
+                    const name = item.name;   // backend name
+                    const id = item._id;      // backend ID
+
+                    // Filter by name
+                    if (
+                      exerciseName &&
+                      !name.toLowerCase().includes(exerciseName.toLowerCase())
+                    ) {
+                      return null;
+                    }
+
+                    // Check if selected
+                    const isSelected = 
+                      typeof id === "string" &&
+                      pendingExercises.includes(id) &&
+                      exercises.some(ex => ex._id === id);
+
+
+                    return (
+                      <div
+                        key={`item-${i}`}
+                        className={`dropdown-item ${isSelected ? "selected" : ""}`}
+                        onClick={() => {
+                          setPendingExercises(prev => {
+                            // Prevent invalid IDs from being added
+                            if (!exercises.some(ex => ex._id === id)) {
+                              console.warn("Invalid exerciseId clicked:", id);
+                              return prev;
+                            }
+
+                            if (prev.includes(id)) {
+                              return prev.filter(p => p !== id);
+                            }
+                            return [...prev, id];
+                          });
+                        }}
+                      >
+                        <span>{name}</span>
+                        {isSelected && <span className="check">✓</span>}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
             {/* Display the list of exercises being added */}
             {/* TODO: Show muscle group too or PR */}
             <div className="pending-list">
-              {pendingExercises.map((ex, i) => {
-                const name = getExerciseName(ex);
+              {pendingExercises.map((id, i) => {
+                const name = personalExNames[id] ||
+                  exercises.find(ex => ex._id === id)?.name ||
+                  "(Unknown Exercise)";
+
                 return (
                   <div key={i} className="pending-item">
                     <span>{name}</span>
@@ -626,8 +556,8 @@ export function Workout() {
                       type="button"
                       className="remove-btn"
                       onClick={() =>
-                        setPendingExercises((prev) =>
-                          prev.filter((_, idx) => idx !== i),
+                        setPendingExercises(prev =>
+                          prev.filter((_, idx) => idx !== i)
                         )
                       }
                     >
@@ -637,7 +567,6 @@ export function Workout() {
                 );
               })}
             </div>
-
             <div
               className="add-btn-wrapper"
               style={{ display: "flex", gap: "8px" }}
@@ -662,30 +591,11 @@ export function Workout() {
       </div>
       {/* New Exercise Modal */}
       {showNewExerciseModal && (
-        <div
-          className="modal-overlay"
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 2000,
-          }}
-          onClick={closeNewExerciseModal}
-        >
+        <div className="modal-overlay" onClick={closeNewExerciseModal}>
           <form
             className="modal-content"
             onClick={(e) => e.stopPropagation()}
             onSubmit={handleNewExerciseSave}
-            style={{
-              background: "#fff",
-              padding: "20px",
-              borderRadius: "8px",
-              width: "480px",
-              maxWidth: "95%",
-            }}
           >
             <h3>Add New Exercise</h3>
 
@@ -699,18 +609,21 @@ export function Workout() {
               style={{ width: "100%" }}
             />
 
-            <label style={{ display: "block", marginTop: 8 }}>
-              Target Muscles
-            </label>
+            <label style={{ display: "block", marginTop: 8 }}>Target Muscles</label>
+            {muscleError && (
+              <div style={{ color: "red", marginBottom: 6 }}>
+                {muscleError}
+              </div>
+            )}
             <select
               multiple
               value={newExercise.targetMuscles}
               onChange={(e) => handleMultiSelectChange(e, "targetMuscles")}
               style={{ width: "100%" }}
             >
-              {MUSCLES.map((m) => (
-                <option key={m} value={m}>
-                  {m}
+              {(muscleOptions || []).map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
                 </option>
               ))}
             </select>
@@ -741,7 +654,7 @@ export function Workout() {
               onChange={(e) => handleMultiSelectChange(e, "equipment")}
               style={{ width: "100%" }}
             >
-              {equipmentOptions.map((opt) => (
+              {(equipmentOptions || []).map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
                 </option>

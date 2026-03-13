@@ -1,4 +1,3 @@
-
 import os
 import requests
 from bson import ObjectId, errors as bson_errors
@@ -453,6 +452,101 @@ def test_create_delete_personal_ex():
     # Assertions
     assert response == responseId
 
+    
+def test_update_personal_ex_roundtrip():
+    personal_ex_id = "69ab5596dc5dee4f518a01cd"
+
+    original, err = PersonalExDriver.get_personal_ex_by_id(personal_ex_id)
+    if err is not None:
+        print("Fetch original failed:", err)
+    assert err is None
+    assert original is not None
+    assert original.get("_id") == personal_ex_id
+
+    orig_reps      = original.get("reps")
+    orig_sets      = original.get("sets")
+    orig_weight    = original.get("weight")
+    orig_duration  = original.get("duration")
+    orig_distance  = original.get("distance")
+    orig_complete  = original.get("complete")
+
+    new_values = {
+        "reps": 999,
+        "sets": 999,
+        "weight": "999",    
+        "duration": 999,    
+        "distance": "999",  
+        "complete": True
+    }
+
+    updated, err = PersonalExDriver.update_personal_ex(id=personal_ex_id, updates=new_values)
+
+    if err is not None:
+        print("Update failed:", err)
+
+    assert err is None
+    assert updated is not None
+    assert updated.get("_id") == personal_ex_id
+
+    assert updated.get("reps") == new_values["reps"]
+    assert updated.get("sets") == new_values["sets"]
+    assert updated.get("weight") == new_values["weight"]
+    assert updated.get("duration") == new_values["duration"]
+    assert updated.get("distance") == new_values["distance"]
+    assert updated.get("complete") == new_values["complete"]
+
+    fetched_after_update, err = PersonalExDriver.get_personal_ex_by_id(personal_ex_id)
+    if err is not None:
+        print("Fetch after update failed:", err)
+    assert err is None
+    assert fetched_after_update is not None
+    assert fetched_after_update.get("_id") == personal_ex_id
+
+    # Assert values are exactly as updated
+    assert fetched_after_update.get("reps") == new_values["reps"]
+    assert fetched_after_update.get("sets") == new_values["sets"]
+    assert fetched_after_update.get("weight") == new_values["weight"]
+    assert fetched_after_update.get("duration") == new_values["duration"]
+    assert fetched_after_update.get("distance") == new_values["distance"]
+    assert fetched_after_update.get("complete") == new_values["complete"]
+
+    restore = {
+        "reps": orig_reps,
+        "sets": orig_sets,
+        "weight": orig_weight,
+        "duration": orig_duration,
+        "distance": orig_distance,
+        "complete": orig_complete
+    }
+    restored, err = PersonalExDriver.update_personal_ex(id=personal_ex_id, updates=restore)
+    if err is not None:
+        print("Restore failed:", err)
+    assert err is None
+    assert restored is not None
+    assert restored.get("_id") == personal_ex_id
+
+    # Assert restored document reflects the original values
+    assert restored.get("reps") == orig_reps
+    assert restored.get("sets") == orig_sets
+    assert restored.get("weight") == orig_weight
+    assert restored.get("duration") == orig_duration
+    assert restored.get("distance") == orig_distance
+    assert restored.get("complete") == orig_complete
+
+    fetched_after_restore, err = PersonalExDriver.get_personal_ex_by_id(personal_ex_id)
+    if err is not None:
+        print("Fetch after restore failed:", err)
+    assert err is None
+    assert fetched_after_restore is not None
+    assert fetched_after_restore.get("_id") == personal_ex_id
+
+    assert fetched_after_restore.get("reps") == orig_reps
+    assert fetched_after_restore.get("sets") == orig_sets
+    assert fetched_after_restore.get("weight") == orig_weight
+    assert fetched_after_restore.get("duration") == orig_duration
+    assert fetched_after_restore.get("distance") == orig_distance
+    assert fetched_after_restore.get("complete") == orig_complete
+
 # User
 
 def test_find_user_by_id():
@@ -641,55 +735,55 @@ def test_find_workout_by_user():
     assert exs is None
     assert err == inv_err_code 
 
-# def test_find_template_by_user():
-#     # Give a valid _id
-#     oid = "699d0093795741a59fe13616"
-#     temps, err = WorkoutDriver.get_templates(oid)
+def test_find_template_by_user():
+    # Give a valid _id
+    oid = "699d0093795741a59fe13616"
+    temps, err = WorkoutDriver.get_templates(oid)
 
-#     if err is not None:
-#         print(temps, err)
+    if err is not None:
+        print(temps, err)
     
-#     tp_oid = "69af2d76938739819748be48"
-#     filtered = [d for d in temps if d.get("_id") == tp_oid]
+    tp_oid = "69af2d76938739819748be48"
+    filtered = [d for d in temps if d.get("_id") == tp_oid]
 
-#     assert len(filtered) == 1
+    assert len(filtered) == 1
 
-#     # Assertions
-#     assert err is None
-#     assert filtered[0] is not None
-#     assert filtered[0].get("_id") == tp_oid
-#     assert filtered[0].get("userId") == "699d0093795741a59fe13616"
-#     assert filtered[0].get("title") == "A workout template"
-#     assert filtered[0].get("template") == "True"
-#     assert filtered[0].get("startTime") == 0
+    # Assertions
+    assert err is None
+    assert filtered[0] is not None
+    assert filtered[0].get("_id") == tp_oid
+    assert filtered[0].get("userId") == "699d0093795741a59fe13616"
+    assert filtered[0].get("title") == "A workout template"
+    assert filtered[0].get("template") == "True"
+    assert filtered[0].get("startTime") == 0
 
-#     # Give a bad _id
-#     bad_oid = "699d0093795741a59fe1361"
-#     temps, err = WorkoutDriver.get_templates(bad_oid)
+    # Give a bad _id
+    bad_oid = "699d0093795741a59fe1361"
+    temps, err = WorkoutDriver.get_templates(bad_oid)
 
-#     if err is not None:
-#         print(temps, err)
+    if err is not None:
+        print(temps, err)
 
-#     # Expected
-#     bad_err_code = "\'" + bad_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    # Expected
+    bad_err_code = "\'" + bad_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
     
-#     # Assertions
-#     assert temps is None
-#     assert err == bad_err_code
+    # Assertions
+    assert temps is None
+    assert err == bad_err_code
 
-#     # Give an invalid _id
-#     inv_oid = "000000000000000000000000"
-#     temps, err = WorkoutDriver.get_templates(inv_oid)
+    # Give an invalid _id
+    inv_oid = "000000000000000000000000"
+    temps, err = WorkoutDriver.get_templates(inv_oid)
 
-#     if err is not None:
-#         print(temps, err)
+    if err is not None:
+        print(temps, err)
 
-#     # Expected
-#     inv_err_code = "Templates not found"
+    # Expected
+    inv_err_code = "Templates not found"
     
-#     # Assertions
-#     assert temps is None
-#     assert err == inv_err_code 
+    # Assertions
+    assert temps is None
+    assert err == inv_err_code 
 
 def test_create_delete_workout():
     # Give a valid gymId
@@ -731,44 +825,116 @@ def test_create_delete_workout():
     # Assertions
     assert response == responseId
 
-# def test_create_delete_template():
-#     # Give a valid gymId
-#     title = "A test template"
-#     userId = "699d0093795741a59fe13616"
-#     responseId, err = WorkoutDriver.create_template(userId, title)
+def test_create_delete_template():
+    # Give a valid gymId
+    title = "A test template"
+    userId = "699d0093795741a59fe13616"
+    responseId, err = WorkoutDriver.create_template(userId, title)
 
-#     if err is not None:
-#         print(responseId, err)
+    if err is not None:
+        print(responseId, err)
 
-#     # Check if response is valid id
-#     try:
-#         responseObj = ObjectId(str(responseId))
-#     except (bson_errors.InvalidId, TypeError, ValueError):
-#         assert(False)
+    # Check if response is valid id
+    try:
+        responseObj = ObjectId(str(responseId))
+    except (bson_errors.InvalidId, TypeError, ValueError):
+        assert(False)
 
-#     # Give created workoutId
-#     templates, err = WorkoutDriver.get_templates(userId)
+    # Give created workoutId
+    templates, err = WorkoutDriver.get_templates(userId)
 
-#     if err is not None:
-#         print(templates, err)
+    if err is not None:
+        print(templates, err)
 
-#     filtered = [d for d in templates if d.get("_id") == responseId]
+    filtered = [d for d in templates if d.get("_id") == responseId]
 
-#     # Assertions
-#     assert err is None
-#     assert filtered is not None
-#     assert filtered[0].get("_id") == responseId
-#     assert filtered[0].get("startTime") == 0
-#     assert filtered[0].get("userId") == "699d0093795741a59fe13616"
-#     assert filtered[0].get("title") == "A test template"
-#     assert filtered[0].get("template") == "True"
+    # Assertions
+    assert err is None
+    assert filtered is not None
+    assert filtered[0].get("_id") == responseId
+    assert filtered[0].get("startTime") == 0
+    assert filtered[0].get("userId") == "699d0093795741a59fe13616"
+    assert filtered[0].get("title") == "A test template"
+    assert filtered[0].get("template") == "True"
     
-#     # Delete created template
-#     response, err = WorkoutDriver.delete_workout(responseId)
-#     if err is not None:
-#         print(response, err)
-#     # Assertions
-#     assert response == responseId
+    # Delete created template
+    response, err = WorkoutDriver.delete_workout(responseId)
+    if err is not None:
+        print(response, err)
+    # Assertions
+    assert response == responseId
 
-def testTrue():
-    assert True
+    
+def test_update_workout_roundtrip():
+    # Known existing document id from your tests/fixtures
+    workout_id = "69af2a4598d0f4227b25ed71"
+
+    original, err = WorkoutDriver.get_workout_by_id(workout_id)
+    if err is not None:
+        print("Fetch original failed:", err)
+    assert err is None
+    assert original is not None
+    assert original.get("_id") == workout_id
+
+    # Keep a copy of original values for roundtrip restore
+    orig_title     = original.get("title")
+    orig_startTime = original.get("startTime")
+    orig_endTime   = original.get("endTime")
+
+    new_values = {
+        "title": "Updated Workout Title",
+        "startTime": 10,
+        "endTime": 20
+    }
+    updated, err = WorkoutDriver.update_workout(id=workout_id, updates=new_values)
+    if err is not None:
+        print("Update failed:", err)
+    assert err is None
+    assert updated is not None
+    assert updated.get("_id") == workout_id
+
+    # Assert updated values persisted
+    assert updated.get("title") == new_values["title"]
+    assert updated.get("startTime") == new_values["startTime"]
+    assert updated.get("endTime") == new_values["endTime"]
+
+    fetched_after_update, err = WorkoutDriver.get_workout_by_id(workout_id)
+    if err is not None:
+        print("Fetch after update failed:", err)
+    assert err is None
+    assert fetched_after_update is not None
+    assert fetched_after_update.get("_id") == workout_id
+
+    # Assert values are exactly as updated
+    assert fetched_after_update.get("title") == new_values["title"]
+    assert fetched_after_update.get("startTime") == new_values["startTime"]
+    assert fetched_after_update.get("endTime") == new_values["endTime"]
+
+    restore_payload = {
+        "title": orig_title,
+        "startTime": orig_startTime,
+        "endTime": orig_endTime
+    }
+    restored, err = WorkoutDriver.update_workout(id=workout_id, updates=restore_payload)
+    if err is not None:
+        print("Restore failed:", err)
+    assert err is None
+    assert restored is not None
+    assert restored.get("_id") == workout_id
+
+    # Assert restored document reflects the original values
+    assert restored.get("title") == orig_title
+    assert restored.get("startTime") == orig_startTime
+    assert restored.get("endTime") == orig_endTime
+
+    fetched_after_restore, err = WorkoutDriver.get_workout_by_id(workout_id)
+    if err is not None:
+        print("Fetch after restore failed:", err)
+    assert err is None
+    assert fetched_after_restore is not None
+    assert fetched_after_restore.get("_id") == workout_id
+
+    assert fetched_after_restore.get("title") == orig_title
+    assert fetched_after_restore.get("startTime") == orig_startTime
+    assert fetched_after_restore.get("endTime") == orig_endTime
+
