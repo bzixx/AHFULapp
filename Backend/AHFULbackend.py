@@ -15,6 +15,7 @@ from APIRoutes.PersonalExRoutes import personalExRouteBlueprint
 from APIRoutes.SwaggerRoutes import swaggerUIBlueprint
 from APIRoutes.SignInRoutes import signInRouteBlueprint
 from APIRoutes.ExerciseRoutes import exerciseRouteBlueprint
+from APIRoutes.UserSettingsRoutes import userSettingsBlueprint
 
 #Main AHFUL APP Backend Entry Point.
 def create_app():
@@ -36,6 +37,7 @@ def create_app():
     app.register_blueprint(swaggerUIBlueprint)
     app.register_blueprint(signInRouteBlueprint)
     app.register_blueprint(exerciseRouteBlueprint)
+    app.register_blueprint(userSettingsBlueprint)
 
     # Enable CORS - includes CloudFront production URL and custom domain
     allowed_origins = [
