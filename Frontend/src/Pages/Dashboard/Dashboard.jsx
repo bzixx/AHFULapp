@@ -10,7 +10,7 @@ export function Dashboard() {
   // Combined landing (home) content and dashboard widgets in one page.
   return (
     <>
-      {/* Landing / Hero section (moved from Home.jsx) */}
+      {/* Landing / Hero section (moved from Home.jsx)
       <main className="gym-landing-root home-root">
         <section className="hero">
           <div className="hero-content">
@@ -70,7 +70,7 @@ export function Dashboard() {
           <div>© {new Date().getFullYear()} AHFUL — Built for better habits</div>
           <div className="footer-links"></div>
         </footer>
-      </main>
+      </main> */}
 
       {/* Dashboard widgets */}
       <CalendarButton />
