@@ -1754,6 +1754,115 @@ swaggerConfig = {
         }
       }
     },
+    
+    "/AHFULgyms/update/{gym_id}": {
+      "put": {
+        "summary": "Update a gym",
+        "description": "Updates allowed fields of a gym by id. The server treats PUT as a partial update.",
+        "tags": ["Gym"],
+        "parameters": [
+          {
+            "name": "gym_id",
+            "in": "path",
+            "required": True,
+            "description": "The id of the gym (Mongo ObjectId as string)",
+            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+          }
+        ],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name":    { "type": "string", "example": "Downtown Fitness" },
+                  "address": { "type": "string", "example": "123 Main St, Anytown, USA" },
+                  "cost":    { "type": "number", "example": 49.99 },
+                  "link":    { "type": "string", "format": "uri", "example": "https://examplegym.com" },
+                  "lat":     { "type": "number", "example": 44.876 },
+                  "lng":     { "type": "number", "example": -91.932 },
+                  "notes":   { "type": "string", "example": "24/7 access; towels included" }
+                },
+                "additionalProperties": False
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gym updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Gym updated" },
+                    "gym": {
+                      "type": "object",
+                      "properties": {
+                        "_id":     { "type": "string", "example": "698d039a6e5117c22dd7771d" },
+                        "name":    { "type": "string", "example": "Downtown Fitness" },
+                        "address": { "type": "string", "example": "123 Main St, Anytown, USA" },
+                        "cost":    { "type": "number", "example": 49.99 },
+                        "link":    { "type": "string", "format": "uri", "example": "https://examplegym.com" },
+                        "lat":     { "type": "number", "example": 44.876 },
+                        "lng":     { "type": "number", "example": -91.932 },
+                        "notes":   { "type": "string", "example": "24/7 access; towels included" }
+                      },
+                      "required": ["_id", "name", "address"]
+                    }
+                  },
+                  "required": ["message", "gym"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or no valid fields to update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "You must provide a JSON body with at least one field to update" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Gym not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Gym not found" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
 
     "/AHFULfood/": {
       "get": {
@@ -2034,7 +2143,107 @@ swaggerConfig = {
           }
         }
       }
+    }, 
+
+    "/AHFULfood/update/{food_id}": {
+      "put": {
+        "summary": "Update a food entry",
+        "description": "Updates allowed fields of a food entry by id. The server treats PUT as a partial update of allowed fields.",
+        "tags": ["Food"],
+        "parameters": [
+          {
+            "name": "food_id",
+            "in": "path",
+            "required": True,
+            "description": "The id of the food entry (Mongo ObjectId as string)",
+            "schema": { "type": "string", "example": "699d0f5f888d8f649698307e" }
+          }
+        ],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name":           { "type": "string",  "example": "Banana" },
+                  "calsPerServing": { "type": "integer", "example": 105 },
+                  "servings":       { "type": "integer", "example": 2 },
+                  "type":           { "type": "string",  "example": "Snack" },
+                  "time":           { "type": "number",  "example": 1708473601 }
+                },
+                "additionalProperties": False
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Food updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id":            { "type": "string",  "example": "699d0f5f888d8f649698307e" },
+                    "userId":         { "type": "string",  "example": "699d0093795741a59fe13616" },
+                    "name":           { "type": "string",  "example": "Banana" },
+                    "calsPerServing": { "type": "integer", "example": 105 },
+                    "servings":       { "type": "integer", "example": 2 },
+                    "type":           { "type": "string",  "example": "Snack" },
+                    "time":           { "type": "number",  "example": 1708473601 }
+                  },
+                  "required": ["_id", "userId", "name", "calsPerServing", "servings", "type", "time"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or update error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "No data provided" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Food not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Food not found" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  },
+                  "required": ["error"]
+                }
+              }
+            }
+          }
+        }
+      }
     }
+
   }
 }
     

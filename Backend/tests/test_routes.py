@@ -150,6 +150,116 @@ def test_create_delete_food():
     # Assertions
     assert response == responseId
 
+def test_update_food_roundtrip():
+    # Known existing document id from your tests/fixtures
+    food_id = "699d0f5f888d8f649698307e"
+
+    # Fetch the current/original state
+    original, err = FoodDriver.get_food_by_id(food_id)
+    if err is not None:
+        print("Fetch original failed:", err)
+    assert err is None
+    assert original is not None
+    assert original.get("_id") == food_id
+
+    # Keep a copy of original values for roundtrip restore
+    orig_userId = original.get("userId")
+    orig_name = original.get("name")
+    orig_calsPerServing = original.get("calsPerServing")
+    orig_servings = original.get("servings")
+    orig_type = original.get("type")
+    orig_time = original.get("time")
+
+    # Sanity checks (aligns with your existing expectations)
+    assert isinstance(orig_name, str)
+    assert isinstance(orig_calsPerServing, int)
+    assert isinstance(orig_servings, int)
+    assert isinstance(orig_type, str)
+    assert isinstance(orig_time, int)
+
+    # Update all allowed fields to new values
+    new_name = "Banana"
+    new_calsPerServing = 105
+    new_servings = 2
+    new_type = "Snack"
+    new_time = 1708473602 
+
+    updated, err = FoodDriver.update_food(
+        food_id=food_id,
+        name=new_name,
+        calsPerServing=new_calsPerServing,
+        servings=new_servings,
+        type=new_type,
+        time=new_time
+    )
+    if err is not None:
+        print("Update failed:", err)
+    assert err is None
+    assert updated is not None
+    assert updated.get("_id") == food_id
+
+    # Assert updated values persisted (and userId unchanged)
+    assert updated.get("userId") == orig_userId
+    assert updated.get("name") == new_name
+    assert updated.get("calsPerServing") == new_calsPerServing
+    assert updated.get("servings") == new_servings
+    assert updated.get("type") == new_type
+    assert updated.get("time") == new_time
+
+    # Re-fetch from DB to ensure it wasn't just an in-memory return
+    fetched_after_update, err = FoodDriver.get_food_by_id(food_id)
+    if err is not None:
+        print("Fetch after update failed:", err)
+    assert err is None
+    assert fetched_after_update is not None
+    assert fetched_after_update.get("_id") == food_id
+
+    # Assert values are exactly as updated
+    assert fetched_after_update.get("userId") == orig_userId
+    assert fetched_after_update.get("name") == new_name
+    assert fetched_after_update.get("calsPerServing") == new_calsPerServing
+    assert fetched_after_update.get("servings") == new_servings
+    assert fetched_after_update.get("type") == new_type
+    assert fetched_after_update.get("time") == new_time
+
+    # Restore the original values
+    restored, err = FoodDriver.update_food(
+        food_id=food_id,
+        name=orig_name,
+        calsPerServing=orig_calsPerServing,
+        servings=orig_servings,
+        type=orig_type,
+        time=orig_time
+    )
+    if err is not None:
+        print("Restore failed:", err)
+    assert err is None
+    assert restored is not None
+    assert restored.get("_id") == food_id
+
+    # Assert restored document reflects the original values
+    assert restored.get("userId") == orig_userId
+    assert restored.get("name") == orig_name
+    assert restored.get("calsPerServing") == orig_calsPerServing
+    assert restored.get("servings") == orig_servings
+    assert restored.get("type") == orig_type
+    assert restored.get("time") == orig_time
+
+    # Re-fetch to ensure final state is restored in DB
+    fetched_after_restore, err = FoodDriver.get_food_by_id(food_id)
+    if err is not None:
+        print("Fetch after restore failed:", err)
+    assert err is None
+    assert fetched_after_restore is not None
+    assert fetched_after_restore.get("_id") == food_id
+
+    assert fetched_after_restore.get("userId") == orig_userId
+    assert fetched_after_restore.get("name") == orig_name
+    assert fetched_after_restore.get("calsPerServing") == orig_calsPerServing
+    assert fetched_after_restore.get("servings") == orig_servings
+    assert fetched_after_restore.get("type") == orig_type
+    assert fetched_after_restore.get("time") == orig_time
+
 # Gym
 
 def test_find_gym_by_id():
@@ -242,6 +352,110 @@ def test_create_delete_gym():
     # Assertions
     assert response == responseId
 
+def test_update_gym_roundtrip():
+    gym_id = "699cff88400d9d43a32e924d"  # replace with a known existing id in your test DB
+
+    # Fetch current/original state
+    original, err = GymDriver.get_gym_by_id(gym_id)
+    if err is not None:
+        print("Fetch original gym failed:", err)
+    assert err is None
+    assert original is not None
+    assert original.get("_id") == gym_id
+
+    # Keep original values for restore
+    orig_name = original.get("name")
+    orig_address = original.get("address")
+    orig_cost = original.get("cost")
+    orig_link = original.get("link")
+    orig_lat = original.get("lat")
+    orig_lng = original.get("lng")
+    orig_notes = original.get("notes")
+
+    # Update all allowed fields
+    new_values = {
+        "name":    "Test Gym",
+        "address": "456 Main St, Testville, USA",
+        "cost":    19.99,
+        "link":    "https://gym.example.com",
+        "lat":     44.1234,
+        "lng":     -91.5678,
+        "notes":   "Test roundtrip"
+    }
+    updated, err = GymDriver.update_gym(id=gym_id, updates=new_values)
+    if err is not None:
+        print("Update gym failed:", err)
+    assert err is None
+    assert updated is not None
+    assert updated.get("_id") == gym_id
+
+    # Assert fields updated
+    assert updated.get("name") == new_values["name"]
+    assert updated.get("address") == new_values["address"]
+    assert updated.get("cost") == new_values["cost"]
+    assert updated.get("link") == new_values["link"]
+    assert updated.get("lat") == new_values["lat"]
+    assert updated.get("lng") == new_values["lng"]
+    assert updated.get("notes") == new_values["notes"]
+
+    # Re-fetch to confirm persistence
+    fetched_after_update, err = GymDriver.get_gym_by_id(gym_id)
+    if err is not None:
+        print("Fetch after update failed:", err)
+    assert err is None
+    assert fetched_after_update is not None
+    assert fetched_after_update.get("_id") == gym_id
+
+    assert fetched_after_update.get("name") == new_values["name"]
+    assert fetched_after_update.get("address") == new_values["address"]
+    assert fetched_after_update.get("cost") == new_values["cost"]
+    assert fetched_after_update.get("link") == new_values["link"]
+    assert fetched_after_update.get("lat") == new_values["lat"]
+    assert fetched_after_update.get("lng") == new_values["lng"]
+    assert fetched_after_update.get("notes") == new_values["notes"]
+
+    # Restore original values
+    restore_payload = {
+        "name":    orig_name,
+        "address": orig_address,
+        "cost":    orig_cost,
+        "link":    orig_link,
+        "lat":     orig_lat,
+        "lng":     orig_lng,
+        "notes":   orig_notes
+    }
+    restored, err = GymDriver.update_gym(id=gym_id, updates=restore_payload)
+    if err is not None:
+        print("Restore gym failed:", err)
+    assert err is None
+    assert restored is not None
+    assert restored.get("_id") == gym_id
+
+    # Assert restored to original
+    assert restored.get("name") == orig_name
+    assert restored.get("address") == orig_address
+    assert restored.get("cost") == orig_cost
+    assert restored.get("link") == orig_link
+    assert restored.get("lat") == orig_lat
+    assert restored.get("lng") == orig_lng
+    assert restored.get("notes") == orig_notes
+
+    # Re-fetch to confirm final persistence
+    fetched_after_restore, err = GymDriver.get_gym_by_id(gym_id)
+    if err is not None:
+        print("Fetch after restore failed:", err)
+    assert err is None
+    assert fetched_after_restore is not None
+    assert fetched_after_restore.get("_id") == gym_id
+
+    assert fetched_after_restore.get("name") == orig_name
+    assert fetched_after_restore.get("address") == orig_address
+    assert fetched_after_restore.get("cost") == orig_cost
+    assert fetched_after_restore.get("link") == orig_link
+    assert fetched_after_restore.get("lat") == orig_lat
+    assert fetched_after_restore.get("lng") == orig_lng
+    assert fetched_after_restore.get("notes") == orig_notes
+
 # Personal Ex
 
 def test_find_personal_ex_by_id():
@@ -259,7 +473,7 @@ def test_find_personal_ex_by_id():
     assert ex.get("complete") == False
     assert ex.get("distance") == "0"
     assert ex.get("duration") == 120
-    assert ex.get("exerciseId") == "69ab3627a819c7ed3f7fcab1"
+    assert ex.get("exerciseId") == "69b4885e542988e24fee392e"
     assert ex.get("reps") == 0
     assert ex.get("sets") == 0
     assert ex.get("userId") == "699d0093795741a59fe13616"
@@ -314,7 +528,7 @@ def test_find_personal_ex_by_workout():
     assert filtered[0].get("complete") == False
     assert filtered[0].get("distance") == "0"
     assert filtered[0].get("duration") == 120
-    assert filtered[0].get("exerciseId") == "69ab3627a819c7ed3f7fcab1"
+    assert filtered[0].get("exerciseId") == "69b4885e542988e24fee392e"
     assert filtered[0].get("reps") == 0
     assert filtered[0].get("sets") == 0
     assert filtered[0].get("userId") == "699d0093795741a59fe13616"
@@ -369,7 +583,7 @@ def test_find_personal_ex_by_user():
     assert filtered[0].get("complete") == False
     assert filtered[0].get("distance") == "0"
     assert filtered[0].get("duration") == 120
-    assert filtered[0].get("exerciseId") == "69ab3627a819c7ed3f7fcab1"
+    assert filtered[0].get("exerciseId") == "69b4885e542988e24fee392e"
     assert filtered[0].get("reps") == 0
     assert filtered[0].get("sets") == 0
     assert filtered[0].get("userId") == "699d0093795741a59fe13616"
@@ -451,8 +665,7 @@ def test_create_delete_personal_ex():
         print(response, err)
     # Assertions
     assert response == responseId
-
-    
+   
 def test_update_personal_ex_roundtrip():
     personal_ex_id = "69ab5596dc5dee4f518a01cd"
 
@@ -627,8 +840,90 @@ def test_find_user_by_email():
     
     # Assertions
     assert user is None
-    assert err == inv_err_code
-    
+    assert err == inv_err_code   
+
+def test_add_remove_role_by_id_roundtrip():
+    user_id = "699f79574048f9ec8b5b0ed3"
+    adder_id = "699d0093795741a59fe13616"
+    test_role = "Gym Owner"
+
+    # Fetch current/original state
+    user, err = UserDriver.get_user_by_id(user_id)
+    if err is not None:
+        print("Fetch original user failed:", err)
+    assert err is None
+    assert user is not None
+    assert user.get("_id") == user_id
+
+    # Add the test role via the driver
+    updated_user, err = UserDriver.add_role_by_id(user_id=user_id, adder_id=adder_id, role=test_role)
+    if err is not None:
+        print("Add role failed:", err)
+    assert err is None
+    assert updated_user is not None
+    assert test_role in updated_user.get("roles", [])
+
+    # Re-fetch and verify role present
+    fetched, err = UserDriver.get_user_by_id(user_id)
+    assert err is None
+    assert fetched is not None
+    assert test_role in fetched.get("roles", [])
+
+    # Remove the test role via the driver
+    updated_user, err = UserDriver.remove_role_by_id(user_id=user_id, remover_id=adder_id, role=test_role)
+    if err is not None:
+        print("Remove role failed:", err)
+    assert err is None
+    assert updated_user is not None
+    assert test_role not in updated_user.get("roles", [])
+
+    # Re-fetch and verify role removed
+    fetched_after, err = UserDriver.get_user_by_id(user_id)
+    assert err is None
+    assert fetched_after is not None
+    assert test_role not in fetched_after.get("roles", [])
+
+def test_add_remove_role_by_email_roundtrip():
+    user_email = "jtboichipichipi@gmail.com"
+    adder_id = "699d0093795741a59fe13616"
+    test_role = "Gym Owner"
+
+    # Fetch current/original state
+    user, err = UserDriver.get_user_by_email(user_email)
+    if err is not None:
+        print("Fetch original user failed:", err)
+    assert err is None
+    assert user is not None
+    assert user.get("email") == user_email
+
+    # Add the test role via the driver
+    updated_user, err = UserDriver.add_role_by_email(user_email=user_email, adder_id=adder_id, role=test_role)
+    if err is not None:
+        print("Add role failed:", err)
+    assert err is None
+    assert updated_user is not None
+    assert test_role in updated_user.get("roles", [])
+
+    # Re-fetch and verify role present
+    fetched, err = UserDriver.get_user_by_email(user_email)
+    assert err is None
+    assert fetched is not None
+    assert test_role in fetched.get("roles", [])
+
+    # Remove the test role via the driver
+    updated_user, err = UserDriver.remove_role_by_email(user_email=user_email, remover_id=adder_id, role=test_role)
+    if err is not None:
+        print("Remove role failed:", err)
+    assert err is None
+    assert updated_user is not None
+    assert test_role not in updated_user.get("roles", [])
+
+    # Re-fetch and verify role removed
+    fetched_after, err = UserDriver.get_user_by_email(user_email)
+    assert err is None
+    assert fetched_after is not None
+    assert test_role not in fetched_after.get("roles", [])
+
 # TO DO    
 # def test_create_user():
 #     pass
@@ -863,8 +1158,7 @@ def test_create_delete_template():
         print(response, err)
     # Assertions
     assert response == responseId
-
-    
+   
 def test_update_workout_roundtrip():
     # Known existing document id from your tests/fixtures
     workout_id = "69af2a4598d0f4227b25ed71"

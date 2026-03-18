@@ -1,13 +1,13 @@
-#Services & Drivers know how to implement business Logic related to the Route operations.  
-#   Intermediate between Routes and Objects.  Ensures validations and rules are applied before 
+#Services & Drivers know how to implement business Logic related to the Route operations.
+#   Intermediate between Routes and Objects.  Ensures validations and rules are applied before
 #   Calling Objects to interact with DB
 from DataModels.UserObject import UserObject
 from datetime import datetime
 from bson import ObjectId, errors as bson_errors
 
 # The UserDriver is responsible for implementing the business logic related to user operations.
-#   It acts as an intermediary between the API routes and the data models, 
-#   ensuring that all necessary validations and rules are applied before interacting with 
+#   It acts as an intermediary between the API routes and the data models,
+#   ensuring that all necessary validations and rules are applied before interacting with
 #   the database.
 class UserDriver:
     # ── Helper ─────────────────────────────────────────────────────────────────
@@ -20,7 +20,7 @@ class UserDriver:
         if role not in UserDriver.valid_roles:
             return None, "Provided role is unidentified"
         return role, None
-    
+
     @staticmethod
     def _validate_obj_id(id, name):
         try:
@@ -38,7 +38,7 @@ class UserDriver:
             return users, None
         except Exception as e:
             return None, str(e)
-        
+
     @staticmethod
     def get_user_by_id(id):
         try:
@@ -58,7 +58,7 @@ class UserDriver:
             return user, None
         except Exception as e:
             return None, str(e)
-    
+
     # ── Update ─────────────────────────────────────────────────────────────────
     @staticmethod
     def add_role_by_id(user_id, adder_id, role):
@@ -77,7 +77,7 @@ class UserDriver:
         oid, err = UserDriver._validate_obj_id(adder_id, "adder_id")
         if err:
             return None, err
-        
+
         try:
             adder = UserObject.find_by_id(adder_id)
             if not adder:
@@ -118,7 +118,7 @@ class UserDriver:
             # TODO Need further verification that adder is logged in
         except Exception as e:
             return None, str(e)
-        
+
         user = UserObject.find_by_email(user_email)
         if not user:
             return None, "User not found"
@@ -148,7 +148,7 @@ class UserDriver:
         oid, err = UserDriver._validate_obj_id(remover_id, "remover_id")
         if err:
             return None, err
-        
+
         try:
             remover = UserObject.find_by_id(remover_id)
             if not remover:
@@ -168,7 +168,7 @@ class UserDriver:
             return None, str(ve)
         except Exception as e:
             return None, f"Failed to remove role: {e}"
-        
+
     @staticmethod
     def remove_role_by_email(user_email, remover_id, role):
         if not user_email:
@@ -183,7 +183,7 @@ class UserDriver:
         oid, err = UserDriver._validate_obj_id(remover_id, "remover_id")
         if err:
             return None, err
-        
+
         try:
             remover = UserObject.find_by_id(remover_id)
             if not remover:
@@ -193,7 +193,7 @@ class UserDriver:
             # TODO Need further verification that adder is logged in
         except Exception as e:
             return None, str(e)
-        
+
         user = UserObject.find_by_email(user_email)
         if not user:
             return None, "User not found"
@@ -207,7 +207,7 @@ class UserDriver:
             return None, str(ve)
         except Exception as e:
             return None, f"Failed to remove role: {e}"
-        
+
     @staticmethod
     def deactivate_user_by_id(user_id, deactivator_id):
         # Validate inputs
@@ -223,7 +223,7 @@ class UserDriver:
         oid, err = UserDriver._validate_obj_id(deactivator_id, "deactivator_id")
         if err:
             return None, err
-        
+
         try:
             deactivator = UserObject.find_by_id(deactivator_id)
             if not deactivator:
@@ -233,11 +233,11 @@ class UserDriver:
             # TODO Need further verification that deactivator is logged in
         except Exception as e:
             return None, str(e)
-        
+
         user = UserObject.find_by_id(user_id)
         if not user:
             return None, "User not found"
-        
+
         try:
             updated_user = UserObject.deactivate_by_id(user["_id"])
             if not updated_user:
@@ -252,22 +252,22 @@ class UserDriver:
     @staticmethod
     def create_user(userJSONObject):
         UserObject.create(userJSONObject)
-    
+
     def update_user_info(dataToBeUpdated: dict):
-        
+
         user_id = dataToBeUpdated.get("_id")
         try:
-            # Remove _id from update_data if present as we already collected it
-            dataToBeUpdated.pop('_id', None)
+            # Work on a copy so the original dict keeps its _id
+            update_copy = {k: v for k, v in dataToBeUpdated.items() if k != "_id"}
 
             # Add updated timestamp
-            dataToBeUpdated['updated_at'] = datetime.now()
+            update_copy['updated_at'] = datetime.now()
 
             #Passing in user_id here tracks who is being updated
-            UserObject.update(user_id,dataToBeUpdated)
+            UserObject.update(user_id, update_copy)
         except Exception as e:
             print(f"Database error from Driver: {e}")
-            return 0        
+            return 0
 
     @staticmethod
     def update_user(email, updates):
