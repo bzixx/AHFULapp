@@ -1,0 +1,43 @@
+from flask import Blueprint, request, jsonify
+from Services.UserSettingsDriver import UserSettingsDriver
+
+userSettingsBlueprint = Blueprint("userSettings", __name__, url_prefix="/AHFULuserSettings")
+
+@userSettingsBlueprint.route("/<user_id>", methods=["GET"])
+def get_user_settings(user_id):
+    settings, error = UserSettingsDriver.get_user_settings(user_id)
+    if error:
+        return jsonify({"error": error}), 404
+    return jsonify(settings), 200
+
+@userSettingsBlueprint.route("/create/<user_id>", methods=["POST"])
+def create_user_settings(user_id):
+    data = request.get_json() or {}
+    settings, error = UserSettingsDriver.create_user_settings(user_id, data)
+    if error:
+        return jsonify({"error": error}), 400
+    return jsonify(settings), 201
+
+@userSettingsBlueprint.route("/createDefault/<user_id>", methods=["POST"])
+def create_default_user_settings(user_id):
+    settings, error = UserSettingsDriver.create_default_user_settings(user_id)
+    if error:
+        return jsonify({"error": error}), 400
+    return jsonify(settings), 201
+
+@userSettingsBlueprint.route("/update/<user_id>", methods=["PUT"])
+def update_user_settings(user_id):
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+    settings, error = UserSettingsDriver.update_user_settings(user_id, data)
+    if error:
+        return jsonify({"error": error}), 400
+    return jsonify(settings), 200
+
+@userSettingsBlueprint.route("/delete/<user_id>", methods=["DELETE"])
+def delete_user_settings(user_id):
+    result, error = UserSettingsDriver.delete_user_settings(user_id)
+    if error:
+        return jsonify({"error": error}), 404
+    return jsonify(result), 200
