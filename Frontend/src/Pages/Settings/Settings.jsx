@@ -1,17 +1,20 @@
 import "./Settings.css";
 import "../../Stylesheets/Themes/Lightmode.css";
 import "../../Stylesheets/Themes/Darkmode.css";
-import { useState, useEffect } from "react";
+
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { DropdownRow, ActionRow } from "./SettingsHook.jsx";
+import { updateSetting, setSettings } from "./SettingsSlice.jsx";
 
 export function Settings() {
-  const [activeTab, setActiveTab] = useState("personal");
-  const [answers, setAnswers] = useState({});
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const answers = useSelector((state) => state.setting);
 
   const update = (key, val) => {
-    setAnswers(prev => ({ ...prev, [key]: val }));
+    dispatch(updateSetting({ key, value: val }));
   };
 
   useEffect(() => {
@@ -22,17 +25,55 @@ export function Settings() {
     }
   }, [answers.theme]);
 
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const user_id = localStorage.getItem("user_id");
+        if (!user_id) return;
+
+        const res = await fetch(`/api/settings/${user_id}`);
+        if (!res.ok) return;
+
+        const data = await res.json();
+
+        dispatch(setSettings({
+          theme: data.displayMode === "dark" ? "Dark" : "Light",
+          units: data.units ? capitalize(data.units) : "Imperial",
+        }));
+
+      } catch (err) {
+        console.error("Failed to load settings:", err);
+      }
+    };
+
+    fetchSettings();
+  }, [dispatch]);
+
+  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+
   const saveSettings = async () => {
+    console.log("Save Called")
     try {
+      const user_id = localStorage.getItem("user_id");
+      if (!user_id) return;
+
+      const { activeTab, ...settingsToSave } = answers;
+
+      const payload = {
+        user_id,
+        displayMode: settingsToSave.theme === "Dark" ? "dark" : "light",
+        units: settingsToSave.units.toLowerCase(),
+      };
+
       await fetch("/api/settings", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(answers)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
+
+      console.log("Settings saved:", payload);
     } catch (err) {
-      console.error(err);
+      console.error("Failed to save settings:", err);
     }
   };
 
@@ -43,29 +84,38 @@ export function Settings() {
 
   return (
     <div className="settings-page">
-
       <div className="settings-navbar">
         <button onClick={() => handleNavigate("/")}>AHFUL</button>
         <button onClick={() => handleNavigate("/Profile")}>Profile</button>
       </div>
 
       <div className="settings-container">
-
         <div className="settings-sidebar">
-          <button className={activeTab === "personal" ? "active" : ""} onClick={() => setActiveTab("personal")}>
+          <button
+            className={answers.activeTab === "personal" ? "active" : ""}
+            onClick={() => update("activeTab", "personal")}
+          >
             Personal Info
           </button>
-          <button className={activeTab === "workout" ? "active" : ""} onClick={() => setActiveTab("workout")}>
+
+          <button
+            className={answers.activeTab === "workout" ? "active" : ""}
+            onClick={() => update("activeTab", "workout")}
+          >
             Workout
           </button>
-          <button className={activeTab === "account" ? "active" : ""} onClick={() => setActiveTab("account")}>
+
+          <button
+            className={answers.activeTab === "account" ? "active" : ""}
+            onClick={() => update("activeTab", "account")}
+          >
             Account
           </button>
         </div>
 
         <div className="settings-content">
 
-          {activeTab === "personal" && (
+          {answers.activeTab === "personal" && (
             <>
               <h2>Personal Settings</h2>
 
@@ -103,7 +153,7 @@ export function Settings() {
               <ActionRow label="Date of Birth" buttonText="Change" />
 
               <DropdownRow
-                label="Gender (At Birf)"
+                label="Gender (At Birth)"
                 options={["Male", "Female", "Other"]}
                 value={answers.gender}
                 onChange={(v) => update("gender", v)}
@@ -111,7 +161,7 @@ export function Settings() {
             </>
           )}
 
-          {activeTab === "workout" && (
+          {answers.activeTab === "workout" && (
             <>
               <h2>Workout Settings</h2>
 
@@ -145,7 +195,7 @@ export function Settings() {
             </>
           )}
 
-          {activeTab === "account" && (
+          {answers.activeTab === "account" && (
             <>
               <h2>Account Settings</h2>
 
