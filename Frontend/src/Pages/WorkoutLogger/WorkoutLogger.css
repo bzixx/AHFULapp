@@ -12,9 +12,16 @@
     padding-top: 20px;
   }
 
-  .workout-title h1 {
-    font-size: 32px;
-  }
+.workout-title input {
+  font-size: 32px;
+  background: transparent;   /* removes white background */
+  border: none;              /* removes border */
+  outline: none;             /* removes blue highlight on click */
+  color: inherit;            /* matches your h1 color */
+  width: 100%;               /* keeps it from shrinking */
+  font-weight: bold;         /* matches heading style */
+}
+
 
   .workout-timer,
   .workout-timer-button {
@@ -77,13 +84,19 @@ body {
   margin-bottom: 50px;
 }
 
-.workout-title h1 {
-  font-size: 48px;
-  margin-bottom: 0;
-  line-height: 1.1;
+.workout-title input {
+  font-size: 24px;        /* match your old h1 */
+  background: transparent;
+  border: none;
+  outline: none;
+  color: inherit;
+  text-align: center;     /* to keep it centered */
+  width: 100%;
+  font-weight: bold;
 }
 
-.workout-title p {
+
+.workout-title h3 {
   margin: 0;
   line-height: 1.2;
 }
