@@ -170,7 +170,7 @@ class ExerciseDriver:
     def search_exercises(searchString):
         try:
             #Define Connection and Endpoint for External API
-            dbConnection =  HTTPSConnection(EXERSICEDB_HOST)
+            dbConnection = HTTPSConnection(EXERSICEDB_HOST, context=ssl_context)
             
             # Properly encode the query string
             query = urlencode({"q": searchString})  # e.g., q=bench+press+chest+dumbbell
@@ -226,7 +226,7 @@ class ExerciseDriver:
         else:
             try:
                 #Define Connection and Endpoint for External API
-                dbConnection =  HTTPSConnection(EXERSICEDB_HOST)
+                dbConnection = HTTPSConnection(EXERSICEDB_HOST, context=ssl_context)
             
                 # Properly encode the query string
                 apiEndpoint = f"/api/v1/exercises/{id}"
@@ -295,3 +295,36 @@ class ExerciseDriver:
         except Exception as e:
             return False, str(e)
         
+
+    @staticmethod
+    def get_bodyparts():
+        try:
+            conn = HTTPSConnection(EXERSICEDB_HOST, context=ssl_context)
+            conn.request("GET", "/api/v1/bodyparts", headers=EXERSICEDB_HEADERS)
+            response = conn.getresponse()
+            data = response.read()
+            return json.loads(data), None
+        except Exception as e:
+            return None, str(e)
+
+    @staticmethod
+    def get_muscles():
+        try:
+            conn = HTTPSConnection(EXERSICEDB_HOST, context=ssl_context)
+            conn.request("GET", "/api/v1/muscles", headers=EXERSICEDB_HEADERS)
+            response = conn.getresponse()
+            data = response.read()
+            return json.loads(data), None
+        except Exception as e:
+            return None, str(e)
+
+    @staticmethod
+    def get_equipments():
+        try:
+            conn = HTTPSConnection(EXERSICEDB_HOST, context=ssl_context)
+            conn.request("GET", "/api/v1/equipments", headers=EXERSICEDB_HEADERS)
+            response = conn.getresponse()
+            data = response.read()
+            return json.loads(data), None
+        except Exception as e:
+            return None, str(e)

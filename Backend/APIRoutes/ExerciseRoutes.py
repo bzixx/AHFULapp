@@ -114,44 +114,26 @@ def delete_exercise(exercise_id):
         return jsonify({"error": error}), 400
     return jsonify({"message": "Exercise deleted successfully"}), 200
 
-# ── DELETE exercise ───────────────────────────────────────────────────────────
+# ── GET bodyparts ───────────────────────────────────────────────────────────
 @exerciseRouteBlueprint.route('/bodyparts/')
 def get_bodyparts():
-    try:
-        ssl_context = ssl.create_default_context(cafile=certifi.where())
-        conn = HTTPSConnection(EXERSICEDB_HOST, context=ssl_context)
-        conn.request("GET", "/api/v1/bodyparts", headers=EXERSICEDB_HEADERS)
-        response = conn.getresponse()
-        data = response.read()
-        return current_app.response_class(data, mimetype='application/json')
-    except Exception as e:
-        payload = json.dumps({"error": str(e)})
-        return current_app.response_class(payload, status=502, mimetype='application/json')
+    data, error = ExerciseDriver.get_bodyparts()
+    if error:
+        return jsonify({"error": error}), 502
+    return jsonify(data), 200
 
-
+# ── GET muscles ──────────────────────────────────────────────────────────────
 @exerciseRouteBlueprint.route('/muscles/')
 def get_muscles():
-    try:
-        ssl_context = ssl.create_default_context(cafile=certifi.where())
-        conn = HTTPSConnection(EXERSICEDB_HOST, context=ssl_context)
-        conn.request("GET", "/api/v1/muscles", headers=EXERSICEDB_HEADERS)
-        response = conn.getresponse()
-        data = response.read()
-        return current_app.response_class(data, mimetype='application/json')
-    except Exception as e:
-        payload = json.dumps({"error": str(e)})
-        return current_app.response_class(payload, status=502, mimetype='application/json')
+    data, error = ExerciseDriver.get_muscles()
+    if error:
+        return jsonify({"error": error}), 502
+    return jsonify(data), 200
 
-
+# ── GET equipments ──────────────────────────────────────────────────────────
 @exerciseRouteBlueprint.route('/equipments/')
 def get_equipments():
-    try:
-        ssl_context = ssl.create_default_context(cafile=certifi.where())
-        conn = HTTPSConnection(EXERSICEDB_HOST, context=ssl_context)
-        conn.request("GET", "/api/v1/equipments", headers=EXERSICEDB_HEADERS)
-        response = conn.getresponse()
-        data = response.read()
-        return current_app.response_class(data, mimetype='application/json')
-    except Exception as e:
-        payload = json.dumps({"error": str(e)})
-        return current_app.response_class(payload, status=502, mimetype='application/json')
+    data, error = ExerciseDriver.get_equipments()
+    if error:
+        return jsonify({"error": error}), 502
+    return jsonify(data), 200

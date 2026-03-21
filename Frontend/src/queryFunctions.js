@@ -20,7 +20,7 @@ export function formatTime(seconds) {
 export async function loadEquipment() {
   // Returns { data: [ {value,label}, ... ] } or throws
   try {
-    const res = await fetch("https://www.exercisedb.dev/api/v1/equipments", {
+    const res = await fetch("http://localhost:5000/AHFULexercises/equipments/", {
       method: "GET",
       mode: "cors",
       headers: {
@@ -58,7 +58,7 @@ export async function loadEquipment() {
 export async function loadBodyParts() {
   // Returns { data: [ {value,label}, ... ] } or throws
   try {
-    const res = await fetch("https://www.exercisedb.dev/api/v1/bodyparts", {
+    const res = await fetch("http://localhost:5000/AHFULexercises/bodyparts/", {
       method: "GET",
       mode: "cors",
       headers: {
@@ -96,7 +96,7 @@ export async function loadBodyParts() {
 export async function loadTargetMuscles() {
   // Returns { data: [ {value,label}, ... ] } or throws
   try {
-    const res = await fetch("https://www.exercisedb.dev/api/v1/muscles", {
+    const res = await fetch("http://localhost:5000/AHFULexercises/muscles/", {
       method: "GET",
       mode: "cors",
       headers: {
