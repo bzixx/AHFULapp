@@ -222,3 +222,46 @@ export async function createExercise(exerciseData) {
     return { error: msg };
   }
 }
+
+// ── Geocoding Functions (Nominatim/OpenStreetMap) ─────────────────────────────────
+
+export async function reverseGeocode(lat, lng) {
+  try {
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
+    const res = await fetch(url, {
+      headers: { "User-Agent": "AHFULApp/1.0" }
+    });
+    if (!res.ok) {
+      throw new Error(`Geocoding API returned ${res.status}`);
+    }
+    const data = await res.json();
+    return data.display_name || null;
+  } catch (err) {
+    console.error("reverseGeocode error:", err);
+    return null;
+  }
+}
+
+export async function forwardGeocode(address) {
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
+    const res = await fetch(url, {
+      headers: { "User-Agent": "AHFULApp/1.0" }
+    });
+    if (!res.ok) {
+      throw new Error(`Geocoding API returned ${res.status}`);
+    }
+    const data = await res.json();
+    if (data && data.length > 0) {
+      return { 
+        lat: parseFloat(data[0].lat), 
+        lng: parseFloat(data[0].lon),
+        displayName: data[0].display_name 
+      };
+    }
+    return null;
+  } catch (err) {
+    console.error("forwardGeocode error:", err);
+    return null;
+  }
+}
