@@ -11,6 +11,7 @@ import {
   fetchWorkout,
   fetchPersonalExercises,
   loadBodyParts,
+  createExercise,
 } from "../../queryFunctions";
 
 export function WorkoutLogger() {
@@ -71,15 +72,20 @@ export function WorkoutLogger() {
     setShowNewExerciseModal(false);
   };
 
-  const handleNewExerciseSave = (e) => {
+  const handleNewExerciseSave = async (e) => {
     e.preventDefault();
     if (!newExercise.name.trim()) {
       alert("Please enter a name for the exercise");
       return;
     }
 
-    // For now, append to exercises list (could POST to backend later)
-    setExercises((prev) => [...prev, { ...newExercise }]);
+    const result = await createExercise(newExercise);
+    if (result.error) {
+      alert(`Failed to save exercise: ${result.error}`);
+      return;
+    }
+
+    setExercises((prev) => [...prev, { ...newExercise, _id: result.data.exercise_id }]);
     closeNewExerciseModal();
   };
 
@@ -856,7 +862,7 @@ const handleSubmit = async () => {
               <button type="button" onClick={closeNewExerciseModal}>
                 Cancel
               </button>
-              <button type="submit">Save</button>
+              <button type="submit" id="Sothat283763Me">Save</button>
             </div>
           </form>
         </div>

@@ -254,15 +254,28 @@ class ExerciseDriver:
 
     def create_exercise(formData):
         try:
+            instructions_raw = formData.get("instructions", "")
+            if isinstance(instructions_raw, str):
+                instructions = [line.strip() for line in instructions_raw.split("\n") if line.strip()]
+            else:
+                instructions = instructions_raw if isinstance(instructions_raw, list) else []
+
+            equipment_value = formData.get("equipment", "")
+            equipments = [equipment_value] if equipment_value else []
+
             exercise_data = {
                 "name": formData.get("name"),
-                "body_part": formData.get("body_part"),
-                "difficulty": formData.get("difficulty"),
-                "equipment": formData.get("equipment"),
-                "instructions": formData.get("instructions"),
-                "type": formData.get("type")
+                "targetMuscles": formData.get("targetMuscles", []),
+                "bodyParts": formData.get("bodyParts", []),
+                "equipments": equipments,
+                "secondaryMuscles": formData.get("secondaryMuscles", []),
+                "instructions": instructions,
+                "gifUrl": formData.get("gifUrl", ""),
             }
-            exercise_id = ExerciseObject.create(exercise_data)
+            
+            exercise_id, error = ExerciseObject.create(exercise_data)
+            if error:
+                return None, error
             return exercise_id, None
         except Exception as e:
             return None, str(e)

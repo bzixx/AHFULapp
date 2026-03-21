@@ -195,3 +195,29 @@ export async function fetchPersonalExercises(workoutId) {
   const data = await res.json();
   return data;
 }
+
+export async function createExercise(exerciseData) {
+  try {
+    const res = await fetch("http://localhost:5000/AHFULexercises/create/", {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(exerciseData),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return { error: data.error || `Server returned ${res.status}` };
+    }
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("createExercise error:", err);
+    const msg = err && err.message ? err.message : "Failed to create exercise";
+    return { error: msg };
+  }
+}
