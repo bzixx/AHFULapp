@@ -301,9 +301,10 @@ class ExerciseDriver:
         try:
             conn = HTTPSConnection(EXERSICEDB_HOST, context=ssl_context)
             conn.request("GET", "/api/v1/bodyparts", headers=EXERSICEDB_HEADERS)
-            response = conn.getresponse()
-            data = response.read()
-            return json.loads(data), None
+            http_response = conn.getresponse()
+            data = http_response.read()
+            response = json.loads(data)
+            return response.get("data", []), None
         except Exception as e:
             return None, str(e)
 
@@ -312,9 +313,10 @@ class ExerciseDriver:
         try:
             conn = HTTPSConnection(EXERSICEDB_HOST, context=ssl_context)
             conn.request("GET", "/api/v1/muscles", headers=EXERSICEDB_HEADERS)
-            response = conn.getresponse()
-            data = response.read()
-            return json.loads(data), None
+            http_response = conn.getresponse()
+            data = http_response.read()
+            response = json.loads(data)
+            return response.get("data", []), None
         except Exception as e:
             return None, str(e)
 
@@ -323,8 +325,9 @@ class ExerciseDriver:
         try:
             conn = HTTPSConnection(EXERSICEDB_HOST, context=ssl_context)
             conn.request("GET", "/api/v1/equipments", headers=EXERSICEDB_HEADERS)
-            response = conn.getresponse()
-            data = response.read()
-            return json.loads(data), None
+            http_response = conn.getresponse()
+            data = http_response.read()
+            response = json.loads(data)
+            return response.get("data", []), None
         except Exception as e:
             return None, str(e)
