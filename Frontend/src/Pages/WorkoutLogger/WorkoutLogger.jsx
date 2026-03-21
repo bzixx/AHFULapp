@@ -197,9 +197,7 @@ export function WorkoutLogger() {
     }
 
     const ids = exercisesInProgressTable.map((ex) => ex.exerciseId);
-    const missing = ids.filter(
-      id => !personalExNames[id] && exercises.some(ex => (ex._id ?? ex.exerciseId) === id)
-    );
+    const missing = ids.filter(id => !personalExNames[id]);
 
 
     if (missing.length === 0) {
