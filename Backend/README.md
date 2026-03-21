@@ -112,7 +112,7 @@ pip install --upgrade pip setuptools wheel
 7) Install project requirements:
 
 ```bash
-pip install -r requirements.txt
+pip install -r newReqs.txt
 ```
 
 8) Run the Flask app (still inside the activated venv):
@@ -158,7 +158,7 @@ echo $env:VIRTUAL_ENV
 
 ```powershell
 python -m pip install --upgrade pip setuptools wheel
-pip install -r requirements.txt
+pip install -r newReqs.txt
 ```
 
 6) Run the Flask app:
@@ -180,8 +180,15 @@ Environment checklist (success criteria)
 - `pip list` shows installed packages from `requirements.txt`.
 - `python -m flask --app AHFULbackend run --debug` starts the app without import errors.
 
-If you'd like, I can also add a tiny convenience Makefile or shell script for macOS that automates venv creation, activation, and running the server. Let me know which you'd prefer and I'll add it.
 Optional for VSCode: Ctrl+Shft+P, Type 'Python: Select Interpreter', Find and select your .venv file
+
+
+To cleanup your Non Virutal Env:
+```bash
+pip3 freeze > packages_to_remove.txt
+cat packages_to_remove.txt  # Review what's being removed
+pip3 uninstall -y -r packages_to_remove.txt
+```
 
 
 Congrats! If you start up the application and Google doesn't yell at you, you survived!
