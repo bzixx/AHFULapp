@@ -2,6 +2,8 @@
 from DataModels.ExerciseObject import ExerciseObject
 from urllib.parse import urlencode
 from http.client import HTTPSConnection
+import ssl
+import certifi
 import json
 from urllib.parse import urlencode
 from bson import ObjectId, errors as bson_errors
@@ -11,7 +13,9 @@ EXERSICEDB_HOST = "www.exercisedb.dev"
 #Define Headers for External API
 EXERSICEDB_HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", "Accept": "application/json"}
 #Define Connection External API
-externalDBConnection =  HTTPSConnection(EXERSICEDB_HOST)
+ssl_context = ssl.create_default_context(cafile=certifi.where())
+
+externalDBConnection =  HTTPSConnection(EXERSICEDB_HOST, context=ssl_context)
 
 class ExerciseDriver:
     @staticmethod

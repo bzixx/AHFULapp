@@ -1,6 +1,7 @@
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from flask import current_app
+import certifi
 import os
 
 #Services & Drivers know how to implement business Logic related to the Route operations.  Intermediate between Routes and Objects.  Ensures validations and rules are applied before Calling Objects to interact with DB
@@ -16,7 +17,7 @@ def getMongoClient():
         raise RuntimeError("MongoDB connection failed: MONGODB_URI not found in environment.")
 
     # Create a new client and connect to the server
-    ahfulMongoDBClient = MongoClient(uri, server_api=ServerApi('1'))
+    ahfulMongoDBClient = MongoClient(uri, server_api=ServerApi('1'), tlsCAFile=certifi.where())
 
     # Send a ping to confirm a successful connection
     try:
