@@ -11,8 +11,7 @@ import {
   fetchWorkout,
   fetchPersonalExercises,
   loadBodyParts,
-  createExercise,
-} from "../../queryFunctions";
+} from "../../QueryFunctions";
 
 export function WorkoutLogger() {
   const [personalExToRemove, setPersonalExToRemove] = useState({});
