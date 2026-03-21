@@ -4,7 +4,6 @@ import {
 } from "recharts";
 import "./ExploreWorkouts.css";
 import "../../SiteStyles.css";
-import {registerService} from "../../firebase.js";
 import { Calendar } from "../../components/Calendar/Calendar";
 import { HeatMap } from "../../Components/HeatMap/HeatMap";
 
@@ -100,9 +99,7 @@ export function ExploreWorkouts() {
           <button onClick={fetchExercises} disabled={loading} className="refresh-btn">
             {loading ? "Refreshing..." : "Refresh"}
           </button>
-          <button onClick={registerService} className="refresh-btn">
-            Register Workout Notifications!
-          </button>
+
         </div>
       </header>
 
