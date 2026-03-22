@@ -984,7 +984,7 @@ swaggerConfig = {
         }
       },
 
-      "/AHFULexercises/create": {
+      "/AHFULexercises/create/": {
         "post": {
           "summary": "Create an exercise",
           "tags": ["Exercises"],
@@ -2242,10 +2242,1504 @@ swaggerConfig = {
           }
         }
       }
+    },
+    "/AHFULmeasurements/": {
+      "get": {
+        "summary": "Get all measurements",
+        "tags": ["Measurements"],
+        "responses": {
+          "200": {
+            "description": "A list of measurements",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "type": "object" }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULmeasurements/{user_id}": {
+      "get": {
+        "summary": "Get measurements by user id",
+        "tags": ["Measurements"],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": True,
+            "description": "User ObjectId",
+            "schema": { "type": "string", "example": "699d0093795741a59fe13616" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Measurements found for the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "type": "object" }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error retrieving measurements",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULmeasurements/id/{measurement_id}": {
+      "get": {
+        "summary": "Get a single measurement by id",
+        "tags": ["Measurements"],
+        "parameters": [
+          {
+            "name": "measurement_id",
+            "in": "path",
+            "required": True,
+            "description": "Measurement ObjectId",
+            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Measurement found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" },
+                    "userId": { "type": "string", "example": "699d0093795741a59fe13616" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Measurement not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULmeasurements/create": {
+      "post": {
+        "summary": "Create a new measurement",
+        "tags": ["Measurements"],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["userId"],
+                "properties": {
+                  "userId": { "type": "string", "description": "User ObjectId", "example": "699d0093795741a59fe13616" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Measurement created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "measurement_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" },
+                    "message": { "type": "string", "example": "Measurement created" }
+                  },
+                  "required": ["measurement_id", "message"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or creation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULmeasurements/update/{measurement_id}": {
+      "put": {
+        "summary": "Update a measurement",
+        "description": "Updates allowed fields of a measurement by id. The server treats PUT as a partial update.",
+        "tags": ["Measurements"],
+        "parameters": [
+          {
+            "name": "measurement_id",
+            "in": "path",
+            "required": True,
+            "description": "The id of the measurement (Mongo ObjectId as string)",
+            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+          }
+        ],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": { "type": "object", "description": "Measurement data fields to update" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Measurement updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or no valid fields to update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "You must provide a JSON body with at least one field to update" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Measurement not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULmeasurements/delete/{measurement_id}": {
+      "delete": {
+        "summary": "Delete a measurement by id",
+        "tags": ["Measurements"],
+        "parameters": [
+          {
+            "name": "measurement_id",
+            "in": "path",
+            "required": True,
+            "description": "The id of the measurement (Mongo ObjectId as string)",
+            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Measurement deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Measurement deleted" },
+                    "measurement_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+                  },
+                  "required": ["message", "measurement_id"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error deleting measurement",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULauth/google-login": {
+      "post": {
+        "summary": "Login with Google",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["token"],
+                "properties": {
+                  "token": { "type": "string", "description": "Google JWT token", "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..." }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Login successful" },
+                    "user_info": { "type": "object", "description": "User information object" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No authentication data provided",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "No authentication data provided" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or disabled account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Your account has been disabled" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULauth/snapchat-login": {
+      "post": {
+        "summary": "Login with Snapchat",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["token"],
+                "properties": {
+                  "token": { "type": "string", "description": "Snapchat authentication token", "example": "snap_token_here" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Login successful" },
+                    "user_info": { "type": "object", "description": "User information object" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No authentication data provided",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "No authentication data provided" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULauth/logout": {
+      "post": {
+        "summary": "Logout user",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["logout_email"],
+                "properties": {
+                  "logout_email": { "type": "string", "format": "email", "description": "Email of user to logout", "example": "user@example.com" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Logout successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Logout successful" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Logout failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Logout failed" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULauth/whoami": {
+      "post": {
+        "summary": "Check authentication status",
+        "description": "Verify if a user is authenticated and their session is valid",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "last_login_expire", "magic_bits"],
+                "properties": {
+                  "email": { "type": "string", "format": "email", "description": "User email", "example": "user@example.com" },
+                  "last_login_expire": { "type": "integer", "description": "Token expiration timestamp", "example": 1708550400 },
+                  "magic_bits": { "type": "string", "description": "Session magic bits for validation", "example": "abcdef1234567890abcdef12345678" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User is authenticated and authorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Authorized and Found User." },
+                    "user_info": { "type": "object", "description": "User information object" }
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Token expired or invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Token Expired, User will need to Auth Again" }
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Email NOT found, User will need to Auth" }
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Magic bits mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Your Bits are overcooked, User will need to Auth Again" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULtasks/{task_id}": {
+      "get": {
+        "summary": "Get task by id",
+        "tags": ["Task"],
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": True,
+            "description": "Task ObjectId",
+            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Task not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULtasks/user/{user_id}": {
+      "get": {
+        "summary": "Get tasks by user id",
+        "tags": ["Task"],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": True,
+            "description": "User ObjectId",
+            "schema": { "type": "string", "example": "699d0093795741a59fe13616" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tasks found for the user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "type": "object" }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tasks not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULtasks/create/{user_id}": {
+      "post": {
+        "summary": "Create a new task",
+        "tags": ["Task"],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": True,
+            "description": "User ObjectId to associate task with",
+            "schema": { "type": "string", "example": "699d0093795741a59fe13616" }
+          }
+        ],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": { "type": "object", "description": "Task data fields" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Task created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or creation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULtasks/update/{task_id}": {
+      "put": {
+        "summary": "Update a task",
+        "tags": ["Task"],
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": True,
+            "description": "Task ObjectId",
+            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+          }
+        ],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": { "type": "object", "description": "Task data fields to update" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or update error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULtasks/delete/{task_id}": {
+      "delete": {
+        "summary": "Delete a task by id",
+        "tags": ["Task"],
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": True,
+            "description": "Task ObjectId",
+            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Task not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULtokens/user/{user_id}": {
+      "get": {
+        "summary": "Get token by user id",
+        "tags": ["Token"],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": True,
+            "description": "User ObjectId",
+            "schema": { "type": "string", "example": "699d0093795741a59fe13616" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Token not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULtokens/value/{token}": {
+      "get": {
+        "summary": "Get token by value",
+        "tags": ["Token"],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": True,
+            "description": "Token value",
+            "schema": { "type": "string", "example": "some_token_value" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Token not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULtokens/create/{user_id}": {
+      "post": {
+        "summary": "Create a token for user",
+        "tags": ["Token"],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": True,
+            "description": "User ObjectId",
+            "schema": { "type": "string", "example": "699d0093795741a59fe13616" }
+          }
+        ],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["token"],
+                "properties": {
+                  "token": { "type": "string", "description": "Token value", "example": "new_token_value" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Token created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Token is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "token is required" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULtokens/delete/user/{user_id}": {
+      "delete": {
+        "summary": "Delete token by user id",
+        "tags": ["Token"],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": True,
+            "description": "User ObjectId",
+            "schema": { "type": "string", "example": "699d0093795741a59fe13616" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Token not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULtokens/delete/value/{token}": {
+      "delete": {
+        "summary": "Delete token by value",
+        "tags": ["Token"],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": True,
+            "description": "Token value",
+            "schema": { "type": "string", "example": "some_token_value" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Token not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULuserSettings/{user_id}": {
+      "get": {
+        "summary": "Get user settings",
+        "tags": ["UserSettings"],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": True,
+            "description": "User ObjectId",
+            "schema": { "type": "string", "example": "699d0093795741a59fe13616" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User settings found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Settings not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULuserSettings/create/{user_id}": {
+      "post": {
+        "summary": "Create user settings",
+        "tags": ["UserSettings"],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": True,
+            "description": "User ObjectId",
+            "schema": { "type": "string", "example": "699d0093795741a59fe13616" }
+          }
+        ],
+        "requestBody": {
+          "required": False,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "settings": { "type": "object", "description": "Optional settings data" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User settings created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error creating settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULuserSettings/createDefault/{user_id}": {
+      "post": {
+        "summary": "Create default user settings",
+        "tags": ["UserSettings"],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": True,
+            "description": "User ObjectId",
+            "schema": { "type": "string", "example": "699d0093795741a59fe13616" }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Default user settings created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error creating default settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULuserSettings/update/{user_id}": {
+      "put": {
+        "summary": "Update user settings",
+        "tags": ["UserSettings"],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": True,
+            "description": "User ObjectId",
+            "schema": { "type": "string", "example": "699d0093795741a59fe13616" }
+          }
+        ],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": { "type": "object", "description": "Settings data fields to update" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User settings updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or update error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULuserSettings/delete/{user_id}": {
+      "delete": {
+        "summary": "Delete user settings",
+        "tags": ["UserSettings"],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": True,
+            "description": "User ObjectId",
+            "schema": { "type": "string", "example": "699d0093795741a59fe13616" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User settings deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Settings not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULexercises/metadata": {
+      "get": {
+        "summary": "Get initial metadata for exercises (Page 1)",
+        "tags": ["Exercises"],
+        "responses": {
+          "200": {
+            "description": "Initial metadata for exercises pagination",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Get next or previous page of metadata",
+        "description": "Use the 'search' query parameter with value 'next' for next page or 'prev' for previous page. Pass the current page data in the request body.",
+        "tags": ["Exercises"],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": True,
+            "description": "Pagination direction: 'next' for next page, 'prev' for previous page",
+            "schema": { "type": "string", "enum": ["next", "prev"], "example": "next" }
+          }
+        ],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Current page data for pagination",
+                "example": { "currentPage": 1 }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Metadata for requested page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid search query or no page data provided",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Invalid search query" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULexercises/": {
+      "post": {
+        "summary": "Get next or previous page of exercises",
+        "description": "Use the 'search' query parameter with value 'next' for next page or 'prev' for previous page. Pass the current page data in the request body.",
+        "tags": ["Exercises"],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": True,
+            "description": "Pagination direction: 'next' for next page, 'prev' for previous page",
+            "schema": { "type": "string", "enum": ["next", "prev"], "example": "next" }
+          }
+        ],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Current page data for pagination",
+                "example": { "currentPage": 1 }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Exercises for requested page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
+                      "name": { "type": "string", "example": "Dumbbell Bench Press" },
+                      "muscle_group": { "type": "string", "example": "Chest" },
+                      "difficulty": { "type": "string", "example": "Intermediate" },
+                      "equipment": { "type": "string", "example": "Dumbbells, Flat Bench" },
+                      "instructions": { "type": "string", "example": "Lie on a flat bench..." },
+                      "type": { "type": "string", "example": "Strength" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid search query or no page data provided",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Invalid search query" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULexercises/{exercise_id}": {
+      "put": {
+        "summary": "Update an exercise",
+        "tags": ["Exercises"],
+        "parameters": [
+          {
+            "name": "exercise_id",
+            "in": "path",
+            "required": True,
+            "description": "Exercise ObjectId",
+            "schema": { "type": "string", "example": "698d0bc06e5117c22dd7774b" }
+          }
+        ],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Barbell Back Squat" },
+                  "muscle_group": { "type": "string", "example": "Legs" },
+                  "difficulty": { "type": "string", "example": "Intermediate" },
+                  "equipment": { "type": "string", "example": "Barbell, Squat Rack" },
+                  "instructions": { "type": "string", "example": "Position the barbell..." },
+                  "type": { "type": "string", "example": "Strength" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Exercise updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string", "example": "Exercise updated successfully" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or update error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULworkout/create/template": {
+      "post": {
+        "summary": "Create a workout template",
+        "tags": ["Workout"],
+        "requestBody": {
+          "required": True,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["userId"],
+                "properties": {
+                  "userId": { "type": "string", "example": "699d0093795741a59fe13616" },
+                  "title": { "type": "string", "example": "My Workout Template" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Workout template created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "workout_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" },
+                    "message": { "type": "string", "example": "Workout created" }
+                  },
+                  "required": ["workout_id", "message"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or creation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
+
 
   }
 }
-    
-
-

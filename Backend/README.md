@@ -3,7 +3,10 @@
 Backend/
 ├── APIRoutes/                  # Backend API Endpoint Routes Called by Frontend. APIs call Services/Drivers
 │   ├── ExerciseRoute.py        # Exercise Releated
+│   ├── FoodRoutes.py           # Food Releated
 │   ├── GymRoutes.py            # Gym Related
+│   ├── MeasurementRotues.py    # Body Measurement Related
+│   ├── PersonalExRoutes.py     # SPersonal Exercise Related
 │   ├── SignInRoutes.py         # Sign In Process Related
 │   ├── SwaggerRoutes.py        # Swagger / API Doc Relates
 │   ├── UserRoutes.py           # User Realted
@@ -11,25 +14,33 @@ Backend/
 │
 ├── DataModels/                 # Data Models to Interact with Collections in the Database.
 │   ├── ExerciseObject.py       # Exercise Collection Operations
+│   ├── FoodObject.py           # Food Collection Operations
 │   ├── GymObject.py            # Gym Collection Operations
-│   ├── MuscleGroupObject.py    # Muscle Group Collection Operations
-│   ├── PersonalExerciseObject.p# Personal Exercise Collection Operations
+│   ├── MeasurementObject.py    # Measurement Collection Operations
+│   ├── PersonalExObject.py     # Personal Exercise Collection Operations
 │   ├── UserObject.py           # User Collection Operations
 │   └── WorkoutObject.py        # Workout Collection Operations
 │
 ├── Services/                   # Services / Drivers to work between API Route and Data Model. Services Call Object.operations
+│   ├── __init__.py             # put here so services can be detected as a package for github actions
 │   ├── ExerciseDriver.py       # Exercise Driver
+│   ├── FoodDriver.py           # Food Driver
 │   ├── GymDriver.py            # Gym Driver
+│   ├── MeasurementDriver.py    # Measurements Driver
 │   ├── MongoDriver.py          # Mongo DB Driver
+│   ├── PersonalExDriver.py     # Personal Exercise Driver
 │   ├── SessionDriver.py        # Session Driver (Not Currently In Sprint)
 │   ├── SignInDriver.py         # Sign in Driver
 │   ├── UserDriver.py           # User Driver
 │   └── WorkoutDriver.py        # Workout Driver
 │
-├── AHFULbackend.py            # Flask App Starting Point (Main)
-├── requirements.txt           # Python dependencies
-├── .env                       # You Should Create and Update this Manually
-└── README.MD                  # This Documentation
+├── tests/                      # Tests for Github
+│   └── test_routes.py          # All testing routes that github runs on cpull requests to main.
+│
+├── AHFULbackend.py             # Flask App Starting Point (Main)
+├── requirements.txt            # Python dependencies
+├── .env                        # You Should Create and Update this Manually
+└── README.MD                   # This Documentation
 ```
 
 ### Backend Coding Standards
@@ -101,7 +112,7 @@ pip install --upgrade pip setuptools wheel
 7) Install project requirements:
 
 ```bash
-pip install -r requirements.txt
+pip install -r newReqs.txt
 ```
 
 8) Run the Flask app (still inside the activated venv):
@@ -147,7 +158,7 @@ echo $env:VIRTUAL_ENV
 
 ```powershell
 python -m pip install --upgrade pip setuptools wheel
-pip install -r requirements.txt
+pip install -r newReqs.txt
 ```
 
 6) Run the Flask app:
@@ -169,8 +180,15 @@ Environment checklist (success criteria)
 - `pip list` shows installed packages from `requirements.txt`.
 - `python -m flask --app AHFULbackend run --debug` starts the app without import errors.
 
-If you'd like, I can also add a tiny convenience Makefile or shell script for macOS that automates venv creation, activation, and running the server. Let me know which you'd prefer and I'll add it.
 Optional for VSCode: Ctrl+Shft+P, Type 'Python: Select Interpreter', Find and select your .venv file
+
+
+To cleanup your Non Virutal Env:
+```bash
+pip3 freeze > packages_to_remove.txt
+cat packages_to_remove.txt  # Review what's being removed
+pip3 uninstall -y -r packages_to_remove.txt
+```
 
 
 Congrats! If you start up the application and Google doesn't yell at you, you survived!

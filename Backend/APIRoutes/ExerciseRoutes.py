@@ -113,3 +113,27 @@ def delete_exercise(exercise_id):
     if error:
         return jsonify({"error": error}), 400
     return jsonify({"message": "Exercise deleted successfully"}), 200
+
+# ── GET bodyparts ───────────────────────────────────────────────────────────
+@exerciseRouteBlueprint.route('/bodyparts/')
+def get_bodyparts():
+    data, error = ExerciseDriver.get_bodyparts()
+    if error:
+        return jsonify({"error": error}), 502
+    return jsonify(data), 200
+
+# ── GET muscles ──────────────────────────────────────────────────────────────
+@exerciseRouteBlueprint.route('/muscles/')
+def get_muscles():
+    data, error = ExerciseDriver.get_muscles()
+    if error:
+        return jsonify({"error": error}), 502
+    return jsonify(data), 200
+
+# ── GET equipments ──────────────────────────────────────────────────────────
+@exerciseRouteBlueprint.route('/equipments/')
+def get_equipments():
+    data, error = ExerciseDriver.get_equipments()
+    if error:
+        return jsonify({"error": error}), 502
+    return jsonify(data), 200

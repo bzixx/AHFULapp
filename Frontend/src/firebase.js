@@ -1,18 +1,19 @@
 // src/firebase.js  ← initialize ONCE here
 import { initializeApp } from 'firebase/app';
+
 // import { getFirestore } from 'firebase/firestore';
 // import { getAuth } from 'firebase/auth';
 
 import { getMessaging, getToken, onMessage} from 'firebase/messaging';
 
 const firebaseConfig = {
-  apiKey: "REDACTED",
-  authDomain: "REDACTED",
-  projectId: "REDACTED",
-  storageBucket: "REDACTED.firebasestorage.app",
-  messagingSenderId: "REDACTED",
-  appId: "1:REDACTED:web:ca5268e9602f1b7dcadf74",
-  measurementId: "REDACTED"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);

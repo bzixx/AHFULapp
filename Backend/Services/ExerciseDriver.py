@@ -12,10 +12,11 @@ from bson import ObjectId, errors as bson_errors
 EXERSICEDB_HOST = "www.exercisedb.dev"
 #Define Headers for External API
 EXERSICEDB_HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", "Accept": "application/json"}
-#Define Connection External API
+#Define SSL Context for External API
 ssl_context = ssl.create_default_context(cafile=certifi.where())
 
-externalDBConnection =  HTTPSConnection(EXERSICEDB_HOST, context=ssl_context)
+def _create_connection():
+    return HTTPSConnection(EXERSICEDB_HOST, context=ssl_context)
 
 class ExerciseDriver:
     @staticmethod
@@ -47,14 +48,16 @@ class ExerciseDriver:
         except (bson_errors.InvalidId, TypeError, ValueError):
             return None, f"Invalid {name} format; must be a 24-hex string"
 
+    @staticmethod
     def get_initial_metadata():
         try:
-            #Define Endpoint for External API
+            #Define Connection and Endpoint for External API
+            conn = _create_connection()
             apiEndpoint = "/api/v1/exercises?offset=0&limit=25&sortBy=name&sortOrder=desc"
             #Make API Request to External API
-            externalDBConnection.request("GET", apiEndpoint, headers=EXERSICEDB_HEADERS)
+            conn.request("GET", apiEndpoint, headers=EXERSICEDB_HEADERS)
             #Assign Response from External API to Variable
-            apiResponse = externalDBConnection.getresponse()
+            apiResponse = conn.getresponse()
             #Read Response Data and Decode it from bytes to string, then Load it as JSON to get a workable dict
             data = apiResponse.read()                   # bytes  → b'{"success":true...}'
             decodedData = data.decode("utf-8")          # string → '{"success":true...}'
@@ -62,19 +65,26 @@ class ExerciseDriver:
             #Workable Data Looks Like:
             # dict   → {"success": true,"metadata": {"totalPages": 60,"totalExercises": 1500,"currentPage": 1,"previousPage": null,"nextPage": "http://www.exercisedb.dev/api/v1/exercises?offset=25&limit=25&&sortBy=name&sortOrder=desc"},"data": []}
             # To acces it: externalExercises = workableData["data"]
-            externalMetadata = ExerciseDriver.normalize(workableData["metadata"])
-
+            
+            # Handle both direct metadata or wrapped in success response
+            if "metadata" in workableData:
+                externalMetadata = ExerciseDriver.normalize(workableData["metadata"])
+            else:
+                externalMetadata = ExerciseDriver.normalize(workableData)
+            conn.close()
             return externalMetadata, None
         except Exception as e:
             return None, str(e)
         
+    @staticmethod
     def get_next_metadata(currentPage):
         try:
+            conn = _create_connection()
             nextPageEndpoint = currentPage["nextPage"]
 
-            externalDBConnection.request("GET", nextPageEndpoint, headers=EXERSICEDB_HEADERS)
+            conn.request("GET", nextPageEndpoint, headers=EXERSICEDB_HEADERS)
             #Assign Response from External API to Variable
-            apiResponse = externalDBConnection.getresponse()
+            apiResponse = conn.getresponse()
             #Read Response Data and Decode it from bytes to string, then Load it as JSON to get a workable dict
             data = apiResponse.read()                   # bytes  → b'{"success":true...}'
             decodedData = data.decode("utf-8")          # string → '{"success":true...}'
@@ -82,19 +92,25 @@ class ExerciseDriver:
             #Workable Data Looks Like:
             # dict   → {"success": true,"metadata": {"totalPages": 60,"totalExercises": 1500,"currentPage": 1,"previousPage": null,"nextPage": "http://www.exercisedb.dev/api/v1/exercises?offset=25&limit=25&&sortBy=name&sortOrder=desc"},"data": []}
             # To acces it: externalExercises = workableData["data"]
-            externalMetadata = ExerciseDriver.normalize(workableData["metadata"])
-
+            
+            if "metadata" in workableData:
+                externalMetadata = ExerciseDriver.normalize(workableData["metadata"])
+            else:
+                externalMetadata = ExerciseDriver.normalize(workableData)
+            conn.close()
             return externalMetadata, None
         except Exception as e:
             return None, str(e)
         
+    @staticmethod
     def get_prev_metadata(currentPage):
         try:
+            conn = _create_connection()
             prevPageEndpoint = currentPage["previousPage"]
 
-            externalDBConnection.request("GET", prevPageEndpoint, headers=EXERSICEDB_HEADERS)
+            conn.request("GET", prevPageEndpoint, headers=EXERSICEDB_HEADERS)
             #Assign Response from External API to Variable
-            apiResponse = externalDBConnection.getresponse()
+            apiResponse = conn.getresponse()
             #Read Response Data and Decode it from bytes to string, then Load it as JSON to get a workable dict
             data = apiResponse.read()                   # bytes  → b'{"success":true...}'
             decodedData = data.decode("utf-8")          # string → '{"success":true...}'
@@ -102,22 +118,28 @@ class ExerciseDriver:
             #Workable Data Looks Like:
             # dict   → {"success": true,"metadata": {"totalPages": 60,"totalExercises": 1500,"currentPage": 1,"previousPage": null,"nextPage": "http://www.exercisedb.dev/api/v1/exercises?offset=25&limit=25&&sortBy=name&sortOrder=desc"},"data": []}
             # To acces it: externalExercises = workableData["data"]
-            externalMetadata = ExerciseDriver.normalize(workableData["metadata"])
-
+            
+            if "metadata" in workableData:
+                externalMetadata = ExerciseDriver.normalize(workableData["metadata"])
+            else:
+                externalMetadata = ExerciseDriver.normalize(workableData)
+            conn.close()
             return externalMetadata, None
         except Exception as e:
             return None, str(e)
         
 #--------------------------------------------------------------------------------------------------------------------------------------------------
         
+    @staticmethod
     def get_initial_exercises():
         try:
-            #Define Endpoint for External API
+            #Define Connection and Endpoint for External API
+            conn = _create_connection()
             apiEndpoint = "/api/v1/exercises?offset=0&limit=25&sortBy=name&sortOrder=desc"
             #Make API Request to External API
-            externalDBConnection.request("GET", apiEndpoint, headers=EXERSICEDB_HEADERS)
+            conn.request("GET", apiEndpoint, headers=EXERSICEDB_HEADERS)
             #Assign Response from External API to Variable
-            apiResponse = externalDBConnection.getresponse()
+            apiResponse = conn.getresponse()
             #Read Response Data and Decode it from bytes to string, then Load it as JSON to get a workable dict
             data = apiResponse.read()                   # bytes  → b'{"success":true...}'
             decodedData = data.decode("utf-8")          # string → '{"success":true...}'
@@ -125,7 +147,13 @@ class ExerciseDriver:
             #Workable Data Looks Like:
             # dict   → {"success": true,"metadata": {"totalPages": 60,"totalExercises": 1500,"currentPage": 1,"previousPage": null,"nextPage": "http://www.exercisedb.dev/api/v1/exercises?offset=25&limit=25&&sortBy=name&sortOrder=desc"},"data": []}
             # To acces it: externalExercises = workableData["data"]
-            externalExercises = ExerciseDriver.normalize(workableData["data"])
+            
+            # Handle both direct data array or wrapped in success response
+            if "data" in workableData:
+                externalExercises = ExerciseDriver.normalize(workableData["data"])
+            else:
+                externalExercises = ExerciseDriver.normalize(workableData)
+            conn.close()
 
             internalExercises = ExerciseObject.find_all()
 
@@ -134,32 +162,44 @@ class ExerciseDriver:
         except Exception as e:
             return None, str(e)
         
+    @staticmethod
     def get_next_exercises(currentMeta):
         try:
+            conn = _create_connection()
             nextPageEndpoint = currentMeta["nextPage"]
 
-            externalDBConnection.request("GET", nextPageEndpoint, headers=EXERSICEDB_HEADERS)
-            apiResponse = externalDBConnection.getresponse()
-            data = apiResponse.read()                   # bytes  → b'{"success":true...
+            conn.request("GET", nextPageEndpoint, headers=EXERSICEDB_HEADERS)
+            apiResponse = conn.getresponse()
+            data = apiResponse.read()                   # bytes  → b'{"success":true...}'
             decodedData = data.decode("utf-8")          # string → '{"success":true...}'
             workableData = json.loads(decodedData)      # dict   → {"success": True,
-            externalExercises = ExerciseDriver.normalize(workableData["data"])
-
+            
+            if "data" in workableData:
+                externalExercises = ExerciseDriver.normalize(workableData["data"])
+            else:
+                externalExercises = ExerciseDriver.normalize(workableData)
+            conn.close()
             return externalExercises, None
         except Exception as e:
             return None, str(e)
 
+    @staticmethod
     def get_prev_exercises(currentMeta):
         try:
+            conn = _create_connection()
             prevPageEndpoint = currentMeta["previousPage"]
 
-            externalDBConnection.request("GET", prevPageEndpoint, headers=EXERSICEDB_HEADERS)
-            apiResponse = externalDBConnection.getresponse()
-            data = apiResponse.read()                   # bytes  → b'{"success":true...
+            conn.request("GET", prevPageEndpoint, headers=EXERSICEDB_HEADERS)
+            apiResponse = conn.getresponse()
+            data = apiResponse.read()                   # bytes  → b'{"success":true...}'
             decodedData = data.decode("utf-8")          # string → '{"success":true...}'
             workableData = json.loads(decodedData)      # dict   → {"success": True,
-            externalExercises = workableData["data"]
-
+            
+            if "data" in workableData:
+                externalExercises = workableData["data"]
+            else:
+                externalExercises = workableData
+            conn.close()
             return externalExercises, None
         except Exception as e:
             return None, str(e)
@@ -167,20 +207,21 @@ class ExerciseDriver:
 
         
     #Search exercises by name using external API and internal DB, then combine results
+    @staticmethod
     def search_exercises(searchString):
         try:
             #Define Connection and Endpoint for External API
-            dbConnection =  HTTPSConnection(EXERSICEDB_HOST)
+            conn = _create_connection()
             
             # Properly encode the query string
             query = urlencode({"q": searchString})  # e.g., q=bench+press+chest+dumbbell
             apiEndpoint = f"/api/v1/exercises/search?{query}"
 
             #Make API Request to External API
-            dbConnection.request("GET", apiEndpoint, headers=EXERSICEDB_HEADERS)
+            conn.request("GET", apiEndpoint, headers=EXERSICEDB_HEADERS)
 
             #Assign Response from External API to Variable
-            apiResponse = dbConnection.getresponse()
+            apiResponse = conn.getresponse()
 
             #Read Response Data and Decode it from bytes to string, then Load it as JSON to get a workable dict
             data = apiResponse.read()                   # bytes  → b'{"success":true...}'
@@ -188,7 +229,11 @@ class ExerciseDriver:
             workableData = json.loads(decodedData)      # dict   → {"success": True, "data": [...]}
 
             # Extract Exercise List from External API Response
-            exercisesList = ExerciseDriver.normalize(workableData["data"])
+            if "data" in workableData:
+                exercisesList = ExerciseDriver.normalize(workableData["data"])
+            else:
+                exercisesList = ExerciseDriver.normalize(workableData)
+            conn.close()
 
             #Internal search for exercises that match the search string (case-insensitive) and combine with external API results
             internalWorkableData = ExerciseObject.find_all()
@@ -213,29 +258,27 @@ class ExerciseDriver:
     def get_exercise_by_id(id):
         # Convert IDs safely
         oid, err = ExerciseDriver._validate_obj_id(id, "exercise id")
-        print("oid", oid)
-        print("err", err)
         
         if oid:
             try:
                 int_exercise = ExerciseObject.find_by_id(id)
                 return int_exercise, None
             except Exception as e:
-                print(None, str(e))
+                return None, str(e)
         
         else:
             try:
                 #Define Connection and Endpoint for External API
-                dbConnection =  HTTPSConnection(EXERSICEDB_HOST)
+                conn = _create_connection()
             
                 # Properly encode the query string
                 apiEndpoint = f"/api/v1/exercises/{id}"
 
                 #Make API Request to External API
-                dbConnection.request("GET", apiEndpoint, headers=EXERSICEDB_HEADERS)
+                conn.request("GET", apiEndpoint, headers=EXERSICEDB_HEADERS)
 
                 #Assign Response from External API to Variable
-                apiResponse = dbConnection.getresponse()
+                apiResponse = conn.getresponse()
 
                 #Read Response Data and Decode it from bytes to string, then Load it as JSON to get a workable dict
                 data = apiResponse.read()                   # bytes  → b'{"success":true...}'
@@ -243,26 +286,44 @@ class ExerciseDriver:
                 workableData = json.loads(decodedData)      # dict   → {"success": True, "data": [...]}
 
                 # Extract Exercise List from External API Response
-                exercisesList = ExerciseDriver.normalize(workableData["data"])
+                if "data" in workableData:
+                    exercisesList = ExerciseDriver.normalize(workableData["data"])
+                else:
+                    exercisesList = ExerciseDriver.normalize(workableData)
+                conn.close()
 
                 if exercisesList:
-                    return exercisesList[0], None,
+                    return exercisesList[0], None
                 else:
                     return None, "Exercise not found"
             except Exception as e:
                 return None, "Exercise not found"
 
+    @staticmethod
     def create_exercise(formData):
         try:
+            instructions_raw = formData.get("instructions", "")
+            if isinstance(instructions_raw, str):
+                instructions = [line.strip() for line in instructions_raw.split("\n") if line.strip()]
+            else:
+                instructions = instructions_raw if isinstance(instructions_raw, list) else []
+
+            equipment_value = formData.get("equipment", "")
+            equipments = [equipment_value] if equipment_value else []
+
             exercise_data = {
                 "name": formData.get("name"),
-                "body_part": formData.get("body_part"),
-                "difficulty": formData.get("difficulty"),
-                "equipment": formData.get("equipment"),
-                "instructions": formData.get("instructions"),
-                "type": formData.get("type")
+                "targetMuscles": formData.get("targetMuscles", []),
+                "bodyParts": formData.get("bodyParts", []),
+                "equipments": equipments,
+                "secondaryMuscles": formData.get("secondaryMuscles", []),
+                "instructions": instructions,
+                "gifUrl": formData.get("gifUrl", ""),
             }
-            exercise_id = ExerciseObject.create(exercise_data)
+            
+            exercise_id, error = ExerciseObject.create(exercise_data)
+            if error:
+                return None, error
             return exercise_id, None
         except Exception as e:
             return None, str(e)
@@ -284,6 +345,7 @@ class ExerciseDriver:
     #     except Exception as e:
     #         return False, str(e)
         
+    @staticmethod
     def delete_exercise(exercise_id):
         try:
             existing_exercise = ExerciseObject.find_by_id(exercise_id)
@@ -295,3 +357,51 @@ class ExerciseDriver:
         except Exception as e:
             return False, str(e)
         
+
+    @staticmethod
+    def get_bodyparts():
+        try:
+            conn = _create_connection()
+            conn.request("GET", "/api/v1/bodyparts", headers=EXERSICEDB_HEADERS)
+            response = conn.getresponse()
+            data = response.read()
+            json_response = json.loads(data)
+            conn.close()
+            # Handle both {"data": [...]} and direct array [...]} responses
+            if isinstance(json_response, list):
+                return json_response, None
+            return json_response.get("data", []), None
+        except Exception as e:
+            return None, str(e)
+
+    @staticmethod
+    def get_muscles():
+        try:
+            conn = _create_connection()
+            conn.request("GET", "/api/v1/muscles", headers=EXERSICEDB_HEADERS)
+            response = conn.getresponse()
+            data = response.read()
+            json_response = json.loads(data)
+            conn.close()
+            # Handle both {"data": [...]} and direct array [...]} responses
+            if isinstance(json_response, list):
+                return json_response, None
+            return json_response.get("data", []), None
+        except Exception as e:
+            return None, str(e)
+
+    @staticmethod
+    def get_equipments():
+        try:
+            conn = _create_connection()
+            conn.request("GET", "/api/v1/equipments", headers=EXERSICEDB_HEADERS)
+            response = conn.getresponse()
+            data = response.read()
+            json_response = json.loads(data)
+            conn.close()
+            # Handle both {"data": [...]} and direct array [...]} responses
+            if isinstance(json_response, list):
+                return json_response, None
+            return json_response.get("data", []), None
+        except Exception as e:
+            return None, str(e)
