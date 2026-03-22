@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import "./Dashboard.css";
 import { DashboardFoodTodoList } from "../../Components/DashboardComponents/DashboardFoodTodoList";
 import { DashboardWorkoutTodoList } from "../../Components/DashboardComponents/DashboardWorkoutTodoList";
-import { WorkoutHistory } from "../../components/WorkoutHistory/WorkoutHistory";
+import { WorkoutChart } from "../../Components/WorkoutChart/WorkoutChart";
 import { TodayFoodChart } from "../../Components/TodayFoodChart/TodayFoodChart";
 import { CalendarButton } from "../../Components/CalendarButton/CalendarButton";
 import "../../SiteStyles.css";
@@ -87,7 +87,7 @@ function InternalDashboard() {
         </div>
         <div className="dashboard-side-content">
           <TodayFoodChart />
-          <WorkoutHistory />
+          <WorkoutChart defaultWeeks={6} />
         </div>
       </div>
     </div>
