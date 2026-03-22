@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import "./Dashboard.css";
 import { DashboardFoodTodoList } from "../../Components/DashboardComponents/DashboardFoodTodoList";
 import { DashboardWorkoutTodoList } from "../../Components/DashboardComponents/DashboardWorkoutTodoList";
+import { DashboardTaskTodoList } from "../../Components/DashboardComponents/DashboardTaskTodoList";
 import { WorkoutChart } from "../../Components/WorkoutChart/WorkoutChart";
 import { TodayFoodChart } from "../../Components/TodayFoodChart/TodayFoodChart";
 import { CalendarButton } from "../../Components/CalendarButton/CalendarButton";
@@ -19,7 +20,6 @@ function ExternalDashboard() {
   useEffect(() => {
       setWorkoutStreak({ streak: 3, loading: false });
       setFoodStreak({ streak: 5, loading: false });
-    
   }, []);
 
   return (
@@ -157,6 +157,9 @@ function InternalDashboard() {
           <div className="dashboard-tasks-row">
             <DashboardFoodTodoList />
             <DashboardWorkoutTodoList />
+          </div>
+          <div className="dashboard-tasks-row">
+            <DashboardTaskTodoList />
           </div>
         </div>
         <div className="dashboard-side-content">

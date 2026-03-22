@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import "./ExploreWorkouts.css";
 import "../../SiteStyles.css";
 import { Calendar } from "../../components/Calendar/Calendar";
@@ -9,7 +10,7 @@ import { WorkoutChart } from "../../Components/WorkoutChart/WorkoutChart";
  * ExploreWorkouts - Workout exploration and history page
  * 
  * Features:
- * - View all workouts (displayed as exercise items)
+ * - View all workouts or just my workouts (toggle)
  * - Interactive workout history chart with week selection
  * - Heat map showing workout frequency
  * - Calendar integration
@@ -21,20 +22,32 @@ import { WorkoutChart } from "../../Components/WorkoutChart/WorkoutChart";
  */
 export function ExploreWorkouts() {
   // ─── State ────────────────────────────────────────────────────────────────────
-  // All workouts fetched from the backend
+  const user = useSelector((state) => state.auth.user);
   const [workouts, setWorkouts] = useState([]);
-  // Loading state for API calls
   const [loading, setLoading] = useState(false);
-  // Error state for displaying errors to user
   const [error, setError] = useState(null);
+  const [showAll, setShowAll] = useState(true);
+
+  const getUserId = () => {
+    if (user?._id) return user._id;
+    try {
+      const stored = JSON.parse(localStorage.getItem("user_data"));
+      return stored?._id || null;
+    } catch { return null; }
+  };
+  const userId = getUserId();
 
   // ─── Fetch Workouts from Backend ─────────────────────────────────────────────
-  // Fetches all workouts for the current user (filtered by userId on backend)
   const fetchExercises = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("http://localhost:5000/AHFULworkout");
+      let url = "http://localhost:5000/AHFULworkout";
+      if (!showAll && userId) {
+        url = `http://localhost:5000/AHFULworkout/${userId}`;
+      }
+
+      const res = await fetch(url);
 
       if (!res.ok) {
         let bodyText = "";
@@ -47,7 +60,6 @@ export function ExploreWorkouts() {
       }
 
       const data = await res.json();
-      // Set workouts - backend should return array or wrap in object
       setWorkouts(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to fetch workouts:", err);
@@ -62,15 +74,30 @@ export function ExploreWorkouts() {
   // ─── Load Workouts on Mount ───────────────────────────────────────────────────
   useEffect(() => {
     fetchExercises();
-  }, []);
+  }, [showAll, userId]);
 
   // ─── Render ──────────────────────────────────────────────────────────────────
   return (
     <div className="explore-root">
-      {/* Page Header with Title and Refresh Button */}
+      {/* Page Header with Title, Toggle, and Refresh Button */}
       <header className="explore-header">
         <h1>Explore Workouts</h1>
-        <div>
+        <div className="header-controls">
+          <div className="toggle-container">
+            <button 
+              className={`toggle-btn ${showAll ? 'active' : ''}`}
+              onClick={() => setShowAll(true)}
+            >
+              All Workouts
+            </button>
+            <button 
+              className={`toggle-btn ${!showAll ? 'active' : ''}`}
+              onClick={() => setShowAll(false)}
+              disabled={!userId}
+            >
+              My Workouts
+            </button>
+          </div>
           <button onClick={fetchExercises} disabled={loading} className="refresh-btn">
             {loading ? "Refreshing..." : "Refresh"}
           </button>
@@ -91,7 +118,9 @@ export function ExploreWorkouts() {
                 <div className="explore-loading">Loading workouts…</div>
               ) : workouts.length === 0 ? (
                 /* Empty State - no workouts yet */
-                <div className="explore-empty">No workouts found. Start a workout to see it here!</div>
+                <div className="explore-empty">
+                  {showAll ? "No workouts found." : "No workouts found. Start a workout to see it here!"}
+                </div>
               ) : (
                 /* Workout List */
                 workouts.map((workout, idx) => {
@@ -132,8 +161,8 @@ export function ExploreWorkouts() {
           {/* Interactive Workout History Chart */}
           {/* Allows users to select different week ranges (4, 6, 8, 12 weeks) */}
           <WorkoutChart defaultWeeks={6} />
-          
           {/* Heat Map showing workout frequency over time */}
+
           <HeatMap />
         </div>
       </div>

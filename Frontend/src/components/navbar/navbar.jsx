@@ -16,6 +16,7 @@ export function Navbar({ minHeight }) {
           <Link to="/WorkoutLogger">Workout Logger</Link>
           <Link to="/ExploreWorkout">Explore Workouts</Link>
           <Link to="/FoodLog">Food Log</Link>
+          <Link to="/ExploreTasks">Tasks</Link>
           <Link to="/Map">Map</Link>
           <Link to="/MeasurementLogger">Measurement Logger</Link>
           <Link to="/Profile">Profile</Link>

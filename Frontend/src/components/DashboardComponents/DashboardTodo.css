@@ -76,3 +76,96 @@
 .workout-button:hover {
   background: #4338ca;
 }
+
+.dashboard-todo-list {
+  background: #fff;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.dashboard-todo-title {
+  margin: 0;
+  padding: 12px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.dashboard-todo-loading,
+.dashboard-todo-empty {
+  padding: 24px;
+  text-align: center;
+  color: #666;
+}
+
+.dashboard-todo-items {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.dashboard-todo-item {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dashboard-todo-item:last-child {
+  border-bottom: none;
+}
+
+.dashboard-todo-item-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-todo-item-title {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.dashboard-todo-item-date {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.dashboard-todo-item-meta {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.dashboard-todo-item-sub {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.dashboard-todo-footer {
+  padding: 10px 12px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+  text-align: center;
+}
+
+.view-more-link {
+  color: #4f46e5;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.view-more-link:hover {
+  text-decoration: underline;
+}
+
+.task-completed {
+  background: #f0fdf4;
+}
+
+.task-status-badge {
+  color: #10b981;
+  font-weight: bold;
+}
