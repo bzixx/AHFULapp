@@ -105,3 +105,65 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.add-task-section {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.add-task-section h2 {
+  margin: 0 0 16px;
+  font-size: 1.25rem;
+}
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group label {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 0.9rem;
+}
+
+.btn-add {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.btn-add:hover {
+  background: #4338ca;
+}

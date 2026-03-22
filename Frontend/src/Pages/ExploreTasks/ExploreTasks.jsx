@@ -10,6 +10,12 @@ export function ExploreTasks() {
   const [showAll, setShowAll] = useState(true);
   const user = useSelector((state) => state.auth.user);
 
+  // Form state
+  const [taskName, setTaskName] = useState("");
+  const [taskNote, setTaskNote] = useState("");
+  const [taskDueDateTime, setTaskDueDateTime] = useState("");
+  const [formError, setFormError] = useState("");
+
   const getUserId = () => {
     if (user?._id) return user._id;
     try {
@@ -52,9 +58,68 @@ export function ExploreTasks() {
     }
   };
 
+  const createTask = async (e) => {
+    e.preventDefault();
+    setFormError("");
+
+    if (!taskName.trim()) {
+      setFormError("Task name is required");
+      return;
+    }
+
+    if (!userId) {
+      setFormError("You must be logged in to create a task");
+      return;
+    }
+
+    // Convert datetime-local to Unix timestamp
+    let dueTime = null;
+    if (taskDueDateTime) {
+      const dateObj = new Date(taskDueDateTime);
+      dueTime = Math.floor(dateObj.getTime() / 1000);
+    }
+
+    try {
+      const res = await fetch(`http://localhost:5000/AHFULtasks/create/${userId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: taskName,
+          note: taskNote,
+          dueTime: dueTime
+        })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        setFormError(errData.error || "Failed to create task");
+        return;
+      }
+
+      // Clear form and refresh task list
+      setTaskName("");
+      setTaskNote("");
+      setTaskDueDateTime("");
+      fetchTasks();
+    } catch (err) {
+      setFormError("Network error - could not create task");
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     fetchTasks();
   }, [showAll, userId]);
+
+  // Helper to format due date display
+  const formatDueDate = (dueTime) => {
+    if (!dueTime || dueTime === 0) return "No due date";
+    try {
+      return new Date(dueTime * 1000).toLocaleString();
+    } catch {
+      return "Invalid date";
+    }
+  };
 
   return (
     <div className="explore-root">
@@ -82,6 +147,46 @@ export function ExploreTasks() {
         </div>
       </header>
 
+      {/* Create Task Form */}
+      {userId && (
+        <div className="add-task-section">
+          <h2>Create New Task</h2>
+          <form onSubmit={createTask} className="task-form">
+            <div className="form-group">
+              <label htmlFor="taskName">Task Name</label>
+              <input
+                id="taskName"
+                type="text"
+                value={taskName}
+                onChange={(e) => setTaskName(e.target.value)}
+                placeholder="e.g., Morning Workout"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="taskNote">Note (optional)</label>
+              <textarea
+                id="taskNote"
+                value={taskNote}
+                onChange={(e) => setTaskNote(e.target.value)}
+                placeholder="Additional details..."
+                rows={2}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="taskDueDateTime">Due Date (optional)</label>
+              <input
+                id="taskDueDateTime"
+                type="datetime-local"
+                value={taskDueDateTime}
+                onChange={(e) => setTaskDueDateTime(e.target.value)}
+              />
+            </div>
+            {formError && <div className="error-message">{formError}</div>}
+            <button type="submit" className="btn-add">Create Task</button>
+          </form>
+        </div>
+      )}
+
       <div className="explore-content">
         <div className="explore-left">
           {error && <div className="explore-error">Error: {error}</div>}
@@ -106,8 +211,8 @@ export function ExploreTasks() {
                         </div>
                         <div className="exercise-meta">
                           {task.note && <span>{task.note}</span>}
-                          {task.dueTime && (
-                            <span> • Due: {new Date(task.dueTime * 1000).toLocaleString()}</span>
+                          {task.dueTime !== undefined && (
+                            <span> • Due: {formatDueDate(task.dueTime)}</span>
                           )}
                         </div>
                       </div>

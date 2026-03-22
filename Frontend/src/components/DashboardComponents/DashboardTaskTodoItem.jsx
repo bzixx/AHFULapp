@@ -7,8 +7,12 @@ export function DashboardTaskTodoItem({ task }) {
   };
 
   const formatDueDate = (timestamp) => {
-    if (!timestamp) return "";
-    return new Date(timestamp * 1000).toLocaleString();
+    if (!timestamp || timestamp === 0) return "No due date";
+    try {
+      return new Date(timestamp * 1000).toLocaleString();
+    } catch {
+      return "Invalid date";
+    }
   };
 
   return (
@@ -21,7 +25,7 @@ export function DashboardTaskTodoItem({ task }) {
         <div className="dashboard-todo-item-meta">{task.note}</div>
       )}
       <div className="dashboard-todo-item-sub">
-        {task.dueTime && <span>Due: {formatDueDate(task.dueTime)}</span>}
+        <span>Due: {formatDueDate(task.dueTime)}</span>
         <span className="dashboard-todo-item-date">{formatDate(task.created_at)}</span>
       </div>
     </div>
