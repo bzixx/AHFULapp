@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { authLogout } from "../Login/AuthSlice";
 import {ProfileSettingsButton} from "../../components/ProfileSettings/ProfileSettingsButton"
 import "./Profile.css";
 import {registerService} from "../../firebase.js";
@@ -7,6 +9,8 @@ export function Profile() {
     const [userData, setUserData] = useState({name: "", email: "", picture: ""});
     const [bio, setBio] = useState("");
     const [isEditingBio, setIsEditingBio] = useState(false);
+    const dispatch = useDispatch();
+
     useEffect(() => {
       try {
         const stored = JSON.parse(localStorage.getItem("user_data"));
@@ -27,6 +31,26 @@ export function Profile() {
     const handleSaveBio = () => {
       localStorage.setItem("user_bio", bio);
       setIsEditingBio(false);
+    };
+
+    const handleLogout = async () => {
+      try {
+        const stored = JSON.parse(localStorage.getItem("user_data"));
+        if (stored?.email) {
+          await fetch("http://localhost:5000/AHFULauth/logout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ logout_email: stored.email }),
+            credentials: "include",
+          });
+        }
+        localStorage.removeItem("user_data");
+        localStorage.removeItem("user_bio");
+        dispatch(authLogout());
+        console.log("Logout completed successfully.");
+      } catch (error) {
+        console.error("Logout error:", error);
+      }
     };
 
     return (
@@ -89,11 +113,19 @@ export function Profile() {
               Enable Push Notifications
             </button>
           </div>
+
+          {/* Logout */}
+          <div className="profile-logout-section">
+            <button
+              className="profile-logout-btn"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </div>
       <div className="right-column" />
     </div>
   );
 }
-
-

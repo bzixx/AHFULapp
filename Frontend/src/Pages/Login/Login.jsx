@@ -1,6 +1,7 @@
 import "./Login.css";
 import { GoogleLogin } from "@react-oauth/google";
 import { useSelector, useDispatch } from "react-redux";
+import { Navigate } from "react-router-dom";
 import { authLogin, authLogout} from "./AuthSlice";
 
 
@@ -8,6 +9,10 @@ export function Login() {
 
     const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
     const dispatch = useDispatch();
+
+    if (isAuthenticated) {
+        return <Navigate to="/" replace />;
+    }
 
     //Check for LocalStorage or Cookie Data.
     const userData = localStorage.getItem("user_data");
