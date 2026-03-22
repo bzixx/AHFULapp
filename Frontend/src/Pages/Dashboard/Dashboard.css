@@ -1,63 +1,11 @@
-.nametxt {
-  font-size: 8em;
-  font-family: monospace;
-  white-space: nowrap;
-  overflow: hidden;
-  width: fit-content;
-  animation:
-    typing-name 1.5s steps(16, end),
-    cursor 0.4s step-end infinite alternate;
-}
-
-.text {
-  font: normal 6em Arial, sans-serif;
-  font-family: monospace;
-  white-space: nowrap;
-  overflow: hidden;
-  width: fit-content;
-  visibility: hidden;
-  animation:
-    typing-text 1s steps(14, end) 2s forwards,
-    cursor 0.4s step-end infinite alternate 2.5s;
-}
-
-.blinking {
-  animation: blink 1s steps(1, end) infinite;
-}
-
-@keyframes typing-name {
-  from { width: 0 }
-  to { width: 16ch }
-}
-
-@keyframes typing-text {
-  0% {
-    width: 0;
-    visibility: visible;
-  }
-  100% {
-    width: 14ch;
-    visibility: visible;
-  }
-}
-
-@keyframes cursor {
-  50% { border-color: transparent; }
-}
-
-@keyframes blink {
-  50% { opacity: 0; }
-}
-
-.gym-landing-root {
+.dashboard-landing {
   min-height: 100vh;
-  color: #111; /* match other pages' dark text */
+  color: #111;
   display: flex;
   flex-direction: column;
-  background: #fff; /* ensure light background consistent with other pages */
+  background: #fff;
 }
 
-/* Center inner content and keep a comfortable max width */
 .page-inner {
   width: 100%;
   max-width: 1100px;
@@ -85,27 +33,37 @@
 }
 
 .primary-cta {
-  background: #0b8a84;
+  background: #4f46e5;
   color: white;
-  padding: 10px 16px;
+  padding: 12px 24px;
   border-radius: 8px;
   text-decoration: none;
+  font-weight: bold;
+}
+
+.primary-cta:hover {
+  background: #4338ca;
 }
 
 .secondary-cta {
-  color: white;
-  padding: 10px 16px;
+  color: #333;
+  padding: 12px 24px;
   margin-left: 12px;
   text-decoration: none;
   border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 2px solid #333;
+  font-weight: bold;
+}
+
+.secondary-cta:hover {
+  background: #f5f5f5;
 }
 
 .hero {
   display: flex;
   gap: 24px;
   align-items: center;
-  padding: 36px 0;
+  padding: 48px 32px;
 }
 
 .hero-content {
@@ -113,18 +71,20 @@
 }
 
 .hero-content h1 {
-  margin: 0 0 12px 0;
-  font-size: 44px;
-  line-height: 1.05;
+  margin: 0 0 16px 0;
+  font-size: 2.5rem;
+  line-height: 1.1;
 }
 
 .lead {
-  color: #333;
+  color: #555;
+  font-size: 1.2rem;
   max-width: 520px;
+  margin-bottom: 24px;
 }
 
 .hero-actions {
-  margin-top: 20px;
+  margin-top: 24px;
 }
 
 .hero-visual {
@@ -136,14 +96,14 @@
 .mock-device {
   width: 200px;
   height: 360px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  background: linear-gradient(180deg, #4f46e5, #6366f1);
   border-radius: 20px;
   padding: 18px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 30px rgba(79, 70, 229, 0.3);
 }
 
 .mock-screen {
-  background: rgba(0,0,0,0.2);
+  background: rgba(255,255,255,0.1);
   height: 100%;
   border-radius: 12px;
   padding: 16px;
@@ -160,6 +120,7 @@
 .stat {
   font-size: 26px;
   font-weight: 700;
+  color: white;
 }
 
 .stat-label {
@@ -168,88 +129,116 @@
 }
 
 .features {
-  padding: 18px 0 32px;
+  padding: 32px;
+  background: #f9fafb;
 }
 
-/* Dashboard widget layout */
-.dashboard-widgets {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 20px;
-  padding: 16px 0 64px;
-  align-items: start;
-}
-
-.dashboard-main {
-  min-width: 0;
-  padding-right: 8px;
-}
-
-.dashboard-side {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-left: 8px;
-}
-
-/* Make child widgets take full width inside their containers */
-.dashboard-widgets > .dashboard-main > *,
-.dashboard-widgets > .dashboard-side > * {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* Cards inside dashboard side should have consistent background and spacing */
-.dashboard-side .feature,
-.dashboard-side .mock-device,
-.dashboard-side .stat-row,
-.dashboard-side .stat,
-.dashboard-side .stat-label {
-  background: transparent;
-}
-
-/* Responsive: stack columns on small screens */
-@media (max-width: 1000px) {
-  .dashboard-widgets {
-    grid-template-columns: 1fr;
-    padding: 8px 16px 32px;
-  }
-  .hero {
-    flex-direction: column;
-    gap: 18px;
-    padding: 18px 0;
-    align-items: flex-start;
-  }
-  .hero-visual {
-    order: 2;
-  }
-}
-
-@media (max-width: 480px) {
-  .nametxt { font-size: 3.5em; }
-  .text { font-size: 2.5em; }
-  .hero-content h1 { font-size: 28px; }
-  .hero { padding: 18px; }
+.features h2 {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 2rem;
 }
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 18px;
-  margin-top: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
 }
 
 .feature {
-  background: rgba(255,255,255,0.03);
-  padding: 18px;
-  border-radius: 10px;
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+}
+
+.feature h3 {
+  margin: 0 0 12px;
+  color: #4f46e5;
+}
+
+.feature p {
+  margin: 0;
+  color: #666;
+  line-height: 1.5;
 }
 
 .gym-footer {
   margin-top: auto;
-  padding: 20px 64px;
+  padding: 24px 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: #1f2937;
   color: rgba(255,255,255,0.7);
+}
+
+/* Internal Dashboard Styles */
+.dashboard-internal {
+  padding: 16px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 20px;
+  align-items: start;
+}
+
+.dashboard-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dashboard-tasks-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.dashboard-side-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-side-content {
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    padding: 24px 16px;
+  }
+  
+  .hero-content h1 {
+    font-size: 1.8rem;
+  }
+  
+  .hero-visual {
+    order: -1;
+  }
+  
+  .dashboard-tasks-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .features {
+    padding: 24px 16px;
+  }
+  
+  .gym-footer {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
 }
