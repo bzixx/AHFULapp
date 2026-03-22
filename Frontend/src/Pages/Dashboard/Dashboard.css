@@ -4,6 +4,7 @@
   display: flex;
   flex-direction: column;
   background: #fff;
+  width: 100%;
 }
 
 .page-inner {
@@ -129,21 +130,26 @@
 }
 
 .features {
-  padding: 32px;
+  padding: 48px 32px;
   background: #f9fafb;
 }
 
 .features h2 {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
   font-size: 2rem;
+}
+
+.features-subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 32px;
 }
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
-  margin-top: 24px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
 }
 
 .feature {
@@ -151,6 +157,18 @@
   padding: 24px;
   border-radius: 12px;
   border: 2px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.feature:hover {
+  border-color: #4f46e5;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.15);
+}
+
+.feature-icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
 }
 
 .feature h3 {
@@ -212,6 +230,10 @@
   .dashboard-side-content {
     order: -1;
   }
+
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
@@ -234,6 +256,10 @@
   
   .features {
     padding: 24px 16px;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
   }
   
   .gym-footer {

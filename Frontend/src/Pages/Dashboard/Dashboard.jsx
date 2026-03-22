@@ -52,16 +52,44 @@ function ExternalDashboard() {
         <h2>Features</h2>
         <div className="features-grid">
           <div className="feature">
+            <div className="feature-icon">📊</div>
             <h3>Track Anything</h3>
             <p>Log workouts, measurements, meals, and moods — all in one place.</p>
           </div>
           <div className="feature">
+            <div className="feature-icon">🎯</div>
             <h3>Habit Coach</h3>
             <p>Micro-goals and reminders to keep momentum every day.</p>
           </div>
           <div className="feature">
+            <div className="feature-icon">🧠</div>
             <h3>Smart Programs</h3>
             <p>Adaptive plans that respect your schedule and progress.</p>
+          </div>
+          <div className="feature">
+            <div className="feature-icon">🏋️</div>
+            <h3>Workout Planning</h3>
+            <p>Plan, record, and track your fitness journey with precision.</p>
+          </div>
+          <div className="feature">
+            <div className="feature-icon">📍</div>
+            <h3>Gym Discovery</h3>
+            <p>Find gyms near you and connect with fitness professionals.</p>
+          </div>
+          <div className="feature">
+            <div className="feature-icon">👨‍🏫</div>
+            <h3>Trainer Tools</h3>
+            <p>Personal trainers can manage clients and assign workouts.</p>
+          </div>
+          <div className="feature">
+            <div className="feature-icon">🔔</div>
+            <h3>Live Notifications</h3>
+            <p>Stay on track with reminders and motivational alerts.</p>
+          </div>
+          <div className="feature">
+            <div className="feature-icon">🤖</div>
+            <h3>AI Planning</h3>
+            <p>AI-powered workout suggestions and fitness research partner.</p>
           </div>
         </div>
       </section>
