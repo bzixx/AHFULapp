@@ -9,6 +9,13 @@ DEFAULT_USER_SETTINGS = {
     "displayMode": "light",
     "units": "imperial",
     "timezone": "UTC",
+    "goals": "maintain",
+    "shameLevel": "medium",
+    "availableEquipment": "basic",
+    "locations": [],
+    "gender": "",
+    "pronouns": "",
+    "dateOfBirth": "",
     "notifications": {
         "email": True,
         "push": True,

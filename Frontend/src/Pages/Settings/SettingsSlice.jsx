@@ -1,17 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
-// Will be removed later when I add pulling from backend to AuthRouteChecker or a different hook
+
 const initialState = {
     activeTab: "personal",
     theme: "Light",
     goals: "Lose Fat",
     shame: "Off",
-    location: "",
     units: "Imperial",
-    email: "",
-    dob: "",
-    gender: "Male",
-    experience: "Beginner",
+    gender: "",
+    pronouns: "",
+    dateOfBirth: "",
+    locations: [],
     equipment: "None",
+    experience: "Beginner",
     warmup: "On",
     rest: "On"
 };
@@ -27,7 +27,7 @@ export const settingSlice = createSlice({
     setSettings: (state, action) => {
         return { ...state, ...action.payload };
     },
-        resetSettings: () => initialState
+    resetSettings: () => initialState
     }
 });
 
