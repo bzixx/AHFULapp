@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import "./Dashboard.css";
@@ -7,9 +7,21 @@ import { DashboardWorkoutTodoList } from "../../Components/DashboardComponents/D
 import { WorkoutChart } from "../../Components/WorkoutChart/WorkoutChart";
 import { TodayFoodChart } from "../../Components/TodayFoodChart/TodayFoodChart";
 import { CalendarButton } from "../../Components/CalendarButton/CalendarButton";
+import { StreakCounter } from "../../Components/StreakCounter/StreakCounter";
 import "../../SiteStyles.css";
 
 function ExternalDashboard() {
+  const [workoutStreak, setWorkoutStreak] = useState({ streak: 3, loading: true });
+  const [foodStreak, setFoodStreak] = useState({ streak: 5, loading: true });
+  const user = useSelector((state) => state.auth.user);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+  useEffect(() => {
+      setWorkoutStreak({ streak: 3, loading: false });
+      setFoodStreak({ streak: 5, loading: false });
+    
+  }, []);
+
   return (
     <div className="dashboard-landing">
       <section className="hero">
@@ -27,23 +39,17 @@ function ExternalDashboard() {
         </div>
 
         <div className="hero-visual">
-          <div className="mock-device">
-            <div className="mock-screen">
-              <div className="stat-row">
-                <div>
-                  <div className="stat">+3</div>
-                  <div className="stat-label">Streak</div>
-                </div>
-                <div>
-                  <div className="stat">72%</div>
-                  <div className="stat-label">Consistency</div>
-                </div>
-                <div>
-                  <div className="stat">5</div>
-                  <div className="stat-label">Programs</div>
-                </div>
-              </div>
-            </div>
+          <div className="streaks-container">
+            <StreakCounter 
+              count={workoutStreak.streak} 
+              type="workout" 
+              loading={workoutStreak.loading} 
+            />
+            <StreakCounter 
+              count={foodStreak.streak} 
+              type="food" 
+              loading={foodStreak.loading} 
+            />
           </div>
         </div>
       </section>
@@ -95,7 +101,7 @@ function ExternalDashboard() {
       </section>
 
       <footer className="gym-footer">
-        <div>© {new Date().getFullYear()} AHFUL — Built for better habits</div>
+        <div>© {new Date().getFullYear()} AHFUL — A Helpful Fitness Utilization Logger, Built for better habits</div>
         <div className="footer-links"></div>
       </footer>
     </div>
@@ -103,10 +109,50 @@ function ExternalDashboard() {
 }
 
 function InternalDashboard() {
+  const [workoutStreak, setWorkoutStreak] = useState({ streak: 0, loading: true });
+  const [foodStreak, setFoodStreak] = useState({ streak: 0, loading: true });
+  const user = useSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    if (user?._id) {
+      const fetchStreaks = async () => {
+        try {
+          const [workoutRes, foodRes] = await Promise.all([
+            fetch(`http://localhost:5000/AHFULworkout/streak/${user._id}`),
+            fetch(`http://localhost:5000/AHFULfood/streak/${user._id}`)
+          ]);
+          
+          const workoutData = await workoutRes.json();
+          const foodData = await foodRes.json();
+          
+          setWorkoutStreak({ streak: workoutData.streak || 0, loading: false });
+          setFoodStreak({ streak: foodData.streak || 0, loading: false });
+        } catch (error) {
+          console.error("Error fetching streaks:", error);
+          setWorkoutStreak({ streak: 0, loading: false });
+          setFoodStreak({ streak: 0, loading: false });
+        }
+      };
+      fetchStreaks();
+    }
+  }, [user?._id]);
+
   return (
     <div className="dashboard-internal">
       <div className="dashboard-grid">
         <div className="dashboard-main-content">
+          <div className="internal-streaks">
+            <StreakCounter 
+              count={workoutStreak.streak} 
+              type="workout" 
+              loading={workoutStreak.loading} 
+            />
+            <StreakCounter 
+              count={foodStreak.streak} 
+              type="food" 
+              loading={foodStreak.loading} 
+            />
+          </div>
           <CalendarButton />
           <div className="dashboard-tasks-row">
             <DashboardFoodTodoList />
