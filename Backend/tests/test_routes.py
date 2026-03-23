@@ -1038,7 +1038,7 @@ def test_find_template_by_user():
     if err is not None:
         print(temps, err)
     
-    tp_oid = "69af2d76938739819748be48"
+    tp_oid = "69c19753432188dfcd568ddc"
     filtered = [d for d in temps if d.get("_id") == tp_oid]
 
     assert len(filtered) == 1
@@ -1048,7 +1048,7 @@ def test_find_template_by_user():
     assert filtered[0] is not None
     assert filtered[0].get("_id") == tp_oid
     assert filtered[0].get("userId") == "699d0093795741a59fe13616"
-    assert filtered[0].get("title") == "A workout template"
+    assert filtered[0].get("title") == "My Weekend Workout Template"
     assert filtered[0].get("template") == "True"
     assert filtered[0].get("startTime") == 0
 
