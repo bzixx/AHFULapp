@@ -7,6 +7,7 @@ from Services.FoodDriver import FoodDriver
 from Services.PersonalExDriver import PersonalExDriver
 from Services.WorkoutDriver import WorkoutDriver
 from Services.MeasurementDriver import MeasurementDriver
+from Services.TaskDriver import TaskDriver
 
 # Food
 
@@ -1420,3 +1421,173 @@ def test_delete_measurement_invalid_id():
     resp, err = MeasurementDriver.delete_measurement("123")
     assert resp is None
     assert err == "'123' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+
+# Tasks
+
+def test_find_task_by_id():
+    oid = "69c07dd86eb4c5de09881b06"
+    task, err = TaskDriver.get_task_by_id(oid)
+
+    if err is not None:
+        print(task, err)
+
+    assert err is None
+    assert task is not None
+    assert task.get("_id") == oid
+    assert task.get("name") == "Something I should Do"
+    assert task.get("note") is not None
+    assert task.get("dueTime") == 1774229940
+    assert task.get("user_id") == "69996a73313d1a459f4529da"
+    assert task.get("completed") is False
+
+    bad_oid = "69c07dd86eb4c5de09881b0"
+    task, err = TaskDriver.get_task_by_id(bad_oid)
+
+    assert task is None
+    assert "24-hex string" in err
+
+    inv_oid = "000000000000000000000000"
+    task, err = TaskDriver.get_task_by_id(inv_oid)
+
+    assert task is None
+    assert err == "Task not found"
+
+def test_find_tasks_by_user():
+    user_id = "69996a73313d1a459f4529da"
+    tasks, err = TaskDriver.get_tasks_by_user(user_id)
+
+    if err is not None:
+        print(tasks, err)
+
+    assert err is None
+    assert isinstance(tasks, list)
+
+    known = next((t for t in tasks if t["_id"] == "69c07dd86eb4c5de09881b06"), None)
+    assert known is not None
+    assert known.get("name") == "Something I should Do"
+
+    bad_uid = "69996a73313d1a459f4529d"
+    tasks, err = TaskDriver.get_tasks_by_user(bad_uid)
+
+    assert tasks is None
+    assert "24-hex string" in err
+
+def test_create_delete_task():
+    user_id = "69996a73313d1a459f4529da"
+
+    data = {
+        "name": "New Task",
+        "note": "Auto-generated test task",
+        "dueTime": 1900000000,
+        "completed": False
+    }
+
+    created, err = TaskDriver.create_task(user_id, data)
+
+    if err is not None:
+        print(created, err)
+
+    assert err is None
+    assert created is not None
+
+    try:
+        ObjectId(str(created["_id"]))
+    except Exception:
+        assert False
+
+    fetched, err = TaskDriver.get_task_by_id(created["_id"])
+    assert err is None
+    assert fetched.get("name") == "New Task"
+    assert fetched.get("note") == "Auto-generated test task"
+    assert fetched.get("dueTime") == 1900000000
+    assert fetched.get("completed") is False
+
+    deleted, err = TaskDriver.delete_task(created["_id"])
+    assert err is None
+    assert deleted.get("deleted") is True or deleted.get("deleted") == 1
+
+    after, err = TaskDriver.get_task_by_id(created["_id"])
+    assert after is None
+
+def test_update_task_roundtrip():
+    task_id = "69c07dd86eb4c5de09881b06"
+
+    original, err = TaskDriver.get_task_by_id(task_id)
+    assert err is None
+    assert original is not None
+
+    orig_name = original.get("name")
+    orig_note = original.get("note")
+    orig_due = original.get("dueTime")
+    orig_completed = original.get("completed")
+
+    new_vals = {
+        "name": "Updated Task",
+        "note": "Updated Note",
+        "dueTime": 1888888888,
+        "completed": True
+    }
+
+    updated, err = TaskDriver.update_task(task_id, new_vals)
+
+    assert err is None
+    assert updated is not None
+
+    assert updated.get("name") == new_vals["name"]
+    assert updated.get("note") == new_vals["note"]
+    assert updated.get("dueTime") == new_vals["dueTime"]
+    assert updated.get("completed") == new_vals["completed"]
+
+    fetched, err = TaskDriver.get_task_by_id(task_id)
+    assert err is None
+    assert fetched.get("name") == "Updated Task"
+
+    restore = {
+        "name": orig_name,
+        "note": orig_note,
+        "dueTime": orig_due,
+        "completed": orig_completed
+    }
+
+    restored, err = TaskDriver.update_task(task_id, restore)
+    assert err is None
+    assert restored is not None
+
+    assert restored.get("name") == orig_name
+    assert restored.get("note") == orig_note
+    assert restored.get("dueTime") == orig_due
+    assert restored.get("completed") == orig_completed
+
+    fetched_after, err = TaskDriver.get_task_by_id(task_id)
+    assert err is None
+    assert fetched_after.get("name") == orig_name
+
+def test_create_task_missing_name():
+    user_id = "69996a73313d1a459f4529da"
+    data = {"note": "Missing name"}
+
+    task, err = TaskDriver.create_task(user_id, data)
+
+    assert task is None
+    assert err == "name is required"
+
+def test_create_task_invalid_user_id():
+    user_id = "notvalid123"
+    data = {"name": "Bad User"}
+
+    task, err = TaskDriver.create_task(user_id, data)
+
+    assert task is None
+    assert "24-hex string" in err
+
+def test_delete_task_invalid_id():
+    deleted, err = TaskDriver.delete_task("123")
+
+    assert deleted is None
+    assert "24-hex string" in err
+
+def test_delete_task_not_found():
+    deleted, err = TaskDriver.delete_task("000000000000000000000000")
+
+    assert deleted is None
+    assert err == "Task not found"
