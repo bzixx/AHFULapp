@@ -622,7 +622,7 @@ def test_create_delete_personal_ex():
     # Give a valid gymId
     completed = False
     distance = "0"
-    duration = 0
+    duration = 240
     exerciseId = "698d0bc06e5117c22dd7774b"
     workoutId = "69c063229f8c3c92b650445b"
     reps = 1
