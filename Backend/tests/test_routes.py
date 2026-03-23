@@ -1419,4 +1419,4 @@ def test_create_measurement_invalid_field_value():
 def test_delete_measurement_invalid_id():
     resp, err = MeasurementDriver.delete_measurement("123")
     assert resp is None
-    assert err == "'" + 123 + "' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    assert err == "'123' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
