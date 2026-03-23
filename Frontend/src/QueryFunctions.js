@@ -197,6 +197,48 @@ export async function fetchPersonalExercises(workoutId) {
   return data;
 }
 
+export async function createPersonalExercises(peData) {
+  try {
+    const res = await fetch("http://localhost:5000/AHFULpersonalEx/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(peData)
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return { error: data.error || `Server returned ${res.status}` };
+    }
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("createPersonalExercise error:", err);
+    return { error: err.message || "Failed to create personal exercise" };
+  }
+}
+
+export async function updatePersonalExercises(peId, peData) {
+  try {
+    const res = await fetch(`http://localhost:5000/AHFULpersonalEx/update/${peId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(peData)
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return { error: data.error || `Server returned ${res.status}` };
+    }
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("updatePersonalExercise error:", err);
+    return { error: err.message || "Failed to update personal exercise" };
+  }
+}
+
 // User Settings functions
 export async function getUserSettings(userId) {
   const res = await fetch(`http://localhost:5000/AHFULuserSettings/${userId}`);
@@ -288,5 +330,48 @@ export async function forwardGeocode(address) {
   } catch (err) {
     console.error("forwardGeocode error:", err);
     return null;
+  }
+}
+
+export async function createWorkout(workoutData) {
+  try {
+    const res = await fetch("http://localhost:5000/AHFULworkout/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(workoutData)
+        });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return { error: data.error || `Server returned ${res.status}` };
+    }
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("createExercise error:", err);
+    const msg = err && err.message ? err.message : "Failed to create exercise";
+    return { error: msg };
+  }
+}
+
+
+export async function updateWorkout(workoutId, workoutData) {
+  try {
+    const res = await fetch(`http://localhost:5000/AHFULworkout/update/${workoutId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(workoutData)
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return { error: data.error || `Server returned ${res.status}` };
+    }
+
+    return { success: true, data };
+  } catch (err) {
+    return { error: err.message || "Failed to update workout" };
   }
 }

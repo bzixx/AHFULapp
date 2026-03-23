@@ -11,6 +11,11 @@ import {
   fetchWorkout,
   fetchPersonalExercises,
   loadBodyParts,
+  createExercise,
+  createPersonalExercises,
+  createWorkout,
+  updateWorkout,
+  updatePersonalExercises
 } from "../../QueryFunctions";
 
 export function WorkoutLogger() {
@@ -246,39 +251,32 @@ const handleSubmit = async () => {
     const saveRequests = exercisesInProgressTable.map(ex => {
       const isNew = ex._id === null;
 
-      const url = isNew
-        ? "http://localhost:5000/AHFULpersonalEx/create"
-        : `http://localhost:5000/AHFULpersonalEx/update/${ex._id}`;
+      const peData = isNew
+    ? {
+        complete: ex.complete,
+        distance: ex.distance,
+        duration: ex.duration,
+        exerciseId: ex.exerciseId,
+        reps: ex.reps,
+        sets: ex.sets,
+        userId: ex.userId,
+        weight: ex.weight,
+        workoutId: ex.workoutId
+      }
+    : {
+        complete: ex.complete,
+        distance: ex.distance,
+        duration: ex.duration,
+        reps: ex.reps,
+        sets: ex.sets,
+        weight: ex.weight
+      };
 
-      const method = isNew ? "POST" : "PUT";
-
-      const body = isNew
-        ? {
-            complete: ex.complete,
-            distance: ex.distance,
-            duration: ex.duration,
-            exerciseId: ex.exerciseId,
-            reps: ex.reps,
-            sets: ex.sets,
-            userId: ex.userId,
-            weight: ex.weight,
-            workoutId: ex.workoutId
-          }
-        : {
-            complete: ex.complete,
-            distance: ex.distance,
-            duration: ex.duration,
-            reps: ex.reps,
-            sets: ex.sets,
-            weight: ex.weight
-          };
-
-      return fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      });
+      return isNew
+          ? createPersonalExercises(peData)
+          : updatePersonalExercises(ex._id, peData);
     });
+
 
     // --- DELETE REQUESTS ---
     const deleteRequests = Object.values(personalExToRemove)
@@ -307,19 +305,12 @@ const handleSubmit = async () => {
       title: workoutTitle            // keep original title
     };
 
-    const workoutRes = await fetch(
-      `http://localhost:5000/AHFULworkout/update/${workoutId}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(workoutUpdatePayload)
-      }
-    );
+    const workoutRes = await updateWorkout(workoutId, workoutUpdatePayload);
 
-    if (!workoutRes.ok) {
-      console.error("Failed to update workout endTime");
+    if (workoutRes.error) {
+      console.error("Failed to update workout:", workoutRes.error);
     } else {
-      console.log("Workout endTime updated successfully!");
+      console.log("Workout updated successfully!");
     }
 
   } catch (err) {
@@ -461,20 +452,18 @@ const handleSubmit = async () => {
           userId: userId
         };
 
-
         console.log(newWorkoutPayload);
 
-        const createRes = await fetch("http://localhost:5000/AHFULworkout/create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newWorkoutPayload)
-        });
+        const result = await createWorkout(newWorkoutPayload);
 
-        const newWorkout = await createRes.json();
+        if (result.error) {
+          alert(`Failed to save workout: ${result.error}`);
+          return;
+        }
 
-        setWorkout(newWorkout);
-        setWorkoutId(newWorkout._id);
-        setWorkoutTitle(newWorkout.title);
+        setWorkout(result);
+        setWorkoutId(result._id);
+        setWorkoutTitle(result.title);
         setTime(workout.endTime - workout.startTime);
         return;
       }
