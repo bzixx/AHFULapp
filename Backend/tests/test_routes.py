@@ -6,6 +6,7 @@ from Services.UserDriver import UserDriver
 from Services.FoodDriver import FoodDriver
 from Services.PersonalExDriver import PersonalExDriver
 from Services.WorkoutDriver import WorkoutDriver
+from Services.MeasurementDriver import MeasurementDriver
 
 # Food
 
@@ -1233,3 +1234,189 @@ def test_update_workout_roundtrip():
     assert fetched_after_restore.get("startTime") == orig_startTime
     assert fetched_after_restore.get("endTime") == orig_endTime
 
+# Measurements
+
+def test_find_measurement_by_id():
+    oid = "69b4880023803f807becacf3"
+    m, err = MeasurementDriver.get_measurement_by_id(oid)
+
+    if err is not None:
+        print(m, err)
+
+    # Assertions
+    assert err is None
+    assert m is not None
+    assert m.get("_id") == oid
+    assert m.get("userId") == "699f79394048f9ec8b5b0ed2"
+    assert m.get("date") == "2026-03-13T00:00:00.000Z"
+    assert m.get("arms") == 70
+    assert m.get("hips") == 130
+    assert m.get("chest") == 108
+    assert m.get("weight") == 220
+    assert m.get("waist") == 108
+    assert m.get("thighs") == 30
+
+    # Bad ID
+    bad_oid = "69b4880023803f807becacf"
+    m, err = MeasurementDriver.get_measurement_by_id(bad_oid)
+
+    assert m is None
+    assert "must be a 24-character hex string" in err or "Invalid" in err
+
+    # Invalid (valid format but not found)
+    inv_oid = "000000000000000000000000"
+    m, err = MeasurementDriver.get_measurement_by_id(inv_oid)
+
+    assert m is None
+    assert err == "Measurement not found"
+
+def test_find_measurements_by_user():
+    userId = "699f79394048f9ec8b5b0ed2"
+    m, err = MeasurementDriver.get_measurements_by_user(userId)
+
+    assert err is None
+    assert isinstance(m, list)
+    assert len(m) > 0
+
+    # Find the known object
+    known = next((x for x in m if x["_id"] == "69b4880023803f807becacf3"), None)
+    assert known is not None
+    assert known.get("arms") == 70
+
+    # Bad userId format
+    bad_uid = "699f79394048f9ec8b5b0ed"
+    m, err = MeasurementDriver.get_measurements_by_user(bad_uid)
+    assert m is None or m == []
+
+def test_create_delete_measurement():
+    userId = "699f79394048f9ec8b5b0ed2"
+
+    data = {
+        "date": "2026-03-20T00:00:00.000Z",
+        "arms": 50,
+        "waist": 100,
+        "weight": 200
+    }
+
+    new_id, err = MeasurementDriver.create_measurement(userId, data)
+    if err is not None:
+        print(new_id, err)
+
+    # Ensure valid ObjectId
+    try:
+        ObjectId(str(new_id))
+    except Exception:
+        assert False
+
+    # Check creation
+    m, err = MeasurementDriver.get_measurement_by_id(new_id)
+    assert err is None
+    assert m is not None
+    assert m.get("_id") == new_id
+    assert m.get("arms") == 50
+    assert m.get("waist") == 100
+    assert m.get("weight") == 200
+
+    # DELETE
+    response, err = MeasurementDriver.delete_measurement(new_id)
+    assert response == new_id
+
+    # Verify deletion
+    m, err = MeasurementDriver.get_measurement_by_id(new_id)
+    assert m is None
+
+def test_update_measurement_roundtrip():
+    oid = "69b4880023803f807becacf3"
+
+    original, err = MeasurementDriver.get_measurement_by_id(oid)
+    assert err is None
+    assert original is not None
+
+    orig_arms    = original.get("arms")
+    orig_hips    = original.get("hips")
+    orig_chest   = original.get("chest")
+    orig_weight  = original.get("weight")
+    orig_waist   = original.get("waist")
+    orig_thighs  = original.get("thighs")
+
+    new_vals = {
+        "arms": 1.1,
+        "hips":  2.2,
+        "chest": 3.3,
+        "weight": 4.4,
+        "waist":  5.5,
+        "thighs": 6.6
+    }
+
+    updated, err = MeasurementDriver.update_measurement(oid, new_vals)
+    assert err is None
+    assert updated is not None
+
+    assert updated.get("arms") == 1.1
+    assert updated.get("hips") == 2.2
+    assert updated.get("chest") == 3.3
+    assert updated.get("weight") == 4.4
+    assert updated.get("waist") == 5.5
+    assert updated.get("thighs") == 6.6
+
+    # Fetch again to confirm DB persistence
+    fetched, err = MeasurementDriver.get_measurement_by_id(oid)
+    assert err is None
+    assert fetched.get("arms") == 1.1
+
+    # Restore original
+    restore = {
+        "arms": orig_arms,
+        "hips": orig_hips,
+        "chest": orig_chest,
+        "weight": orig_weight,
+        "waist": orig_waist,
+        "thighs": orig_thighs
+    }
+
+    restored, err = MeasurementDriver.update_measurement(oid, restore)
+    assert err is None
+    assert restored is not None
+
+    assert restored.get("arms") == orig_arms
+    assert restored.get("hips") == orig_hips
+    assert restored.get("chest") == orig_chest
+    assert restored.get("weight") == orig_weight
+    assert restored.get("waist") == orig_waist
+    assert restored.get("thighs") == orig_thighs
+
+def test_create_measurement_missing_date():
+    userId = "699f79394048f9ec8b5b0ed2"
+    data = {
+        "arms": 40
+    }
+
+    resp, err = MeasurementDriver.create_measurement(userId, data)
+    assert resp is None
+    assert err == "You must provide a measurement date"
+
+def test_create_measurement_no_values():
+    userId = "699f79394048f9ec8b5b0ed2"
+    data = {
+        "date": "2026-03-20T00:00:00.000Z"
+    }
+
+    resp, err = MeasurementDriver.create_measurement(userId, data)
+    assert resp is None
+    assert err == "You must provide at least one measurement value"
+
+def test_create_measurement_invalid_field_value():
+    userId = "699f79394048f9ec8b5b0ed2"
+    data = {
+        "date": "2026-03-20T00:00:00.000Z",
+        "weight": "abc"     # invalid
+    }
+
+    resp, err = MeasurementDriver.create_measurement(userId, data)
+    assert resp is None
+    assert "Invalid weight" in err
+
+def test_delete_measurement_invalid_id():
+    resp, err = MeasurementDriver.delete_measurement("123")
+    assert resp is None
+    assert "must be a 24-hex string" in err or "Invalid" in err
