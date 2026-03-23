@@ -1161,7 +1161,7 @@ def test_create_delete_template():
    
 def test_update_workout_roundtrip():
     # Known existing document id from your tests/fixtures
-    workout_id = "69af2a4598d0f4227b25ed71"
+    workout_id = "69c063229f8c3c92b650445b"
 
     original, err = WorkoutDriver.get_workout_by_id(workout_id)
     if err is not None:
