@@ -17,8 +17,9 @@ import {
   createPersonalExercise,
   updatePersonalExercise,
   deletePersonalExercise,
+  fetchTemplate,
   loadBodyParts,
-  createExercise,
+  createExercise
 } from "../../QueryFunctions";
 
 /**
@@ -47,6 +48,8 @@ export function WorkoutLogger() {
   // Maps exercise IDs to their display names (fetched from backend)
   const [personalExNames, setPersonalExNames] = useState({});
   // Exercises currently in the workout (reps, sets, weight, completed status)
+  const [templates, setTemplates] = useState([]);
+  /* Hook to track state of the InProgressTable on the Workout Page */
   const [exercisesInProgressTable, setExercisesInProgressTable] = useState([]);
 
   // ─── Exercise Database State ──────────────────────────────────────────────────
@@ -80,9 +83,27 @@ export function WorkoutLogger() {
   // Modal visibility for creating new exercises
   const [showNewExerciseModal, setShowNewExerciseModal] = useState(false);
 
-  // ─── Exercise Form Options (loaded from backend) ──────────────────────────────
+  const [personalExToRemove, setPersonalExToRemove] = useState({});
+  const [personalExNames, setPersonalExNames] = useState({});
+
+  // Wireframe option lists for dropdowns (replace with fetch later)
+  const MUSCLES = [
+    "Chest",
+    "Back",
+    "Shoulders",
+    "Biceps",
+    "Triceps",
+    "Quadriceps",
+    "Hamstrings",
+    "Calves",
+    "Abs",
+  ];
+
+  const BODY_PARTS = ["Upper Body", "Lower Body", "Full Body", "Core"];
+
   const [equipmentOptions, setEquipmentOptions] = useState([]);
   const [equipmentError, setEquipmentError] = useState(null);
+
   const [BodyPartOptions, setBodyPartOptions] = useState([]);
   const [BodyPartError, setBodyPartError] = useState(null);
   const [muscleOptions, setMuscleOptions] = useState([]);
@@ -148,6 +169,21 @@ export function WorkoutLogger() {
     const values = Array.from(e.target.selectedOptions, (o) => o.value);
     setNewExercise((prev) => ({ ...prev, [field]: values }));
   };
+  const searchTimeoutRef = useRef(null);
+
+  const [templateSearch, setTemplateSearch] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+
+  function handleApplyTemplate(template) {
+    console.log("Apply template:", template);
+  }
+
+  // useEffect 1: cleanup debounced search timer on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    };
+  }, []);
 
   // ─── Load Exercise Options on Mount ──────────────────────────────────────────
   useEffect(() => {
@@ -193,11 +229,11 @@ export function WorkoutLogger() {
     setError(null);
     try {
       const list = await fetchExercisesFromBackend();
-      console.log("Fetched exercises:", list);
       setExercises(list);
     } catch (err) {
       console.error("Failed to fetch exercises:", err);
-      const friendly = err && err.name ? `${err.name}: ${err.message}` : String(err);
+      const friendly =
+        err && err.name ? `${err.name}: ${err.message}` : String(err);
       setError(friendly || "Unknown error");
       setExercises([]);
     } finally {
@@ -236,9 +272,11 @@ export function WorkoutLogger() {
     if (!exercisesInProgressTable.length) return;
 
     const ids = exercisesInProgressTable.map((ex) => ex.exerciseId);
-    const missing = ids.filter(id => !personalExNames[id]);
+    const missing = ids.filter((id) => !personalExNames[id]);
 
-    if (missing.length === 0) return;
+    if (missing.length === 0) {
+      return;
+    }
 
     const loadNames = async () => {
       try {
@@ -262,66 +300,84 @@ export function WorkoutLogger() {
   }, [exercisesInProgressTable]);
 
   // ─── Submit Workout ───────────────────────────────────────────────────────────
-  // Saves all exercise changes and updates workout end time
-  const handleSubmit = async () => {
-    if (!workoutId) {
-      console.error("No workout loaded yet");
-      return;
-    }
+  // Saves all exercise changes and updates workout end tim
 
+  const handleSubmit = async () => {
     console.log("Submitting workout...");
     console.log("Submitting:", exercisesInProgressTable);
     console.log("Deleting:", personalExToRemove);
 
     try {
-      // Create/update requests for each exercise in the table
-      const saveRequests = exercisesInProgressTable.map(ex => {
+      // --- CREATE + UPDATE REQUESTS ---
+      const saveRequests = exercisesInProgressTable.map((ex) => {
         const isNew = ex._id === null;
-        const body = isNew
-          ? {
-              complete: ex.complete,
-              distance: ex.distance,
-              duration: ex.duration,
-              exerciseId: ex.exerciseId,
-              reps: ex.reps,
-              sets: ex.sets,
-              userId: userId,
-              weight: ex.weight,
-              workoutId: workoutId
-            }
-          : {
-              complete: ex.complete,
-              distance: ex.distance,
-              duration: ex.duration,
-              reps: ex.reps,
-              sets: ex.sets,
-              weight: ex.weight
-            };
 
-        if (isNew) {
-          return createPersonalExercise(body);
-        } else {
-          return updatePersonalExercise(ex._id, body);
-        }
-      });
-
-      // Delete requests for removed exercises
-      const deleteRequests = Object.values(personalExToRemove)
-        .filter(ex => ex._id)
-        .map(ex => deletePersonalExercise(ex._id));
-
-      // Execute all requests in parallel
-      await Promise.all([...saveRequests, ...deleteRequests]);
-      console.log("Workout saved successfully!");
-
-      // Update workout end time
-      const workoutUpdatePayload = {
-        endTime: workout.startTime + time,
-        startTime: workout.startTime,
-        title: workoutTitle
+      const peData = isNew
+    ? {
+        complete: ex.complete,
+        distance: ex.distance,
+        duration: ex.duration,
+        exerciseId: ex.exerciseId,
+        reps: ex.reps,
+        sets: ex.sets,
+        userId: ex.userId,
+        weight: ex.weight,
+        workoutId: ex.workoutId
+      }
+    : {
+        complete: ex.complete,
+        distance: ex.distance,
+        duration: ex.duration,
+        reps: ex.reps,
+        sets: ex.sets,
+        weight: ex.weight
       };
-      await updateWorkout(workoutId, workoutUpdatePayload);
-      console.log("Workout endTime updated successfully!");
+
+      return isNew
+          ? createPersonalExercises(peData)
+          : updatePersonalExercises(ex._id, peData);
+    });
+
+
+      // --- DELETE REQUESTS ---
+      const deleteRequests = Object.values(personalExToRemove)
+        .filter((ex) => ex._id) // only delete DB-backed exercises
+        .map((ex) =>
+          fetch(`http://localhost:5000/AHFULpersonalEx/delete/${ex._id}`, {
+            method: "DELETE",
+          }),
+        );
+
+      // --- RUN EVERYTHING IN PARALLEL ---
+      const responses = await Promise.all([...saveRequests, ...deleteRequests]);
+
+      const failed = responses.filter((r) => !r.ok);
+
+      if (failed.length > 0) {
+        console.error("Some operations failed:", failed);
+      } else {
+        console.log("Workout saved successfully!");
+      }
+
+      // --- UPDATE WORKOUT endTime ---
+      const workoutUpdatePayload = {
+        endTime: workout.startTime + time, // your endTime variable
+        startTime: workout.startTime, // keep original startTime
+        title: workoutTitle, // keep original title
+      };
+
+    const workoutRes = await updateWorkout(workoutId, workoutUpdatePayload);
+
+    if (workoutRes.error) {
+      console.error("Failed to update workout:", workoutRes.error);
+    } else {
+      console.log("Workout updated successfully!");
+    }
+
+  } catch (err) {
+    console.error("Error submitting workout:", err);
+  }
+};
 
     } catch (err) {
       console.error("Error submitting workout:", err);
@@ -331,18 +387,19 @@ export function WorkoutLogger() {
   // ─── Remove Exercise from Workout ─────────────────────────────────────────────
   // Removes from UI but queues for deletion on submit
   const removePersonalEx = (index) => {
-    setExercisesInProgressTable(prev => {
-      const removed = prev[index];
-      // Add to removal queue (will be deleted from DB on submit)
-      setPersonalExToRemove(prevRemoved => ({
+    setExercisesInProgressTable((prev) => {
+      const removed = prev[index]; // the exercise being removed
+
+      // Add removed exercise to personalExToRemove
+      setPersonalExToRemove((prevRemoved) => ({
         ...prevRemoved,
-        [removed._id || removed.exerciseId]: removed
+        [removed._id || removed.exerciseId]: removed,
       }));
       return prev.filter((_, i) => i !== index);
     });
   };
 
-  // ─── Add Selected Exercises to Workout ───────────────────────────────────────
+  // Append selected pending exercises to the in-progress table
   const addExerciseToWorkout = (e) => {
     if (e && typeof e.preventDefault === "function") e.preventDefault();
     
@@ -532,6 +589,26 @@ export function WorkoutLogger() {
       </div>
     );
   }
+  // useEffect 7: fetch templates that user has created on load
+
+  useEffect(() => {
+    async function getTemplates() {
+      try {
+        const allTemplates = await fetchTemplate(userId);
+
+        // Normalize if needed (backend might return null or object)
+        if (Array.isArray(allTemplates)) {
+          setTemplates(allTemplates);
+        } else {
+          setTemplates([]); // fallback
+        }
+      } catch (err) {
+        console.error("Error fetching templates:", err);
+      }
+    }
+
+    getTemplates();
+  }, [userId]);
 
   // ─── Error State ─────────────────────────────────────────────────────────────
   if (workoutError) {
@@ -554,7 +631,75 @@ export function WorkoutLogger() {
       {/* Left Column: Template/History (placeholder for future feature) */}
       <div className="left-column">
         <div className="template-container">
-          <form onSubmit={addExerciseToWorkout} className="apply-template"></form>
+          <div className="add-template-form">
+            {/* Search Bar */}
+            <div className="dropdown-wrapper">
+              <input
+                type="text"
+                placeholder="Search templates..."
+                value={templateSearch}
+                onChange={(e) => setTemplateSearch(e.target.value)}
+              />
+
+              <div className="dropdown-instructions">
+                Select a template to apply
+              </div>
+
+              {/* Template List */}
+              <div className="dropdown">
+                {templates.length === 0 && (
+                  <div className="dropdown-item">No templates found</div>
+                )}
+
+                {templates
+                  .filter((t) => {
+                    const title = t?.title ?? "";
+
+                    // Keep selected template visible even if search doesn't match
+                    if (selectedTemplate?._id === t._id) return true;
+
+                    return title
+                      .toLowerCase()
+                      .includes(templateSearch.toLowerCase());
+                  })
+                  .map((t, i) => {
+                    const isSelected = selectedTemplate?._id === t._id;
+
+                    return (
+                      <div
+                        key={t._id ?? i}
+                        className={`dropdown-item ${isSelected ? "selected" : ""}`}
+                        onClick={() => {
+                          if (isSelected) {
+                            setSelectedTemplate(null); // unselect
+                          } else {
+                            setSelectedTemplate(t); // select
+                          }
+                        }}
+                      >
+                        <span>{t.title ?? "Unnamed Template"}</span>
+                        {isSelected && <span className="check">✓</span>}
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+
+            <div
+              className="apply-btn-wrapper"
+              style={{ display: "flex", gap: "8px" }}
+            >
+              {/* Apply Button */}
+              {selectedTemplate && (
+                <button
+                  className="apply-btn"
+                  onClick={() => handleApplyTemplate(selectedTemplate)}
+                >
+                  Apply Template
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -689,7 +834,6 @@ export function WorkoutLogger() {
                 {!exerciseLoading && exercises.length === 0 && (
                   <div className="dropdown-item">No exercises found</div>
                 )}
-                <div className="dropdown-item">
                   {!exerciseLoading &&
                     exercises.map((item, i) => {
                       const name = item.name;
@@ -728,15 +872,16 @@ export function WorkoutLogger() {
                         </div>
                       );
                     })}
-                </div>
               </div>
             </div>
 
             {/* Pending Exercises List */}
             <div className="pending-list">
               {pendingExercises.map((id, i) => {
-                const name = personalExNames[id] ||
-                  exercises.find(ex => (ex._id ?? ex.exerciseId) === id)?.name ||
+                const name =
+                  personalExNames[id] ||
+                  exercises.find((ex) => (ex._id ?? ex.exerciseId) === id)
+                    ?.name ||
                   "(Unknown Exercise)";
                 return (
                   <div key={i} className="pending-item">
@@ -745,7 +890,9 @@ export function WorkoutLogger() {
                       type="button"
                       className="remove-btn"
                       onClick={() =>
-                        setPendingExercises(prev => prev.filter((_, idx) => idx !== i))
+                        setPendingExercises((prev) =>
+                          prev.filter((_, idx) => idx !== i),
+                        )
                       }
                     >
                       ×
@@ -779,12 +926,21 @@ export function WorkoutLogger() {
 
       {/* Save Success Toast */}
       {saveSuccess && (
-        <div style={{
-          position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)",
-          background: "#0a7b00", color: "white", padding: "12px 24px",
-          borderRadius: 8, fontWeight: "bold", boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-          zIndex: 3000,
-        }}>
+        <div
+          style={{
+            position: "fixed",
+            bottom: 24,
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "#0a7b00",
+            color: "white",
+            padding: "12px 24px",
+            borderRadius: 8,
+            fontWeight: "bold",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+            zIndex: 3000,
+          }}
+        >
           Exercise saved successfully!
         </div>
       )}
@@ -807,7 +963,9 @@ export function WorkoutLogger() {
               style={{ width: "100%" }}
             />
 
-            <label style={{ display: "block", marginTop: 8 }}>GIF URL (optional)</label>
+            <label style={{ display: "block", marginTop: 8 }}>
+              GIF URL (optional)
+            </label>
             <input
               type="text"
               value={newExercise.gifUrl}
@@ -815,19 +973,30 @@ export function WorkoutLogger() {
               placeholder="https://..."
               style={{ width: "100%" }}
             />
-            {newExercise.gifUrl && newExercise.gifUrl.startsWith('http') && (
+            {newExercise.gifUrl && newExercise.gifUrl.startsWith("http") && (
               <div style={{ marginTop: 8, textAlign: "center" }}>
                 <img
                   src={newExercise.gifUrl}
                   alt="GIF Preview"
-                  style={{ maxWidth: "100%", maxHeight: "150px", borderRadius: "8px", border: "2px solid #000" }}
-                  onError={(e) => { e.target.style.display = "none"; }}
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "150px",
+                    borderRadius: "8px",
+                    border: "2px solid #000",
+                  }}
+                  onError={(e) => {
+                    e.target.style.display = "none";
+                  }}
                 />
               </div>
             )}
 
-            <label style={{ display: "block", marginTop: 8 }}>Target Muscles</label>
-            {muscleError && <div style={{ color: "red", marginBottom: 6 }}>{muscleError}</div>}
+            <label style={{ display: "block", marginTop: 8 }}>
+              Target Muscles
+            </label>
+            {muscleError && (
+              <div style={{ color: "red", marginBottom: 6 }}>{muscleError}</div>
+            )}
             <select
               multiple
               value={newExercise.targetMuscles}

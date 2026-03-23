@@ -173,6 +173,19 @@ export async function searchExercises(searchQuery) {
   return list;
 }
 
+export async function fetchTemplate(userId) {
+  const res = await fetch(`http://localhost:5000/AHFULworkout/templates/${userId}`);
+  if (!res.ok) {
+    let bodyText = "";
+    try {
+      bodyText = await res.text();
+    } catch (e) {}
+    throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
+  }
+  const data = await res.json();
+  return data;
+}
+
 export async function fetchWorkout(userId) {
   try {
     const res = await fetch(`http://localhost:5000/AHFULworkout/${userId}`);
@@ -222,6 +235,48 @@ export async function fetchPersonalExercises(workoutId) {
   } catch (err) {
     console.error("fetchPersonalExercises error:", err);
     return [];
+  }
+}
+
+export async function createPersonalExercises(peData) {
+  try {
+    const res = await fetch("http://localhost:5000/AHFULpersonalEx/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(peData)
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return { error: data.error || `Server returned ${res.status}` };
+    }
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("createPersonalExercise error:", err);
+    return { error: err.message || "Failed to create personal exercise" };
+  }
+}
+
+export async function updatePersonalExercises(peId, peData) {
+  try {
+    const res = await fetch(`http://localhost:5000/AHFULpersonalEx/update/${peId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(peData)
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return { error: data.error || `Server returned ${res.status}` };
+    }
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("updatePersonalExercise error:", err);
+    return { error: err.message || "Failed to update personal exercise" };
   }
 }
 
