@@ -11,9 +11,10 @@ import {
   fetchWorkout,
   fetchPersonalExercises,
   loadBodyParts,
-} from "../../queryFunctions";
+} from "../../QueryFunctions";
 
 export function WorkoutLogger() {
+  const [personalExToRemove, setPersonalExToRemove] = useState({});
   const [personalExNames, setPersonalExNames] = useState({});
   /* Hook to track state of the InProgressTable on the Workout Page */
   const [exercisesInProgressTable, setExercisesInProgressTable] = useState([]);
@@ -58,6 +59,8 @@ export function WorkoutLogger() {
 
 
   const [newExercise, setNewExercise] = useState(getDefaultNewExercise());
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const resetNewExercise = () => setNewExercise(getDefaultNewExercise());
 
@@ -70,16 +73,27 @@ export function WorkoutLogger() {
     setShowNewExerciseModal(false);
   };
 
-  const handleNewExerciseSave = (e) => {
+  const handleNewExerciseSave = async (e) => {
     e.preventDefault();
     if (!newExercise.name.trim()) {
       alert("Please enter a name for the exercise");
       return;
     }
 
-    // For now, append to exercises list (could POST to backend later)
-    setExercises((prev) => [...prev, { ...newExercise }]);
+    setIsSaving(true);
+    const result = await createExercise(newExercise);
+    setIsSaving(false);
+
+    if (result.error) {
+      alert(`Failed to save exercise: ${result.error}`);
+      return;
+    }
+
+    setExercises((prev) => [...prev, { ...newExercise, _id: result.data.exercise_id }]);
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 2500);
     closeNewExerciseModal();
+    resetNewExercise();
   };
 
   const handleMultiSelectChange = (e, field) => {
@@ -155,7 +169,7 @@ export function WorkoutLogger() {
       const updated = [...prev];
       updated[index] = {
         ...updated[index],
-        completed: !updated[index].completed,
+        complete: !updated[index].complete,
       };
       return updated;
     });
@@ -182,13 +196,10 @@ export function WorkoutLogger() {
     }
 
     const ids = exercisesInProgressTable.map((ex) => ex.exerciseId);
-    const missing = ids.filter(
-      id => !personalExNames[id] && exercises.some(ex => (ex._id ?? ex.exerciseId) === id)
-    );
+    const missing = ids.filter(id => !personalExNames[id]);
 
 
     if (missing.length === 0) {
-      console.log("All names already loaded.");
       return;
     }
 
@@ -227,35 +238,88 @@ export function WorkoutLogger() {
 
 const handleSubmit = async () => {
   console.log("Submitting workout...");
+  console.log("Submitting:", exercisesInProgressTable);
+  console.log("Deleting:", personalExToRemove);
 
   try {
-    // POST each exercise in parallel
-    const responses = await Promise.all(
-      exercisesInProgressTable.map(ex =>
-        fetch("http://localhost:5000/AHFULpersonalEx/create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
+    // --- CREATE + UPDATE REQUESTS ---
+    const saveRequests = exercisesInProgressTable.map(ex => {
+      const isNew = ex._id === null;
+
+      const url = isNew
+        ? "http://localhost:5000/AHFULpersonalEx/create"
+        : `http://localhost:5000/AHFULpersonalEx/update/${ex._id}`;
+
+      const method = isNew ? "POST" : "PUT";
+
+      const body = isNew
+        ? {
             complete: ex.complete,
             distance: ex.distance,
             duration: ex.duration,
-            exerciseId: ex.exerciseId,   // external or internal normalized
+            exerciseId: ex.exerciseId,
             reps: ex.reps,
             sets: ex.sets,
             userId: ex.userId,
             weight: ex.weight,
             workoutId: ex.workoutId
-          })
-        })
-      )
-    );
+          }
+        : {
+            complete: ex.complete,
+            distance: ex.distance,
+            duration: ex.duration,
+            reps: ex.reps,
+            sets: ex.sets,
+            weight: ex.weight
+          };
 
-    // Check for failures
+      return fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+    });
+
+    // --- DELETE REQUESTS ---
+    const deleteRequests = Object.values(personalExToRemove)
+      .filter(ex => ex._id) // only delete DB-backed exercises
+      .map(ex =>
+        fetch(`http://localhost:5000/AHFULpersonalEx/delete/${ex._id}`, {
+          method: "DELETE"
+        })
+      );
+
+    // --- RUN EVERYTHING IN PARALLEL ---
+    const responses = await Promise.all([...saveRequests, ...deleteRequests]);
+
     const failed = responses.filter(r => !r.ok);
+
     if (failed.length > 0) {
-      console.error("Some exercises failed to save:", failed);
+      console.error("Some operations failed:", failed);
     } else {
       console.log("Workout saved successfully!");
+    }
+
+    // --- UPDATE WORKOUT endTime ---
+    const workoutUpdatePayload = {
+      endTime: workout.startTime + time,                 // your endTime variable
+      startTime: workout.startTime,  // keep original startTime
+      title: workoutTitle            // keep original title
+    };
+
+    const workoutRes = await fetch(
+      `http://localhost:5000/AHFULworkout/update/${workoutId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(workoutUpdatePayload)
+      }
+    );
+
+    if (!workoutRes.ok) {
+      console.error("Failed to update workout endTime");
+    } else {
+      console.log("Workout endTime updated successfully!");
     }
 
   } catch (err) {
@@ -264,14 +328,27 @@ const handleSubmit = async () => {
 };
 
 
+
   // useEffect 3: fetch available exercises from backend on mount
   useEffect(() => {
     fetch_exercises();
   }, []);
 
-  const removeWorkout = (index) => {
-    setExercisesInProgressTable((prev) => prev.filter((_, i) => i !== index));
+  const removePersonalEx = (index) => {
+    setExercisesInProgressTable(prev => {
+      const removed = prev[index];   // the exercise being removed
+
+      // Add removed exercise to personalExToRemove
+      setPersonalExToRemove(prevRemoved => ({
+        ...prevRemoved,
+        [removed._id || removed.exerciseId]: removed
+      }));
+
+      // Return new table without the removed item
+      return prev.filter((_, i) => i !== index);
+    });
   };
+
 
   // Append selected pending exercises to the in-progress table
   const addExerciseToWorkout = (e) => {
@@ -345,25 +422,79 @@ const handleSubmit = async () => {
 
   // useEffect 5: fetch current workout for the user on mount
   useEffect(() => {
-    async function getWorkout() {
-      try {
-        const data = await fetchWorkout(userId);
+  async function getWorkout() {
+    try {
+      // --- 1. Compute today at midnight ---
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const currentDateUnix = Math.floor(today.getTime() / 1000);
 
-        // Only set workoutId if data is a non-empty array
-        if (Array.isArray(data) && data.length > 0) {
-          setWorkout(data[0]);
-          setWorkoutId(data[0]._id);
-          setWorkoutTitle(data[0]["title"]);
-        } else {
-          console.warn("Workout data is empty or invalid:", data);
-        }
-      } catch (err) {
-        console.error("Error fetching workout:", err);
+      // --- 2. Compute tomorrow at midnight ---
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+      const tomorrowUnix = Math.floor(tomorrow.getTime() / 1000);
+
+      console.log("Searching workouts between:", currentDateUnix, tomorrowUnix);
+
+      // --- 3. Fetch ALL workouts for the user ---
+      const allWorkouts = await fetchWorkout(userId); // your existing function
+
+      if (!Array.isArray(allWorkouts)) {
+        console.warn("Workout fetch returned invalid data:", allWorkouts);
+        return;
       }
-    }
 
-    getWorkout();
-  }, []);
+      // --- 4. Filter workouts by today's date range ---
+      const todaysWorkouts = allWorkouts.filter(w =>
+        w.startTime >= currentDateUnix && w.startTime < tomorrowUnix
+      );
+
+      // --- 5. If none exist, create a new workout ---
+      if (todaysWorkouts.length === 0) {
+        console.log("No workout found for today — creating new workout...");
+
+        const newWorkoutPayload = {
+          endTime: currentDateUnix,          // or 0 if you prefer
+          gymId: "69af3c3e94310c6e29840229", // your real gymId
+          startTime: currentDateUnix,        // midnight Unix timestamp
+          title: "Workout (" + today.toDateString() + ")",
+          userId: userId
+        };
+
+
+        console.log(newWorkoutPayload);
+
+        const createRes = await fetch("http://localhost:5000/AHFULworkout/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newWorkoutPayload)
+        });
+
+        const newWorkout = await createRes.json();
+
+        setWorkout(newWorkout);
+        setWorkoutId(newWorkout._id);
+        setWorkoutTitle(newWorkout.title);
+        setTime(workout.endTime - workout.startTime);
+        return;
+      }
+
+      // --- 6. Otherwise load the existing workout ---
+      const workout = todaysWorkouts[0];
+
+      setWorkout(workout);
+      setWorkoutId(workout._id);
+      setWorkoutTitle(workout.title);
+      setTime(workout.endTime - workout.startTime);
+
+    } catch (err) {
+      console.error("Error fetching workout:", err);
+    }
+  }
+
+  getWorkout();
+}, []);
+
 
   // useEffect 6: fetch personal exercises when workoutId changes
   useEffect(() => {
@@ -406,9 +537,14 @@ const handleSubmit = async () => {
       <div className="center-column">
         <div className="workout-card">
           <div className="workout-title">
-            <h1>{workoutTitle}</h1>
-            {workout && <h2>{unixToDate(workout.startTime)}</h2>}
+            <input
+              type="text"
+              value={workoutTitle}
+              onChange={(e) => setWorkoutTitle(e.target.value)}
+            />
+            {workout && <h3>{unixToDate(workout.startTime)}</h3>}
           </div>
+
 
           <div className="workout-grid">
             <div className="cell header">Exercise</div>
@@ -424,7 +560,7 @@ const handleSubmit = async () => {
                 </div>
 
                 <div className="cell">
-                  {ex.completed ? (
+                  {ex.complete ? (
                     ex.reps
                   ) : (
                     <input
@@ -436,7 +572,7 @@ const handleSubmit = async () => {
                 </div>
 
                 <div className="cell">
-                  {ex.completed ? (
+                  {ex.complete ? (
                     ex.sets
                   ) : (
                     <input
@@ -448,7 +584,7 @@ const handleSubmit = async () => {
                 </div>
 
                 <div className="cell">
-                  {ex.completed ? (
+                  {ex.complete ? (
                     ex.weight
                   ) : (
                     <input
@@ -472,7 +608,7 @@ const handleSubmit = async () => {
                 <div className="cell">
                   <button
                     className="delete-button"
-                    onClick={() => removeWorkout(i)}
+                    onClick={() => removePersonalEx(i)}
                   >
                     🗑️
                   </button>
@@ -632,6 +768,25 @@ const handleSubmit = async () => {
           </div>
         </div>
       </div>
+      {/* Save Success Toast */}
+      {saveSuccess && (
+        <div style={{
+          position: "fixed",
+          bottom: 24,
+          left: "50%",
+          transform: "translateX(-50%)",
+          background: "#0a7b00",
+          color: "white",
+          padding: "12px 24px",
+          borderRadius: 8,
+          fontWeight: "bold",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+          zIndex: 3000,
+        }}>
+          Exercise saved successfully!
+        </div>
+      )}
+
       {/* New Exercise Modal */}
       {showNewExerciseModal && (
         <div className="modal-overlay" onClick={closeNewExerciseModal}>
@@ -651,6 +806,27 @@ const handleSubmit = async () => {
               }
               style={{ width: "100%" }}
             />
+
+            <label style={{ display: "block", marginTop: 8 }}>GIF URL (optional)</label>
+            <input
+              type="text"
+              value={newExercise.gifUrl}
+              onChange={(e) =>
+                setNewExercise((p) => ({ ...p, gifUrl: e.target.value }))
+              }
+              placeholder="https://..."
+              style={{ width: "100%" }}
+            />
+            {newExercise.gifUrl && newExercise.gifUrl.startsWith('http') && (
+              <div style={{ marginTop: 8, textAlign: "center" }}>
+                <img
+                  src={newExercise.gifUrl}
+                  alt="GIF Preview"
+                  style={{ maxWidth: "100%", maxHeight: "150px", borderRadius: "8px", border: "2px solid #000" }}
+                  onError={(e) => { e.target.style.display = "none"; }}
+                />
+              </div>
+            )}
 
             <label style={{ display: "block", marginTop: 8 }}>Target Muscles</label>
             {muscleError && (
@@ -731,7 +907,9 @@ const handleSubmit = async () => {
               <button type="button" onClick={closeNewExerciseModal}>
                 Cancel
               </button>
-              <button type="submit">Save</button>
+              <button type="submit" id="Sothat283763Me" disabled={isSaving}>
+                {isSaving ? "Saving..." : "Save"}
+              </button>
             </div>
           </form>
         </div>

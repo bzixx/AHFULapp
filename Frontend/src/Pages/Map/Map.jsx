@@ -7,6 +7,7 @@ import "leaflet/dist/leaflet.css";
 
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import L from "leaflet";
+import { reverseGeocode, forwardGeocode } from "../../queryFunctions";
 
 // Fix marker icon paths for bundlers (Vite/webpack). Importing the images returns
 // a resolved URL which Leaflet can use when creating the default icon.
@@ -29,6 +30,12 @@ export function Map() {
   const [savedGyms, setSavedGyms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  
+  // Geocoding state
+  const [addressInput, setAddressInput] = useState("");
+  const [geoError, setGeoError] = useState(null);
+  const [isGeocoding, setIsGeocoding] = useState(false);
+  const [addressLocked, setAddressLocked] = useState(false);
 
   const fetchGyms = async () => {
     try {
@@ -87,6 +94,60 @@ export function Map() {
 
   function onMapClick(mapinput) {
     setForm((f) => ({ ...f, lat: mapinput.lat, lng: mapinput.lng }));
+    // Unlock address when user clicks map so reverse geocode can fill it
+    setAddressLocked(false);
+  }
+
+  // Reverse geocode lat/lng to address when they change (debounced 1 second)
+  useEffect(() => {
+    if (addressLocked) return;
+    
+    const timer = setTimeout(async () => {
+      if (!form.lat || !form.lng) return;
+      
+      setIsGeocoding(true);
+      try {
+        const address = await reverseGeocode(form.lat, form.lng);
+        if (address) {
+          setForm((f) => ({ ...f, address }));
+        }
+      } catch (e) {
+        // Silent fail
+      } finally {
+        setIsGeocoding(false);
+      }
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, [form.lat, form.lng, addressLocked]);
+
+  // Forward geocode address to lat/lng
+  async function handleAddressSearch(e) {
+    e.preventDefault();
+    if (!addressInput.trim()) return;
+    
+    setIsGeocoding(true);
+    setGeoError(null);
+    setAddressLocked(true);
+    
+    try {
+      const result = await forwardGeocode(addressInput);
+      if (result) {
+        setForm((f) => ({ 
+          ...f, 
+          lat: result.lat, 
+          lng: result.lng,
+          address: result.displayName || addressInput
+        }));
+        setAddressInput("");
+      } else {
+        setGeoError("Address not found. Try a more specific location.");
+      }
+    } catch (e) {
+      setGeoError("Failed to search address. Please try again.");
+    } finally {
+      setIsGeocoding(false);
+    }
   }
 
   function saveGym(e) {
@@ -165,6 +226,21 @@ export function Map() {
 
       <div className="map-and-form">
         <div className="map-container">
+          {/* Address search box */}
+          <p className="search-hint">Search for an address to update lat/long, or click the map to fill in all fields.</p>
+          <form onSubmit={handleAddressSearch} className="address-search">
+            <input
+              value={addressInput}
+              onChange={(e) => setAddressInput(e.target.value)}
+              placeholder="Search for an address..."
+              disabled={isGeocoding}
+            />
+            <button type="submit" disabled={isGeocoding}>
+              {isGeocoding ? "..." : "Go"}
+            </button>
+          </form>
+          {geoError && <p className="geo-error">{geoError}</p>}
+
           {/* MapContainer needs an explicit height (or a parent with height) to display tiles */}
           <MapContainer center={position} zoom={13} scrollWheelZoom={false} style={{ height: "60vh", width: "100%" }}>
             <TileLayer
@@ -216,7 +292,10 @@ export function Map() {
               Address
               <input
                 value={form.address}
-                onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
+                onChange={(e) => {
+                  setForm((f) => ({ ...f, address: e.target.value }));
+                  setAddressLocked(true);
+                }}
                 placeholder="Street, city"
               />
             </label>
@@ -297,7 +376,7 @@ export function Map() {
               <button type="submit" className="primary">Save</button>
             </div>
 
-            <p className="hint">Tip: click anywhere on the map to fill latitude/longitude.</p>
+            <p className="hint">Tip: click anywhere on the map to fill latitude/longitude and address.</p>
           </form>
 
           <div className="saved-list">

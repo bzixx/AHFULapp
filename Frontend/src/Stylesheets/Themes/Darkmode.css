@@ -1,0 +1,12 @@
+.dark {
+  --color-bg: #505256;
+  --color-surface: #1e293b;
+  --color-primary: #0f172a;
+  --color-border: #475569;
+
+  --text-primary: white;
+  --text-secondary: white;
+  --text-muted: white;
+
+  --gradient-card: linear-gradient(90deg, #1e293b, #334155);
+}

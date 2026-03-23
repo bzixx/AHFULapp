@@ -15,11 +15,32 @@ class ExerciseObject:
             exercise["_id"] = str(exercise["_id"])
         return exercise
     
+    # ── Validation ─────────────────────────────────────────────────────────────
+    @staticmethod
+    def validate(data):
+        """Validate exercise data. Returns (is_valid, error_message)."""
+        if not data:
+            return False, "No data provided"
+        
+        if "name" not in data or not isinstance(data["name"], str) or not data["name"].strip():
+            return False, "Name is required and must be a non-empty string"
+        
+        array_fields = ["targetMuscles", "bodyParts", "equipments", "secondaryMuscles", "instructions"]
+        for field in array_fields:
+            if field in data and not isinstance(data[field], list):
+                return False, f"{field} must be an array"
+        
+        return True, None
+    
     # ── Create ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def create(workout_data):
-        result = ExerciseCollection.insert_one(workout_data)
-        return str(result.inserted_id)
+    def create(exercise_data):
+        is_valid, error = ExerciseObject.validate(exercise_data)
+        if not is_valid:
+            return None, error
+        
+        result = ExerciseCollection.insert_one(exercise_data)
+        return str(result.inserted_id), None
 
     # ── Read ──────────────────────────────────────────────────────────────────
     @staticmethod
@@ -42,6 +63,3 @@ class ExerciseObject:
     def delete(id):
         result = ExerciseCollection.delete_one({"_id": ObjectId(id)})
         return str((result.deleted_count == 1) * id)
-    
-    
-        
