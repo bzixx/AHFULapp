@@ -10,8 +10,9 @@ import { Map } from "./Pages/Map/Map.jsx";
 import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
 import { Profile } from "./Pages/Profile/Profile.jsx";
 import { TOS } from "./Pages/TOS/TOS.jsx";
-import { Layout } from "./Layout.jsx"
+import { Layout } from "./layout.jsx"
 import { AuthRouteCheck } from "./AuthRouteCheck.jsx";
+import { Settings } from "./Pages/Settings/Settings.jsx";
 import "./SiteStyles.css";
 
 
@@ -67,6 +68,9 @@ function AHFULApp() {
               <TOS/>
             </AuthRouteCheck>}/>
         </Route>
+        <Route path="Settings" element={
+          <Settings/>
+        }/>
       </Routes>
     </GoogleOAuthProvider>
   );
