@@ -460,8 +460,6 @@ export function WorkoutLogger() {
           userId: userId
         };
 
-        console.log(newWorkoutPayload);
-
         const result = await createWorkout(newWorkoutPayload);
 
         if (result.error) {
@@ -747,7 +745,6 @@ export function WorkoutLogger() {
                 )}
                 {!loading &&
                   exercises.map((item, i) => {
-                    console.log("Exercise item:", item);
                     const name = item.name; // backend name
                     const id = item._id ?? item.exerciseId; // backend ID
 
