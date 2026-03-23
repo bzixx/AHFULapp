@@ -19,7 +19,6 @@ export function formatTime(seconds) {
 }
 
 export async function loadEquipment() {
-  // Returns { data: [ {value,label}, ... ] } or throws
   try {
     const res = await fetch("http://localhost:5000/AHFULexercises/equipments/", {
       method: "GET",
@@ -57,7 +56,6 @@ export async function loadEquipment() {
 }
 
 export async function loadBodyParts() {
-  // Returns { data: [ {value,label}, ... ] } or throws
   try {
     const res = await fetch("http://localhost:5000/AHFULexercises/bodyparts/", {
       method: "GET",
@@ -95,7 +93,6 @@ export async function loadBodyParts() {
 }
 
 export async function loadTargetMuscles() {
-  // Returns { data: [ {value,label}, ... ] } or throws
   try {
     const res = await fetch("http://localhost:5000/AHFULexercises/muscles/", {
       method: "GET",
@@ -133,14 +130,15 @@ export async function loadTargetMuscles() {
 }
 
 export async function fetchExercisesFromBackend() {
-  // Returns array of exercises or throws
   const res = await fetch("http://localhost:5000/AHFULexercises");
   if (!res.ok) {
     let bodyText = "";
     try {
       bodyText = await res.text();
-    } catch (e) {
-      /* ignore */
+    } catch (e) {}
+    // If 404 or empty response, return empty array for new users
+    if (res.status === 404 || res.status === 204) {
+      return [];
     }
     throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
   }
@@ -160,6 +158,10 @@ export async function searchExercises(searchQuery) {
     try {
       bodyText = await res.text();
     } catch (e) {}
+    // If 404 or empty response, return empty array for new users
+    if (res.status === 404 || res.status === 204) {
+      return [];
+    }
     throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
   }
   const data = await res.json();
@@ -185,29 +187,55 @@ export async function fetchTemplate(userId) {
 }
 
 export async function fetchWorkout(userId) {
-  const res = await fetch(`http://localhost:5000/AHFULworkout/${userId}`);
-  if (!res.ok) {
-    let bodyText = "";
-    try {
-      bodyText = await res.text();
-    } catch (e) {}
-    throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
+  try {
+    const res = await fetch(`http://localhost:5000/AHFULworkout/${userId}`);
+    
+    // Handle empty or not found responses for new users
+    if (res.status === 404 || res.status === 204) {
+      return [];
+    }
+    
+    if (!res.ok) {
+      const bodyText = await res.text().catch(() => "");
+      throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
+    }
+    
+    const data = await res.json();
+    // Ensure we always return an array
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.workouts)) return data.workouts;
+    if (data && Array.isArray(data.data)) return data.data;
+    return [];
+  } catch (err) {
+    console.error("fetchWorkout error:", err);
+    // Return empty array for network errors on new user accounts
+    throw err;
   }
-  const data = await res.json();
-  return data;
 }
 
 export async function fetchPersonalExercises(workoutId) {
-  const res = await fetch(`http://localhost:5000/AHFULpersonalEx/workout/${workoutId}`);
-  if (!res.ok) {
-    let bodyText = "";
-    try {
-      bodyText = await res.text();
-    } catch (e) {}
-    throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
+  try {
+    const res = await fetch(`http://localhost:5000/AHFULpersonalEx/workout/${workoutId}`);
+    
+    // Handle empty or not found responses
+    if (res.status === 404 || res.status === 204) {
+      return [];
+    }
+    
+    if (!res.ok) {
+      const bodyText = await res.text().catch(() => "");
+      throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
+    }
+    
+    const data = await res.json();
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.exercises)) return data.exercises;
+    if (data && Array.isArray(data.data)) return data.data;
+    return [];
+  } catch (err) {
+    console.error("fetchPersonalExercises error:", err);
+    return [];
   }
-  const data = await res.json();
-  return data;
 }
 
 export async function createPersonalExercises(peData) {
@@ -303,8 +331,6 @@ export async function createExercise(exerciseData) {
   }
 }
 
-// ── Geocoding Functions (Nominatim/OpenStreetMap) ─────────────────────────────────
-
 export async function reverseGeocode(lat, lng) {
   try {
     const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
@@ -346,45 +372,79 @@ export async function forwardGeocode(address) {
   }
 }
 
-export async function createWorkout(workoutData) {
-  try {
-    const res = await fetch("http://localhost:5000/AHFULworkout/create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(workoutData)
-        });
+// ── Exercise Functions ─────────────────────────────────────────────────────────
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      return { error: data.error || `Server returned ${res.status}` };
-    }
-
-    return { success: true, data };
-  } catch (err) {
-    console.error("createExercise error:", err);
-    const msg = err && err.message ? err.message : "Failed to create exercise";
-    return { error: msg };
+export async function fetchExerciseById(exerciseId) {
+  const res = await fetch(`http://localhost:5000/AHFULexercises/id/${exerciseId}`);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch exercise: ${res.status} ${res.statusText}`);
   }
+  return res.json();
 }
 
+// ── Workout Functions ───────────────────────────────────────────────────────────
 
-export async function updateWorkout(workoutId, workoutData) {
-  try {
-    const res = await fetch(`http://localhost:5000/AHFULworkout/update/${workoutId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(workoutData)
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      return { error: data.error || `Server returned ${res.status}` };
-    }
-
-    return { success: true, data };
-  } catch (err) {
-    return { error: err.message || "Failed to update workout" };
+export async function createWorkout(workoutData) {
+  const res = await fetch("http://localhost:5000/AHFULworkout/create", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(workoutData)
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to create workout: ${res.status} ${err}`);
   }
+  return res.json();
+}
+
+export async function updateWorkout(workoutId, data) {
+  const res = await fetch(`http://localhost:5000/AHFULworkout/update/${workoutId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to update workout: ${res.status} ${err}`);
+  }
+  return res.json();
+}
+
+// ── Personal Exercise Functions ─────────────────────────────────────────────────
+
+export async function createPersonalExercise(data) {
+  const res = await fetch("http://localhost:5000/AHFULpersonalEx/create", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to create personal exercise: ${res.status} ${err}`);
+  }
+  return res.json();
+}
+
+export async function updatePersonalExercise(exerciseId, data) {
+  const res = await fetch(`http://localhost:5000/AHFULpersonalEx/update/${exerciseId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to update personal exercise: ${res.status} ${err}`);
+  }
+  return res.json();
+}
+
+export async function deletePersonalExercise(exerciseId) {
+  const res = await fetch(`http://localhost:5000/AHFULpersonalEx/delete/${exerciseId}`, {
+    method: "DELETE"
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to delete personal exercise: ${res.status} ${err}`);
+  }
+  return res.json();
 }

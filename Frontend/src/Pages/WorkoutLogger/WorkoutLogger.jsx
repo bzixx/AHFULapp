@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useSelector } from "react-redux";
 import "./WorkoutLogger.css";
 import "../../SiteStyles.css";
 import {
@@ -10,32 +11,76 @@ import {
   searchExercises,
   fetchWorkout,
   fetchPersonalExercises,
-  fetchTemplate,
-  loadBodyParts,
-  createExercise,
-  createPersonalExercises,
+  fetchExerciseById,
   createWorkout,
   updateWorkout,
-  updatePersonalExercises
+  createPersonalExercise,
+  updatePersonalExercise,
+  deletePersonalExercise,
+  fetchTemplate,
+  loadBodyParts,
+  createExercise
 } from "../../QueryFunctions";
 
+/**
+ * WorkoutLogger - Main workout tracking page
+ * 
+ * Features:
+ * - Create/manage daily workouts
+ * - Add exercises from the database
+ * - Create custom exercises
+ * - Track reps, sets, weight for each exercise
+ * - Workout timer
+ * 
+ * Auth Flow:
+ * - Gets userId from Redux auth state
+ * - Creates a default workout for today if none exists
+ * - Loads existing personal exercises for the workout
+ */
 export function WorkoutLogger() {
+  // ─── Redux Auth State ─────────────────────────────────────────────────────────
+  const user = useSelector((state) => state.auth.user);
+  const userId = user?._id;
+
+  // ─── Personal Exercise State ──────────────────────────────────────────────────
+  // Tracks exercises to be deleted when workout is submitted (removed from UI but need DB deletion)
+  const [personalExToRemove, setPersonalExToRemove] = useState({});
+  // Maps exercise IDs to their display names (fetched from backend)
+  const [personalExNames, setPersonalExNames] = useState({});
+  // Exercises currently in the workout (reps, sets, weight, completed status)
   const [templates, setTemplates] = useState([]);
   /* Hook to track state of the InProgressTable on the Workout Page */
   const [exercisesInProgressTable, setExercisesInProgressTable] = useState([]);
-  /* Hook to track state of the exercises from the DB on the Workout Page */
+
+  // ─── Exercise Database State ──────────────────────────────────────────────────
+  // All exercises available in the database
   const [exercises, setExercises] = useState([]);
-  /* Hook to track state of the exercises from the DB on the Explore Workout Page */
-  const [loading, setLoading] = useState(false);
-  /* Hook to track state of the error from the DB on the Workout Page */
+  // Exercise list loading state
+  const [exerciseLoading, setExerciseLoading] = useState(false);
+  // Error state for exercise operations
   const [error, setError] = useState(null);
-  /* Hook to track state of the timer for the workout */
+
+  // ─── Workout State ───────────────────────────────────────────────────────────
+  // Current workout object from database
+  const [workout, setWorkout] = useState(null);
+  // Current workout ID (used for API calls)
+  const [workoutId, setWorkoutId] = useState("");
+  // User-editable workout title
+  const [workoutTitle, setWorkoutTitle] = useState("");
+  // Workout loading state
+  const [workoutLoading, setWorkoutLoading] = useState(true);
+  // Workout error state
+  const [workoutError, setWorkoutError] = useState(null);
+
+  // ─── Timer State ─────────────────────────────────────────────────────────────
   const [isRunning, setIsRunning] = useState(false);
-  /* Hook to track the time elapsed during the workout */
   const [time, setTime] = useState(0);
-  /*Hook to track name of the exercise being added to the workout via the dropdown */
+
+  // ─── Exercise Selection State ────────────────────────────────────────────────
   const [exerciseName, setExerciseName] = useState("");
+  // Selected exercise IDs pending to be added to workout
   const [pendingExercises, setPendingExercises] = useState([]);
+  // Modal visibility for creating new exercises
   const [showNewExerciseModal, setShowNewExerciseModal] = useState(false);
 
   const [personalExToRemove, setPersonalExToRemove] = useState({});
@@ -61,16 +106,27 @@ export function WorkoutLogger() {
 
   const [BodyPartOptions, setBodyPartOptions] = useState([]);
   const [BodyPartError, setBodyPartError] = useState(null);
-
   const [muscleOptions, setMuscleOptions] = useState([]);
   const [muscleError, setMuscleError] = useState(null);
 
+  // ─── New Exercise Form State ──────────────────────────────────────────────────
   const [newExercise, setNewExercise] = useState(getDefaultNewExercise());
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  // ─── Refs ───────────────────────────────────────────────────────────────────
+  const searchTimeoutRef = useRef(null);
+
+  // ─── Utility Functions ───────────────────────────────────────────────────────
   const resetNewExercise = () => setNewExercise(getDefaultNewExercise());
 
+  const formatTime = formatTimeFn;
+
+  const unixToDate = (unix) => {
+    return new Date(unix * 1000).toLocaleDateString("en-US");
+  };
+
+  // ─── Modal Handlers ─────────────────────────────────────────────────────────
   const openNewExerciseModal = () => {
     resetNewExercise();
     setShowNewExerciseModal(true);
@@ -80,6 +136,7 @@ export function WorkoutLogger() {
     setShowNewExerciseModal(false);
   };
 
+  // ─── New Exercise Form Handler ────────────────────────────────────────────────
   const handleNewExerciseSave = async (e) => {
     e.preventDefault();
     if (!newExercise.name.trim()) {
@@ -88,24 +145,26 @@ export function WorkoutLogger() {
     }
 
     setIsSaving(true);
-    const result = await createExercise(newExercise);
-    setIsSaving(false);
+    try {
+      const result = await createExercise(newExercise);
 
-    if (result.error) {
-      alert(`Failed to save exercise: ${result.error}`);
-      return;
+      if (result.error) {
+        alert(`Failed to save exercise: ${result.error}`);
+        return;
+      }
+
+      // Add the new exercise to the local list
+      setExercises((prev) => [...prev, { ...newExercise, _id: result.data.exercise_id }]);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 2500);
+      closeNewExerciseModal();
+      resetNewExercise();
+    } finally {
+      setIsSaving(false);
     }
-
-    setExercises((prev) => [
-      ...prev,
-      { ...newExercise, _id: result.data.exercise_id },
-    ]);
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 2500);
-    closeNewExerciseModal();
-    resetNewExercise();
   };
 
+  // ─── Multi-select Handler for Exercise Form ─────────────────────────────────
   const handleMultiSelectChange = (e, field) => {
     const values = Array.from(e.target.selectedOptions, (o) => o.value);
     setNewExercise((prev) => ({ ...prev, [field]: values }));
@@ -126,9 +185,11 @@ export function WorkoutLogger() {
     };
   }, []);
 
-  // useEffect 2: load equipment options once on mount
+  // ─── Load Exercise Options on Mount ──────────────────────────────────────────
   useEffect(() => {
     let mounted = true;
+
+    // Load equipment options
     (async () => {
       const res = await loadEquipmentFn();
       if (!mounted) return;
@@ -136,6 +197,7 @@ export function WorkoutLogger() {
       if (res && res.error) setEquipmentError(res.error);
     })();
 
+    // Load muscle options
     (async () => {
       const res = await loadTargetMuscles();
       if (!mounted) return;
@@ -143,6 +205,7 @@ export function WorkoutLogger() {
       if (res && res.error) setMuscleError(res.error);
     })();
 
+    // Load body part options
     (async () => {
       const res = await loadBodyParts();
       if (!mounted) return;
@@ -150,22 +213,19 @@ export function WorkoutLogger() {
       if (res && res.error) setBodyPartError(res.error);
     })();
 
+    return () => { mounted = false; };
+  }, []);
+
+  // ─── Cleanup Search Timeout on Unmount ────────────────────────────────────────
+  useEffect(() => {
     return () => {
-      mounted = false;
+      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
     };
   }, []);
 
-  /* Functions */
-
-  /* Exercise Functions */
-
-  // Fetch exercises from our backend.
-  // The backend registers the blueprint at /exercises (see Backend/APIRoutes/ExerciseRoutes.py).
-  // The endpoint may return either a raw array (e.g. [ {name:...}, ... ])
-  // or an envelope like { data: [...] } or { results: [...] } depending on the backend.
-  // We try to be flexible and handle the common shapes.
+  // ─── Load Exercises from Database ─────────────────────────────────────────────
   const fetch_exercises = async () => {
-    setLoading(true);
+    setExerciseLoading(true);
     setError(null);
     try {
       const list = await fetchExercisesFromBackend();
@@ -177,40 +237,39 @@ export function WorkoutLogger() {
       setError(friendly || "Unknown error");
       setExercises([]);
     } finally {
-      setLoading(false);
+      setExerciseLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetch_exercises();
+  }, []);
+
+  // ─── Toggle Exercise Completion ───────────────────────────────────────────────
   const toggleCompleted = (index) => {
     setExercisesInProgressTable((prev) => {
       const updated = [...prev];
       updated[index] = {
         ...updated[index],
-        complete: !updated[index].complete,
+        complete: !updated[index].complete
       };
       return updated;
     });
   };
 
-  function createPersonalExerciseObject(rawName) {
-    return {
-      _id: null, // temporary ID until backend saves it
-      exerciseId: rawName, // or map this to your real exerciseId
-      workoutId: workoutId, // you should have this in state/props
-      userId: userId, // same here
-      complete: false,
-      reps: 0,
-      sets: 0,
-      weight: "0",
-      distance: "0",
-      duration: 0,
-    };
-  }
+  // ─── Update Exercise Field (reps, sets, weight) ───────────────────────────────
+  const updateField = (index, field, value) => {
+    setExercisesInProgressTable((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
 
+  // ─── Load Exercise Names for Display ─────────────────────────────────────────
+  // When exercises are added to the workout, we need to fetch their display names
   useEffect(() => {
-    if (!exercisesInProgressTable.length) {
-      return;
-    }
+    if (!exercisesInProgressTable.length) return;
 
     const ids = exercisesInProgressTable.map((ex) => ex.exerciseId);
     const missing = ids.filter((id) => !personalExNames[id]);
@@ -222,20 +281,16 @@ export function WorkoutLogger() {
     const loadNames = async () => {
       try {
         const results = {};
-
         for (const id of missing) {
-          const res = await fetch(
-            `http://localhost:5000/AHFULexercises/id/${id}`,
-          );
-          const data = await res.json();
-
-          results[id] = data.name;
+          try {
+            const data = await fetchExerciseById(id);
+            results[id] = data.name;
+          } catch (err) {
+            console.error("Error fetching exercise name for", id, err);
+            results[id] = "Unknown Exercise";
+          }
         }
-
-        setPersonalExNames((prev) => {
-          const merged = { ...prev, ...results };
-          return merged;
-        });
+        setPersonalExNames((prev) => ({ ...prev, ...results }));
       } catch (err) {
         console.error("Error fetching exercise names:", err);
       }
@@ -244,13 +299,8 @@ export function WorkoutLogger() {
     loadNames();
   }, [exercisesInProgressTable]);
 
-  const updateField = (index, field, value) => {
-    setExercisesInProgressTable((prev) => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
-    });
-  };
+  // ─── Submit Workout ───────────────────────────────────────────────────────────
+  // Saves all exercise changes and updates workout end tim
 
   const handleSubmit = async () => {
     console.log("Submitting workout...");
@@ -329,13 +379,13 @@ export function WorkoutLogger() {
   }
 };
 
+    } catch (err) {
+      console.error("Error submitting workout:", err);
+    }
+  };
 
-
-  // useEffect 3: fetch available exercises from backend on mount
-  useEffect(() => {
-    fetch_exercises();
-  }, []);
-
+  // ─── Remove Exercise from Workout ─────────────────────────────────────────────
+  // Removes from UI but queues for deletion on submit
   const removePersonalEx = (index) => {
     setExercisesInProgressTable((prev) => {
       const removed = prev[index]; // the exercise being removed
@@ -345,8 +395,6 @@ export function WorkoutLogger() {
         ...prevRemoved,
         [removed._id || removed.exerciseId]: removed,
       }));
-
-      // Return new table without the removed item
       return prev.filter((_, i) => i !== index);
     });
   };
@@ -354,46 +402,60 @@ export function WorkoutLogger() {
   // Append selected pending exercises to the in-progress table
   const addExerciseToWorkout = (e) => {
     if (e && typeof e.preventDefault === "function") e.preventDefault();
+    
+    // Ensure workout is loaded before adding exercises
+    if (!workoutId) {
+      console.warn("Cannot add exercises - workout not loaded yet");
+      return;
+    }
+    
     if (pendingExercises.length === 0) return;
 
-    setExercisesInProgressTable((prev) => [
-      ...prev,
-      ...pendingExercises.map((name) => createPersonalExerciseObject(name)),
-    ]);
+    // Create exercise objects with workout context
+    const newExercises = pendingExercises.map(rawName => ({
+      _id: null,  // null = new exercise, will be assigned ID after DB save
+      exerciseId: rawName,
+      workoutId: workoutId,
+      userId: userId,
+      complete: false,
+      reps: 0,
+      sets: 0,
+      weight: "0",
+      distance: "0",
+      duration: 0,
+    }));
 
+    setExercisesInProgressTable((prev) => [...prev, ...newExercises]);
     setPendingExercises([]);
     setExerciseName("");
   };
 
-  // Search handler - calls the backend search endpoint and replaces `exercises` with results
+  // ─── Search Exercises ─────────────────────────────────────────────────────────
   const handleSearch = async (query) => {
     const searchQuery = typeof query === "string" ? query : exerciseName;
+    
     if (!searchQuery) {
-      // If no query, re-fetch all exercises
       fetch_exercises();
       return;
     }
 
-    setLoading(true);
+    setExerciseLoading(true);
     setError(null);
     try {
       const list = await searchExercises(searchQuery);
       setExercises(list);
     } catch (err) {
       console.error("Search failed:", err);
-      const friendly =
-        err && err.name ? `${err.name}: ${err.message}` : String(err);
+      const friendly = err && err.name ? `${err.name}: ${err.message}` : String(err);
       setError(friendly || "Unknown error");
     } finally {
-      setLoading(false);
+      setExerciseLoading(false);
     }
   };
 
-  /* Timer Functions */
-  // useEffect 4: manage workout timer interval while isRunning
+  // ─── Timer Logic ──────────────────────────────────────────────────────────────
   useEffect(() => {
     let interval = null;
-
     if (isRunning) {
       interval = setInterval(() => {
         setTime((t) => t + 1);
@@ -401,7 +463,6 @@ export function WorkoutLogger() {
     } else {
       clearInterval(interval);
     }
-
     return () => clearInterval(interval);
   }, [isRunning]);
 
@@ -409,102 +470,125 @@ export function WorkoutLogger() {
     setIsRunning((r) => !r);
   };
 
-  const formatTime = formatTimeFn;
-
-  /////////////////////////////////////////////////////////////////////////////////////////
-  /* Initial Page Load */
-  /////////////////////////////////////////////////////////////////////////////////////////
-
-  // Test id: user_id: 699d0093795741a59fe13616
-  const userId = "699d0093795741a59fe13616";
-  const [workout, setWorkout] = useState("");
-  const [workoutId, setWorkoutId] = useState("");
-  const [workoutTitle, setWorkoutTitle] = useState("");
-
-  // useEffect 5: fetch current workout for the user on mount
+  // ─── Load or Create Today's Workout ───────────────────────────────────────────
   useEffect(() => {
+    // Don't proceed if user isn't logged in
+    if (!userId) {
+      setWorkoutLoading(false);
+      return;
+    }
+
     async function getWorkout() {
       try {
-        // --- 1. Compute today at midnight ---
+        setWorkoutLoading(true);
+        setWorkoutError(null);
+
+        // Calculate today's date range (midnight to midnight)
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const currentDateUnix = Math.floor(today.getTime() / 1000);
-
-        // --- 2. Compute tomorrow at midnight ---
         const tomorrow = new Date(today);
         tomorrow.setDate(today.getDate() + 1);
         const tomorrowUnix = Math.floor(tomorrow.getTime() / 1000);
 
-        // --- 3. Fetch ALL workouts for the user ---
-        const allWorkouts = await fetchWorkout(userId); // your existing function
+        console.log("Searching workouts between:", currentDateUnix, tomorrowUnix);
 
-        if (!Array.isArray(allWorkouts)) {
-          console.warn("Workout fetch returned invalid data:", allWorkouts);
-          return;
-        }
+        // Fetch all workouts for this user
+        const allWorkouts = await fetchWorkout(userId);
 
-        // --- 4. Filter workouts by today's date range ---
-        const todaysWorkouts = allWorkouts.filter(
-          (w) => w.startTime >= currentDateUnix && w.startTime < tomorrowUnix,
+        // Filter to today's workouts only
+        const todaysWorkouts = allWorkouts.filter(w =>
+          w.startTime >= currentDateUnix && w.startTime < tomorrowUnix
         );
 
-        // --- 5. If none exist, create a new workout ---
+        // If no workout exists for today, create one
         if (todaysWorkouts.length === 0) {
           console.log("No workout found for today — creating new workout...");
 
-        const newWorkoutPayload = {
-          endTime: currentDateUnix,          // or 0 if you prefer
-          gymId: "69af3c3e94310c6e29840229", // your real gymId
-          startTime: currentDateUnix,        // midnight Unix timestamp
-          title: "Workout (" + today.toDateString() + ")",
-          userId: userId
-        };
+          // Hardcoded gym ID (should be user preference in future)
+          const gymId = "69af3c3e94310c6e29840229";
+          
+          const newWorkoutPayload = {
+            endTime: currentDateUnix,
+            gymId: gymId,
+            startTime: currentDateUnix,
+            title: "Workout (" + today.toDateString() + ")",
+            userId: userId
+          };
 
-        const result = await createWorkout(newWorkoutPayload);
+          console.log("Creating workout:", newWorkoutPayload);
+          
+          const newWorkout = await createWorkout(newWorkoutPayload);
 
-        if (result.error) {
-          alert(`Failed to save workout: ${result.error}`);
+          setWorkout(newWorkout);
+          setWorkoutId(newWorkout._id);
+          setWorkoutTitle(newWorkout.title);
+          setTime(0);  // Reset timer for new workout
           return;
         }
 
-        setWorkout(result);
-        setWorkoutId(result._id);
-        setWorkoutTitle(result.title);
-        setTime(workout.endTime - workout.startTime);
-        return;
-      }
+        // Load existing workout for today
+        const existingWorkout = todaysWorkouts[0];
+        setWorkout(existingWorkout);
+        setWorkoutId(existingWorkout._id);
+        setWorkoutTitle(existingWorkout.title);
+        setTime(existingWorkout.endTime - existingWorkout.startTime);
 
-        // --- 6. Otherwise load the existing workout ---
-        const workout = todaysWorkouts[0];
-
-        setWorkout(workout);
-        setWorkoutId(workout._id);
-        setWorkoutTitle(workout.title);
-        setTime(workout.endTime - workout.startTime);
       } catch (err) {
         console.error("Error fetching workout:", err);
+        setWorkoutError(err.message || "Failed to load workout");
+      } finally {
+        setWorkoutLoading(false);
       }
     }
 
     getWorkout();
-  }, []);
+  }, [userId]);
 
-  // useEffect 6: fetch personal exercises when workoutId changes
+  // ─── Load Personal Exercises for Current Workout ───────────────────────────────
   useEffect(() => {
-    if (!workoutId) return; // prevents running on initial render
+    if (!workoutId) return;
 
     async function getPersonalEx() {
       try {
+        console.log("Fetching personal exercises for workout:", workoutId);
         const data = await fetchPersonalExercises(workoutId);
-        setExercisesInProgressTable(data);
+        setExercisesInProgressTable(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Error fetching personal exercises:", err);
       }
     }
 
     getPersonalEx();
-  }, [workoutId]); // <-- runs only when workoutId changes
+  }, [workoutId]);
 
+  // ─── Auth Guard: Show login prompt if not authenticated ──────────────────────
+  if (!userId) {
+    return (
+      <div className="page-layout">
+        <div className="center-column">
+          <div className="workout-card">
+            <h2>Please log in to track your workouts</h2>
+            <p>You need to be signed in to use the workout logger.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Loading State ────────────────────────────────────────────────────────────
+  if (workoutLoading) {
+    return (
+      <div className="page-layout">
+        <div className="center-column">
+          <div className="workout-card">
+            <h2>Loading workout...</h2>
+            <p>Please wait while we set up your workout.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
   // useEffect 7: fetch templates that user has created on load
 
   useEffect(() => {
@@ -526,12 +610,25 @@ export function WorkoutLogger() {
     getTemplates();
   }, [userId]);
 
-  function unixToDate(unix) {
-    return new Date(unix * 1000).toLocaleDateString("en-US");
+  // ─── Error State ─────────────────────────────────────────────────────────────
+  if (workoutError) {
+    return (
+      <div className="page-layout">
+        <div className="center-column">
+          <div className="workout-card">
+            <h2>Error Loading Workout</h2>
+            <p>{workoutError}</p>
+            <button onClick={() => window.location.reload()}>Retry</button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
+  // ─── Main Render ─────────────────────────────────────────────────────────────
   return (
     <div className="page-layout">
+      {/* Left Column: Template/History (placeholder for future feature) */}
       <div className="left-column">
         <div className="template-container">
           <div className="add-template-form">
@@ -606,8 +703,10 @@ export function WorkoutLogger() {
         </div>
       </div>
 
+      {/* Center Column: Workout Card */}
       <div className="center-column">
         <div className="workout-card">
+          {/* Workout Title & Date */}
           <div className="workout-title">
             <input
               type="text"
@@ -617,6 +716,7 @@ export function WorkoutLogger() {
             {workout && <h3>{unixToDate(workout.startTime)}</h3>}
           </div>
 
+          {/* Exercise Table */}
           <div className="workout-grid">
             <div className="cell header">Exercise</div>
             <div className="cell header">Reps</div>
@@ -624,12 +724,12 @@ export function WorkoutLogger() {
             <div className="cell header">Weight</div>
             <div className="cell header">Completed</div>
             <div className="cell header"></div>
+            
             {exercisesInProgressTable.map((ex, i) => (
               <React.Fragment key={i}>
                 <div className="cell">
-                  {personalExNames[ex.exerciseId] || "ERROR"}
+                  {personalExNames[ex.exerciseId] || "Loading..."}
                 </div>
-
                 <div className="cell">
                   {ex.complete ? (
                     ex.reps
@@ -641,7 +741,6 @@ export function WorkoutLogger() {
                     />
                   )}
                 </div>
-
                 <div className="cell">
                   {ex.complete ? (
                     ex.sets
@@ -653,7 +752,6 @@ export function WorkoutLogger() {
                     />
                   )}
                 </div>
-
                 <div className="cell">
                   {ex.complete ? (
                     ex.weight
@@ -665,28 +763,23 @@ export function WorkoutLogger() {
                     />
                   )}
                 </div>
-
                 <div className="cell">
                   <input
                     type="checkbox"
                     checked={ex.complete}
-                    onChange={() => {
-                      toggleCompleted(i);
-                    }}
+                    onChange={() => toggleCompleted(i)}
                   />
                 </div>
-
                 <div className="cell">
-                  <button
-                    className="delete-button"
-                    onClick={() => removePersonalEx(i)}
-                  >
+                  <button className="delete-button" onClick={() => removePersonalEx(i)}>
                     🗑️
                   </button>
                 </div>
               </React.Fragment>
             ))}
           </div>
+
+          {/* Submit Button */}
           <div className="workout-actions">
             <div className="workout-actions-left-side"></div>
             <div className="workout-actions-right-side">
@@ -696,11 +789,12 @@ export function WorkoutLogger() {
             </div>
           </div>
         </div>
+
+        {/* Timer Footer */}
         <div className="workout-footer">
           <div className="workout-timer-box workout-timer">
             {formatTime(time)}
           </div>
-
           <button
             className="workout-timer-box workout-timer-button"
             onClick={toggleTimer}
@@ -710,9 +804,11 @@ export function WorkoutLogger() {
         </div>
       </div>
 
+      {/* Right Column: Exercise Search & Selection */}
       <div className="right-column">
         <div className="add-exercise">
           <div className="add-exercise-form">
+            {/* Search Input */}
             <div className="dropdown-wrapper">
               <input
                 type="text"
@@ -721,79 +817,65 @@ export function WorkoutLogger() {
                 onChange={(e) => {
                   const v = e.target.value;
                   setExerciseName(v);
-
-                  // Debounce search calls so we don't spam the backend while typing
-                  if (searchTimeoutRef.current)
-                    clearTimeout(searchTimeoutRef.current);
+                  // Debounce search to avoid too many API calls
+                  if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
                   searchTimeoutRef.current = setTimeout(() => {
                     handleSearch(v);
                   }, 300);
                 }}
-                onFocus={() => {
-                  // no-op: list is always visible
-                }}
               />
-
               <div className="dropdown-instructions">
                 Click an exercise to select it
               </div>
+              
+              {/* Exercise List Dropdown */}
               <div className="dropdown">
-                {loading && <div className="dropdown-item">Loading...</div>}
-
-                {!loading && exercises.length === 0 && (
+                {exerciseLoading && <div className="dropdown-item">Loading...</div>}
+                {!exerciseLoading && exercises.length === 0 && (
                   <div className="dropdown-item">No exercises found</div>
                 )}
-                {!loading &&
-                  exercises.map((item, i) => {
-                    const name = item.name; // backend name
-                    const id = item._id ?? item.exerciseId; // backend ID
+                  {!exerciseLoading &&
+                    exercises.map((item, i) => {
+                      const name = item.name;
+                      const id = item._id ?? item.exerciseId;
 
-                    // Filter by name
-                    if (
-                      exerciseName &&
-                      !name.toLowerCase().includes(exerciseName.toLowerCase())
-                    ) {
-                      return null;
-                    }
+                      // Filter by search term
+                      if (exerciseName && !name.toLowerCase().includes(exerciseName.toLowerCase())) {
+                        return null;
+                      }
 
-                    // Check if selected
-                    const isSelected =
-                      typeof id === "string" &&
-                      pendingExercises.includes(id) &&
-                      exercises.some((ex) => (ex._id ?? ex.exerciseId) === id);
+                      // Check if already selected
+                      const isSelected =
+                        typeof id === "string" &&
+                        pendingExercises.includes(id) &&
+                        exercises.some(ex => (ex._id ?? ex.exerciseId) === id);
 
-                    return (
-                      <div
-                        key={`item-${i}`}
-                        className={`dropdown-item ${isSelected ? "selected" : ""}`}
-                        onClick={() => {
-                          setPendingExercises((prev) => {
-                            // Prevent invalid IDs from being added
-                            if (
-                              !exercises.some(
-                                (ex) => (ex._id ?? ex.exerciseId) === id,
-                              )
-                            ) {
-                              console.warn("Invalid exerciseId clicked:", id);
-                              return prev;
-                            }
-
-                            if (prev.includes(id)) {
-                              return prev.filter((p) => p !== id);
-                            }
-                            return [...prev, id];
-                          });
-                        }}
-                      >
-                        <span>{name}</span>
-                        {isSelected && <span className="check">✓</span>}
-                      </div>
-                    );
-                  })}
+                      return (
+                        <div
+                          key={`item-${i}`}
+                          className={`dropdown-item ${isSelected ? "selected" : ""}`}
+                          onClick={() => {
+                            setPendingExercises(prev => {
+                              if (!exercises.some(ex => (ex._id ?? ex.exerciseId) === id)) {
+                                console.warn("Invalid exerciseId clicked:", id);
+                                return prev;
+                              }
+                              if (prev.includes(id)) {
+                                return prev.filter(p => p !== id);
+                              }
+                              return [...prev, id];
+                            });
+                          }}
+                        >
+                          <span>{name}</span>
+                          {isSelected && <span className="check">✓</span>}
+                        </div>
+                      );
+                    })}
               </div>
             </div>
-            {/* Display the list of exercises being added */}
 
+            {/* Pending Exercises List */}
             <div className="pending-list">
               {pendingExercises.map((id, i) => {
                 const name =
@@ -801,7 +883,6 @@ export function WorkoutLogger() {
                   exercises.find((ex) => (ex._id ?? ex.exerciseId) === id)
                     ?.name ||
                   "(Unknown Exercise)";
-
                 return (
                   <div key={i} className="pending-item">
                     <span>{name}</span>
@@ -820,14 +901,14 @@ export function WorkoutLogger() {
                 );
               })}
             </div>
-            <div
-              className="add-btn-wrapper"
-              style={{ display: "flex", gap: "8px" }}
-            >
+
+            {/* Action Buttons */}
+            <div className="add-btn-wrapper" style={{ display: "flex", gap: "8px" }}>
               <button
                 className="workout-add-selected-button add-btn"
                 type="button"
                 onClick={() => addExerciseToWorkout()}
+                disabled={!workoutId}
               >
                 Add Selected Exercises
               </button>
@@ -842,6 +923,7 @@ export function WorkoutLogger() {
           </div>
         </div>
       </div>
+
       {/* Save Success Toast */}
       {saveSuccess && (
         <div
@@ -877,9 +959,7 @@ export function WorkoutLogger() {
             <input
               type="text"
               value={newExercise.name}
-              onChange={(e) =>
-                setNewExercise((p) => ({ ...p, name: e.target.value }))
-              }
+              onChange={(e) => setNewExercise((p) => ({ ...p, name: e.target.value }))}
               style={{ width: "100%" }}
             />
 
@@ -889,9 +969,7 @@ export function WorkoutLogger() {
             <input
               type="text"
               value={newExercise.gifUrl}
-              onChange={(e) =>
-                setNewExercise((p) => ({ ...p, gifUrl: e.target.value }))
-              }
+              onChange={(e) => setNewExercise((p) => ({ ...p, gifUrl: e.target.value }))}
               placeholder="https://..."
               style={{ width: "100%" }}
             />
@@ -926,18 +1004,12 @@ export function WorkoutLogger() {
               style={{ width: "100%" }}
             >
               {(muscleOptions || []).map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
 
             <label style={{ display: "block", marginTop: 8 }}>Body Parts</label>
-            {BodyPartError && (
-              <div style={{ color: "red", marginBottom: 6 }}>
-                {BodyPartError}
-              </div>
-            )}
+            {BodyPartError && <div style={{ color: "red", marginBottom: 6 }}>{BodyPartError}</div>}
             <select
               multiple
               value={newExercise.bodyParts}
@@ -945,18 +1017,12 @@ export function WorkoutLogger() {
               style={{ width: "100%" }}
             >
               {(BodyPartOptions || []).map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
 
             <label style={{ display: "block", marginTop: 8 }}>Equipment</label>
-            {equipmentError && (
-              <div style={{ color: "red", marginBottom: 6 }}>
-                {equipmentError}
-              </div>
-            )}
+            {equipmentError && <div style={{ color: "red", marginBottom: 6 }}>{equipmentError}</div>}
             <select
               multiple
               value={newExercise.equipment}
@@ -964,37 +1030,20 @@ export function WorkoutLogger() {
               style={{ width: "100%" }}
             >
               {(equipmentOptions || []).map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </select>
 
-            <label style={{ display: "block", marginTop: 8 }}>
-              Instructions
-            </label>
+            <label style={{ display: "block", marginTop: 8 }}>Instructions</label>
             <textarea
               value={newExercise.instructions}
-              onChange={(e) =>
-                setNewExercise((p) => ({ ...p, instructions: e.target.value }))
-              }
+              onChange={(e) => setNewExercise((p) => ({ ...p, instructions: e.target.value }))}
               style={{ width: "100%" }}
             />
 
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                gap: 8,
-                marginTop: 12,
-              }}
-            >
-              <button type="button" onClick={closeNewExerciseModal}>
-                Cancel
-              </button>
-              <button type="submit" id="Sothat283763Me" disabled={isSaving}>
-                {isSaving ? "Saving..." : "Save"}
-              </button>
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
+              <button type="button" onClick={closeNewExerciseModal}>Cancel</button>
+              <button type="submit" disabled={isSaving}>{isSaving ? "Saving..." : "Save"}</button>
             </div>
           </form>
         </div>

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import "./DashboardTodo.css";
-import { DashboardWorkoutTodoItem } from "./DashboardWorkoutTodoItem";
+import { DashboardTaskTodoItem } from "./DashboardTaskTodoItem";
 
-export function DashboardWorkoutTodoList() {
-  const [workouts, setWorkouts] = useState([]);
+export function DashboardTaskTodoList() {
+  const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const user = useSelector((state) => state.auth.user);
 
@@ -24,30 +24,30 @@ export function DashboardWorkoutTodoList() {
       return;
     }
 
-    const fetchWorkouts = async () => {
+    const fetchTasks = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/AHFULworkout/${userId}`);
+        const res = await fetch(`http://localhost:5000/AHFULtasks/user/${userId}`);
         if (res.ok) {
           const data = await res.json();
           const sorted = (Array.isArray(data) ? data : [])
-            .sort((a, b) => (b.startTime || 0) - (a.startTime || 0))
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
             .slice(0, 15);
-          setWorkouts(sorted);
+          setTasks(sorted);
         }
       } catch (err) {
-        console.error("Failed to fetch workouts:", err);
+        console.error("Failed to fetch tasks:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchWorkouts();
+    fetchTasks();
   }, [userId]);
 
   if (loading) {
     return (
       <div className="dashboard-todo-list">
-        <h3 className="dashboard-todo-title">Recent Workouts</h3>
+        <h3 className="dashboard-todo-title">Tasks</h3>
         <div className="dashboard-todo-loading">Loading...</div>
       </div>
     );
@@ -55,18 +55,18 @@ export function DashboardWorkoutTodoList() {
 
   return (
     <div className="dashboard-todo-list">
-      <h3 className="dashboard-todo-title">Recent Workouts</h3>
-      {workouts.length === 0 ? (
-        <div className="dashboard-todo-empty">No workouts yet</div>
+      <h3 className="dashboard-todo-title">Tasks</h3>
+      {tasks.length === 0 ? (
+        <div className="dashboard-todo-empty">No tasks yet</div>
       ) : (
         <div className="dashboard-todo-items">
-          {workouts.map((workout) => (
-            <DashboardWorkoutTodoItem key={workout._id} workout={workout} />
+          {tasks.map((task) => (
+            <DashboardTaskTodoItem key={task._id} task={task} />
           ))}
         </div>
       )}
       <div className="dashboard-todo-footer">
-        <Link to="/ExploreWorkout" className="view-more-link">View More →</Link>
+        <Link to="/ExploreTasks" className="view-more-link">View More →</Link>
       </div>
     </div>
   );

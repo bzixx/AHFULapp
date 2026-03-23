@@ -21,11 +21,6 @@
 	min-width: 0;
 }
 
-.explore-right {
-	flex: 1;
-	min-width: 0;
-}
-
 @media (max-width: 768px) {
 	.explore-content {
 		flex-direction: column;
@@ -75,33 +70,6 @@
 	border-radius: 8px;
 }
 
-/* Workout history chart (moved from WorkoutHistory) */
-.wh-chart-section {
-	background: #ffffff;
-	border-radius: 12px;
-	padding: 1.5rem;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-	width: 100%;
-}
-
-.wh-chart-heading {
-	font-size: 1.15rem;
-	font-weight: 600;
-	margin-bottom: 1rem;
-	color: #333;
-}
-
-.wh-status {
-	text-align: center;
-	font-size: 1.1rem;
-	padding: 3rem 1rem;
-	color: #555;
-}
-
-.wh-error {
-	color: #dc3636;
-}
-
 .header-controls {
   display: flex;
   align-items: center;
@@ -136,4 +104,66 @@
 .toggle-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.add-task-section {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.add-task-section h2 {
+  margin: 0 0 16px;
+  font-size: 1.25rem;
+}
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group label {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.error-message {
+  color: #dc2626;
+  font-size: 0.9rem;
+}
+
+.btn-add {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.btn-add:hover {
+  background: #4338ca;
 }

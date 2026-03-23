@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { DropdownRow, ActionRow } from "./SettingsHook.jsx";
 import { updateSetting, setSettings } from "./SettingsSlice.jsx";
-import { getUserSettings, updateUserSettings } from "../../queryFunctions";
+import { getUserSettings, updateUserSettings } from "../../QueryFunctions";
 
 export function Settings() {
   const dispatch = useDispatch();

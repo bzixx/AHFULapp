@@ -15,5 +15,11 @@ class SignInDriver:
         try:
             idinfo = id_token.verify_oauth2_token(token, requests.Request(), self.client_id)
             return idinfo  # Contains 'sub', 'email', 'name', etc.
-        except ValueError:
+        except ValueError as e:
+            # Log the specific reason so you can diagnose
+            print(f"Token verification failed: {str(e)}")
+            return None
+        except Exception as e:
+            # Catch unexpected errors too
+            print(f"Unexpected error during token verification: {str(e)}")
             return None

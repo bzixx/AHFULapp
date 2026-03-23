@@ -1,133 +1,153 @@
 import React, { useEffect, useState } from "react";
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
-} from "recharts";
+import { useSelector } from "react-redux";
 import "./ExploreWorkouts.css";
 import "../../SiteStyles.css";
 import { Calendar } from "../../components/Calendar/Calendar";
 import { HeatMap } from "../../Components/HeatMap/HeatMap";
+import { WorkoutChart } from "../../Components/WorkoutChart/WorkoutChart";
 
-
-
+/**
+ * ExploreWorkouts - Workout exploration and history page
+ * 
+ * Features:
+ * - View all workouts or just my workouts (toggle)
+ * - Interactive workout history chart with week selection
+ * - Heat map showing workout frequency
+ * - Calendar integration
+ * 
+ * Layout:
+ * - Left column: List of workouts/exercises
+ * - Right column: WorkoutChart and HeatMap widgets
+ * - Bottom: Calendar component
+ */
 export function ExploreWorkouts() {
-  const [exercises, setExercises] = useState([]);
+  // ─── State ────────────────────────────────────────────────────────────────────
+  const user = useSelector((state) => state.auth.user);
+  const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+  const [showAll, setShowAll] = useState(true);
 
-  // Workout history graph state (derived from exercises)
-  const [weeklyData, setWeeklyData] = useState([]);
+  const getUserId = () => {
+    if (user?._id) return user._id;
+    try {
+      const stored = JSON.parse(localStorage.getItem("user_data"));
+      return stored?._id || null;
+    } catch { return null; }
+  };
+  const userId = getUserId();
 
-  // Fetch exercises from our backend.
-  // The backend registers the blueprint at /exercises (see Backend/APIRoutes/ExerciseRoutes.py).
-  // The endpoint may return either a raw array (e.g. [ {name:...}, ... ])
-  // or an envelope like { data: [...] } or { results: [...] } depending on the backend.
-  // We try to be flexible and handle the common shapes.
+  // ─── Fetch Workouts from Backend ─────────────────────────────────────────────
   const fetchExercises = async () => {
     setLoading(true);
     setError(null);
     try {
-      // Use a relative path so the dev server proxy (if configured) will forward to backend.
-      const res = await fetch("http://localhost:5000/AHFULworkout");
+      let url = "http://localhost:5000/AHFULworkout";
+      if (!showAll && userId) {
+        url = `http://localhost:5000/AHFULworkout/${userId}`;
+      }
 
-      //If Response is not OK, try to extract more info from the body and Throw
+      const res = await fetch(url);
+
       if (!res.ok) {
-        // Provide a clearer error including body text when possible
         let bodyText = "";
         try {
           bodyText = await res.text();
         } catch (e) {
-          /* ignore */
+          // Ignore text extraction errors
         }
         throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
       }
 
-      //
       const data = await res.json();
-      setExercises(data);
+      setWorkouts(Array.isArray(data) ? data : []);
     } catch (err) {
-
-      // Log the full error for debugging
-      console.error("Failed to fetch exercises:", err);
-      // Some Error objects (DOMExceptions) have a name and message
+      console.error("Failed to fetch workouts:", err);
       const friendly = err && err.name ? `${err.name}: ${err.message}` : String(err);
       setError(friendly || "Unknown error");
-      setExercises([]);
+      setWorkouts([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Aggregate exercises into weekly buckets for the graph
-  function getWeekInfo(date) {
-    const d = new Date(date);
-    const day = d.getDay() || 7;
-    d.setDate(d.getDate() - (day - 1));
-    const month = d.toLocaleString("default", { month: "short" });
-    const label = `Week of ${month} ${d.getDate()}`;
-    const sortKey = d.toISOString().slice(0, 10);
-    return { label, sortKey };
-  }
-
-  useEffect(() => {
-    if (!exercises || exercises.length === 0) {
-      setWeeklyData([]);
-      return;
-    }
-    const buckets = {};
-    exercises.forEach((w) => {
-      if (!w.startTime) return;
-      const { label, sortKey } = getWeekInfo(w.startTime);
-      if (!buckets[sortKey]) buckets[sortKey] = { label, count: 0 };
-      buckets[sortKey].count += 1;
-    });
-    const aggregated = Object.entries(buckets)
-      .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-      .map(([, { label, count }]) => ({ week: label, workouts: count }));
-    setWeeklyData(aggregated);
-  }, [exercises]);
-
+  // ─── Load Workouts on Mount ───────────────────────────────────────────────────
   useEffect(() => {
     fetchExercises();
-  }, []);
+  }, [showAll, userId]);
 
+  // ─── Render ──────────────────────────────────────────────────────────────────
   return (
     <div className="explore-root">
+      {/* Page Header with Title, Toggle, and Refresh Button */}
       <header className="explore-header">
         <h1>Explore Workouts</h1>
-        <div>
+        <div className="header-controls">
+          <div className="toggle-container">
+            <button 
+              className={`toggle-btn ${showAll ? 'active' : ''}`}
+              onClick={() => setShowAll(true)}
+            >
+              All Workouts
+            </button>
+            <button 
+              className={`toggle-btn ${!showAll ? 'active' : ''}`}
+              onClick={() => setShowAll(false)}
+              disabled={!userId}
+            >
+              My Workouts
+            </button>
+          </div>
           <button onClick={fetchExercises} disabled={loading} className="refresh-btn">
             {loading ? "Refreshing..." : "Refresh"}
           </button>
-
         </div>
       </header>
 
+      {/* Main Content Grid */}
       <div className="explore-content">
-        {/* Left column: saved workouts */}
+        {/* Left Column: Workout List */}
         <div className="explore-left">
+          {/* Error Message */}
           {error && <div className="explore-error">Error: {error}</div>}
 
           {!error && (
             <div className="exercise-list">
-              {loading && exercises.length === 0 ? (
-                <div className="explore-loading">Loading exercises…</div>
-              ) : exercises.length === 0 ? (
-                <div className="explore-empty">No exercises found.</div>
+              {/* Loading State */}
+              {loading && workouts.length === 0 ? (
+                <div className="explore-loading">Loading workouts…</div>
+              ) : workouts.length === 0 ? (
+                /* Empty State - no workouts yet */
+                <div className="explore-empty">
+                  {showAll ? "No workouts found." : "No workouts found. Start a workout to see it here!"}
+                </div>
               ) : (
-                exercises.map((ex, idx) => {
-                  const key = ex.id || ex._id || ex.name || `exercise-${idx}`;
+                /* Workout List */
+                workouts.map((workout, idx) => {
+                  // Generate unique key for each workout item
+                  const key = workout.id || workout._id || workout.title || `workout-${idx}`;
                   return (
                     <div key={key} className="exercise-item">
                       <div className="exercise-main">
-                        <div className="exercise-name">{ex.title || "Untitled"}</div>
+                        {/* Workout Title */}
+                        <div className="exercise-name">
+                          {workout.title || "Untitled Workout"}
+                        </div>
+                        {/* Workout Metadata (start/end times, gym) */}
                         <div className="exercise-meta">
-                          {ex.startTime && <span>Start: {ex.startTime}</span>}
-                          {ex.endTime && <span> • End: {ex.endTime}</span>}
-                          {ex.gymId && <span> • Gym: {ex.gymId}</span>}
+                          {workout.startTime && (
+                            <span>Start: {new Date(workout.startTime * 1000).toLocaleDateString()}</span>
+                          )}
+                          {workout.endTime && (
+                            <span> • End: {new Date(workout.endTime * 1000).toLocaleDateString()}</span>
+                          )}
+                          {workout.gymId && <span> • Gym ID: {workout.gymId.slice(0, 8)}...</span>}
                         </div>
                       </div>
-                      {ex.instructions && <div className="exercise-instructions">{ex.instructions}</div>}
+                      {/* Optional Instructions */}
+                      {workout.instructions && (
+                        <div className="exercise-instructions">{workout.instructions}</div>
+                      )}
                     </div>
                   );
                 })
@@ -136,44 +156,19 @@ export function ExploreWorkouts() {
           )}
         </div>
 
-        {/* Right column: workout history graph */}
+        {/* Right Column: Charts and Visualizations */}
         <div className="explore-right">
-          <div className="wh-chart-section">
-            <h2 className="wh-chart-heading">Workouts Per Week</h2>
-            {loading ? (
-              <p className="wh-status">Loading workout history...</p>
-            ) : weeklyData.length === 0 ? (
-              <p className="wh-status">No workouts recorded yet.</p>
-            ) : (
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={weeklyData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="week"
-                    label={{ value: "Week", position: "insideBottom", offset: -5 }}
-                    tick={{ fontSize: 12 }}
-                    tickLine={{ strokeWidth: 2, stroke: "#333" }}
-                    tickSize={8}
-                  />
-                  <YAxis allowDecimals={false} label={{ value: "Number of Workouts", angle: -90, position: "insideLeft", style: { textAnchor: "middle" } }} />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="workouts" fill="#4f46e5" name="Workouts" />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </div>
+          {/* Interactive Workout History Chart */}
+          {/* Allows users to select different week ranges (4, 6, 8, 12 weeks) */}
+          <WorkoutChart defaultWeeks={6} />
+          {/* Heat Map showing workout frequency over time */}
 
-                  {/* Right column: workout history graph */}
-
-
+          <HeatMap />
         </div>
-                  <div className="explore-right">
-            <HeatMap />
-            
-          </div>
       </div>
-              <Calendar />
+
+      {/* Calendar Component */}
+      <Calendar />
     </div>
   );
 }
