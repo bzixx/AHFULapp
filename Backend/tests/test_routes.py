@@ -474,8 +474,8 @@ def test_find_personal_ex_by_id():
     assert ex.get("distance") == "0"
     assert ex.get("duration") == 120
     assert ex.get("exerciseId") == "69b4885e542988e24fee392e"
-    assert ex.get("reps") == 0
-    assert ex.get("sets") == 0
+    assert ex.get("reps") == "10"
+    assert ex.get("sets") == "35"
     assert ex.get("userId") == "699d0093795741a59fe13616"
     assert ex.get("weight") == "150"
     assert ex.get("workoutId") == "699d05d8f1677119323250bc"
@@ -529,8 +529,8 @@ def test_find_personal_ex_by_workout():
     assert filtered[0].get("distance") == "0"
     assert filtered[0].get("duration") == 120
     assert filtered[0].get("exerciseId") == "69b4885e542988e24fee392e"
-    assert filtered[0].get("reps") == 0
-    assert filtered[0].get("sets") == 0
+    assert filtered[0].get("reps") == "10"
+    assert filtered[0].get("sets") == "35"
     assert filtered[0].get("userId") == "699d0093795741a59fe13616"
     assert filtered[0].get("weight") == "150"
     assert filtered[0].get("workoutId") == "699d05d8f1677119323250bc"
@@ -584,8 +584,8 @@ def test_find_personal_ex_by_user():
     assert filtered[0].get("distance") == "0"
     assert filtered[0].get("duration") == 120
     assert filtered[0].get("exerciseId") == "69b4885e542988e24fee392e"
-    assert filtered[0].get("reps") == 0
-    assert filtered[0].get("sets") == 0
+    assert filtered[0].get("reps") == "10"
+    assert filtered[0].get("sets") == "35"
     assert filtered[0].get("userId") == "699d0093795741a59fe13616"
     assert filtered[0].get("weight") == "150"
     assert filtered[0].get("workoutId") == "699d05d8f1677119323250bc"
@@ -935,7 +935,7 @@ def test_add_remove_role_by_email_roundtrip():
 
 def test_find_workout_by_id():
     # Give a valid _id
-    oid = "69af2a4598d0f4227b25ed71"
+    oid = "69c063229f8c3c92b650445b"
     ex, err = WorkoutDriver.get_workout_by_id(oid)
 
     if err is not None:
@@ -947,9 +947,9 @@ def test_find_workout_by_id():
     assert ex.get("_id") == oid
     assert ex.get("userId") == "699d0093795741a59fe13616"
     assert ex.get("gymId") == "699cff88400d9d43a32e924d"
-    assert ex.get("title") == "A test workout"
-    assert ex.get("startTime") == 1
-    assert ex.get("endTime") == 2
+    assert ex.get("title") == "Leg Day"
+    assert ex.get("startTime") == 1742443200
+    assert ex.get("endTime") == 1742446800
 
     # Give a bad _id
     bad_oid = "69af2a4598d0f4227b25ed7"
@@ -998,9 +998,9 @@ def test_find_workout_by_user():
     assert filtered[0].get("_id") == wo_oid
     assert filtered[0].get("userId") == "699d0093795741a59fe13616"
     assert filtered[0].get("gymId") == "699cff88400d9d43a32e924d"
-    assert filtered[0].get("title") == "A test workout"
-    assert filtered[0].get("startTime") == 1
-    assert filtered[0].get("endTime") == 2
+    assert filtered[0].get("title") == "Leg Day"
+    assert filtered[0].get("startTime") == 1742443200
+    assert filtered[0].get("endTime") == 1742446800
 
     # Give a bad _id
     bad_oid = "699d0093795741a59fe1361"
