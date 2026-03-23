@@ -1261,7 +1261,7 @@ def test_find_measurement_by_id():
     m, err = MeasurementDriver.get_measurement_by_id(bad_oid)
 
     assert m is None
-    assert "must be a 24-character hex string" in err or "Invalid" in err
+    assert err == "'" + bad_oid + "' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
 
     # Invalid (valid format but not found)
     inv_oid = "000000000000000000000000"
