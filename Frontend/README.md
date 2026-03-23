@@ -19,6 +19,20 @@ Custom Auth Context component for persistent authentication
 2. **Access the Application**:
     - Open your browser and navigate to `http://localhost:5173`.
 
+### CSS Information
+  -Start with theme pages under Stylesheets/Themes/
+  -Use design tokens (var(--...)) for all colors, text, borders, spacing, etc.
+  -Never hardcode colors or font sizes
+  -Structure layouts using flexbox or grid
+  -Keep components consistent (background, border, radius, shadow)
+  -Use padding for internal spacing, margin for separation
+  -Avoid stacking large vertical padding (prevents “extra lines”)
+  -Let .dark handle dark mode automatically (don’t duplicate styles)
+  -Reuse existing classes before creating new ones
+  -Keep styles modular (component-specific CSS files)
+  -Follow consistent naming (.component-name, .component-element)
+  -Test styles in both different color modes before finalizing
+
 
 ### Frontend Directory Structure
 

@@ -196,7 +196,6 @@
 .settings-save-section {
   margin-top: 30px;
   padding-top: 20px;
-  border-top: var(--border-thin);
   display: flex;
   align-items: center;
   gap: 16px;

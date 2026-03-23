@@ -1,7 +1,3 @@
-/*Same functionality as the calendar button, will revisit after we get
-a list of settings together & once global css changes are done.*/
-import { useState, useEffect } from "react";
-import { ProfileSettingsPopup } from "./ProfileSettingsPopup.jsx";
 import "./ProfileSettings.css";
 import { useNavigate } from "react-router-dom";
 
