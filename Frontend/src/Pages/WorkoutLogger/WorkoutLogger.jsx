@@ -545,7 +545,6 @@ const handleSubmit = async () => {
             {workout && <h3>{unixToDate(workout.startTime)}</h3>}
           </div>
 
-
           <div className="workout-grid">
             <div className="cell header">Exercise</div>
             <div className="cell header">Reps</div>
