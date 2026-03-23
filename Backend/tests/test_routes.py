@@ -6,6 +6,8 @@ from Services.UserDriver import UserDriver
 from Services.FoodDriver import FoodDriver
 from Services.PersonalExDriver import PersonalExDriver
 from Services.WorkoutDriver import WorkoutDriver
+from Services.MeasurementDriver import MeasurementDriver
+from Services.TaskDriver import TaskDriver
 
 # Food
 
@@ -474,8 +476,8 @@ def test_find_personal_ex_by_id():
     assert ex.get("distance") == "0"
     assert ex.get("duration") == 120
     assert ex.get("exerciseId") == "69b4885e542988e24fee392e"
-    assert ex.get("reps") == 0
-    assert ex.get("sets") == 0
+    assert ex.get("reps") == "10"
+    assert ex.get("sets") == "35"
     assert ex.get("userId") == "699d0093795741a59fe13616"
     assert ex.get("weight") == "150"
     assert ex.get("workoutId") == "699d05d8f1677119323250bc"
@@ -529,8 +531,8 @@ def test_find_personal_ex_by_workout():
     assert filtered[0].get("distance") == "0"
     assert filtered[0].get("duration") == 120
     assert filtered[0].get("exerciseId") == "69b4885e542988e24fee392e"
-    assert filtered[0].get("reps") == 0
-    assert filtered[0].get("sets") == 0
+    assert filtered[0].get("reps") == "10"
+    assert filtered[0].get("sets") == "35"
     assert filtered[0].get("userId") == "699d0093795741a59fe13616"
     assert filtered[0].get("weight") == "150"
     assert filtered[0].get("workoutId") == "699d05d8f1677119323250bc"
@@ -584,8 +586,8 @@ def test_find_personal_ex_by_user():
     assert filtered[0].get("distance") == "0"
     assert filtered[0].get("duration") == 120
     assert filtered[0].get("exerciseId") == "69b4885e542988e24fee392e"
-    assert filtered[0].get("reps") == 0
-    assert filtered[0].get("sets") == 0
+    assert filtered[0].get("reps") == "10"
+    assert filtered[0].get("sets") == "35"
     assert filtered[0].get("userId") == "699d0093795741a59fe13616"
     assert filtered[0].get("weight") == "150"
     assert filtered[0].get("workoutId") == "699d05d8f1677119323250bc"
@@ -623,10 +625,10 @@ def test_create_delete_personal_ex():
     completed = False
     distance = "0"
     duration = 240
-    exerciseId = "69ab3627a819c7ed3f7fcab1"
-    workoutId = "699d05d8f1677119323250bc"
-    reps = 0
-    sets = 0
+    exerciseId = "698d0bc06e5117c22dd7774b"
+    workoutId = "69c063229f8c3c92b650445b"
+    reps = 1
+    sets = 1
     userId = "699d0093795741a59fe13616"
     weight = 600
     responseId, err = PersonalExDriver.create_personal_ex(userId, exerciseId, workoutId, reps, sets, weight, duration, distance, completed)
@@ -653,9 +655,10 @@ def test_create_delete_personal_ex():
     assert personalEx.get("complete") == False
     assert personalEx.get("distance") == "0"
     assert personalEx.get("duration") == 240
-    assert personalEx.get("exerciseId") == "69ab3627a819c7ed3f7fcab1"
-    assert personalEx.get("reps") == 0
-    assert personalEx.get("sets") == 0
+    assert personalEx.get("exerciseId") == "698d0bc06e5117c22dd7774b"
+    assert personalEx.get("workoutId") == "69c063229f8c3c92b650445b"
+    assert personalEx.get("reps") == 1
+    assert personalEx.get("sets") == 1
     assert personalEx.get("userId") == "699d0093795741a59fe13616"
     assert personalEx.get("weight") == 600
 
@@ -935,7 +938,7 @@ def test_add_remove_role_by_email_roundtrip():
 
 def test_find_workout_by_id():
     # Give a valid _id
-    oid = "69af2a4598d0f4227b25ed71"
+    oid = "69c063229f8c3c92b650445b"
     ex, err = WorkoutDriver.get_workout_by_id(oid)
 
     if err is not None:
@@ -947,9 +950,9 @@ def test_find_workout_by_id():
     assert ex.get("_id") == oid
     assert ex.get("userId") == "699d0093795741a59fe13616"
     assert ex.get("gymId") == "699cff88400d9d43a32e924d"
-    assert ex.get("title") == "A test workout"
-    assert ex.get("startTime") == 1
-    assert ex.get("endTime") == 2
+    assert ex.get("title") == "Leg Day"
+    assert ex.get("startTime") == 1742443200
+    assert ex.get("endTime") == 1742446800
 
     # Give a bad _id
     bad_oid = "69af2a4598d0f4227b25ed7"
@@ -987,7 +990,7 @@ def test_find_workout_by_user():
     if err is not None:
         print(exs, err)
     
-    wo_oid = "69af2a4598d0f4227b25ed71"
+    wo_oid = "69c063229f8c3c92b650445b"
     filtered = [d for d in exs if d.get("_id") == wo_oid]
 
     assert len(filtered) == 1
@@ -998,9 +1001,9 @@ def test_find_workout_by_user():
     assert filtered[0].get("_id") == wo_oid
     assert filtered[0].get("userId") == "699d0093795741a59fe13616"
     assert filtered[0].get("gymId") == "699cff88400d9d43a32e924d"
-    assert filtered[0].get("title") == "A test workout"
-    assert filtered[0].get("startTime") == 1
-    assert filtered[0].get("endTime") == 2
+    assert filtered[0].get("title") == "Leg Day"
+    assert filtered[0].get("startTime") == 1742443200
+    assert filtered[0].get("endTime") == 1742446800
 
     # Give a bad _id
     bad_oid = "699d0093795741a59fe1361"
@@ -1038,7 +1041,7 @@ def test_find_template_by_user():
     if err is not None:
         print(temps, err)
     
-    tp_oid = "69af2d76938739819748be48"
+    tp_oid = "69c19753432188dfcd568ddc"
     filtered = [d for d in temps if d.get("_id") == tp_oid]
 
     assert len(filtered) == 1
@@ -1048,7 +1051,7 @@ def test_find_template_by_user():
     assert filtered[0] is not None
     assert filtered[0].get("_id") == tp_oid
     assert filtered[0].get("userId") == "699d0093795741a59fe13616"
-    assert filtered[0].get("title") == "A workout template"
+    assert filtered[0].get("title") == "My Weekend Workout Template"
     assert filtered[0].get("template") == "True"
     assert filtered[0].get("startTime") == 0
 
@@ -1161,7 +1164,7 @@ def test_create_delete_template():
    
 def test_update_workout_roundtrip():
     # Known existing document id from your tests/fixtures
-    workout_id = "69af2a4598d0f4227b25ed71"
+    workout_id = "69c063229f8c3c92b650445b"
 
     original, err = WorkoutDriver.get_workout_by_id(workout_id)
     if err is not None:
@@ -1232,3 +1235,359 @@ def test_update_workout_roundtrip():
     assert fetched_after_restore.get("startTime") == orig_startTime
     assert fetched_after_restore.get("endTime") == orig_endTime
 
+# Measurements
+
+def test_find_measurement_by_id():
+    oid = "69b4880023803f807becacf3"
+    m, err = MeasurementDriver.get_measurement_by_id(oid)
+
+    if err is not None:
+        print(m, err)
+
+    # Assertions
+    assert err is None
+    assert m is not None
+    assert m.get("_id") == oid
+    assert m.get("userId") == "699f79394048f9ec8b5b0ed2"
+    assert m.get("date") == "2026-03-13T00:00:00.000Z"
+    assert m.get("arms") == 70
+    assert m.get("hips") == 130
+    assert m.get("chest") == 108
+    assert m.get("weight") == 220
+    assert m.get("waist") == 108
+    assert m.get("thighs") == 30
+
+    # Bad ID
+    bad_oid = "69b4880023803f807becacf"
+    m, err = MeasurementDriver.get_measurement_by_id(bad_oid)
+
+    assert m is None
+    assert err == "'" + bad_oid + "' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+
+    # Invalid (valid format but not found)
+    inv_oid = "000000000000000000000000"
+    m, err = MeasurementDriver.get_measurement_by_id(inv_oid)
+
+    assert m is None
+    assert err == "Measurement not found"
+
+def test_find_measurements_by_user():
+    userId = "699f79394048f9ec8b5b0ed2"
+    m, err = MeasurementDriver.get_measurements_by_user(userId)
+
+    assert err is None
+    assert isinstance(m, list)
+    assert len(m) > 0
+
+    # Find the known object
+    known = next((x for x in m if x["_id"] == "69b4880023803f807becacf3"), None)
+    assert known is not None
+    assert known.get("arms") == 70
+
+    # Bad userId format
+    bad_uid = "699f79394048f9ec8b5b0ed"
+    m, err = MeasurementDriver.get_measurements_by_user(bad_uid)
+    assert m is None or m == []
+
+def test_create_delete_measurement():
+    userId = "699f79394048f9ec8b5b0ed2"
+
+    data = {
+        "date": "2026-03-20T00:00:00.000Z",
+        "arms": 50,
+        "waist": 100,
+        "weight": 200
+    }
+
+    new_id, err = MeasurementDriver.create_measurement(userId, data)
+    if err is not None:
+        print(new_id, err)
+
+    # Ensure valid ObjectId
+    try:
+        ObjectId(str(new_id))
+    except Exception:
+        assert False
+
+    # Check creation
+    m, err = MeasurementDriver.get_measurement_by_id(new_id)
+    assert err is None
+    assert m is not None
+    assert m.get("_id") == new_id
+    assert m.get("arms") == 50
+    assert m.get("waist") == 100
+    assert m.get("weight") == 200
+
+    # DELETE
+    response, err = MeasurementDriver.delete_measurement(new_id)
+    assert response == new_id
+
+    # Verify deletion
+    m, err = MeasurementDriver.get_measurement_by_id(new_id)
+    assert m is None
+
+def test_update_measurement_roundtrip():
+    oid = "69b4880023803f807becacf3"
+
+    original, err = MeasurementDriver.get_measurement_by_id(oid)
+    assert err is None
+    assert original is not None
+
+    orig_arms    = original.get("arms")
+    orig_hips    = original.get("hips")
+    orig_chest   = original.get("chest")
+    orig_weight  = original.get("weight")
+    orig_waist   = original.get("waist")
+    orig_thighs  = original.get("thighs")
+
+    new_vals = {
+        "arms": 1.1,
+        "hips":  2.2,
+        "chest": 3.3,
+        "weight": 4.4,
+        "waist":  5.5,
+        "thighs": 6.6
+    }
+
+    updated, err = MeasurementDriver.update_measurement(oid, new_vals)
+    assert err is None
+    assert updated is not None
+
+    assert updated.get("arms") == 1.1
+    assert updated.get("hips") == 2.2
+    assert updated.get("chest") == 3.3
+    assert updated.get("weight") == 4.4
+    assert updated.get("waist") == 5.5
+    assert updated.get("thighs") == 6.6
+
+    # Fetch again to confirm DB persistence
+    fetched, err = MeasurementDriver.get_measurement_by_id(oid)
+    assert err is None
+    assert fetched.get("arms") == 1.1
+
+    # Restore original
+    restore = {
+        "arms": orig_arms,
+        "hips": orig_hips,
+        "chest": orig_chest,
+        "weight": orig_weight,
+        "waist": orig_waist,
+        "thighs": orig_thighs
+    }
+
+    restored, err = MeasurementDriver.update_measurement(oid, restore)
+    assert err is None
+    assert restored is not None
+
+    assert restored.get("arms") == orig_arms
+    assert restored.get("hips") == orig_hips
+    assert restored.get("chest") == orig_chest
+    assert restored.get("weight") == orig_weight
+    assert restored.get("waist") == orig_waist
+    assert restored.get("thighs") == orig_thighs
+
+def test_create_measurement_missing_date():
+    userId = "699f79394048f9ec8b5b0ed2"
+    data = {
+        "arms": 40
+    }
+
+    resp, err = MeasurementDriver.create_measurement(userId, data)
+    assert resp is None
+    assert err == "You must provide a measurement date"
+
+def test_create_measurement_no_values():
+    userId = "699f79394048f9ec8b5b0ed2"
+    data = {
+        "date": "2026-03-20T00:00:00.000Z"
+    }
+
+    resp, err = MeasurementDriver.create_measurement(userId, data)
+    assert resp is None
+    assert err == "You must provide at least one measurement value"
+
+def test_create_measurement_invalid_field_value():
+    userId = "699f79394048f9ec8b5b0ed2"
+    data = {
+        "date": "2026-03-20T00:00:00.000Z",
+        "weight": "abc"     # invalid
+    }
+
+    resp, err = MeasurementDriver.create_measurement(userId, data)
+    assert resp is None
+    assert "Invalid weight" in err
+
+def test_delete_measurement_invalid_id():
+    resp, err = MeasurementDriver.delete_measurement("123")
+    assert resp is None
+    assert err == "'123' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+
+# Tasks
+
+def test_find_task_by_id():
+    oid = "69c07dd86eb4c5de09881b06"
+    task, err = TaskDriver.get_task_by_id(oid)
+
+    if err is not None:
+        print(task, err)
+
+    assert err is None
+    assert task is not None
+    assert task.get("_id") == oid
+    assert task.get("name") == "Something I should Do"
+    assert task.get("note") is not None
+    assert task.get("dueTime") == 1774229940
+    assert task.get("user_id") == "69996a73313d1a459f4529da"
+    assert task.get("completed") is False
+
+    bad_oid = "69c07dd86eb4c5de09881b0"
+    task, err = TaskDriver.get_task_by_id(bad_oid)
+
+    assert task is None
+    assert "24-hex string" in err
+
+    inv_oid = "000000000000000000000000"
+    task, err = TaskDriver.get_task_by_id(inv_oid)
+
+    assert task is None
+    assert err == "Task not found"
+
+def test_find_tasks_by_user():
+    user_id = "69996a73313d1a459f4529da"
+    tasks, err = TaskDriver.get_tasks_by_user(user_id)
+
+    if err is not None:
+        print(tasks, err)
+
+    assert err is None
+    assert isinstance(tasks, list)
+
+    known = next((t for t in tasks if t["_id"] == "69c07dd86eb4c5de09881b06"), None)
+    assert known is not None
+    assert known.get("name") == "Something I should Do"
+
+    bad_uid = "69996a73313d1a459f4529d"
+    tasks, err = TaskDriver.get_tasks_by_user(bad_uid)
+
+    assert tasks is None
+    assert "24-hex string" in err
+
+def test_create_delete_task():
+    user_id = "69996a73313d1a459f4529da"
+
+    data = {
+        "name": "New Task",
+        "note": "Auto-generated test task",
+        "dueTime": 1900000000,
+        "completed": False
+    }
+
+    created, err = TaskDriver.create_task(user_id, data)
+
+    if err is not None:
+        print(created, err)
+
+    assert err is None
+    assert created is not None
+
+    try:
+        ObjectId(str(created["_id"]))
+    except Exception:
+        assert False
+
+    fetched, err = TaskDriver.get_task_by_id(created["_id"])
+    assert err is None
+    assert fetched.get("name") == "New Task"
+    assert fetched.get("note") == "Auto-generated test task"
+    assert fetched.get("dueTime") == 1900000000
+    assert fetched.get("completed") is False
+
+    deleted, err = TaskDriver.delete_task(created["_id"])
+    assert err is None
+    assert deleted.get("deleted") is True or deleted.get("deleted") == 1
+
+    after, err = TaskDriver.get_task_by_id(created["_id"])
+    assert after is None
+
+def test_update_task_roundtrip():
+    task_id = "69c07dd86eb4c5de09881b06"
+
+    original, err = TaskDriver.get_task_by_id(task_id)
+    assert err is None
+    assert original is not None
+
+    orig_name = original.get("name")
+    orig_note = original.get("note")
+    orig_due = original.get("dueTime")
+    orig_completed = original.get("completed")
+
+    new_vals = {
+        "name": "Updated Task",
+        "note": "Updated Note",
+        "dueTime": 1888888888,
+        "completed": True
+    }
+
+    updated, err = TaskDriver.update_task(task_id, new_vals)
+
+    assert err is None
+    assert updated is not None
+
+    assert updated.get("name") == new_vals["name"]
+    assert updated.get("note") == new_vals["note"]
+    assert updated.get("dueTime") == new_vals["dueTime"]
+    assert updated.get("completed") == new_vals["completed"]
+
+    fetched, err = TaskDriver.get_task_by_id(task_id)
+    assert err is None
+    assert fetched.get("name") == "Updated Task"
+
+    restore = {
+        "name": orig_name,
+        "note": orig_note,
+        "dueTime": orig_due,
+        "completed": orig_completed
+    }
+
+    restored, err = TaskDriver.update_task(task_id, restore)
+    assert err is None
+    assert restored is not None
+
+    assert restored.get("name") == orig_name
+    assert restored.get("note") == orig_note
+    assert restored.get("dueTime") == orig_due
+    assert restored.get("completed") == orig_completed
+
+    fetched_after, err = TaskDriver.get_task_by_id(task_id)
+    assert err is None
+    assert fetched_after.get("name") == orig_name
+
+def test_create_task_missing_name():
+    user_id = "69996a73313d1a459f4529da"
+    data = {"note": "Missing name"}
+
+    task, err = TaskDriver.create_task(user_id, data)
+
+    assert task is None
+    assert err == "name is required"
+
+def test_create_task_invalid_user_id():
+    user_id = "notvalid123"
+    data = {"name": "Bad User"}
+
+    task, err = TaskDriver.create_task(user_id, data)
+
+    assert task is None
+    assert "24-hex string" in err
+
+def test_delete_task_invalid_id():
+    deleted, err = TaskDriver.delete_task("123")
+
+    assert deleted is None
+    assert "24-hex string" in err
+
+def test_delete_task_not_found():
+    deleted, err = TaskDriver.delete_task("000000000000000000000000")
+
+    assert deleted is None
+    assert err == "Task not found"

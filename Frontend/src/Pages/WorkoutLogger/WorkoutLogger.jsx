@@ -12,6 +12,11 @@ import {
   fetchPersonalExercises,
   fetchTemplate,
   loadBodyParts,
+  createExercise,
+  createPersonalExercises,
+  createWorkout,
+  updateWorkout,
+  updatePersonalExercises
 } from "../../QueryFunctions";
 
 export function WorkoutLogger() {
@@ -257,39 +262,32 @@ export function WorkoutLogger() {
       const saveRequests = exercisesInProgressTable.map((ex) => {
         const isNew = ex._id === null;
 
-        const url = isNew
-          ? "http://localhost:5000/AHFULpersonalEx/create"
-          : `http://localhost:5000/AHFULpersonalEx/update/${ex._id}`;
+      const peData = isNew
+    ? {
+        complete: ex.complete,
+        distance: ex.distance,
+        duration: ex.duration,
+        exerciseId: ex.exerciseId,
+        reps: ex.reps,
+        sets: ex.sets,
+        userId: ex.userId,
+        weight: ex.weight,
+        workoutId: ex.workoutId
+      }
+    : {
+        complete: ex.complete,
+        distance: ex.distance,
+        duration: ex.duration,
+        reps: ex.reps,
+        sets: ex.sets,
+        weight: ex.weight
+      };
 
-        const method = isNew ? "POST" : "PUT";
+      return isNew
+          ? createPersonalExercises(peData)
+          : updatePersonalExercises(ex._id, peData);
+    });
 
-        const body = isNew
-          ? {
-              complete: ex.complete,
-              distance: ex.distance,
-              duration: ex.duration,
-              exerciseId: ex.exerciseId,
-              reps: ex.reps,
-              sets: ex.sets,
-              userId: ex.userId,
-              weight: ex.weight,
-              workoutId: ex.workoutId,
-            }
-          : {
-              complete: ex.complete,
-              distance: ex.distance,
-              duration: ex.duration,
-              reps: ex.reps,
-              sets: ex.sets,
-              weight: ex.weight,
-            };
-
-        return fetch(url, {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
-      });
 
       // --- DELETE REQUESTS ---
       const deleteRequests = Object.values(personalExToRemove)
@@ -318,18 +316,20 @@ export function WorkoutLogger() {
         title: workoutTitle, // keep original title
       };
 
-      const workoutRes = await fetch(
-        `http://localhost:5000/AHFULworkout/update/${workoutId}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(workoutUpdatePayload),
-        },
-      );
-    } catch (err) {
-      console.error("Error submitting workout:", err);
+    const workoutRes = await updateWorkout(workoutId, workoutUpdatePayload);
+
+    if (workoutRes.error) {
+      console.error("Failed to update workout:", workoutRes.error);
+    } else {
+      console.log("Workout updated successfully!");
     }
-  };
+
+  } catch (err) {
+    console.error("Error submitting workout:", err);
+  }
+};
+
+
 
   // useEffect 3: fetch available exercises from backend on mount
   useEffect(() => {
@@ -452,31 +452,29 @@ export function WorkoutLogger() {
         if (todaysWorkouts.length === 0) {
           console.log("No workout found for today — creating new workout...");
 
-          const newWorkoutPayload = {
-            endTime: currentDateUnix, // or 0 if you prefer
-            gymId: "69af3c3e94310c6e29840229", // your real gymId
-            startTime: currentDateUnix, // midnight Unix timestamp
-            title: "Workout (" + today.toDateString() + ")",
-            userId: userId,
-          };
+        const newWorkoutPayload = {
+          endTime: currentDateUnix,          // or 0 if you prefer
+          gymId: "69af3c3e94310c6e29840229", // your real gymId
+          startTime: currentDateUnix,        // midnight Unix timestamp
+          title: "Workout (" + today.toDateString() + ")",
+          userId: userId
+        };
 
-          const createRes = await fetch(
-            "http://localhost:5000/AHFULworkout/create",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(newWorkoutPayload),
-            },
-          );
+        console.log(newWorkoutPayload);
 
-          const newWorkout = await createRes.json();
+        const result = await createWorkout(newWorkoutPayload);
 
-          setWorkout(newWorkout);
-          setWorkoutId(newWorkout._id);
-          setWorkoutTitle(newWorkout.title);
-          setTime(workout.endTime - workout.startTime);
+        if (result.error) {
+          alert(`Failed to save workout: ${result.error}`);
           return;
         }
+
+        setWorkout(result);
+        setWorkoutId(result._id);
+        setWorkoutTitle(result.title);
+        setTime(workout.endTime - workout.startTime);
+        return;
+      }
 
         // --- 6. Otherwise load the existing workout ---
         const workout = todaysWorkouts[0];

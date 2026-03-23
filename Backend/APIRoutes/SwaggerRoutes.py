@@ -597,17 +597,66 @@ swaggerConfig = {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "required": ["userId"],
+                  "required": ["userId", "name", "gifUrl"],
                   "properties": {
-                    "userId":    { "type": "string", "description": "User ObjectId", "example": "699d0093795741a59fe13616" },
-                    "exerciseId":{ "type": "string", "description": "Exercise ObjectId (if applicable)", "example": "698d0bc06e5117c22dd7774b" },
-                    "workoutId": { "type": "string", "description": "Workout ObjectId (if applicable)",  "example": "699d05d8f1677119323250bc" },
-                    "reps":      { "type": "integer", "example": 1 },
-                    "sets":      { "type": "integer", "example": 1 },
-                    "weight":    { "type": "string",  "example": "135" },
-                    "duration":  { "type": "number",  "example": 0 },
-                    "distance":  { "type": "string",  "example": "0" },
-                    "complete":  { "type": "boolean", "example": True }
+                    "userId": {
+                      "type": "string",
+                      "description": "User ObjectId",
+                      "example": "699d0093795741a59fe13616"
+                    },
+                    "exercise": {
+                      "type": "object",
+                      "description": "Full exercise definition object",
+                      "properties": {
+                        "_id": {
+                          "type": "object",
+                          "properties": {
+                            "$oid": {
+                              "type": "string",
+                              "example": "69b22a2344f2bd681112ca8a"
+                            }
+                          }
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "AHFUL arm circles"
+                        },
+                        "gifUrl": {
+                          "type": "string",
+                          "example": "https://static.exercisedb.dev/media/2zNKRUB.gif"
+                        },
+                        "targetMuscles": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": ["forearms"]
+                        },
+                        "bodyParts": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": ["lower arms"]
+                        },
+                        "equipments": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": []
+                        },
+                        "secondaryMuscles": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": ["hands"]
+                        },
+                        "instructions": {
+                          "type": "array",
+                          "items": { "type": "string" },
+                          "example": [
+                            "Step:1 Extend your arms straight out in front of you.",
+                            "Step:2 Make a fist with both hands.",
+                            "Step:3 Rotate your arms in a circular motion, keeping your arms still.",
+                            "Step:4 Continue the arms circles for the desired number of repetitions."
+                          ]
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -621,8 +670,14 @@ swaggerConfig = {
                   "schema": {
                     "type": "object",
                     "properties": {
-                      "personal_ex_id": { "type": "string", "example": "698d07b26e5117c22dd7772e" },
-                      "message": { "type": "string", "example": "Personal Ex created" }
+                      "personal_ex_id": {
+                        "type": "string",
+                        "example": "698d07b26e5117c22dd7772e"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Personal Ex created"
+                      }
                     },
                     "required": ["personal_ex_id", "message"]
                   }
@@ -633,7 +688,12 @@ swaggerConfig = {
               "description": "Invalid input or creation error",
               "content": {
                 "application/json": {
-                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "error": { "type": "string" }
+                    }
+                  }
                 }
               }
             }
