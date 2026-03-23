@@ -225,29 +225,6 @@ export async function fetchPersonalExercises(workoutId) {
   }
 }
 
-export async function getUserSettings(userId) {
-  const res = await fetch(`http://localhost:5000/AHFULuserSettings/${userId}`);
-  if (res.status === 404) {
-    const createRes = await fetch(`http://localhost:5000/AHFULuserSettings/createDefault/${userId}`, {
-      method: "POST"
-    });
-    if (!createRes.ok) throw new Error("Failed to create default settings");
-    return createRes.json();
-  }
-  if (!res.ok) throw new Error("Failed to fetch settings");
-  return res.json();
-}
-
-export async function updateUserSettings(userId, settings) {
-  const res = await fetch(`http://localhost:5000/AHFULuserSettings/update/${userId}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(settings)
-  });
-  if (!res.ok) throw new Error("Failed to update settings");
-  return res.json();
-}
-
 // User Settings functions
 export async function getUserSettings(userId) {
   const res = await fetch(`http://localhost:5000/AHFULuserSettings/${userId}`);

@@ -81,12 +81,6 @@ export function WorkoutLogger() {
   const [showNewExerciseModal, setShowNewExerciseModal] = useState(false);
 
   // ─── Exercise Form Options (loaded from backend) ──────────────────────────────
-  const MUSCLES = [
-    "Chest", "Back", "Shoulders", "Biceps", "Triceps",
-    "Quadriceps", "Hamstrings", "Calves", "Abs",
-  ];
-  const BODY_PARTS = ["Upper Body", "Lower Body", "Full Body", "Core"];
-  
   const [equipmentOptions, setEquipmentOptions] = useState([]);
   const [equipmentError, setEquipmentError] = useState(null);
   const [BodyPartOptions, setBodyPartOptions] = useState([]);
