@@ -171,6 +171,19 @@ export async function searchExercises(searchQuery) {
   return list;
 }
 
+export async function fetchTemplate(userId) {
+  const res = await fetch(`http://localhost:5000/AHFULworkout/templates/${userId}`);
+  if (!res.ok) {
+    let bodyText = "";
+    try {
+      bodyText = await res.text();
+    } catch (e) {}
+    throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
+  }
+  const data = await res.json();
+  return data;
+}
+
 export async function fetchWorkout(userId) {
   const res = await fetch(`http://localhost:5000/AHFULworkout/${userId}`);
   if (!res.ok) {

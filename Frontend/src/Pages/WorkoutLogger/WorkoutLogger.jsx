@@ -10,10 +10,12 @@ import {
   searchExercises,
   fetchWorkout,
   fetchPersonalExercises,
+  fetchTemplate,
   loadBodyParts,
 } from "../../QueryFunctions";
 
 export function WorkoutLogger() {
+  const [templates, setTemplates] = useState([]);
   /* Hook to track state of the InProgressTable on the Workout Page */
   const [exercisesInProgressTable, setExercisesInProgressTable] = useState([]);
   /* Hook to track state of the exercises from the DB on the Workout Page */
@@ -104,6 +106,13 @@ export function WorkoutLogger() {
     setNewExercise((prev) => ({ ...prev, [field]: values }));
   };
   const searchTimeoutRef = useRef(null);
+
+  const [templateSearch, setTemplateSearch] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+
+  function handleApplyTemplate(template) {
+    console.log("Apply template:", template);
+  }
 
   // useEffect 1: cleanup debounced search timer on unmount
   useEffect(() => {
@@ -500,9 +509,26 @@ export function WorkoutLogger() {
     getPersonalEx();
   }, [workoutId]); // <-- runs only when workoutId changes
 
-  // useEffect 7: log exercisesInProgressTable updates for debugging
+  // useEffect 7: fetch templates that user has created on load
+
   useEffect(() => {
-  }, [exercisesInProgressTable]);
+    async function getTemplates() {
+      try {
+        const allTemplates = await fetchTemplate(userId);
+
+        // Normalize if needed (backend might return null or object)
+        if (Array.isArray(allTemplates)) {
+          setTemplates(allTemplates);
+        } else {
+          setTemplates([]); // fallback
+        }
+      } catch (err) {
+        console.error("Error fetching templates:", err);
+      }
+    }
+
+    getTemplates();
+  }, [userId]);
 
   function unixToDate(unix) {
     return new Date(unix * 1000).toLocaleDateString("en-US");
@@ -512,10 +538,75 @@ export function WorkoutLogger() {
     <div className="page-layout">
       <div className="left-column">
         <div className="template-container">
-          <form
-            onSubmit={addExerciseToWorkout}
-            className="apply-template"
-          ></form>
+          <div className="add-template-form">
+            {/* Search Bar */}
+            <div className="dropdown-wrapper">
+              <input
+                type="text"
+                placeholder="Search templates..."
+                value={templateSearch}
+                onChange={(e) => setTemplateSearch(e.target.value)}
+              />
+
+              <div className="dropdown-instructions">
+                Select a template to apply
+              </div>
+
+              {/* Template List */}
+              <div className="dropdown">
+                {templates.length === 0 && (
+                  <div className="dropdown-item">No templates found</div>
+                )}
+
+                {templates
+                  .filter((t) => {
+                    const title = t?.title ?? "";
+
+                    // Keep selected template visible even if search doesn't match
+                    if (selectedTemplate?._id === t._id) return true;
+
+                    return title
+                      .toLowerCase()
+                      .includes(templateSearch.toLowerCase());
+                  })
+                  .map((t, i) => {
+                    const isSelected = selectedTemplate?._id === t._id;
+
+                    return (
+                      <div
+                        key={t._id ?? i}
+                        className={`dropdown-item ${isSelected ? "selected" : ""}`}
+                        onClick={() => {
+                          if (isSelected) {
+                            setSelectedTemplate(null); // unselect
+                          } else {
+                            setSelectedTemplate(t); // select
+                          }
+                        }}
+                      >
+                        <span>{t.title ?? "Unnamed Template"}</span>
+                        {isSelected && <span className="check">✓</span>}
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+
+            <div
+              className="apply-btn-wrapper"
+              style={{ display: "flex", gap: "8px" }}
+            >
+              {/* Apply Button */}
+              {selectedTemplate && (
+                <button
+                  className="apply-btn"
+                  onClick={() => handleApplyTemplate(selectedTemplate)}
+                >
+                  Apply Template
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -656,62 +747,58 @@ export function WorkoutLogger() {
                 {!loading && exercises.length === 0 && (
                   <div className="dropdown-item">No exercises found</div>
                 )}
+                {!loading &&
+                  exercises.map((item, i) => {
+                    console.log("Exercise item:", item);
+                    const name = item.name; // backend name
+                    const id = item._id ?? item.exerciseId; // backend ID
 
-                <div className="dropdown-item">
-                  {!loading &&
-                    exercises.map((item, i) => {
-                      const name = item.name; // backend name
-                      const id = item._id ?? item.exerciseId; // backend ID
+                    // Filter by name
+                    if (
+                      exerciseName &&
+                      !name.toLowerCase().includes(exerciseName.toLowerCase())
+                    ) {
+                      return null;
+                    }
 
-                      // Filter by name
-                      if (
-                        exerciseName &&
-                        !name.toLowerCase().includes(exerciseName.toLowerCase())
-                      ) {
-                        return null;
-                      }
+                    // Check if selected
+                    const isSelected =
+                      typeof id === "string" &&
+                      pendingExercises.includes(id) &&
+                      exercises.some((ex) => (ex._id ?? ex.exerciseId) === id);
 
-                      // Check if selected
-                      const isSelected =
-                        typeof id === "string" &&
-                        pendingExercises.includes(id) &&
-                        exercises.some(
-                          (ex) => (ex._id ?? ex.exerciseId) === id,
-                        );
+                    return (
+                      <div
+                        key={`item-${i}`}
+                        className={`dropdown-item ${isSelected ? "selected" : ""}`}
+                        onClick={() => {
+                          setPendingExercises((prev) => {
+                            // Prevent invalid IDs from being added
+                            if (
+                              !exercises.some(
+                                (ex) => (ex._id ?? ex.exerciseId) === id,
+                              )
+                            ) {
+                              console.warn("Invalid exerciseId clicked:", id);
+                              return prev;
+                            }
 
-                      return (
-                        <div
-                          key={`item-${i}`}
-                          className={`dropdown-item ${isSelected ? "selected" : ""}`}
-                          onClick={() => {
-                            setPendingExercises((prev) => {
-                              // Prevent invalid IDs from being added
-                              if (
-                                !exercises.some(
-                                  (ex) => (ex._id ?? ex.exerciseId) === id,
-                                )
-                              ) {
-                                console.warn("Invalid exerciseId clicked:", id);
-                                return prev;
-                              }
-
-                              if (prev.includes(id)) {
-                                return prev.filter((p) => p !== id);
-                              }
-                              return [...prev, id];
-                            });
-                          }}
-                        >
-                          <span>{name}</span>
-                          {isSelected && <span className="check">✓</span>}
-                        </div>
-                      );
-                    })}
-                </div>
+                            if (prev.includes(id)) {
+                              return prev.filter((p) => p !== id);
+                            }
+                            return [...prev, id];
+                          });
+                        }}
+                      >
+                        <span>{name}</span>
+                        {isSelected && <span className="check">✓</span>}
+                      </div>
+                    );
+                  })}
               </div>
             </div>
             {/* Display the list of exercises being added */}
-            {/* TODO: Show muscle group too or PR */}
+
             <div className="pending-list">
               {pendingExercises.map((id, i) => {
                 const name =
