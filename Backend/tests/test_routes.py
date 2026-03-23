@@ -987,7 +987,7 @@ def test_find_workout_by_user():
     if err is not None:
         print(exs, err)
     
-    wo_oid = "69af2a4598d0f4227b25ed71"
+    wo_oid = "69c063229f8c3c92b650445b"
     filtered = [d for d in exs if d.get("_id") == wo_oid]
 
     assert len(filtered) == 1
