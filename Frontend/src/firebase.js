@@ -6,13 +6,13 @@ import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken, onMessage} from 'firebase/messaging';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAm0WivNJ-mQiOVdQmVz8VxvcLEdhO8W3A",
-  authDomain: "hello-world-311604.firebaseapp.com",
-  projectId: "hello-world-311604",
-  storageBucket: "hello-world-311604.firebasestorage.app",
-  messagingSenderId: "178689462685",
-  appId: "1:178689462685:web:ca5268e9602f1b7dcadf74",
-  measurementId: "G-H70QP4Y22V"
+  apiKey: "REDACTED",
+  authDomain: "REDACTED",
+  projectId: "REDACTED",
+  storageBucket: "REDACTED.firebasestorage.app",
+  messagingSenderId: "REDACTED",
+  appId: "1:REDACTED:web:ca5268e9602f1b7dcadf74",
+  measurementId: "REDACTED"
 };
 
 const app = initializeApp(firebaseConfig);
