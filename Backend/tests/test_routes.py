@@ -622,11 +622,11 @@ def test_create_delete_personal_ex():
     # Give a valid gymId
     completed = False
     distance = "0"
-    duration = 240
-    exerciseId = "69ab3627a819c7ed3f7fcab1"
-    workoutId = "699d05d8f1677119323250bc"
-    reps = 0
-    sets = 0
+    duration = 0
+    exerciseId = "698d0bc06e5117c22dd7774b"
+    workoutId = "69c063229f8c3c92b650445b"
+    reps = 1
+    sets = 1
     userId = "699d0093795741a59fe13616"
     weight = 600
     responseId, err = PersonalExDriver.create_personal_ex(userId, exerciseId, workoutId, reps, sets, weight, duration, distance, completed)
