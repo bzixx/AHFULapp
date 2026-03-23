@@ -653,9 +653,10 @@ def test_create_delete_personal_ex():
     assert personalEx.get("complete") == False
     assert personalEx.get("distance") == "0"
     assert personalEx.get("duration") == 240
-    assert personalEx.get("exerciseId") == "69ab3627a819c7ed3f7fcab1"
-    assert personalEx.get("reps") == 0
-    assert personalEx.get("sets") == 0
+    assert personalEx.get("exerciseId") == "698d0bc06e5117c22dd7774b"
+    assert personalEx.get("workoutId") == "69c063229f8c3c92b650445b"
+    assert personalEx.get("reps") == 1
+    assert personalEx.get("sets") == 1
     assert personalEx.get("userId") == "699d0093795741a59fe13616"
     assert personalEx.get("weight") == 600
 
