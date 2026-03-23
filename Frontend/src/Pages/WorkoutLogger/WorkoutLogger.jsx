@@ -11,7 +11,7 @@ import {
   fetchWorkout,
   fetchPersonalExercises,
   loadBodyParts,
-} from "../../queryFunctions";
+} from "../../QueryFunctions";
 
 export function WorkoutLogger() {
   const [personalExToRemove, setPersonalExToRemove] = useState({});
@@ -59,6 +59,8 @@ export function WorkoutLogger() {
 
 
   const [newExercise, setNewExercise] = useState(getDefaultNewExercise());
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const resetNewExercise = () => setNewExercise(getDefaultNewExercise());
 
@@ -71,16 +73,27 @@ export function WorkoutLogger() {
     setShowNewExerciseModal(false);
   };
 
-  const handleNewExerciseSave = (e) => {
+  const handleNewExerciseSave = async (e) => {
     e.preventDefault();
     if (!newExercise.name.trim()) {
       alert("Please enter a name for the exercise");
       return;
     }
 
-    // For now, append to exercises list (could POST to backend later)
-    setExercises((prev) => [...prev, { ...newExercise }]);
+    setIsSaving(true);
+    const result = await createExercise(newExercise);
+    setIsSaving(false);
+
+    if (result.error) {
+      alert(`Failed to save exercise: ${result.error}`);
+      return;
+    }
+
+    setExercises((prev) => [...prev, { ...newExercise, _id: result.data.exercise_id }]);
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 2500);
     closeNewExerciseModal();
+    resetNewExercise();
   };
 
   const handleMultiSelectChange = (e, field) => {
@@ -183,9 +196,7 @@ export function WorkoutLogger() {
     }
 
     const ids = exercisesInProgressTable.map((ex) => ex.exerciseId);
-    const missing = ids.filter(
-      id => !personalExNames[id] && exercises.some(ex => (ex._id ?? ex.exerciseId) === id)
-    );
+    const missing = ids.filter(id => !personalExNames[id]);
 
 
     if (missing.length === 0) {
@@ -757,6 +768,25 @@ const handleSubmit = async () => {
           </div>
         </div>
       </div>
+      {/* Save Success Toast */}
+      {saveSuccess && (
+        <div style={{
+          position: "fixed",
+          bottom: 24,
+          left: "50%",
+          transform: "translateX(-50%)",
+          background: "#0a7b00",
+          color: "white",
+          padding: "12px 24px",
+          borderRadius: 8,
+          fontWeight: "bold",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+          zIndex: 3000,
+        }}>
+          Exercise saved successfully!
+        </div>
+      )}
+
       {/* New Exercise Modal */}
       {showNewExerciseModal && (
         <div className="modal-overlay" onClick={closeNewExerciseModal}>
@@ -776,6 +806,27 @@ const handleSubmit = async () => {
               }
               style={{ width: "100%" }}
             />
+
+            <label style={{ display: "block", marginTop: 8 }}>GIF URL (optional)</label>
+            <input
+              type="text"
+              value={newExercise.gifUrl}
+              onChange={(e) =>
+                setNewExercise((p) => ({ ...p, gifUrl: e.target.value }))
+              }
+              placeholder="https://..."
+              style={{ width: "100%" }}
+            />
+            {newExercise.gifUrl && newExercise.gifUrl.startsWith('http') && (
+              <div style={{ marginTop: 8, textAlign: "center" }}>
+                <img
+                  src={newExercise.gifUrl}
+                  alt="GIF Preview"
+                  style={{ maxWidth: "100%", maxHeight: "150px", borderRadius: "8px", border: "2px solid #000" }}
+                  onError={(e) => { e.target.style.display = "none"; }}
+                />
+              </div>
+            )}
 
             <label style={{ display: "block", marginTop: 8 }}>Target Muscles</label>
             {muscleError && (
@@ -856,7 +907,9 @@ const handleSubmit = async () => {
               <button type="button" onClick={closeNewExerciseModal}>
                 Cancel
               </button>
-              <button type="submit">Save</button>
+              <button type="submit" id="Sothat283763Me" disabled={isSaving}>
+                {isSaving ? "Saving..." : "Save"}
+              </button>
             </div>
           </form>
         </div>

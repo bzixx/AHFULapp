@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {ProfileSettingsButton} from "../../components/ProfileSettings/ProfileSettingsButton"
 import "./Profile.css";
+import {registerService} from "../../firebase.js";
 import "../../SiteStyles.css";
 export function Profile() {
     const [userData, setUserData] = useState({name: "", email: "", picture: ""});
@@ -83,7 +84,7 @@ export function Profile() {
           <div className="profile-notifications-section">
             <button
               className="profile-notifications-btn"
-              onClick={() => {}}
+              onClick={registerService}
             >
               Enable Push Notifications
             </button>

@@ -2,16 +2,20 @@ import "./Settings.css";
 import "../../Stylesheets/Themes/Lightmode.css";
 import "../../Stylesheets/Themes/Darkmode.css";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { DropdownRow, ActionRow } from "./SettingsHook.jsx";
 import { updateSetting, setSettings } from "./SettingsSlice.jsx";
+import { getUserSettings, updateUserSettings } from "../../queryFunctions";
 
 export function Settings() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const answers = useSelector((state) => state.setting);
+  const user = useSelector((state) => state.auth.user);
+  const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const update = (key, val) => {
     dispatch(updateSetting({ key, value: val }));
@@ -27,58 +31,76 @@ export function Settings() {
 
   useEffect(() => {
     const fetchSettings = async () => {
+      if (!user || !user._id) {
+        console.log("No user or user._id found");
+        return;
+      }
+      
       try {
-        const user_id = localStorage.getItem("user_id");
-        if (!user_id) return;
-
-        const res = await fetch(`/api/settings/${user_id}`);
-        if (!res.ok) return;
-
-        const data = await res.json();
-
+        const data = await getUserSettings(user._id);
+        
         dispatch(setSettings({
           theme: data.displayMode === "dark" ? "Dark" : "Light",
           units: data.units ? capitalize(data.units) : "Imperial",
+          goals: data.goals || "Lose Fat",
+          shame: data.shameLevel === "low" ? "Off" : data.shameLevel === "medium" ? "On" : data.shameLevel === "high" ? "On" : "On",
+          equipment: data.availableEquipment || "None",
+          gender: data.gender || "",
+          pronouns: data.pronouns || "",
+          dateOfBirth: data.dateOfBirth || "",
+          locations: data.locations || [],
         }));
-
       } catch (err) {
         console.error("Failed to load settings:", err);
       }
     };
 
     fetchSettings();
-  }, [dispatch]);
+  }, [dispatch, user]);
 
-  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+  const capitalize = (str) => str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
 
-  const saveSettings = async () => {
-    console.log("Save Called")
-    try {
-      const user_id = localStorage.getItem("user_id");
-      if (!user_id) return;
-
-      const { activeTab, ...settingsToSave } = answers;
-
-      const payload = {
-        user_id,
-        displayMode: settingsToSave.theme === "Dark" ? "dark" : "light",
-        units: settingsToSave.units.toLowerCase(),
-      };
-
-      await fetch("/api/settings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      console.log("Settings saved:", payload);
-    } catch (err) {
-      console.error("Failed to save settings:", err);
+  const handleSave = () => {
+    console.log("handleSave clicked, user:", user);
+    
+    if (!user || !user._id) {
+      console.log("No user ID available");
+      return;
     }
+    
+    setSaving(true);
+    setSaveSuccess(false);
+    
+    const payload = {
+      displayMode: answers.theme === "Dark" ? "dark" : "light",
+      units: answers.units.toLowerCase(),
+      goals: answers.goals.toLowerCase().replace(" ", "_"),
+      shameLevel: answers.shame === "Off" ? "low" : answers.shame === "On" ? "medium" : "low",
+      availableEquipment: answers.equipment.toLowerCase().replace(" ", "_"),
+      gender: answers.gender || "",
+      pronouns: answers.pronouns || "",
+      dateOfBirth: answers.dateOfBirth || "",
+      locations: answers.locations || [],
+    };
+
+    console.log("Saving payload:", payload);
+
+    updateUserSettings(user._id, payload)
+      .then(() => {
+        console.log("Settings saved successfully");
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+      })
+      .catch((err) => {
+        console.error("Failed to save settings:", err);
+      })
+      .finally(() => {
+        setSaving(false);
+      });
   };
 
-  const handleNavigate = async (path) => {
-    await saveSettings();
+  const handleNavigate = (path) => {
+    handleSave();
     navigate(path);
   };
 
@@ -128,19 +150,17 @@ export function Settings() {
 
               <DropdownRow
                 label="Goals"
-                options={["Lose Fat", "Build Muscle"]}
+                options={["Lose Fat", "Build Muscle", "Maintain"]}
                 value={answers.goals}
                 onChange={(v) => update("goals", v)}
               />
 
               <DropdownRow
-                label="Shame Button"
-                options={["On", "Off"]}
+                label="Shame Level"
+                options={["Off", "On"]}
                 value={answers.shame}
                 onChange={(v) => update("shame", v)}
               />
-
-              <ActionRow label="Location" buttonText="Change" />
 
               <DropdownRow
                 label="Units"
@@ -149,15 +169,43 @@ export function Settings() {
                 onChange={(v) => update("units", v)}
               />
 
-              <ActionRow label="Change Email" buttonText="Change" />
-              <ActionRow label="Date of Birth" buttonText="Change" />
+              <div className="setting-row">
+                <span className="setting-label">Gender</span>
+                <div className="setting-control">
+                  <input
+                    type="text"
+                    value={answers.gender || ""}
+                    onChange={(e) => update("gender", e.target.value)}
+                    placeholder="Enter gender"
+                    className="setting-input"
+                  />
+                </div>
+              </div>
 
-              <DropdownRow
-                label="Gender (At Birth)"
-                options={["Male", "Female", "Other"]}
-                value={answers.gender}
-                onChange={(v) => update("gender", v)}
-              />
+              <div className="setting-row">
+                <span className="setting-label">Pronouns</span>
+                <div className="setting-control">
+                  <input
+                    type="text"
+                    value={answers.pronouns || ""}
+                    onChange={(e) => update("pronouns", e.target.value)}
+                    placeholder="e.g. they/them"
+                    className="setting-input"
+                  />
+                </div>
+              </div>
+
+              <div className="setting-row">
+                <span className="setting-label">Date of Birth</span>
+                <div className="setting-control">
+                  <input
+                    type="date"
+                    value={answers.dateOfBirth || ""}
+                    onChange={(e) => update("dateOfBirth", e.target.value)}
+                    className="setting-input"
+                  />
+                </div>
+              </div>
             </>
           )}
 
@@ -166,31 +214,10 @@ export function Settings() {
               <h2>Workout Settings</h2>
 
               <DropdownRow
-                label="Experience"
-                options={["Beginner", "Intermediate", "Advanced"]}
-                value={answers.experience}
-                onChange={(v) => update("experience", v)}
-              />
-
-              <DropdownRow
                 label="Available Equipment"
                 options={["None", "Basic", "Full Gym"]}
                 value={answers.equipment}
                 onChange={(v) => update("equipment", v)}
-              />
-
-              <DropdownRow
-                label="Warmup Suggestion"
-                options={["On", "Off"]}
-                value={answers.warmup}
-                onChange={(v) => update("warmup", v)}
-              />
-
-              <DropdownRow
-                label="Rest Timer"
-                options={["On", "Off"]}
-                value={answers.rest}
-                onChange={(v) => update("rest", v)}
               />
             </>
           )}
@@ -204,6 +231,19 @@ export function Settings() {
               <ActionRow label="Delete Account" buttonText="Delete" />
             </>
           )}
+
+          <div className="settings-save-section">
+            <button 
+              type="button"
+              className="settings-save-button" 
+              onClick={handleSave}
+              disabled={saving}
+              style={{ display: 'block', position: 'relative', zIndex: 9999 }}
+            >
+              {saving ? "Saving..." : "Save Settings"}
+            </button>
+            {saveSuccess && <span className="save-success">Settings saved!</span>}
+          </div>
 
         </div>
       </div>
