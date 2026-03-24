@@ -1,4 +1,6 @@
 import "./ProfileSettings.css";
+import { useState, useEffect } from "react";
+
 import { useNavigate } from "react-router-dom";
 
 export function ProfileSettingsButton({ trigger = undefined, setTrigger = undefined }) {
