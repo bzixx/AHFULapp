@@ -83,44 +83,26 @@ export function WorkoutLogger() {
   // Modal visibility for creating new exercises
   const [showNewExerciseModal, setShowNewExerciseModal] = useState(false);
 
-  const [personalExToRemove, setPersonalExToRemove] = useState({});
-  const [personalExNames, setPersonalExNames] = useState({});
-
-  // Wireframe option lists for dropdowns (replace with fetch later)
-  const MUSCLES = [
-    "Chest",
-    "Back",
-    "Shoulders",
-    "Biceps",
-    "Triceps",
-    "Quadriceps",
-    "Hamstrings",
-    "Calves",
-    "Abs",
-  ];
-
-  const BODY_PARTS = ["Upper Body", "Lower Body", "Full Body", "Core"];
-
+    // ─── New Exercise Form States 
   const [equipmentOptions, setEquipmentOptions] = useState([]);
   const [equipmentError, setEquipmentError] = useState(null);
-
   const [BodyPartOptions, setBodyPartOptions] = useState([]);
   const [BodyPartError, setBodyPartError] = useState(null);
   const [muscleOptions, setMuscleOptions] = useState([]);
   const [muscleError, setMuscleError] = useState(null);
-
-  // ─── New Exercise Form State ──────────────────────────────────────────────────
   const [newExercise, setNewExercise] = useState(getDefaultNewExercise());
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // ─── Template States 
+  const [templateSearch, setTemplateSearch] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
 
   // ─── Refs ───────────────────────────────────────────────────────────────────
   const searchTimeoutRef = useRef(null);
 
   // ─── Utility Functions ───────────────────────────────────────────────────────
   const resetNewExercise = () => setNewExercise(getDefaultNewExercise());
-
-  const formatTime = formatTimeFn;
 
   const unixToDate = (unix) => {
     return new Date(unix * 1000).toLocaleDateString("en-US");
@@ -169,10 +151,6 @@ export function WorkoutLogger() {
     const values = Array.from(e.target.selectedOptions, (o) => o.value);
     setNewExercise((prev) => ({ ...prev, [field]: values }));
   };
-  const searchTimeoutRef = useRef(null);
-
-  const [templateSearch, setTemplateSearch] = useState("");
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
 
   function handleApplyTemplate(template) {
     console.log("Apply template:", template);
@@ -378,11 +356,6 @@ export function WorkoutLogger() {
     console.error("Error submitting workout:", err);
   }
 };
-
-    } catch (err) {
-      console.error("Error submitting workout:", err);
-    }
-  };
 
   // ─── Remove Exercise from Workout ─────────────────────────────────────────────
   // Removes from UI but queues for deletion on submit
