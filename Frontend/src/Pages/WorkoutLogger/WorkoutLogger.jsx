@@ -33,14 +33,14 @@ import {
  * - Workout timer
  * 
  * Auth Flow:
- * - Gets userId from Redux auth state
+ * - Gets user from Redux auth state
  * - Creates a default workout for today if none exists
  * - Loads existing personal exercises for the workout
  */
 export function WorkoutLogger() {
   // ─── Redux Auth State ─────────────────────────────────────────────────────────
   const user = useSelector((state) => state.auth.user);
-  const userId = user?._id;
+  const userAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   // ─── Personal Exercise State ──────────────────────────────────────────────────
   // Tracks exercises to be deleted when workout is submitted (removed from UI but need DB deletion)
@@ -389,7 +389,7 @@ export function WorkoutLogger() {
       _id: null,  // null = new exercise, will be assigned ID after DB save
       exerciseId: rawName,
       workoutId: workoutId,
-      userId: userId,
+      userId: user._id,
       complete: false,
       reps: 0,
       sets: 0,
@@ -446,7 +446,7 @@ export function WorkoutLogger() {
   // ─── Load or Create Today's Workout ───────────────────────────────────────────
   useEffect(() => {
     // Don't proceed if user isn't logged in
-    if (!userId) {
+    if (!userAuthenticated) {
       setWorkoutLoading(false);
       return;
     }
@@ -467,7 +467,7 @@ export function WorkoutLogger() {
         console.log("Searching workouts between:", currentDateUnix, tomorrowUnix);
 
         // Fetch all workouts for this user
-        const allWorkouts = await fetchWorkout(userId);
+        const allWorkouts = await fetchWorkout(user._id);
 
         // Filter to today's workouts only
         const todaysWorkouts = allWorkouts.filter(w =>
@@ -486,7 +486,7 @@ export function WorkoutLogger() {
             gymId: gymId,
             startTime: currentDateUnix,
             title: "Workout (" + today.toDateString() + ")",
-            userId: userId
+            userId: user._id
           };
 
           console.log("Creating workout:", newWorkoutPayload);
@@ -516,7 +516,7 @@ export function WorkoutLogger() {
     }
 
     getWorkout();
-  }, [userId]);
+  }, [userAuthenticated]);
 
   // ─── Load Personal Exercises for Current Workout ───────────────────────────────
   useEffect(() => {
@@ -535,19 +535,25 @@ export function WorkoutLogger() {
     getPersonalEx();
   }, [workoutId]);
 
-  // ─── Auth Guard: Show login prompt if not authenticated ──────────────────────
-  if (!userId) {
-    return (
-      <div className="page-layout">
-        <div className="center-column">
-          <div className="workout-card">
-            <h2>Please log in to track your workouts</h2>
-            <p>You need to be signed in to use the workout logger.</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // useEffect: fetch templates that user has created on load
+  useEffect(() => {
+    async function getTemplates() {
+      try {
+        const allTemplates = await fetchTemplate(user._id);
+
+        // Normalize if needed (backend might return null or object)
+        if (Array.isArray(allTemplates)) {
+          setTemplates(allTemplates);
+        } else {
+          setTemplates([]); // fallback
+        }
+      } catch (err) {
+        console.error("Error fetching templates:", err);
+      }
+    }
+
+    getTemplates();
+  }, [user._id]);
 
   // ─── Loading State ────────────────────────────────────────────────────────────
   if (workoutLoading) {
@@ -562,26 +568,7 @@ export function WorkoutLogger() {
       </div>
     );
   }
-  // useEffect 7: fetch templates that user has created on load
-
-  useEffect(() => {
-    async function getTemplates() {
-      try {
-        const allTemplates = await fetchTemplate(userId);
-
-        // Normalize if needed (backend might return null or object)
-        if (Array.isArray(allTemplates)) {
-          setTemplates(allTemplates);
-        } else {
-          setTemplates([]); // fallback
-        }
-      } catch (err) {
-        console.error("Error fetching templates:", err);
-      }
-    }
-
-    getTemplates();
-  }, [userId]);
+  
 
   // ─── Error State ─────────────────────────────────────────────────────────────
   if (workoutError) {
@@ -766,7 +753,7 @@ export function WorkoutLogger() {
         {/* Timer Footer */}
         <div className="workout-footer">
           <div className="workout-timer-box workout-timer">
-            {formatTime(time)}
+            {formatTimeFn(time)}
           </div>
           <button
             className="workout-timer-box workout-timer-button"
