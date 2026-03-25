@@ -1,0 +1,128 @@
+.streak-counter {
+  background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+  border-radius: 16px;
+  padding: 20px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.streak-counter::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ff6b6b, #ffa500, #ff6b6b);
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.streak-workout {
+  border: 2px solid #4f46e5;
+}
+
+.streak-food {
+  border: 2px solid #10b981;
+}
+
+.streak-icon {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+
+.streak-value {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.streak-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.streak-period {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: lowercase;
+}
+
+.streak-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+}
+
+.streak-flame {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 1.25rem;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* Loading state */
+.streak-loading {
+  background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+}
+
+.streak-icon-loading,
+.streak-value-loading,
+.streak-label-loading {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  animation: loading-pulse 1.5s ease-in-out infinite;
+}
+
+.streak-icon-loading {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-bottom: 8px;
+}
+
+.streak-value-loading {
+  width: 60px;
+  height: 40px;
+  margin-bottom: 4px;
+}
+
+.streak-label-loading {
+  width: 80px;
+  height: 14px;
+}
+
+@keyframes loading-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+
+/* Empty state */
+.streak-counter.empty {
+  opacity: 0.7;
+}
+
+.streak-counter.empty .streak-number {
+  color: rgba(255, 255, 255, 0.5);
+}

@@ -209,6 +209,7 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 /* Template container */
+
 .template-container {
   display: flex;
   flex-direction: column;
@@ -221,8 +222,59 @@ body {
   height: 275px;
 }
 
-.apply-template{
+.add-template-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  gap: 10px;
+}
 
+.template-container a {
+  text-decoration: none;
+  color: black;
+  font-size: 14px;
+}
+.template-container a:hover {
+  color: #c3cfe2;
+}
+.template-container input[type="text"] {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  color: #041833; /* darker text */
+  background-color: rgba(255,255,255,0.9); /* softer white to fit panel */
+  border: 2px solid rgba(0,0,0,0.6); /* subtle border */
+  border-radius: 8px;
+  outline: none;
+}
+
+.template-container input[type="text"]:focus {
+  border-color: rgba(0,0,0,0.9);
+}
+
+.apply-btn-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: auto; /* pushes it to the bottom */ 
+  padding-bottom: 10px; /* optional spacing */
+}
+
+.apply-btn {
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 10px 14px;
+  width: 100%;
+  background: linear-gradient(90deg,#eaf0fb,#ffffff);
+  color: #041833;
+  border: 2px solid #000; /* consistent black border */
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.apply-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
 }
 /* Add Exercise container */
 

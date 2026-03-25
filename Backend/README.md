@@ -112,7 +112,7 @@ pip install --upgrade pip setuptools wheel
 7) Install project requirements:
 
 ```bash
-pip install -r newReqs.txt
+pip install -r requirements.txt
 ```
 
 8) Run the Flask app (still inside the activated venv):

@@ -173,3 +173,59 @@ class WorkoutDriver:
             return response, None
         except Exception as e:
             return None, str(e)
+    # ── Streak Calculation ─────────────────────────────────────────────────────
+    @staticmethod
+    def get_streak(userId):
+        try:
+            # Validate userId
+            if not userId:
+                return None, "User ID is required"
+            
+            oid, err = WorkoutDriver._validate_obj_id(userId, "userId")
+            if err:
+                return None, err
+            
+            # Get all workouts for user, sorted by startTime descending
+            workouts = WorkoutObject.find_by_user(userId)
+            if not workouts:
+                return {"streak": 0, "lastWorkoutDate": None}, None
+            
+            from datetime import datetime, timedelta
+            
+            # Extract unique dates (calendar days) from workouts
+            dates = set()
+            for workout in workouts:
+                if workout.get("startTime"):
+                    # Convert timestamp to date
+                    dt = datetime.fromtimestamp(workout["startTime"])
+                    dates.add(dt.date())
+            
+            if not dates:
+                return {"streak": 0, "lastWorkoutDate": None}, None
+            
+            # Sort dates in descending order
+            sorted_dates = sorted(dates, reverse=True)
+            today = datetime.now().date()
+            yesterday = today - timedelta(days=1)
+            
+            # Check if most recent workout was today or yesterday
+            most_recent = sorted_dates[0]
+            if most_recent not in [today, yesterday]:
+                # Streak is broken - no activity today or yesterday
+                return {"streak": 0, "lastWorkoutDate": str(most_recent)}, None
+            
+            # Count consecutive days
+            streak = 1
+            for i in range(len(sorted_dates) - 1):
+                current_date = sorted_dates[i]
+                next_date = sorted_dates[i + 1]
+                expected_prev = current_date - timedelta(days=1)
+                
+                if next_date == expected_prev:
+                    streak += 1
+                else:
+                    break
+            
+            return {"streak": streak, "lastWorkoutDate": str(most_recent)}, None
+        except Exception as e:
+            return None, str(e)

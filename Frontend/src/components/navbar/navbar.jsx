@@ -1,27 +1,29 @@
-import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import "./Navbar.css";
 
-export function Navbar() {
+export function Navbar({ minHeight }) {
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
   return (
     <nav className="sidebar">
-      <NavLink to="/" end>Dashboard Home</NavLink>
-      <NavLink to="/Login">Login</NavLink>
-      <NavLink to="/WorkoutLogger">Workout Logger</NavLink>
-      <NavLink to="/ExploreWorkout">Explore Workouts</NavLink>
-      <NavLink to="/FoodLog">Food Log</NavLink>
-      <NavLink to="/Map">Map</NavLink>
-      <NavLink to="/MeasurementLogger">Measurement Logger</NavLink>
-      <NavLink to="/Profile">Profile</NavLink>
-      <NavLink to="/TOS">Terms of Service</NavLink>
-
-      <a
-        href="http://localhost:5000/APIDocs"
-        target="_blank"
-        rel="noreferrer"
-      >
-        Documentation
-      </a>
-
+      <Link to="/">Dashboard Home</Link>
+      
+      {!isAuthenticated ? (
+        <Link to="/Login">Login</Link>
+      ) : (
+        <>
+          <Link to="/WorkoutLogger">Workout Logger</Link>
+          <Link to="/ExploreWorkout">Explore Workouts</Link>
+          <Link to="/FoodLog">Food Log</Link>
+          <Link to="/ExploreTasks">Tasks</Link>
+          <Link to="/Map">Map</Link>
+          <Link to="/MeasurementLogger">Measurement Logger</Link>
+          <Link to="/Profile">Profile</Link>
+          <Link to="/TOS">Terms of Service</Link>
+          <a href="http://localhost:5000/APIDocs" target="_blank" rel="noreferrer">Documentation</a>
+        </>
+      )}
     </nav>
   );
 }
