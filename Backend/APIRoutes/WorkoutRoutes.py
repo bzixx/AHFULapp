@@ -22,7 +22,15 @@ def get_workouts_by_user(userId):
 # ── GET all templates for a specific user ──────────────────────────────────────
 @workoutRouteBlueprint.route("/templates/<userId>", methods=["GET"])
 def get_templates(userId):
-    workouts, error = WorkoutDriver.get_templates(userId)
+    workouts, error = WorkoutDriver.get_user_templates(userId)
+    if error:
+        return jsonify({"error": error}), 500
+    return jsonify(workouts), 200
+
+# ── GET all templates for a specific user ──────────────────────────────────────
+@workoutRouteBlueprint.route("/template/<id>", methods=["GET"])
+def get_template(id):
+    workouts, error = WorkoutDriver.get_template(id)
     if error:
         return jsonify({"error": error}), 404
     return jsonify(workouts), 200
@@ -68,7 +76,7 @@ def create_template():
     
     if error:
         return jsonify({"error": error}), 400
-    return jsonify({"workout_id": workout_id, "message": "Workout created"}), 201
+    return jsonify({"workout_id": workout_id, "message": "Template created"}), 201
 
 # ── UPDATE personalEx ───────────────────────────────────────────────────────────
 @workoutRouteBlueprint.route("/update/<workout_id>", methods=["PUT"])
