@@ -1540,7 +1540,7 @@ def test_find_workout_by_user():
 def test_find_template_by_user():
     # Give a valid _id
     oid = "699d0093795741a59fe13616"
-    temps, err = WorkoutDriver.get_templates(oid)
+    temps, err = WorkoutDriver.get_user_templates(oid)
 
     if err is not None:
         print(temps, err)
@@ -1561,7 +1561,7 @@ def test_find_template_by_user():
 
     # Give a bad _id
     bad_oid = "699d0093795741a59fe1361"
-    temps, err = WorkoutDriver.get_templates(bad_oid)
+    temps, err = WorkoutDriver.get_user_templates(bad_oid)
 
     if err is not None:
         print(temps, err)
@@ -1575,7 +1575,7 @@ def test_find_template_by_user():
 
     # Give an invalid _id
     inv_oid = "000000000000000000000000"
-    temps, err = WorkoutDriver.get_templates(inv_oid)
+    temps, err = WorkoutDriver.get_user_templates(inv_oid)
 
     if err is not None:
         print(temps, err)
@@ -1586,6 +1586,17 @@ def test_find_template_by_user():
     # Assertions
     assert temps is None
     assert err == inv_err_code 
+
+    template_id = "69c19753432188dfcd568ddc"  # known existing template
+    template, err = WorkoutDriver.get_template(template_id)
+
+    assert err is None
+    assert template is not None
+    assert template.get("_id") == template_id
+    
+    template, err = WorkoutDriver.get_template(None)
+    assert template is None
+    assert err == "You are missing an id. Please fix, then attempt to create workout again"
 
 def test_create_delete_workout():
     # Give a valid gymId
@@ -1643,7 +1654,7 @@ def test_create_delete_template():
         assert(False)
 
     # Give created workoutId
-    templates, err = WorkoutDriver.get_templates(userId)
+    templates, err = WorkoutDriver.get_user_templates(userId)
 
     if err is not None:
         print(templates, err)
@@ -1766,11 +1777,11 @@ def test_workout_invalid_inputs_combined():
 
     # GET TEMPLATES — INVALID INPUTS
     for bad in [None, "", 123, [], {}, "nothex"]:
-        resp, err = WorkoutDriver.get_templates(bad)
+        resp, err = WorkoutDriver.get_user_templates(bad)
         assert resp is None
         assert err == "You are missing a user id. Please fix, then attempt to create workout again" or "Invalid user_id format; must be a 24-hex string"
 
-    resp, err = WorkoutDriver.get_templates("000000000000000000000000")
+    resp, err = WorkoutDriver.get_user_templates("000000000000000000000000")
     assert resp is None
     assert err == "Templates not found"
 
@@ -1840,6 +1851,17 @@ def test_workout_invalid_inputs_combined():
     resp, err = WorkoutDriver.update_workout(valid_workout_id, None)
     assert resp is None
     assert err == "You must provide at least one field to update"
+
+    bad_id = "nothex"
+    template, err = WorkoutDriver.get_template(bad_id)
+
+    assert template is None
+    assert err == "Invalid id format; must be a 24-hex string"
+
+    template, err = WorkoutDriver.get_template("000000000000000000000000")
+
+    assert template is None
+    assert err == "Template not found"
 
 def test_workout_partial_empty_unknown_updates():
     workout_id = "69c063229f8c3c92b650445b"
