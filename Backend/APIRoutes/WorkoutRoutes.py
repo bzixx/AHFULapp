@@ -61,7 +61,7 @@ def create_template():
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
-    workout_id, error = WorkoutDriver.create_workout(
+    workout_id, error = WorkoutDriver.create_template(
         userId=data.get("userId"),
         title=data.get("title")
     )
