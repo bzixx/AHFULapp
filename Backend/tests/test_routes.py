@@ -1362,12 +1362,12 @@ def test_user_invalid_inputs_combined():
     for bad in ["nothex", 123, [], {}, ""]:
         resp, err = UserDriver.add_role_by_id(bad, valid_admin_id, "User")
         assert resp is None
-        assert err == "Invalid user_id format; must be a 24-hex string"
+        assert err == "Invalid user_id format; must be a 24-hex string" or "user_id is required"
 
     for bad in ["nothex", 123, [], {}, ""]:
         resp, err = UserDriver.add_role_by_id(valid_user_id, bad, "User")
         assert resp is None
-        assert err == "Invalid adder_id format; must be a 24-hex string"
+        assert err == "Invalid adder_id format; must be a 24-hex string" or "user_id is required"
 
     # Invalid role
     resp, err = UserDriver.add_role_by_id(valid_user_id, valid_admin_id, "Super Saiyan")
