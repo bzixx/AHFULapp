@@ -347,6 +347,9 @@ class ExerciseDriver:
         
     @staticmethod
     def delete_exercise(exercise_id):
+        exercise_id, err = ExerciseDriver._validate_obj_id(exercise_id, "userid")
+        if err:
+            return None, err
         try:
             existing_exercise = ExerciseObject.find_by_id(exercise_id)
             if not existing_exercise:

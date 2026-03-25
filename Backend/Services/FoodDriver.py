@@ -63,6 +63,11 @@ class FoodDriver:
 
     @staticmethod
     def get_food_by_user(id):
+        if not id:
+            return None, "You must provide a user id to get"
+        oid, err = FoodDriver._validate_obj_id(id, "food_id")
+        if err:
+            return None, err
         try:
             food = FoodObject.find_by_user(id)
             return food, None
@@ -71,6 +76,11 @@ class FoodDriver:
 
     @staticmethod
     def get_food_by_id(id):
+        if not id:
+            return None, "You must provide a food id to get"
+        oid, err = FoodDriver._validate_obj_id(id, "food_id")
+        if err:
+            return None, err
         try:
             food = FoodObject.find_by_id(id)
             if not food:
@@ -81,28 +91,33 @@ class FoodDriver:
 
     # ── Update ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def update_food(food_id, name, calsPerServing, servings, type, time):
-        oid, err = FoodDriver._validate_obj_id(food_id, "food_id")
+    def update_food(id, updates):
+        if not id:
+            return None, "You must provide a food id to update"
+        oid, err = FoodDriver._validate_obj_id(id, "food_id")
         if err:
             return None, err
+        
+        if not updates or not isinstance(updates, dict):
+            return None, "You must provide at least one field to update"
 
-        update_data = {}
-        if name is not None:
-            update_data["name"] = name
-        if calsPerServing is not None:
-            update_data["calsPerServing"] = calsPerServing
-        if servings is not None:
-            update_data["servings"] = servings
-        if type is not None:
-            update_data["type"] = type
-        if time is not None:
-            update_data["time"] = time
+         # Allowed fields to update
+        allowed_fields = {
+            "name",
+            "calsPerServing",
+            "servings",
+            "type",
+            "time"
+        }
 
-        if not update_data:
-            return None, "No fields to update"
+        # Filter only allowed fields
+        sanitized_updates = {k: v for k, v in updates.items() if k in allowed_fields}
+
+        if not sanitized_updates:
+            return None, "No valid fields to update"
 
         try:
-            updated = FoodObject.update(food_id, update_data)
+            updated = FoodObject.update(id, sanitized_updates)
             if not updated:
                 return None, "Food not found"
             return updated, None
@@ -112,6 +127,11 @@ class FoodDriver:
     # ── Delete ─────────────────────────────────────────────────────────────────
     @staticmethod
     def delete_food(id):
+        if not id:
+            return None, "You must provide a food id to delete"
+        oid, err = FoodDriver._validate_obj_id(id, "food_id")
+        if err:
+            return None, err
         # Validate input
         if not id:
             return None, "You must provide a food id to delete"

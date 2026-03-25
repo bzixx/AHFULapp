@@ -66,24 +66,27 @@ def create_food():
         return jsonify({"error": error}), 400
     return jsonify({"food_id": food_id, "message": "food created"}), 201
 
+
 # ── UPDATE food ────────────────────────────────────────────────────────────────
 @foodRouteBlueprint.route("/update/<food_id>", methods=["PUT"])
 def update_food(food_id):
     data = request.get_json()
-    if not data:
+
+    if not data or not isinstance(data, dict):
         return jsonify({"error": "No data provided"}), 400
 
-    updated, error = FoodDriver.update_food(
-        food_id=food_id,
-        name=data.get("name"),
-        calsPerServing=data.get("calsPerServing"),
-        servings=data.get("servings"),
-        type=data.get("type"),
-        time=data.get("time")
-    )
+    updates = {
+        "name": data.get("name"),
+        "calsPerServing": data.get("calsPerServing"),
+        "servings": data.get("servings"),
+        "type": data.get("type"),
+        "time": data.get("time")
+    }
 
+    updated, error = FoodDriver.update_food(food_id, updates)
     if error:
         return jsonify({"error": error}), 400
+
     return jsonify(updated), 200
 
 # ── DELETE food ────────────────────────────────────────────────────────────────

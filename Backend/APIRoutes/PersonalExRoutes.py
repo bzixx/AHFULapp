@@ -41,6 +41,12 @@ def create_personal_ex():
     data = request.get_json()
     if not data:
         return jsonify({"error": "No data provided"}), 400
+    
+    template=data.get("template")
+    if not template:
+        template = False
+    else:
+        template = True
 
     personal_ex_id, error = PersonalExDriver.create_personal_ex(
         userId=data.get("userId"),
@@ -52,6 +58,7 @@ def create_personal_ex():
         duration=data.get("duration"),
         distance=data.get("distance"),
         complete=data.get("complete"),
+        template=template
     )
     
     if error:

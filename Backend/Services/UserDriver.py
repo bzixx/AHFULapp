@@ -41,6 +41,11 @@ class UserDriver:
 
     @staticmethod
     def get_user_by_id(id):
+        if not id:
+            return None, "You must provide a user id to grab"
+        oid, err = UserDriver._validate_obj_id(id, "userId")
+        if err:
+            return None, err
         try:
             user = UserObject.find_by_id(id)
             if not user:
@@ -105,6 +110,8 @@ class UserDriver:
             return None, err
 
         # Check id
+        if not adder_id:
+            return None, "adder_id is required"
         oid, err = UserDriver._validate_obj_id(adder_id, "adder_id")
         if err:
             return None, err
@@ -137,6 +144,7 @@ class UserDriver:
             return None, "user_id is required"
         if not role:
             return None, "Role is required"
+            
         role, err = UserDriver._validate_role(role)
         if not role:
             return None, err
