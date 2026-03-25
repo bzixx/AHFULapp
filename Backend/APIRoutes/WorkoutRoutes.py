@@ -16,7 +16,7 @@ def get_all_workouts():
 def get_workouts_by_user(userId):
     workouts, error = WorkoutDriver.get_workouts_by_user(userId)
     if error:
-        return jsonify({"error": error}), 500
+        return jsonify({"error": error}), 404
     return jsonify(workouts), 200
 
 # ── GET all templates for a specific user ──────────────────────────────────────
@@ -24,7 +24,7 @@ def get_workouts_by_user(userId):
 def get_templates(userId):
     workouts, error = WorkoutDriver.get_templates(userId)
     if error:
-        return jsonify({"error": error}), 500
+        return jsonify({"error": error}), 404
     return jsonify(workouts), 200
 
 # ── GET single workout ────────────────────────────────────────────────────────

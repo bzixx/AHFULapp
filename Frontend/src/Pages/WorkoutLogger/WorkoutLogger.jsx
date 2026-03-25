@@ -456,6 +456,8 @@ export function WorkoutLogger() {
         setWorkoutLoading(true);
         setWorkoutError(null);
 
+        console.log(user._id);
+
         // Calculate today's date range (midnight to midnight)
         const today = new Date();
         today.setHours(0, 0, 0, 0);
