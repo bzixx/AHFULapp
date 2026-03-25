@@ -21,7 +21,7 @@ class PersonalExDriver:
 
     # ── Create ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def create_personal_ex(userId, exerciseId, workoutId, reps, sets, weight, duration, distance, complete, template):
+    def create_personal_ex(userId, exerciseId, workoutId, reps, sets, weight, duration, distance, complete, template=None):
         # Validate required fields
         if (not userId) or (not exerciseId) or (not workoutId):
             return None, "You are missing a userId, workoutId or exerciseId. Please fix, then attempt to create personalEx again"
