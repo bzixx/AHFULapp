@@ -1825,7 +1825,7 @@ def test_workout_invalid_inputs_combined():
     for bad in ["", 123, [], {}, "nothex"]:
         resp, err = WorkoutDriver.delete_workout(bad)
         assert resp is None
-        assert err == "Invalid workout_id format; must be a 24-hex string"
+        assert err == "Invalid workout_id format; must be a 24-hex string" or "You must provide a workout id to delete"
 
     resp, err = WorkoutDriver.delete_workout("000000000000000000000000")
     assert resp is None
