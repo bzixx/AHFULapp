@@ -10,8 +10,10 @@ export function Navbar({ minHeight }) {
       <Link to="/">Dashboard Home</Link>
       
       {!isAuthenticated ? (
-        <Link to="/Login">Login</Link>,
+        <>
+        <Link to="/Login">Login</Link>
         <Link to="/TOS">Terms of Service</Link>
+        </>
       ) : (
         <>
           <Link to="/WorkoutLogger">Workout Logger</Link>
