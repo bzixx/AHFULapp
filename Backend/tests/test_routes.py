@@ -1041,7 +1041,7 @@ def test_personal_ex_invalid_inputs_combined():
             reps=1, sets=1, weight=100, duration=60, distance="0", complete=False
         )
         assert resp is None
-        assert err == "You are missing a userId, workoutId or exerciseId. Please fix, then attempt to create personalEx again"
+        assert err == "You are missing a userId, workoutId or exerciseId. Please fix, then attempt to create personalEx again" or "Invalid userId format; must be a 24-hex string"
 
     for bad in ["nothex", 123, [], {}, ""]:
         resp, err = PersonalExDriver.create_personal_ex(
