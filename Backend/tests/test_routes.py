@@ -262,6 +262,55 @@ def test_update_food_roundtrip():
     assert fetched_after_restore.get("type") == orig_type
     assert fetched_after_restore.get("time") == orig_time
 
+def test_food_invalid_inputs():
+    # CREATE FOOD
+    # None userId
+    resp, err = FoodDriver.create_food(None, "Apple", 95, 1, "Lunch", 100)
+    assert resp is None
+    assert err is not None
+
+    # Empty userId
+    resp, err = FoodDriver.create_food("", "Apple", 95, 1, "Lunch", 100)
+    assert resp is None
+    assert err is not None
+
+    # Wrong types
+    bad_values = [
+        (123, "Apple", 95, 1, "Lunch", 100),                  # userId int
+        ("699d0093795741a59fe13616", ["Not a string"], 95, 1, "Lunch", 100),     # name list
+        ("699d0093795741a59fe13616", "Apple", "cals", 1, "Lunch", 100),          # cals str
+        ("699d0093795741a59fe13616", "Apple", 95, {}, "Lunch", 100),             # servings dict
+        ("699d0093795741a59fe13616", "Apple", 95, 1, 999, 100),                  # type int
+        ("699d0093795741a59fe13616", "Apple", 95, 1, "Lunch", [1, 2, 3])         # time list
+    ]
+
+    for args in bad_values:
+        resp, err = FoodDriver.create_food(*args)
+        assert resp is None
+        assert err is not None
+
+    # GET FOOD BY ID — wrong types
+    for bad in [None, 12345, [], {}, ""]:
+        resp, err = FoodDriver.get_food_by_id(bad)
+        assert resp is None
+        assert err is not None
+
+    # UPDATE FOOD
+    resp, err = FoodDriver.update_food(food_id=None, name="Test")
+    assert resp is None
+    assert err is not None
+
+    resp, err = FoodDriver.update_food(food_id="valid", calsPerServing="bad")
+    assert resp is None
+    assert err is not None
+
+    # DELETE FOOD
+    for bad in [None, "", 123, [], {}]:
+        resp, err = FoodDriver.delete_food(bad)
+        assert resp is None
+        assert err is not None
+
+
 # Gym
 
 def test_find_gym_by_id():
