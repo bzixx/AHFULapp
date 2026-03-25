@@ -68,7 +68,7 @@ def create_template():
     
     if error:
         return jsonify({"error": error}), 400
-    return jsonify({"workout_id": workout_id, "message": "Workout created"}), 201
+    return jsonify({"workout_id": workout_id, "message": "Template created"}), 201
 
 # ── UPDATE personalEx ───────────────────────────────────────────────────────────
 @workoutRouteBlueprint.route("/update/<workout_id>", methods=["PUT"])
