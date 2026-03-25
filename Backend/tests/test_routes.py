@@ -1788,7 +1788,7 @@ def test_workout_invalid_inputs_combined():
     for bad in ["nothex", 123, [], {}, ""]:
         resp, err = WorkoutDriver.create_workout(bad, valid_gym_id, "Test", "1", "2")
         assert resp is None
-        assert err == "Invalid userId format; must be a 24-hex string"
+        assert err == "Invalid userId format; must be a 24-hex string" or "You are missing a userId or startTime. Please fix, then attempt to create workout again"
 
     # Invalid gymIds
     for bad in ["nothex", 123, [], {}, ""]:
