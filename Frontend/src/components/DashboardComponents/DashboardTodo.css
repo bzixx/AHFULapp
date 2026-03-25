@@ -4,6 +4,11 @@
   height: 300px;
   display: flex;
   justify-content: flex-end;
+  border: 3px solid #000000;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
 }
 
 .dashboard-workout-todo-item {
@@ -11,9 +16,9 @@
   flex-direction: column;
   height: 100%;
   width: 100%;
-  background: #fff;
-  border: 2px solid #333;
-  border-radius: 8px;
+  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
+  border: none;
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -23,8 +28,9 @@
   font-weight: bold;
   padding: 12px;
   border-bottom: 2px solid #333;
-  background: #f5f5f5;
+  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
   font-size: 1rem;
+  color: #041833;
 }
 
 .dashboard-task-section {
@@ -34,7 +40,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  background: #fff;
+  background: linear-gradient(0deg, #FFF7F2, #f5f5f5);
 }
 
 .dashboard-task-section table {
@@ -43,8 +49,8 @@
 }
 
 .dashboard-cell {
-  background: #f5f5f5;
-  border: 1px solid #ddd;
+  background: linear-gradient(0deg, #FFF7F2, #f5f5f5);
+  border: 1px solid #333;
   border-radius: 6px;
   padding: 10px;
   text-align: center;
@@ -52,12 +58,14 @@
   display: block;
   margin-bottom: 6px;
   font-size: 0.95rem;
+  color: #041833;
+  font-weight: 500;
 }
 
 .dashboard-footer {
   flex-shrink: 0;
   border-top: 2px solid #333;
-  background: #f5f5f5;
+  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
 }
 
 .workout-button {
@@ -67,37 +75,47 @@
   border: none;
   font-size: 1rem;
   font-weight: bold;
-  background: #4f46e5;
-  color: white;
+  background: linear-gradient(90deg, #eaf0fb, #ffffff);
+  color: #041833;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  border-left: 2px solid #000;
 }
 
 .workout-button:hover {
-  background: #4338ca;
+  background: linear-gradient(90deg, #d4e4f7, #f5f5f5);
+  transform: scale(1.02);
+}
+
+.workout-button:active {
+  transform: scale(0.98);
 }
 
 .dashboard-todo-list {
-  background: #fff;
-  border: 2px solid #e5e7eb;
+  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
+  border: 3px solid #000000;
   border-radius: 8px;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .dashboard-todo-title {
   margin: 0;
   padding: 12px;
-  background: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
+  border-bottom: 2px solid #333;
   font-size: 1rem;
   font-weight: 600;
+  color: #041833;
+  text-align: center;
 }
 
 .dashboard-todo-loading,
 .dashboard-todo-empty {
   padding: 24px;
   text-align: center;
-  color: #666;
+  color: #041833;
+  font-weight: 600;
 }
 
 .dashboard-todo-items {
@@ -106,8 +124,11 @@
 }
 
 .dashboard-todo-item {
-  padding: 10px 12px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 8px 12px;
+  border-bottom: 1px solid #333;
+  background: linear-gradient(0deg, #FFF7F2, #f5f5f5);
+  border-radius: 0;
+  transition: background-color 0.2s ease;
 }
 
 .dashboard-todo-item:last-child {
@@ -118,54 +139,76 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 4px;
 }
 
 .dashboard-todo-item-title {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.9rem;
+  color: #041833;
 }
 
 .dashboard-todo-item-date {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #666;
+  background: #f5f5f5;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 2px 6px;
 }
 
 .dashboard-todo-item-meta {
   font-size: 0.8rem;
-  color: #888;
+  color: #555;
 }
 
 .dashboard-todo-item-sub {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-top: 4px;
   font-size: 0.8rem;
-  color: #666;
+  color: #041833;
+}
+
+.dashboard-todo-item-sub span:first-child {
+  background: linear-gradient(90deg, #eaf0fb, #ffffff);
+  color: #041833;
+  border: 2px solid #000;
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-weight: 600;
+  font-size: 0.8rem;
 }
 
 .dashboard-todo-footer {
   padding: 10px 12px;
-  border-top: 1px solid #e5e7eb;
-  background: #f9fafb;
+  border-top: 2px solid #333;
+  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
   text-align: center;
 }
 
 .view-more-link {
-  color: #4f46e5;
+  color: #041833;
   text-decoration: none;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
 }
 
 .view-more-link:hover {
-  text-decoration: underline;
+  opacity: 0.7;
 }
 
 .task-completed {
-  background: #f0fdf4;
+  background: linear-gradient(0deg, #f0fdf4, #e8f5e9);
+  border: 1px solid #4caf50;
 }
 
 .task-status-badge {
-  color: #10b981;
+  color: #2e7d32;
   font-weight: bold;
+  background: #c8e6c9;
+  padding: 2px 6px;
+  border-radius: 3px;
 }
