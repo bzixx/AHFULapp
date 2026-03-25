@@ -248,8 +248,8 @@ def test_update_food_roundtrip():
     assert final.get("type") == orig_type
     assert final.get("time") == orig_time
     
-def test_food_invalid_inputs_combined():
-    valid_food_id = "699d0f5f888d8f649698307e"  # Replace if needed
+def test_food_invalid_inputs():
+    valid_food_id = "699d0f5f888d8f649698307e"
     valid_user_id = "699d0093795741a59fe13616"
 
     # ===============================================================
@@ -292,6 +292,11 @@ def test_food_invalid_inputs_combined():
     # GET FOOD INVALID INPUTS
     for bad_id in [None, "", "nothex", 123, [], {}]:
         resp, err = FoodDriver.get_food_by_id(bad_id)
+        assert resp is None
+        assert err is not None
+
+    for bad_id in [None, "", "nothex", 123, [], {}]:
+        resp, err = FoodDriver.get_food_by_user(bad_id)
         assert resp is None
         assert err is not None
 
@@ -358,6 +363,63 @@ def test_food_invalid_inputs_combined():
     resp, err = FoodDriver.update_food("000000000000000000000000", {"name": "Test"})
     assert resp is None
     assert err == "Food not found"
+
+def test_food_partial_empty_unknown_updates():
+    valid_user_id = "699d0093795741a59fe13616"
+    valid_food_id = "699d0f5f888d8f649698307e"
+
+    original, err = FoodDriver.get_food_by_id(valid_food_id)
+
+    # UPDATE — PARTIAL UPDATE
+    partial_update = {"name": "PartialUpdateName"}
+    updated, err = FoodDriver.update_food(valid_food_id, partial_update)
+
+    assert err is None
+    assert updated is not None
+    assert updated.get("name") == "PartialUpdateName"
+
+    # UPDATE — EMPTY DICT
+    resp, err = FoodDriver.update_food(valid_food_id, {})
+    assert resp is None
+    assert err == "You must provide at least one field to update" or err == "No valid fields to update"
+
+    # UPDATE — ONLY UNKNOWN FIELDS
+    unknown_update = {"notARealField": 123, "userId": "SHOULD_NOT_BE_ALLOWED"}
+
+    resp, err = FoodDriver.update_food(valid_food_id, unknown_update)
+    assert resp is None
+    assert err == "No valid fields to update"
+
+    # UPDATE — MIX OF VALID + UNKNOWN FIELDS
+    # unknown fields should be ignored, valid ones applied
+    mixed_update = {
+        "name": "MixedUpdateName",
+        "calsPerServing": 200,
+        "junk": "ignore me",
+        "somethingElse": 999,
+    }
+
+    updated, err = FoodDriver.update_food(valid_food_id, mixed_update)
+    assert err is None
+    assert updated.get("name") == "MixedUpdateName"
+    assert updated.get("calsPerServing") == 200
+    assert "junk" not in updated
+    assert "somethingElse" not in updated
+
+    # RESTORE ORIGINAL VALUES
+    # Fetch original to restore exactly
+
+    restore = {
+        "name": original["name"],
+        "calsPerServing": original["calsPerServing"],
+        "servings": original["servings"],
+        "type": original["type"],
+        "time": original["time"],
+    }
+
+    restored, err = FoodDriver.update_food(valid_food_id, restore)
+    assert err is None
+    assert restored["name"] == original["name"]
 
 # Gym
 
