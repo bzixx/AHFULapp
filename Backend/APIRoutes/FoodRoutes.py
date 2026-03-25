@@ -3,6 +3,26 @@ from Services.FoodDriver import FoodDriver
 
 foodRouteBlueprint = Blueprint("food", __name__, url_prefix="/AHFULfood")
 
+# ── SEARCH USDA FoodData Central API (MUST BE BEFORE CATCH-ALL ROUTES) ────────────────────────────────
+@foodRouteBlueprint.route("/search/usda", methods=["GET"])
+def search_usda_foods():
+    """
+    Search USDA FoodData Central for foods.
+    Query parameter: q (search query)
+    """
+    query = request.args.get("q", "").strip()
+    max_results = request.args.get("limit", 10, type=int)
+
+    if not query:
+        return jsonify({"error": "Search query (q) is required"}), 400
+
+    foods, error = FoodDriver.search_usda_foods(query, max_results)
+
+    if error:
+        return jsonify({"error": error}), 500
+
+    return jsonify({"foods": foods}), 200
+
 # ── GET all foods ────────────────────────────
 @foodRouteBlueprint.route("/", methods=["GET"])
 def get_all_food():
