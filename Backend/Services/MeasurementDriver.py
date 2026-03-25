@@ -109,7 +109,7 @@ class MeasurementDriver:
     def get_measurements_by_user(userId):
         if not userId:
             return None, "You must provide a userId to get"
-        oid, err = MeasurementDriver._validate_obj_id(id, "measurement_id")
+        oid, err = MeasurementDriver._validate_obj_id(userId, "measurement_id")
         if err:
             return None, err
         try:
