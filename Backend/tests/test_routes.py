@@ -152,7 +152,7 @@ def test_create_delete_food():
 
 def test_update_food_roundtrip():
     # Known existing document id from your tests/fixtures
-    food_id = "699d0f5f5f888d8f649698307e"
+    food_id = "699d0f5f888d8f649698307e"
 
     # Fetch the current/original state
     original, err = FoodDriver.get_food_by_id(food_id)
