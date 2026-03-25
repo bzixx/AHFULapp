@@ -13,7 +13,8 @@ const initialState = {
     equipment: "None",
     experience: "Beginner",
     warmup: "On",
-    rest: "On"
+    rest: "On",
+    tutorialComplete: false
 };
 
 export const settingSlice = createSlice({

@@ -74,6 +74,7 @@ export function useAuthInit() {
                   pronouns: settingsData.pronouns || "",
                   dateOfBirth: settingsData.dateOfBirth || "",
                   locations: settingsData.locations || [],
+                  tutorialComplete: settingsData.tutorialComplete ?? false,
                 }));
               } catch (settingsErr) {
                 console.error("Failed to load settings:", settingsErr);

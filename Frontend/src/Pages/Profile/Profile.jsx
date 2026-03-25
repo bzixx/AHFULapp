@@ -115,7 +115,7 @@ export function Profile() {
         {/* Logout */}
         <div className="profile-logout-section">
           <button
-            className="profile-logout-btn"
+            className="profile-logout-btn" id="logout-btn"
             onClick={() => {handle_logout(); dispatch(authLogout());}}
           >
             Logout

@@ -49,6 +49,7 @@ export function Settings() {
           pronouns: data.pronouns || "",
           dateOfBirth: data.dateOfBirth || "",
           locations: data.locations || [],
+          tutorialComplete: data.tutorialComplete ?? false,
         }));
       } catch (err) {
         console.error("Failed to load settings:", err);
@@ -60,7 +61,7 @@ export function Settings() {
 
   const capitalize = (str) => str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
 
-  const handleSave = () => {
+  const handleSave = async () => {
     console.log("handleSave clicked, user:", user);
     
     if (!user || !user._id) {
@@ -81,22 +82,36 @@ export function Settings() {
       pronouns: answers.pronouns || "",
       dateOfBirth: answers.dateOfBirth || "",
       locations: answers.locations || [],
+      tutorialComplete: answers.tutorialComplete ?? false,
     };
 
     console.log("Saving payload:", payload);
 
-    updateUserSettings(user._id, payload)
-      .then(() => {
-        console.log("Settings saved successfully");
-        setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 3000);
-      })
-      .catch((err) => {
-        console.error("Failed to save settings:", err);
-      })
-      .finally(() => {
-        setSaving(false);
-      });
+    try {
+      await updateUserSettings(user._id, payload);
+      console.log("Settings saved successfully");
+      
+      const freshData = await getUserSettings(user._id);
+      dispatch(setSettings({
+        theme: freshData.displayMode === "dark" ? "Dark" : "Light",
+        units: freshData.units ? capitalize(freshData.units) : "Imperial",
+        goals: freshData.goals || "Lose Fat",
+        shame: freshData.shameLevel === "low" ? "Off" : "On",
+        equipment: freshData.availableEquipment || "None",
+        gender: freshData.gender || "",
+        pronouns: freshData.pronouns || "",
+        dateOfBirth: freshData.dateOfBirth || "",
+        locations: freshData.locations || [],
+        tutorialComplete: freshData.tutorialComplete ?? false,
+      }));
+      
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err) {
+      console.error("Failed to save settings:", err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleNavigate = (path) => {

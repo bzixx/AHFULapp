@@ -20,7 +20,8 @@ DEFAULT_USER_SETTINGS = {
         "email": True,
         "push": True,
         "workoutReminders": True,
-        "mealReminders": True
+        "mealReminders": True,
+    "tutorialComplete": False
     }
 }
 
