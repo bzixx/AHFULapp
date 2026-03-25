@@ -128,17 +128,32 @@ class WorkoutDriver:
             return None, str(e)
         
     @staticmethod
-    def get_templates(userId):
+    def get_user_templates(userId):
         if (not userId):
             return None, "You are missing a user id. Please fix, then attempt to create workout again"
         oid, err = WorkoutDriver._validate_obj_id(userId, "user_id")
         if err:
             return None, err
         try:
-            templates = WorkoutObject.find_templates(userId)
+            templates = WorkoutObject.find_user_templates(userId)
             if not templates:
                 return None, "Templates not found"
             return templates, None
+        except Exception as e:
+            return None, str(e)
+        
+    @staticmethod
+    def get_template(id):
+        if (not id):
+            return None, "You are missing an id. Please fix, then attempt to create workout again"
+        oid, err = WorkoutDriver._validate_obj_id(id, "id")
+        if err:
+            return None, err
+        try:
+            template = WorkoutObject.find_template(id)
+            if not template:
+                return None, "Template not found"
+            return template, None
         except Exception as e:
             return None, str(e)
         

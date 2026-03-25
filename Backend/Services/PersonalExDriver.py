@@ -21,7 +21,7 @@ class PersonalExDriver:
 
     # ── Create ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def create_personal_ex(userId, exerciseId, workoutId, reps, sets, weight, duration, distance, complete):
+    def create_personal_ex(userId, exerciseId, workoutId, reps, sets, weight, duration, distance, complete, template):
         # Validate required fields
         if (not userId) or (not exerciseId) or (not workoutId):
             return None, "You are missing a userId, workoutId or exerciseId. Please fix, then attempt to create personalEx again"
@@ -44,9 +44,14 @@ class PersonalExDriver:
         #     return None, "Exercise not found"
 
         # Ensure the workout exists
-        workout = WorkoutObject.find_by_id(workoutId)
-        if not workout:
-            return None, "workout not found"
+        if not template:
+            workout = WorkoutObject.find_by_id(workoutId)
+            if not workout:
+                return None, "workout not found"
+        else:
+            template = WorkoutObject.find_user_templates(workoutId)
+            if not template:
+                return None, "template not found"
 
 
         personal_ex_data = {
