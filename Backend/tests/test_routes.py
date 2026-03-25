@@ -1326,6 +1326,111 @@ def test_add_remove_role_by_email_roundtrip():
     assert fetched_after is not None
     assert test_role not in fetched_after.get("roles", [])
 
+def test_user_invalid_inputs_combined():
+    valid_user_id = "699d0093795741a59fe13616"
+    valid_other_user_id = "699f79574048f9ec8b5b0ed3"
+    valid_admin_id = "699d0093795741a59fe13616"   # must be an Admin or Developer in DB
+    valid_email = "test@email.com"
+
+    # GET USER BY ID — INVALID INPUTS
+    for bad in [None, "", 123, [], {}, "nothex"]:
+        user, err = UserDriver.get_user_by_id(bad)
+        assert user is None
+        assert err == "Invalid userId format; must be a 24-hex string" or err is not None
+
+    user, err = UserDriver.get_user_by_id("000000000000000000000000")
+    assert user is None
+    assert err == "User not found"
+
+    # GET USER BY EMAIL — INVALID INPUTS
+    for bad in [None, "", 123, [], {}, "not-an-email"]:
+        user, err = UserDriver.get_user_by_email(bad)
+        assert user is None
+        assert err == "User not found" or err is not None
+
+    # ADD ROLE BY ID — INVALID INPUTS
+    # Missing required fields
+    resp, err = UserDriver.add_role_by_id(None, valid_admin_id, "User")
+    assert resp is None
+    assert err == "user_id is required"
+
+    resp, err = UserDriver.add_role_by_id(valid_user_id, valid_admin_id, None)
+    assert resp is None
+    assert err == "role is required"
+
+    # Invalid identifier formats
+    for bad in ["nothex", 123, [], {}, ""]:
+        resp, err = UserDriver.add_role_by_id(bad, valid_admin_id, "User")
+        assert resp is None
+        assert err == "Invalid user_id format; must be a 24-hex string"
+
+    for bad in ["nothex", 123, [], {}, ""]:
+        resp, err = UserDriver.add_role_by_id(valid_user_id, bad, "User")
+        assert resp is None
+        assert err == "Invalid adder_id format; must be a 24-hex string"
+
+    # Invalid role
+    resp, err = UserDriver.add_role_by_id(valid_user_id, valid_admin_id, "Super Saiyan")
+    assert resp is None
+    assert err == "Provided role is unidentified"
+
+    # Invalid admin permissions (adder exists but has no Admin/Dev role)
+    # Note: depends on DB; this test will work as long as user has no admin power
+    resp, err = UserDriver.add_role_by_id(valid_user_id, valid_other_user_id, "User")
+    assert resp is None
+    assert err in ["Adder not found", "Adder does not have permission"]
+
+    # REMOVE ROLE BY ID — INVALID INPUTS
+    resp, err = UserDriver.remove_role_by_id(None, valid_admin_id, "User")
+    assert resp is None
+    assert err == "user_id is required"
+
+    resp, err = UserDriver.remove_role_by_id(valid_user_id, valid_admin_id, None)
+    assert resp is None
+    assert err == "Role is required"
+
+    resp, err = UserDriver.remove_role_by_id(valid_user_id, "nothex", "User")
+    assert resp is None
+    assert err == "Invalid remover_id format; must be a 24-hex string"
+
+    # DEACTIVATE USER BY ID — INVALID INPUTS
+    resp, err = UserDriver.deactivate_user_by_id(None, valid_admin_id)
+    assert resp is None
+    assert err == "user_id is required"
+
+    resp, err = UserDriver.deactivate_user_by_id(valid_user_id, None)
+    assert resp is None
+    assert err == "deactivator_id is required"
+
+    for bad in ["nothex", 123, [], {}, ""]:
+        resp, err = UserDriver.deactivate_user_by_id(bad, valid_admin_id)
+        assert resp is None
+        assert "Invalid user_id format" in err
+
+    for bad in ["nothex", 123, [], {}, ""]:
+        resp, err = UserDriver.deactivate_user_by_id(valid_user_id, bad)
+        assert resp is None
+        assert "Invalid deactivator_id format" in err
+
+    # UPDATE USER — INVALID INPUTS
+    # Empty update dict
+    resp, err = UserDriver.update_user(valid_email, {})
+    assert resp is None
+    assert err == "No valid fields to update"
+
+    # Remove password & _id automatically
+    resp, err = UserDriver.update_user(valid_email, {"password": "hack", "_id": "fake"})
+    assert err == "No valid fields to update"
+
+    # DELETE USER — INVALID INPUTS
+    resp, err = UserDriver.delete_user(None)
+    assert resp is None
+    assert err == "User not found"
+
+    resp, err = UserDriver.delete_user("not-an-email")
+    assert resp is None
+    assert err == "User not found"
+
 # TO DO    
 # def test_create_user():
 #     pass
