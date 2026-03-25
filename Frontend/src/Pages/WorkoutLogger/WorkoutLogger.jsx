@@ -277,8 +277,15 @@ export function WorkoutLogger() {
     loadNames();
   }, [exercisesInProgressTable]);
 
+  // ─── Save Template ───────────────────────────────────────────────────────────
+  // Saves personal exercises as a template using the workout name
+  const saveTemplate = async () => {
+
+  };
+
+
   // ─── Submit Workout ───────────────────────────────────────────────────────────
-  // Saves all exercise changes and updates workout end tim
+  // Saves all exercise changes and updates workout end time
 
   const handleSubmit = async () => {
     console.log("Submitting workout...");
@@ -518,7 +525,7 @@ export function WorkoutLogger() {
     }
 
     getWorkout();
-  }, [userAuthenticated]);
+  }, [userAuthenticated, workoutId]);
 
   // ─── Load Personal Exercises for Current Workout ───────────────────────────────
   useEffect(() => {
@@ -743,7 +750,11 @@ export function WorkoutLogger() {
 
           {/* Submit Button */}
           <div className="workout-actions">
-            <div className="workout-actions-left-side"></div>
+            <div className="workout-actions-left-side">
+              <button className="workout-submit-button" onClick={saveTemplate}>
+                Save as Template
+              </button>
+            </div>
             <div className="workout-actions-right-side">
               <button className="workout-submit-button" onClick={handleSubmit}>
                 Submit
