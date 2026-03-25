@@ -262,54 +262,116 @@ def test_update_food_roundtrip():
     assert fetched_after_restore.get("type") == orig_type
     assert fetched_after_restore.get("time") == orig_time
 
-def test_food_invalid_inputs():
-    # CREATE FOOD
-    # None userId
-    resp, err = FoodDriver.create_food(None, "Apple", 95, 1, "Lunch", 100)
-    assert resp is None
-    assert err is not None
+def test_food_invalid_inputs_combined():
+    valid_food_id = "699d0f5f888d8f649698307e"  # Replace if needed
+    valid_user_id = "699d0093795741a59fe13616"
 
-    # Empty userId
-    resp, err = FoodDriver.create_food("", "Apple", 95, 1, "Lunch", 100)
-    assert resp is None
-    assert err is not None
+    # ===============================================================
+    # CREATE FOOD — INVALID INPUTS
+    # ===============================================================
+    base_create = {
+        "userId": valid_user_id,
+        "name": "Apple",
+        "calsPerServing": 95,
+        "servings": 1,
+        "type": "Snack",
+        "time": 123
+    }
 
-    # Wrong types
-    bad_values = [
-        (123, "Apple", 95, 1, "Lunch", 100),                  # userId int
-        ("699d0093795741a59fe13616", ["Not a string"], 95, 1, "Lunch", 100),     # name list
-        ("699d0093795741a59fe13616", "Apple", "cals", 1, "Lunch", 100),          # cals str
-        ("699d0093795741a59fe13616", "Apple", 95, {}, "Lunch", 100),             # servings dict
-        ("699d0093795741a59fe13616", "Apple", 95, 1, 999, 100),                  # type int
-        ("699d0093795741a59fe13616", "Apple", 95, 1, "Lunch", [1, 2, 3])         # time list
+    # Missing required values
+    missing_cases = [
+        {**base_create, "userId": None},
+        {**base_create, "name": ""},
+        {**base_create, "calsPerServing": None},
+        {**base_create, "servings": 0},
+        {**base_create, "type": ""},
+        {**base_create, "time": None},
     ]
 
-    for args in bad_values:
-        resp, err = FoodDriver.create_food(*args)
+    for case in missing_cases:
+        resp, err = FoodDriver.create_food(**case)
+        assert resp is None
+        assert err == "You are missing a value. Please fix, then attempt to create food again"
+
+    # Invalid userId formats
+    resp, err = FoodDriver.create_food("nothex", "Apple", 95, 1, "Snack", 100)
+    assert resp is None
+    assert err == "Invalid userid format; must be a 24-hex string"
+
+    # User not found
+    resp, err = FoodDriver.create_food("000000000000000000000000", "Apple", 95, 1, "Snack", 100)
+    assert resp is None
+    assert err == "User not found"
+
+    # GET FOOD INVALID INPUTS
+    for bad_id in [None, "", "nothex", 123, [], {}]:
+        resp, err = FoodDriver.get_food_by_id(bad_id)
         assert resp is None
         assert err is not None
 
-    # GET FOOD BY ID — wrong types
-    for bad in [None, 12345, [], {}, ""]:
-        resp, err = FoodDriver.get_food_by_id(bad)
+    # DELETE FOOD INVALID INPUTS
+    # Missing id
+    resp, err = FoodDriver.delete_food(None)
+    assert resp is None
+    assert err == "You must provide a food id to delete"
+
+    # Wrong types
+    for bad_id in ["", 123, [], {}]:
+        resp, err = FoodDriver.delete_food(bad_id)
         assert resp is None
         assert err is not None
 
-    # UPDATE FOOD
-    resp, err = FoodDriver.update_food(food_id=None, name="Test")
+    # Valid format but not found
+    resp, err = FoodDriver.delete_food("000000000000000000000000")
+    assert resp is None
+    assert err == "Food not found or already deleted"
+
+    # UPDATE FOOD INVALID INPUTS
+    # Invalid food_id formats
+    for bad in [None, "", 123, [], {}, "nothex"]:
+        resp, err = FoodDriver.update_food(bad, {"name": "Test"})
+        assert resp is None
+        assert err == "Invalid food_id format; must be a 24-hex string"
+
+    # Missing updates argument
+    resp, err = FoodDriver.update_food(valid_food_id, None)
+    assert resp is None
+    assert err == "You must provide at least one field to update"
+
+    # updates is not a dict
+    for bad in ["string", 123, [], True, 3.14]:
+        resp, err = FoodDriver.update_food(valid_food_id, bad)
+        assert resp is None
+        assert err == "You must provide at least one field to update"
+
+    # No valid fields
+    resp, err = FoodDriver.update_food(valid_food_id, {"junk": 123})
+    assert resp is None
+    assert err == "No valid fields to update"
+
+    # Invalid types for allowed fields
+    invalid_field_cases = [
+        {"name": 123},
+        {"calsPerServing": "bad"},
+        {"servings": "many"},
+        {"type": 999},
+        {"time": "nope"},
+    ]
+
+    for updates in invalid_field_cases:
+        resp, err = FoodDriver.update_food(valid_food_id, updates)
+        assert resp is None
+        assert err is not None
+
+    # Mixed valid + invalid
+    resp, err = FoodDriver.update_food(valid_food_id, {"name": "Good", "calsPerServing": "bad"})
     assert resp is None
     assert err is not None
 
-    resp, err = FoodDriver.update_food(food_id="valid", calsPerServing="bad")
+    # Valid format but food does not exist
+    resp, err = FoodDriver.update_food("000000000000000000000000", {"name": "Test"})
     assert resp is None
-    assert err is not None
-
-    # DELETE FOOD
-    for bad in [None, "", 123, [], {}]:
-        resp, err = FoodDriver.delete_food(bad)
-        assert resp is None
-        assert err is not None
-
+    assert err == "Food not found"
 
 # Gym
 
