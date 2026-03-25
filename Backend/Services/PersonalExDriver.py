@@ -21,7 +21,7 @@ class PersonalExDriver:
 
     # ── Create ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def create_personal_ex(userId, exerciseId, workoutId, reps, sets, weight, duration, distance, complete):
+    def create_personal_ex(userId, exerciseId, workoutId, reps, sets, weight, duration, distance, complete, template=None):
         # Validate required fields
         if (not userId) or (not exerciseId) or (not workoutId):
             return None, "You are missing a userId, workoutId or exerciseId. Please fix, then attempt to create personalEx again"
@@ -44,9 +44,14 @@ class PersonalExDriver:
         #     return None, "Exercise not found"
 
         # Ensure the workout exists
-        workout = WorkoutObject.find_by_id(workoutId)
-        if not workout:
-            return None, "workout not found"
+        if not template:
+            workout = WorkoutObject.find_by_id(workoutId)
+            if not workout:
+                return None, "workout not found"
+        else:
+            template = WorkoutObject.find_user_templates(workoutId)
+            if not template:
+                return None, "template not found"
 
 
         personal_ex_data = {
@@ -79,6 +84,11 @@ class PersonalExDriver:
 
     @staticmethod
     def get_personal_ex_by_id(id):
+        if not id:
+            return None, "You must provide a personal ex id to grab"
+        oid, err = PersonalExDriver._validate_obj_id(id, "personal ex id")
+        if err:
+            return None, err
         try:
             personalEx = PersonalExObject.find_by_id(id)
             if not personalEx:
@@ -89,6 +99,11 @@ class PersonalExDriver:
         
     @staticmethod
     def get_personal_exs_by_user(userId):
+        if not userId:
+            return None, "You must provide a user id to grab"
+        oid, err = PersonalExDriver._validate_obj_id(userId, "userId")
+        if err:
+            return None, err
         try:
             personalEx = PersonalExObject.find_by_user(userId)
             if not personalEx:
@@ -99,6 +114,12 @@ class PersonalExDriver:
         
     @staticmethod
     def get_personal_exs_by_workout(workoutId):
+        # Validate target id
+        if not workoutId:
+            return None, "You must provide a workout id to update"
+        oid, err = PersonalExDriver._validate_obj_id(workoutId, "workoutId")
+        if err:
+            return None, err
         try:
             personalEx = PersonalExObject.find_by_workout(workoutId)
             if not personalEx:
@@ -147,6 +168,9 @@ class PersonalExDriver:
         # Validate input
         if not id:
             return None, "You must provide a personal ex id to delete"
+        obj, err = PersonalExDriver._validate_obj_id(id, "personal_ex_id")
+        if err:
+            return None, err
 
         try:
             response = PersonalExObject.delete(id)
