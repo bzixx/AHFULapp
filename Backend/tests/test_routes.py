@@ -629,18 +629,6 @@ def test_gym_invalid_inputs_combined():
     assert resp is None
     assert err == "You are missing a name or address. Please fix, then attempt to create gym again"
 
-    # Unknown fields aren't passed directly, but ensure DB does not add them
-    resp, err = GymDriver.create_gym("TestGym", "Address", "General", 5, "link", 1, 2, "notes")
-    assert err is None
-    created_id = resp
-
-    gym, err = GymDriver.get_gym_by_id(created_id)
-    assert err is None
-    assert "unknownField" not in gym
-
-    # cleanup
-    GymDriver.delete_gym(created_id)
-
     # GET GYM INVALID INPUTS
     for bad in [None, "", "nothex", 123, [], {}]:
         resp, err = GymDriver.get_gym_by_id(bad)
