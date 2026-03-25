@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import { WorkoutLogger } from "./Pages/WorkoutLogger/WorkoutLogger.jsx";
 import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
 import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
@@ -23,55 +22,50 @@ function AHFULApp() {
   // This component is rendered inside a <Router> (see `main.jsx`), so useLocation works here.
   const location = useLocation();
   const [pageChangeCount, setPageChangeCount] = useState(0);
-
   useEffect(() => {
-        // increment a counter every time the pathname changes — replace with your refresh logic
+    // increment a counter every time the pathname changes — used for debugging route changes
     setPageChangeCount((c) => c + 1);
     // console.log("route changed to", location.pathname);
   }, [location.pathname]);
 
   return (
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <Routes>
-        <Route element={<Layout/>}>
-          <Route path="/" element={<Dashboard/>}/>
-          <Route path="/Login" element={<Login/>}/>
-          <Route path="/TOS" element={<TOS/>}/>
-          <Route path="/WorkoutLogger" element={
-            <AuthRouteCheck>
-              <WorkoutLogger/>
-            </AuthRouteCheck>}/>
-          <Route path="/ExploreWorkout" element={
-            <AuthRouteCheck>
-              <ExploreWorkouts/>
-            </AuthRouteCheck>
-            }/>
-          <Route path="/FoodLog" element={
-            <AuthRouteCheck>
-              <FoodLog/>
-            </AuthRouteCheck>}/>
-          <Route path="/Map" element={
-            <AuthRouteCheck>
-              <Map/>
-            </AuthRouteCheck>}/>
-          <Route path="/MeasurementLogger" element={
-            <AuthRouteCheck>
-              <MeasurementLogger/>
-            </AuthRouteCheck>}/>
-          <Route path="/Profile" element={
-            <AuthRouteCheck>
-              <Profile/>
-            </AuthRouteCheck>}/>
-          <Route path="/ExploreTasks" element={
-            <AuthRouteCheck>
-              <ExploreTasks/>
-            </AuthRouteCheck>}/>
-        </Route>
-        <Route path="Settings" element={
-          <Settings/>
-        }/>
-      </Routes>
-    </GoogleOAuthProvider>
+    <Routes>
+      <Route element={<Layout/>}>
+        <Route path="/" element={<Dashboard/>}/>
+        <Route path="/Login" element={<Login/>}/>
+        <Route path="/TOS" element={<TOS/>}/>
+        <Route path="/WorkoutLogger" element={
+          <AuthRouteCheck>
+            <WorkoutLogger/>
+          </AuthRouteCheck>} />
+        <Route path="/ExploreWorkout" element={
+          <AuthRouteCheck>
+            <ExploreWorkouts/>
+          </AuthRouteCheck>
+          }/>
+        <Route path="/FoodLog" element={
+          <AuthRouteCheck>
+            <FoodLog/>
+          </AuthRouteCheck>}/>
+        <Route path="/Map" element={
+          <AuthRouteCheck>
+            <Map/>
+          </AuthRouteCheck>}/>
+        <Route path="/MeasurementLogger" element={
+          <AuthRouteCheck>
+            <MeasurementLogger/>
+          </AuthRouteCheck>}/>
+        <Route path="/Profile" element={
+          <AuthRouteCheck>
+            <Profile/>
+          </AuthRouteCheck>}/>
+        <Route path="/ExploreTasks" element={
+          <AuthRouteCheck>
+            <ExploreTasks/>
+          </AuthRouteCheck>}/>
+      </Route>
+      <Route path="Settings" element={<Settings/>} />
+    </Routes>
   );
 }
 
