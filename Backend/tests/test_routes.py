@@ -1013,6 +1013,155 @@ def test_update_personal_ex_roundtrip():
     assert fetched_after_restore.get("distance") == orig_distance
     assert fetched_after_restore.get("complete") == orig_complete
 
+def test_personal_ex_invalid_inputs_combined():
+    valid_user_id = "699d0093795741a59fe13616"
+    valid_workout_id = "69c063229f8c3c92b650445b"
+    valid_personal_ex_id = "69ab5596dc5dee4f518a01cd"
+
+    # CREATE — INVALID INPUTS
+
+    # Missing required identifiers
+    missing_required = [
+        (None, "ex", valid_workout_id),
+        (valid_user_id, None, valid_workout_id),
+        (valid_user_id, "ex", None),
+    ]
+    for uid, exid, wid in missing_required:
+        resp, err = PersonalExDriver.create_personal_ex(
+            uid, exid, wid,
+            reps=1, sets=1, weight=100, duration=60, distance="0", complete=False
+        )
+        assert resp is None
+        assert err == "You are missing a userId, workoutId or exerciseId. Please fix, then attempt to create personalEx again"
+
+    # Invalid user / workout IDs
+    for bad in ["nothex", 123, [], {}, ""]:
+        resp, err = PersonalExDriver.create_personal_ex(
+            bad, "ex", valid_workout_id,
+            reps=1, sets=1, weight=100, duration=60, distance="0", complete=False
+        )
+        assert resp is None
+        assert "Invalid userId format" in err
+
+    for bad in ["nothex", 123, [], {}, ""]:
+        resp, err = PersonalExDriver.create_personal_ex(
+            valid_user_id, "ex", bad,
+            reps=1, sets=1, weight=100, duration=60, distance="0", complete=False
+        )
+        assert resp is None
+        assert "Invalid workoutId format" in err
+
+    # GET PERSONAL EX BY ID — INVALID INPUTS
+
+    for bad in [None, "", 123, [], {}, "nothex"]:
+        resp, err = PersonalExDriver.get_personal_ex_by_id(bad)
+        assert resp is None
+        assert "Invalid personal ex id format" in err or err is not None
+
+    resp, err = PersonalExDriver.get_personal_ex_by_id("000000000000000000000000")
+    assert resp is None
+    assert err == "PersonalEx not found"
+
+    # GET PERSONAL EX BY USER — INVALID INPUTS
+
+    for bad in [None, "", 123, [], {}, "nothex"]:
+        resp, err = PersonalExDriver.get_personal_exs_by_user(bad)
+        assert resp is None
+        assert "Invalid userId format" in err or err is not None
+
+    resp, err = PersonalExDriver.get_personal_exs_by_user("000000000000000000000000")
+    assert resp is None
+    assert err == "PersonalEx not found"
+
+    # GET PERSONAL EX BY WORKOUT — INVALID INPUTS
+
+    for bad in [None, "", 123, [], {}, "nothex"]:
+        resp, err = PersonalExDriver.get_personal_exs_by_workout(bad)
+        assert resp is None
+        assert "Invalid workoutId format" in err or err is not None
+
+    resp, err = PersonalExDriver.get_personal_exs_by_workout("000000000000000000000000")
+    assert resp is None
+    assert err == "PersonalEx not found"
+
+    # DELETE PERSONAL EX — INVALID INPUTS
+
+    resp, err = PersonalExDriver.delete_personal_ex(None)
+    assert resp is None
+    assert err == "You must provide a personal ex id to delete"
+
+    for bad in ["", 123, [], {}, "nothex"]:
+        resp, err = PersonalExDriver.delete_personal_ex(bad)
+        assert resp is None
+        assert "Invalid personal_ex_id format" in err
+
+    resp, err = PersonalExDriver.delete_personal_ex("000000000000000000000000")
+    assert resp is None
+    assert err == "Personal ex not found or already deleted"
+
+    # UPDATE PERSONAL EX — INVALID INPUTS
+
+    for bad in [None, "", 123, [], {}, "nothex"]:
+        resp, err = PersonalExDriver.update_personal_ex(bad, {"reps": 10})
+        assert resp is None
+        assert "Invalid personal_ex_id format" in err
+
+    resp, err = PersonalExDriver.update_personal_ex(valid_personal_ex_id, None)
+    assert resp is None
+    assert err == "You must provide at least one field to update"
+
+def test_personal_ex_partial_empty_unknown_updates():
+    personal_ex_id = "69ab5596dc5dee4f518a01cd"
+
+    # Fetch original
+    original, err = PersonalExDriver.get_personal_ex_by_id(personal_ex_id)
+    assert err is None
+
+    orig_values = {
+        "reps": original["reps"],
+        "sets": original["sets"],
+        "weight": original["weight"],
+        "duration": original["duration"],
+        "distance": original["distance"],
+        "complete": original["complete"],
+    }
+
+    # Partial update: only 1 field
+    partial = {"reps": 123}
+    updated, err = PersonalExDriver.update_personal_ex(personal_ex_id, partial)
+    assert err is None
+    assert updated["reps"] == 123
+
+    # Empty update should error
+    resp, err = PersonalExDriver.update_personal_ex(personal_ex_id, {})
+    assert resp is None
+    assert err == "You must provide at least one field to update"
+
+    # Unknown-only fields should error
+    resp, err = PersonalExDriver.update_personal_ex(personal_ex_id, {"junk": 55})
+    assert resp is None
+    assert err == "PersonalEx not found or no changes applied" or err == "You must provide at least one field to update"
+
+    # Mixed fields: valid + unknown
+    # Unknown should be ignored
+    mixed = {
+        "reps": 888,
+        "junk": True,
+        "invalidField": "ignore",
+    }
+    updated, err = PersonalExDriver.update_personal_ex(personal_ex_id, mixed)
+    assert err is None
+    assert updated["reps"] == 888
+    assert "junk" not in updated
+    assert "invalidField" not in updated
+
+    # Restore original values
+    restored, err = PersonalExDriver.update_personal_ex(personal_ex_id, orig_values)
+    assert err is None
+
+    for k, v in orig_values.items():
+        assert restored[k] == v
+
 # User
 
 def test_find_user_by_id():
