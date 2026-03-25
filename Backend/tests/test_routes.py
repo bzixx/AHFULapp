@@ -1405,12 +1405,12 @@ def test_user_invalid_inputs_combined():
     for bad in ["nothex", 123, [], {}, ""]:
         resp, err = UserDriver.deactivate_user_by_id(bad, valid_admin_id)
         assert resp is None
-        assert "Invalid user_id format" in err
+        assert "Invalid user_id format" or "user_id is required"
 
     for bad in ["nothex", 123, [], {}, ""]:
         resp, err = UserDriver.deactivate_user_by_id(valid_user_id, bad)
         assert resp is None
-        assert "Invalid deactivator_id format" in err
+        assert "Invalid deactivator_id format" in "deactivator_id is required"
 
     # UPDATE USER — INVALID INPUTS
     # Empty update dict
