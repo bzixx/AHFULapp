@@ -408,7 +408,6 @@ def test_food_partial_empty_unknown_updates():
 
     # RESTORE ORIGINAL VALUES
     # Fetch original to restore exactly
-
     restore = {
         "name": original["name"],
         "calsPerServing": original["calsPerServing"],

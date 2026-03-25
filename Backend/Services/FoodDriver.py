@@ -61,6 +61,11 @@ class FoodDriver:
 
     @staticmethod
     def get_food_by_user(id):
+        if not id:
+            return None, "You must provide a user id to get"
+        oid, err = FoodDriver._validate_obj_id(id, "food_id")
+        if err:
+            return None, err
         try:
             food = FoodObject.find_by_user(id)
             return food, None
@@ -69,6 +74,11 @@ class FoodDriver:
 
     @staticmethod
     def get_food_by_id(id):
+        if not id:
+            return None, "You must provide a food id to get"
+        oid, err = FoodDriver._validate_obj_id(id, "food_id")
+        if err:
+            return None, err
         try:
             food = FoodObject.find_by_id(id)
             if not food:
@@ -79,8 +89,10 @@ class FoodDriver:
 
     # ── Update ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def update_food(food_id, updates):
-        oid, err = FoodDriver._validate_obj_id(food_id, "food_id")
+    def update_food(id, updates):
+        if not id:
+            return None, "You must provide a food id to update"
+        oid, err = FoodDriver._validate_obj_id(id, "food_id")
         if err:
             return None, err
         
@@ -103,7 +115,7 @@ class FoodDriver:
             return None, "No valid fields to update"
 
         try:
-            updated = FoodObject.update(food_id, sanitized_updates)
+            updated = FoodObject.update(id, sanitized_updates)
             if not updated:
                 return None, "Food not found"
             return updated, None
@@ -113,6 +125,11 @@ class FoodDriver:
     # ── Delete ─────────────────────────────────────────────────────────────────
     @staticmethod
     def delete_food(id):
+        if not id:
+            return None, "You must provide a food id to delete"
+        oid, err = FoodDriver._validate_obj_id(id, "food_id")
+        if err:
+            return None, err
         # Validate input
         if not id:
             return None, "You must provide a food id to delete"

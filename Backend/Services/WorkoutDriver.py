@@ -99,6 +99,11 @@ class WorkoutDriver:
 
     @staticmethod
     def get_workout_by_id(id):
+        if (not id):
+            return None, "You are missing a workout id. Please fix, then attempt to create workout again"
+        oid, err = WorkoutDriver._validate_obj_id(id, "workout_id")
+        if err:
+            return None, err
         try:
             workout = WorkoutObject.find_by_id(id)
             if not workout:
@@ -109,6 +114,11 @@ class WorkoutDriver:
         
     @staticmethod
     def get_workouts_by_user(userId):
+        if (not userId):
+            return None, "You are missing a user id. Please fix, then attempt to create workout again"
+        oid, err = WorkoutDriver._validate_obj_id(userId, "user_id")
+        if err:
+            return None, err
         try:
             workouts = WorkoutObject.find_by_user(userId)
             if not workouts:
@@ -119,6 +129,11 @@ class WorkoutDriver:
         
     @staticmethod
     def get_templates(userId):
+        if (not userId):
+            return None, "You are missing a user id. Please fix, then attempt to create workout again"
+        oid, err = WorkoutDriver._validate_obj_id(userId, "user_id")
+        if err:
+            return None, err
         try:
             templates = WorkoutObject.find_templates(userId)
             if not templates:
@@ -164,6 +179,9 @@ class WorkoutDriver:
         # Validate input
         if not id:
             return None, "You must provide a workout id to delete"
+        oid, err = WorkoutDriver._validate_obj_id(id, "workout_id")
+        if err:
+            return None, err
 
         try:
             response = WorkoutObject.delete(id)

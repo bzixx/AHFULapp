@@ -92,6 +92,11 @@ class MeasurementDriver:
 
     @staticmethod
     def get_measurement_by_id(id):
+        if not id:
+            return None, "You must provide a measurement id to get"
+        oid, err = MeasurementDriver._validate_obj_id(id, "measurement_id")
+        if err:
+            return None, err
         try:
             measurement = MeasurementObject.find_by_id(id)
             if not measurement:
@@ -102,6 +107,11 @@ class MeasurementDriver:
 
     @staticmethod
     def get_measurements_by_user(userId):
+        if not userId:
+            return None, "You must provide a userId to get"
+        oid, err = MeasurementDriver._validate_obj_id(id, "measurement_id")
+        if err:
+            return None, err
         try:
             measurements = MeasurementObject.find_by_user(userId)
             return measurements, None
@@ -112,7 +122,6 @@ class MeasurementDriver:
     def update_measurement(measurement_id, data):
         if not measurement_id:
             return None, "You must provide a measurement id to update"
-
         oid, err = MeasurementDriver._validate_obj_id(measurement_id, "measurement_id")
         if err:
             return None, err
@@ -133,6 +142,9 @@ class MeasurementDriver:
     def delete_measurement(id):
         if not id:
             return None, "You must provide a measurement id to delete"
+        oid, err = MeasurementDriver._validate_obj_id(id, "measurement_id")
+        if err:
+            return None, err
 
         try:
             response = MeasurementObject.delete(id)

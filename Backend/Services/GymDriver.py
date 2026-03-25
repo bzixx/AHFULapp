@@ -2,12 +2,21 @@
 #   Intermediate between Routes and Objects.  Ensures validations and rules are applied before 
 #   Calling Objects to interact with DB
 from DataModels.GymObject import GymObject
+from bson import ObjectId, errors as bson_errors
 
 # The GymDriver is responsible for implementing the business logic related to gym operations.
 #   It acts as an intermediary between the API routes and the data models, 
 #   ensuring that all necessary validations and rules are applied before interacting with 
 #   the database.
 class GymDriver:
+    # ── Helper ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def _validate_obj_id(id, name):
+        try:
+            return ObjectId(str(id)), None
+        except (bson_errors.InvalidId, TypeError, ValueError):
+            return None, f"Invalid {name} format; must be a 24-hex string"
+        
     # ── Create ─────────────────────────────────────────────────────────────────
     @staticmethod
     def create_gym(name, address, type, cost, link, lat, lng, notes):
@@ -43,6 +52,11 @@ class GymDriver:
 
     @staticmethod
     def get_gym_by_id(id):
+        if not id:
+            return None, "You must provide a gym id to get"
+        oid, err = GymDriver._validate_obj_id(id, "gym_id")
+        if err:
+            return None, err
         try:
             gym = GymObject.find_by_id(id)
             if not gym:
@@ -57,6 +71,9 @@ class GymDriver:
         # Validate input
         if not id:
             return None, "You must provide a gym id to update"
+        oid, err = GymDriver._validate_obj_id(id, "gym_id")
+        if err:
+            return None, err
 
         if not updates or not isinstance(updates, dict):
             return None, "You must provide at least one field to update"
@@ -93,6 +110,9 @@ class GymDriver:
         # Validate input
         if not id:
             return None, "You must provide a gym id to delete"
+        oid, err = GymDriver._validate_obj_id(id, "gym_id")
+        if err:
+            return None, err
 
         try:
             response = GymObject.delete(id)
