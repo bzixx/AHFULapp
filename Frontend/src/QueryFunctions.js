@@ -1,16 +1,4 @@
 // Shared query and utility functions used by pages/components
-
-export function getDefaultNewExercise() {
-  return {
-    name: "",
-    targetMuscles: [],
-    bodyParts: [],
-    equipment: [],
-    gifUrl: "",
-    instructions: "",
-  };
-}
-
 export function formatTime(seconds) {
   const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
   const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
@@ -18,17 +6,21 @@ export function formatTime(seconds) {
   return `${h}:${m}:${s}`;
 }
 
+// ── External API Load Functions ─────────────────────────────────────────────────────────
+
 export async function loadEquipment() {
-  // Returns { data: [ {value,label}, ... ] } or throws
   try {
-    const res = await fetch("http://localhost:5000/AHFULexercises/equipments/", {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+    const res = await fetch(
+      "http://localhost:5000/AHFULexercises/equipments/",
+      {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     if (!res.ok) {
       throw new Error(`Equipment API returned ${res.status} ${res.statusText}`);
@@ -40,8 +32,10 @@ export async function loadEquipment() {
 
     const normalized = (arr || []).map((item, idx) => {
       if (item && typeof item === "object") {
-        const value = item.id ?? item._id ?? item.value ?? item.name ?? String(idx);
-        const label = item.name ?? item.title ?? item.equipment ?? String(value);
+        const value =
+          item.id ?? item._id ?? item.value ?? item.name ?? String(idx);
+        const label =
+          item.name ?? item.title ?? item.equipment ?? String(value);
         return { value: String(value), label: String(label) };
       }
       const v = String(item);
@@ -51,13 +45,15 @@ export async function loadEquipment() {
     return { data: normalized };
   } catch (err) {
     console.error("loadEquipment error:", err);
-    const msg = err && err.message ? `Could not load equipment list: ${err.message}` : "Could not load equipment list";
+    const msg =
+      err && err.message
+        ? `Could not load equipment list: ${err.message}`
+        : "Could not load equipment list";
     return { data: null, error: msg };
   }
 }
 
 export async function loadBodyParts() {
-  // Returns { data: [ {value,label}, ... ] } or throws
   try {
     const res = await fetch("http://localhost:5000/AHFULexercises/bodyparts/", {
       method: "GET",
@@ -78,8 +74,10 @@ export async function loadBodyParts() {
 
     const normalized = (arr || []).map((item, idx) => {
       if (item && typeof item === "object") {
-        const value = item.id ?? item._id ?? item.value ?? item.name ?? String(idx);
-        const label = item.name ?? item.title ?? item.equipment ?? String(value);
+        const value =
+          item.id ?? item._id ?? item.value ?? item.name ?? String(idx);
+        const label =
+          item.name ?? item.title ?? item.equipment ?? String(value);
         return { value: String(value), label: String(label) };
       }
       const v = String(item);
@@ -89,13 +87,15 @@ export async function loadBodyParts() {
     return { data: normalized };
   } catch (err) {
     console.error("loadBodyPart error:", err);
-    const msg = err && err.message ? `Could not load body part list: ${err.message}` : "Could not load body part list";
+    const msg =
+      err && err.message
+        ? `Could not load body part list: ${err.message}`
+        : "Could not load body part list";
     return { data: null, error: msg };
   }
 }
 
 export async function loadTargetMuscles() {
-  // Returns { data: [ {value,label}, ... ] } or throws
   try {
     const res = await fetch("http://localhost:5000/AHFULexercises/muscles/", {
       method: "GET",
@@ -116,8 +116,10 @@ export async function loadTargetMuscles() {
 
     const normalized = (arr || []).map((item, idx) => {
       if (item && typeof item === "object") {
-        const value = item.id ?? item._id ?? item.value ?? item.name ?? String(idx);
-        const label = item.name ?? item.title ?? item.equipment ?? String(value);
+        const value =
+          item.id ?? item._id ?? item.value ?? item.name ?? String(idx);
+        const label =
+          item.name ?? item.title ?? item.equipment ?? String(value);
         return { value: String(value), label: String(label) };
       }
       const v = String(item);
@@ -127,126 +129,130 @@ export async function loadTargetMuscles() {
     return { data: normalized };
   } catch (err) {
     console.error("loadEquipment error:", err);
-    const msg = err && err.message ? `Could not load equipment list: ${err.message}` : "Could not load equipment list";
+    const msg =
+      err && err.message
+        ? `Could not load equipment list: ${err.message}`
+        : "Could not load equipment list";
     return { data: null, error: msg };
   }
 }
 
-export async function fetchExercisesFromBackend() {
-  // Returns array of exercises or throws
-  const res = await fetch("http://localhost:5000/AHFULexercises");
-  if (!res.ok) {
-    let bodyText = "";
-    try {
-      bodyText = await res.text();
-    } catch (e) {
-      /* ignore */
-    }
-    throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
-  }
-  const data = await res.json();
-  let list = [];
-  if (Array.isArray(data)) list = data;
-  else if (data && Array.isArray(data.data)) list = data.data;
-  else if (data && Array.isArray(data.results)) list = data.results;
-  else list = [];
-  return list;
-}
+// ──  Authentication  functions ─────────────────────────────────────────────────────────
+export async function handle_logout() {
+  //Define POST URL for Later
+  const backendPOSTURL = `http://localhost:5000/AHFULauth/logout`;
 
-export async function searchExercises(searchQuery) {
-  const res = await fetch(`http://localhost:5000/AHFULexercises/search?search=${encodeURIComponent(searchQuery)}`);
-  if (!res.ok) {
-    let bodyText = "";
-    try {
-      bodyText = await res.text();
-    } catch (e) {}
-    throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
-  }
-  const data = await res.json();
-  let list = [];
-  if (Array.isArray(data)) list = data;
-  else if (data && Array.isArray(data.data)) list = data.data;
-  else if (data && Array.isArray(data.results)) list = data.results;
-  else list = [];
-  return list;
-}
-
-export async function fetchWorkout(userId) {
-  const res = await fetch(`http://localhost:5000/AHFULworkout/${userId}`);
-  if (!res.ok) {
-    let bodyText = "";
-    try {
-      bodyText = await res.text();
-    } catch (e) {}
-    throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
-  }
-  const data = await res.json();
-  return data;
-}
-
-export async function fetchPersonalExercises(workoutId) {
-  const res = await fetch(`http://localhost:5000/AHFULpersonalEx/workout/${workoutId}`);
-  if (!res.ok) {
-    let bodyText = "";
-    try {
-      bodyText = await res.text();
-    } catch (e) {}
-    throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
-  }
-  const data = await res.json();
-  return data;
-}
-
-export async function createPersonalExercises(peData) {
+  //Try to Get LocalStorage Cookie for data
   try {
-    const res = await fetch("http://localhost:5000/AHFULpersonalEx/create", {
+    let storedUserData = localStorage.getItem("user_data");
+    let parsedData = JSON.parse(storedUserData);
+
+    // POST response Object to BACKEND API ROUTE for processing.
+    const backendResponse = await fetch(backendPOSTURL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(peData)
+      body: JSON.stringify({ logout_email: parsedData.email }),
+      credentials: "include",
     });
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      return { error: data.error || `Server returned ${res.status}` };
-    }
-
-    return { success: true, data };
-  } catch (err) {
-    console.error("createPersonalExercise error:", err);
-    return { error: err.message || "Failed to create personal exercise" };
+    localStorage.removeItem("user_data");
+    //TODO: UPDATE REDUX
+    //setIsLoggedIn(false);
+    console.log("AHFUL Logout Completed successfully.");
+  } catch (error) {
+    //Catch Spooky Errors that should never occur because you shouldnt log out before login
+    console.log("👻 Logout Error:, ", error);
   }
 }
 
-export async function updatePersonalExercises(peId, peData) {
+export async function handle_google_login(response) {
   try {
-    const res = await fetch(`http://localhost:5000/AHFULpersonalEx/update/${peId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(peData)
-    });
+    //URL to send POST to later
+    const backendPOSTURL = `http://localhost:5000/AHFULauth/google-login`;
 
-    const data = await res.json();
+    //Find ID Token, and maybe details from Google Success Response
+    const googleButtonIdToken = response?.credential;
+    const googleCSFR = response?.g_csrf_token;
+    const googleButtonClientID = response?.client_id;
 
-    if (!res.ok) {
-      return { error: data.error || `Server returned ${res.status}` };
+    //Check IDToken Not Null
+    if (googleButtonIdToken) {
+      // POST response Object to BACKEND API ROUTE for processing.
+      const backendResponse = await fetch(backendPOSTURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: googleButtonIdToken }),
+        credentials: "include",
+      });
+
+      //Error Handeling for if Backend Logic reported Failed to Frontend
+      if (!backendResponse.ok) {
+        const message = backendUserData?.error || backendResponse.statusText;
+        throw new Error(
+          `AHFUL Frontend API response error (${backendResponse.status}): ${message}`,
+        );
+      }
+
+      //Explicit check over response from server
+      const contentType = backendResponse.headers.get("content-type");
+      let backendUserData = null;
+
+      //If it exisits and the content type mathces, then set the frontendUserInfo variable
+      //Also Sotre it to local Storage
+      if (contentType && contentType.includes("application/json")) {
+        backendUserData = await backendResponse.json();
+        const frontendUserInfo = backendUserData.user_info;
+        const userString = JSON.stringify(frontendUserInfo);
+        localStorage.setItem("user_data", userString);
+        //If we want to swap to https use below line instead.
+        //document.cookie = `user_data=${userString}; path=/; secure; samesite=strict`;
+        return userString;
+      } else {
+        //If its not JSON try to parse it into text.
+        throw new Error(
+          `AHFUL Frontend API response error: Expected JSON but got ${contentType}`,
+        );
+      }
     }
 
-    return { success: true, data };
-  } catch (err) {
-    console.error("updatePersonalExercise error:", err);
-    return { error: err.message || "Failed to update personal exercise" };
+    console.log("AHFUL context_login Completed successfully.");
+  } catch (error) {
+    console.log(
+      "AHFUL Error in context_login Func Catch.  Not sure how you got here.  But here is a hint: ",
+      error,
+    );
   }
 }
 
-// User Settings functions
+// ──  Template functions ─────────────────────────────────────────────────────────
+export async function fetchTemplate(userId) {
+  const res = await fetch(
+    `http://localhost:5000/AHFULworkout/templates/${userId}`,
+  );
+  if (!res.ok) {
+    let bodyText = "";
+    try {
+      bodyText = await res.text();
+    } catch (e) {}
+    throw new Error(
+      `Server returned ${res.status} ${res.statusText} ${bodyText}`,
+    );
+  }
+  const data = await res.json();
+  return data;
+}
+
+// ──  User Settings functions ─────────────────────────────────────────────────────────
 export async function getUserSettings(userId) {
   const res = await fetch(`http://localhost:5000/AHFULuserSettings/${userId}`);
   if (res.status === 404) {
     // Create default settings if not found
-    const createRes = await fetch(`http://localhost:5000/AHFULuserSettings/createDefault/${userId}`, {
-      method: "POST"
-    });
+    const createRes = await fetch(
+      `http://localhost:5000/AHFULuserSettings/createDefault/${userId}`,
+      {
+        method: "POST",
+      },
+    );
     if (!createRes.ok) throw new Error("Failed to create default settings");
     return createRes.json();
   }
@@ -255,13 +261,84 @@ export async function getUserSettings(userId) {
 }
 
 export async function updateUserSettings(userId, settings) {
-  const res = await fetch(`http://localhost:5000/AHFULuserSettings/update/${userId}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(settings)
-  });
+  const res = await fetch(
+    `http://localhost:5000/AHFULuserSettings/update/${userId}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(settings),
+    },
+  );
   if (!res.ok) throw new Error("Failed to update settings");
   return res.json();
+}
+
+// ── Gym Functions ─────────────────────────────────────────────────────────
+
+export async function reverseGeocode(lat, lng) {
+  try {
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
+    const res = await fetch(url, {
+      headers: { "User-Agent": "AHFULApp/1.0" },
+    });
+    if (!res.ok) {
+      throw new Error(`Geocoding API returned ${res.status}`);
+    }
+    const data = await res.json();
+    return data.display_name || null;
+  } catch (err) {
+    console.error("reverseGeocode error:", err);
+    return null;
+  }
+}
+
+export async function forwardGeocode(address) {
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
+    const res = await fetch(url, {
+      headers: { "User-Agent": "AHFULApp/1.0" },
+    });
+    if (!res.ok) {
+      throw new Error(`Geocoding API returned ${res.status}`);
+    }
+    const data = await res.json();
+    if (data && data.length > 0) {
+      return {
+        lat: parseFloat(data[0].lat),
+        lng: parseFloat(data[0].lon),
+        displayName: data[0].display_name,
+      };
+    }
+    return null;
+  } catch (err) {
+    console.error("forwardGeocode error:", err);
+    return null;
+  }
+}
+
+// ── Exercise Functions ─────────────────────────────────────────────────────────
+
+export async function fetchExerciseById(exerciseId) {
+  const res = await fetch(
+    `http://localhost:5000/AHFULexercises/id/${exerciseId}`,
+  );
+  if (!res.ok) {
+    throw new Error(
+      `Failed to fetch exercise: ${res.status} ${res.statusText}`,
+    );
+  }
+  return res.json();
+}
+
+export function getDefaultNewExercise() {
+  return {
+    name: "",
+    targetMuscles: [],
+    bodyParts: [],
+    equipment: [],
+    gifUrl: "",
+    instructions: "",
+  };
 }
 
 export async function createExercise(exerciseData) {
@@ -290,78 +367,197 @@ export async function createExercise(exerciseData) {
   }
 }
 
-// ── Geocoding Functions (Nominatim/OpenStreetMap) ─────────────────────────────────
-
-export async function reverseGeocode(lat, lng) {
-  try {
-    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
-    const res = await fetch(url, {
-      headers: { "User-Agent": "AHFULApp/1.0" }
-    });
-    if (!res.ok) {
-      throw new Error(`Geocoding API returned ${res.status}`);
+export async function fetchExercisesFromBackend() {
+  const res = await fetch("http://localhost:5000/AHFULexercises");
+  if (!res.ok) {
+    let bodyText = "";
+    try {
+      bodyText = await res.text();
+    } catch (e) {}
+    // If 404 or empty response, return empty array for new users
+    if (res.status === 404 || res.status === 204) {
+      return [];
     }
-    const data = await res.json();
-    return data.display_name || null;
-  } catch (err) {
-    console.error("reverseGeocode error:", err);
-    return null;
+    throw new Error(
+      `Server returned ${res.status} ${res.statusText} ${bodyText}`,
+    );
   }
+  const data = await res.json();
+  let list = [];
+  if (Array.isArray(data)) list = data;
+  else if (data && Array.isArray(data.data)) list = data.data;
+  else if (data && Array.isArray(data.results)) list = data.results;
+  else list = [];
+  return list;
 }
 
-export async function forwardGeocode(address) {
-  try {
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
-    const res = await fetch(url, {
-      headers: { "User-Agent": "AHFULApp/1.0" }
-    });
-    if (!res.ok) {
-      throw new Error(`Geocoding API returned ${res.status}`);
+export async function searchExercises(searchQuery) {
+  const res = await fetch(
+    `http://localhost:5000/AHFULexercises/search?search=${encodeURIComponent(searchQuery)}`,
+  );
+  if (!res.ok) {
+    let bodyText = "";
+    try {
+      bodyText = await res.text();
+    } catch (e) {}
+    // If 404 or empty response, return empty array for new users
+    if (res.status === 404 || res.status === 204) {
+      return [];
     }
-    const data = await res.json();
-    if (data && data.length > 0) {
-      return { 
-        lat: parseFloat(data[0].lat), 
-        lng: parseFloat(data[0].lon),
-        displayName: data[0].display_name 
-      };
-    }
-    return null;
-  } catch (err) {
-    console.error("forwardGeocode error:", err);
-    return null;
+    throw new Error(
+      `Server returned ${res.status} ${res.statusText} ${bodyText}`,
+    );
   }
+  const data = await res.json();
+  let list = [];
+  if (Array.isArray(data)) list = data;
+  else if (data && Array.isArray(data.data)) list = data.data;
+  else if (data && Array.isArray(data.results)) list = data.results;
+  else list = [];
+  return list;
 }
+
+// ── Workout Functions ───────────────────────────────────────────────────────────
 
 export async function createWorkout(workoutData) {
+  const res = await fetch("http://localhost:5000/AHFULworkout/create", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(workoutData),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to create workout: ${res.status} ${err}`);
+  }
+  return res.json();
+}
+
+export async function fetchWorkout(userId) {
   try {
-    const res = await fetch("http://localhost:5000/AHFULworkout/create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(workoutData)
-        });
+    const res = await fetch(`http://localhost:5000/AHFULworkout/${userId}`);
 
-    const data = await res.json();
-
-    if (!res.ok) {
-      return { error: data.error || `Server returned ${res.status}` };
+    // Handle empty or not found responses for new users
+    if (res.status === 404 || res.status === 204) {
+      return [];
     }
 
-    return { success: true, data };
+    if (!res.ok) {
+      const bodyText = await res.text().catch(() => "");
+      throw new Error(
+        `Server returned ${res.status} ${res.statusText} ${bodyText}`,
+      );
+    }
+
+    const data = await res.json();
+    // Ensure we always return an array
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.workouts)) return data.workouts;
+    if (data && Array.isArray(data.data)) return data.data;
+    return [];
   } catch (err) {
-    console.error("createExercise error:", err);
-    const msg = err && err.message ? err.message : "Failed to create exercise";
-    return { error: msg };
+    console.error("fetchWorkout error:", err);
+    // Return empty array for network errors on new user accounts
+    throw err;
   }
 }
 
-
-export async function updateWorkout(workoutId, workoutData) {
-  try {
-    const res = await fetch(`http://localhost:5000/AHFULworkout/update/${workoutId}`, {
+export async function updateWorkout(workoutId, data) {
+  const res = await fetch(
+    `http://localhost:5000/AHFULworkout/update/${workoutId}`,
+    {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(workoutData)
+      body: JSON.stringify(data),
+    },
+  );
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to update workout: ${res.status} ${err}`);
+  }
+  return res.json();
+}
+
+// ── Personal Exercise Functions ─────────────────────────────────────────────────
+
+export async function fetchPersonalExercises(workoutId) {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/AHFULpersonalEx/workout/${workoutId}`,
+    );
+
+    // Handle empty or not found responses
+    if (res.status === 404 || res.status === 204) {
+      return [];
+    }
+
+    if (!res.ok) {
+      const bodyText = await res.text().catch(() => "");
+      throw new Error(
+        `Server returned ${res.status} ${res.statusText} ${bodyText}`,
+      );
+    }
+
+    const data = await res.json();
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.exercises)) return data.exercises;
+    if (data && Array.isArray(data.data)) return data.data;
+    return [];
+  } catch (err) {
+    console.error("fetchPersonalExercises error:", err);
+    return [];
+  }
+}
+
+export async function createPersonalExercise(data) {
+  const res = await fetch("http://localhost:5000/AHFULpersonalEx/create", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to create personal exercise: ${res.status} ${err}`);
+  }
+  return res.json();
+}
+
+export async function updatePersonalExercise(exerciseId, data) {
+  const res = await fetch(
+    `http://localhost:5000/AHFULpersonalEx/update/${exerciseId}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    },
+  );
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to update personal exercise: ${res.status} ${err}`);
+  }
+  return res.json();
+}
+
+export async function deletePersonalExercise(exerciseId) {
+  const res = await fetch(
+    `http://localhost:5000/AHFULpersonalEx/delete/${exerciseId}`,
+    {
+      method: "DELETE",
+    },
+  );
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Failed to delete personal exercise: ${res.status} ${err}`);
+  }
+  return res.json();
+}
+
+//Personal Exercise Data
+export async function createPersonalExercises(peData) {
+  try {
+    const res = await fetch("http://localhost:5000/AHFULpersonalEx/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(peData),
     });
 
     const data = await res.json();
@@ -372,6 +568,31 @@ export async function updateWorkout(workoutId, workoutData) {
 
     return { success: true, data };
   } catch (err) {
-    return { error: err.message || "Failed to update workout" };
+    console.error("createPersonalExercise error:", err);
+    return { error: err.message || "Failed to create personal exercise" };
+  }
+}
+
+export async function updatePersonalExercises(peId, peData) {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/AHFULpersonalEx/update/${peId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(peData),
+      },
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return { error: data.error || `Server returned ${res.status}` };
+    }
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("updatePersonalExercise error:", err);
+    return { error: err.message || "Failed to update personal exercise" };
   }
 }

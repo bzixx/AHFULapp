@@ -79,3 +79,11 @@ def delete_food(food_id):
     if error:
         return jsonify({"error": error}), 400
     return jsonify({"message": "Food deleted", "food_id": response}), 200
+
+# ── GET food streak for user ──────────────────────────────────────
+@foodRouteBlueprint.route("/streak/<userId>", methods=["GET"])
+def get_food_streak(userId):
+    streak_data, error = FoodDriver.get_streak(userId)
+    if error:
+        return jsonify({"error": error}), 500
+    return jsonify(streak_data), 200

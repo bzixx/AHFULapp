@@ -13,6 +13,7 @@ import { TOS } from "./Pages/TOS/TOS.jsx";
 import { Layout } from "./layout.jsx"
 import { AuthRouteCheck } from "./AuthRouteCheck.jsx";
 import { Settings } from "./Pages/Settings/Settings.jsx";
+import { ExploreTasks } from "./Pages/ExploreTasks/ExploreTasks.jsx";
 import "./SiteStyles.css";
 
 
@@ -24,13 +25,10 @@ function AHFULApp() {
   const [pageChangeCount, setPageChangeCount] = useState(0);
 
   useEffect(() => {
-    // increment a counter every time the pathname changes — replace with your refresh logic
+        // increment a counter every time the pathname changes — replace with your refresh logic
     setPageChangeCount((c) => c + 1);
     // console.log("route changed to", location.pathname);
   }, [location.pathname]);
-
-
-
 
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
@@ -63,9 +61,11 @@ function AHFULApp() {
             <AuthRouteCheck>
               <Profile/>
             </AuthRouteCheck>}/>
-          <Route path="/TOS" element={
+          <Route path="/TOS" element={<TOS/>}/>
+            
+          <Route path="/ExploreTasks" element={
             <AuthRouteCheck>
-              <TOS/>
+              <ExploreTasks/>
             </AuthRouteCheck>}/>
         </Route>
         <Route path="Settings" element={

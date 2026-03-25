@@ -1,53 +1,49 @@
-.navbar a,
-.sidebar a {
-  color: white;
-  text-decoration: none;
-  font-size: 1rem;
-  transition: background-color 0.18s ease, color 0.18s ease, transform 0.08s ease;
-  display: block; /* make the whole area clickable */
-  padding: 8px 10px;
-  border-radius: 8px;
-}
-
-/* Hover shows a subtle highlighted section */
-.navbar a:hover,
-.sidebar a:hover {
-  background-color: rgba(255, 255, 255, 0.06);
-  color: #ffffff;
-  transform: translateY(-1px);
-}
-
-/* Keep visited links visually consistent with unvisited links */
-.navbar a:visited,
-.sidebar a:visited {
-  color: inherit;
-}
-
-/* Provide an obvious visible state while clicking or when focused (keyboard users) */
-.navbar a:active,
-.sidebar a:active,
-.navbar a:focus,
-.sidebar a:focus {
-  outline: none;
-  background-color: #fff2d9; /* warm highlight */
-  color: #1e1e2e; /* dark text for contrast */
-  font-weight: 700;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-}
-
-/* If you later switch Links to NavLink from react-router, aria-current="page" will persistently mark the active page */
-.sidebar a[aria-current="page"] {
-  background-color: #ffe6b3;
-  color: #111;
-  font-weight: 800;
-}
-
 .sidebar {
   width: 250px;
-  background-color: #1e1e2e;
-  color: white;
-  padding: 20px;
+  min-width: 250px;
+  background: var(--color-primary);
+  padding: 20px 10px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+}
+
+/* Sidebar links styled like settings sidebar buttons */
+.sidebar a {
+  padding: 14px 18px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: var(--text-md);
+  font-weight: var(--font-normal);
+  display: block;
+  transition: all 0.2s ease;
+}
+
+/* Ensure visited links stay same color */
+.sidebar a:visited,
+.sidebar a:link {
+  color: var(--text-secondary);
+}
+
+/* Hover effect */
+.sidebar a:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Active tab */
+.sidebar a.active {
+  background: var(--color-bg);
+  color: var(--color-primary);
+  font-weight: var(--font-semibold);
+}
+
+/* Dark mode support */
+.dark .sidebar a.active {
+  color: var(--text-primary);
+  background: var(--color-surface);
 }
