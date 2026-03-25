@@ -1049,7 +1049,7 @@ def test_personal_ex_invalid_inputs_combined():
             reps=1, sets=1, weight=100, duration=60, distance="0", complete=False
         )
         assert resp is None
-        assert "Invalid workoutId format" in err
+        assert err == "You are missing a userId, workoutId or exerciseId. Please fix, then attempt to create personalEx again" or "Invalid userId format; must be a 24-hex string"
 
     # GET PERSONAL EX BY ID — INVALID INPUTS
 
