@@ -1739,6 +1739,150 @@ def test_update_workout_roundtrip():
     assert fetched_after_restore.get("startTime") == orig_startTime
     assert fetched_after_restore.get("endTime") == orig_endTime
 
+def test_workout_invalid_inputs_combined():
+    valid_user_id = "699d0093795741a59fe13616"
+    valid_gym_id = "699cff88400d9d43a32e924d"
+    valid_workout_id = "69c063229f8c3c92b650445b"
+
+    # GET WORKOUT BY ID — INVALID INPUTS
+    for bad in [None, "", 123, [], {}, "nothex"]:
+        resp, err = WorkoutDriver.get_workout_by_id(bad)
+        assert resp is None
+        assert err == "You are missing a user id. Please fix, then attempt to create workout again" or "Invalid user_id format; must be a 24-hex string"
+
+    resp, err = WorkoutDriver.get_workout_by_id("000000000000000000000000")
+    assert resp is None
+    assert err == "Workout not found"
+
+    # GET WORKOUTS BY USER — INVALID INPUTS
+    for bad in [None, "", 123, [], {}, "nothex"]:
+        resp, err = WorkoutDriver.get_workouts_by_user(bad)
+        assert resp is None
+        assert err == "You are missing a user id. Please fix, then attempt to create workout again" or "Invalid user_id format; must be a 24-hex string"
+
+    resp, err = WorkoutDriver.get_workouts_by_user("000000000000000000000000")
+    assert resp is None
+    assert err == "Workout not found"
+
+    # GET TEMPLATES — INVALID INPUTS
+    for bad in [None, "", 123, [], {}, "nothex"]:
+        resp, err = WorkoutDriver.get_templates(bad)
+        assert resp is None
+        assert err == "You are missing a user id. Please fix, then attempt to create workout again" or "Invalid user_id format; must be a 24-hex string"
+
+    resp, err = WorkoutDriver.get_templates("000000000000000000000000")
+    assert resp is None
+    assert err == "Templates not found"
+
+    # CREATE WORKOUT — INVALID INPUTS
+    # Missing required
+    resp, err = WorkoutDriver.create_workout(None, valid_gym_id, "Test", "1", "2")
+    assert resp is None
+    assert err == "You are missing a userId or startTime. Please fix, then attempt to create workout again"
+
+    resp, err = WorkoutDriver.create_workout(valid_user_id, valid_gym_id, "Test", None, "2")
+    assert resp is None
+    assert err == "You are missing a userId or startTime. Please fix, then attempt to create workout again"
+
+    # Invalid userIds
+    for bad in ["nothex", 123, [], {}, ""]:
+        resp, err = WorkoutDriver.create_workout(bad, valid_gym_id, "Test", "1", "2")
+        assert resp is None
+        assert err == "Invalid userId format; must be a 24-hex string"
+
+    # Invalid gymIds
+    for bad in ["nothex", 123, [], {}, ""]:
+        resp, err = WorkoutDriver.create_workout(valid_user_id, bad, "Test", "1", "2")
+        assert resp is None
+        assert err == "Invalid gymId format; must be a 24-hex string"
+
+    resp, err = WorkoutDriver.create_workout("000000000000000000000000", valid_gym_id, "Test", "1", "2")
+    assert resp is None
+    assert err == "User not found"
+
+    resp, err = WorkoutDriver.create_workout(valid_user_id, "000000000000000000000000", "Test", "1", "2")
+    assert resp is None
+    assert err == "Gym not found"
+
+    # CREATE TEMPLATE — INVALID INPUTS
+    resp, err = WorkoutDriver.create_template(None, "TestTemplate")
+    assert resp is None
+    assert err == "You are missing a userId. Please fix, then attempt to create workout again"
+
+    resp, err = WorkoutDriver.create_template("nothex", "TestTemplate")
+    assert resp is None
+    assert err == "Invalid userId format; must be a 24-hex string"
+
+    resp, err = WorkoutDriver.create_template("000000000000000000000000", "TestTemplate")
+    assert resp is None
+    assert err == "User not found"
+
+    # DELETE WORKOUT — INVALID INPUTS
+    resp, err = WorkoutDriver.delete_workout(None)
+    assert resp is None
+    assert err == "You must provide a workout id to delete"
+
+    for bad in ["", 123, [], {}, "nothex"]:
+        resp, err = WorkoutDriver.delete_workout(bad)
+        assert resp is None
+        assert err == "Invalid workout_id format; must be a 24-hex string"
+
+    resp, err = WorkoutDriver.delete_workout("000000000000000000000000")
+    assert resp is None
+    assert err == "Workout not found or already deleted"
+
+    # UPDATE WORKOUT — INVALID INPUTS
+    for bad in [None, "", 123, [], {}, "nothex"]:
+        resp, err = WorkoutDriver.update_workout(bad, {"title": "New"})
+        assert resp is None
+        assert err == "You must provide a personal ex id to update" or "Invalid workout_id format; must be a 24-hex string"
+
+    resp, err = WorkoutDriver.update_workout(valid_workout_id, None)
+    assert resp is None
+    assert err == "You must provide at least one field to update"
+
+def test_workout_partial_empty_unknown_updates():
+    workout_id = "69c063229f8c3c92b650445b"
+
+    original, err = WorkoutDriver.get_workout_by_id(workout_id)
+    assert err is None
+
+    orig_values = {
+        "title": original["title"],
+        "startTime": original["startTime"],
+        "endTime": original["endTime"],
+    }
+
+    partial = {"title": "PartialTitle"}
+    updated, err = WorkoutDriver.update_workout(workout_id, partial)
+    assert err is None
+    assert updated["title"] == "PartialTitle"
+
+    resp, err = WorkoutDriver.update_workout(workout_id, {})
+    assert resp is None
+    assert err == "You must provide at least one field to update"
+
+    resp, err = WorkoutDriver.update_workout(workout_id, {"junk": 123})
+    assert resp is None
+    assert err == "Workout not found or no changes applied" or "You must provide at least one field to update"
+
+    mixed = {
+        "title": "MixedTitle",
+        "startTime": 500,
+        "junk": True,
+        "badField": "ignore"
+    }
+    updated, err = WorkoutDriver.update_workout(workout_id, mixed)
+    assert err is None
+    assert updated["title"] == "MixedTitle"
+    assert updated["startTime"] == 500
+
+    restored, err = WorkoutDriver.update_workout(workout_id, orig_values)
+    assert err is None
+    assert restored["title"] == orig_values["title"]
+    assert restored["startTime"] == orig_values["startTime"]
+    assert restored["endTime"] == orig_values["endTime"]
+
 # Measurements
 
 def test_find_measurement_by_id():
