@@ -14,7 +14,7 @@ export function Navbar({ minHeight }) {
         Dashboard Home
       </NavLink>
 
-      {!isAuthenticated ? (
+      {/* {!isAuthenticated ? ( */}
         <>
           <NavLink
             to="/Login"
@@ -30,7 +30,7 @@ export function Navbar({ minHeight }) {
             Terms of Service
           </NavLink>
         </>
-      ) : (
+      {/* ) : ( */}
         <>
           <NavLink
             to="/WorkoutLogger"
@@ -76,10 +76,14 @@ export function Navbar({ minHeight }) {
 
           <NavLink
             to="/Profile"
-            className={({ isActive }) => (isActive ? "active" : "")}
+            className={({ isActive }) =>
+              isActive || location.pathname.startsWith("/Settings")
+                ? "active"
+                : ""
+            }
           >
             Profile
-          </NavLink>
+          </NavLink> 
 
           <NavLink
             to="/TOS"
@@ -96,7 +100,7 @@ export function Navbar({ minHeight }) {
             Documentation
           </a>
         </>
-      )}
+      {/* )} */}  
     </nav>
   );
 }
