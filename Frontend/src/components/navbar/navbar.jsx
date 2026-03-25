@@ -10,7 +10,10 @@ export function Navbar({ minHeight }) {
       <Link to="/">Dashboard Home</Link>
       
       {!isAuthenticated ? (
-        <Link to="/Login">Login</Link>
+        <>
+          <Link to="/Login">Login</Link>
+          <Link to="/TOS">Terms of Service</Link>
+        </>
       ) : (
         <>
           <Link to="/WorkoutLogger">Workout Logger</Link>
@@ -20,7 +23,6 @@ export function Navbar({ minHeight }) {
           <Link to="/Map">Map</Link>
           <Link to="/MeasurementLogger">Measurement Logger</Link>
           <Link to="/Profile">Profile</Link>
-          <Link to="/TOS">Terms of Service</Link>
           <a href="http://localhost:5000/APIDocs" target="_blank" rel="noreferrer">Documentation</a>
         </>
       )}

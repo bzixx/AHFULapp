@@ -7,6 +7,7 @@ import { authLogout } from "../Login/AuthSlice";
 import {registerService} from "../../firebase.js";
 import {handle_logout} from "../../QueryFunctions.js"
 import {ProfileSettingsButton} from "../../components/ProfileSettings/ProfileSettingsButton"
+import { useNavigate } from "react-router-dom";
 
 export function Profile() {
   const [userData, setUserData] = useState({name: "", email: "", picture: ""});
@@ -16,6 +17,7 @@ export function Profile() {
   const reduxUserData = useSelector((state) => state.auth.user);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     try {
@@ -97,6 +99,16 @@ export function Profile() {
             onClick={registerService}
           >
             Enable Push Notifications
+          </button>
+        </div>
+
+        {/* Terms of Service (visible from profile when logged in) */}
+        <div className="profile-tos-section">
+          <button
+            className="profile-tos-btn"
+            onClick={() => navigate("/TOS")}
+          >
+            Terms of Service
           </button>
         </div>
 
