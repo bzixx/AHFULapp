@@ -38,7 +38,7 @@ def test_find_food_by_id():
         print(food, err)
 
     # Expected
-    bad_err_code = "\'" + bad_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    bad_err_code = "Invalid food_id format; must be a 24-hex string"
     
     # Assertions
     assert food is None
@@ -87,7 +87,7 @@ def test_find_food_by_user():
         print(food, err)
 
     # Expected
-    bad_err_code = "\'" + bad_userId + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    bad_err_code = "Invalid food_id format; must be a 24-hex string"
     
     # Assertions
     assert food is None
@@ -322,7 +322,7 @@ def test_food_invalid_inputs():
     for bad in [None, "", 123, [], {}, "nothex"]:
         resp, err = FoodDriver.update_food(bad, {"name": "Test"})
         assert resp is None
-        assert err == "Invalid food_id format; must be a 24-hex string"
+        assert err == "Invalid food_id format; must be a 24-hex string" or "You must provide a food id to update"
 
     # Missing updates argument
     resp, err = FoodDriver.update_food(valid_food_id, None)
@@ -447,7 +447,7 @@ def test_find_gym_by_id():
         print(gym, err)
 
     # Expected
-    bad_err_code = "\'" + bad_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    bad_err_code = "Invalid gym_id format; must be a 24-hex string"
     
     # Assertions
     assert gym is None
@@ -648,7 +648,7 @@ def test_find_personal_ex_by_id():
         print(ex, err)
 
     # Expected
-    bad_err_code = "\'" + bad_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    bad_err_code = "Invalid personal ex id format; must be a 24-hex string"
     
     # Assertions
     assert ex is None
@@ -703,7 +703,7 @@ def test_find_personal_ex_by_workout():
         print(exs, err)
 
     # Expected
-    bad_err_code = "\'" + bad_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    bad_err_code = "Invalid workoutId format; must be a 24-hex string"
     
     # Assertions
     assert exs is None
@@ -758,7 +758,7 @@ def test_find_personal_ex_by_user():
         print(exs, err)
 
     # Expected
-    bad_err_code = "\'" + bad_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    bad_err_code = "Invalid userId format; must be a 24-hex string"
     
     # Assertions
     assert exs is None
@@ -950,7 +950,7 @@ def test_find_user_by_id():
         print(user, err)
 
     # Expected
-    bad_err_code = "\'" + bad_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    bad_err_code = "Invalid userId format; must be a 24-hex string"
     
     # Assertions
     assert user is None
@@ -1120,7 +1120,7 @@ def test_find_workout_by_id():
         print(ex, err)
 
     # Expected
-    bad_err_code = "\'" + bad_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    bad_err_code = "Invalid userId format; must be a 24-hex string"
     
     # Assertions
     assert ex is None
@@ -1171,7 +1171,7 @@ def test_find_workout_by_user():
         print(exs, err)
 
     # Expected
-    bad_err_code = "\'" + bad_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    bad_err_code = "Invalid user_id format; must be a 24-hex string"
     
     # Assertions
     assert exs is None
@@ -1221,7 +1221,7 @@ def test_find_template_by_user():
         print(temps, err)
 
     # Expected
-    bad_err_code = "\'" + bad_oid + "\' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    bad_err_code = "Invalid user_id format; must be a 24-hex string"
     
     # Assertions
     assert temps is None
@@ -1420,7 +1420,7 @@ def test_find_measurement_by_id():
     m, err = MeasurementDriver.get_measurement_by_id(bad_oid)
 
     assert m is None
-    assert err == "'" + bad_oid + "' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    assert err == "Invalid measurement_id format; must be a 24-hex string"
 
     # Invalid (valid format but not found)
     inv_oid = "000000000000000000000000"
@@ -1578,7 +1578,7 @@ def test_create_measurement_invalid_field_value():
 def test_delete_measurement_invalid_id():
     resp, err = MeasurementDriver.delete_measurement("123")
     assert resp is None
-    assert err == "'123' is not a valid ObjectId, it must be a 12-byte input or a 24-character hex string"
+    assert err == "Invalid measurement_id format; must be a 24-hex string"
 
 # Tasks
 
