@@ -1104,7 +1104,7 @@ def test_personal_ex_invalid_inputs_combined():
     for bad in [None, "", 123, [], {}, "nothex"]:
         resp, err = PersonalExDriver.update_personal_ex(bad, {"reps": 10})
         assert resp is None
-        assert "Invalid personal_ex_id format" in err
+        assert err == "You must provide a personal ex id to delete"
 
     resp, err = PersonalExDriver.update_personal_ex(valid_personal_ex_id, None)
     assert resp is None
