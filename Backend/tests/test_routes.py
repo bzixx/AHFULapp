@@ -1120,7 +1120,7 @@ def test_find_workout_by_id():
         print(ex, err)
 
     # Expected
-    bad_err_code = "Invalid userId format; must be a 24-hex string"
+    bad_err_code = "Invalid workout_id format; must be a 24-hex string"
     
     # Assertions
     assert ex is None
