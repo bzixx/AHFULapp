@@ -35,6 +35,8 @@ function AHFULApp() {
       <Routes>
         <Route element={<Layout/>}>
           <Route path="/" element={<Dashboard/>}/>
+          <Route path="/Login" element={<Login/>}/>
+          <Route path="/TOS" element={<TOS/>}/>
           <Route path="/WorkoutLogger" element={
             <AuthRouteCheck>
               <WorkoutLogger/>
@@ -48,7 +50,6 @@ function AHFULApp() {
             <AuthRouteCheck>
               <FoodLog/>
             </AuthRouteCheck>}/>
-          <Route path="/Login" element={<Login/>}/>
           <Route path="/Map" element={
             <AuthRouteCheck>
               <Map/>
@@ -60,10 +61,6 @@ function AHFULApp() {
           <Route path="/Profile" element={
             <AuthRouteCheck>
               <Profile/>
-            </AuthRouteCheck>}/>
-          <Route path="/TOS" element={
-            <AuthRouteCheck>
-              <TOS/>
             </AuthRouteCheck>}/>
           <Route path="/ExploreTasks" element={
             <AuthRouteCheck>
