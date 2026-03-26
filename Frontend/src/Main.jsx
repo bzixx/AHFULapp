@@ -66,6 +66,7 @@ function AHFULApp_localStorageChecked() {
                   pronouns: settingsData.pronouns,
                   dateOfBirth: settingsData.dateOfBirth,
                   locations: settingsData.locations,
+                  tutorialComplete: settingsData.tutorialComplete,
                 }));
                 
               } catch (settingsErr) {
