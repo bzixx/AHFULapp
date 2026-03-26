@@ -1,6 +1,7 @@
 import { Navbar } from "./components/navbar/navbar";
 import { Outlet } from "react-router-dom";
 import { MenuButton } from "./components/MenuButton/MenuButton";
+import { Header } from "./components/Header/Header.jsx";
 
 export function Layout() {
     
@@ -10,9 +11,9 @@ export function Layout() {
             <MenuButton/>
             */}
             <main>
-            <Navbar/>
-
-            <Outlet/>
+            <Navbar />
+            <Header />
+            <Outlet />
             {/* Outlet is used to render the child routes on every page listed in the AHFULApp.jsx file in this case our Navbar*/}
             </main>
         </>

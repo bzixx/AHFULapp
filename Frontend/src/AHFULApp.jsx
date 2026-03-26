@@ -62,7 +62,6 @@ function AHFULApp() {
               <Profile/>
             </AuthRouteCheck>}/>
           <Route path="/TOS" element={<TOS/>}/>
-            
           <Route path="/ExploreTasks" element={
             <AuthRouteCheck>
               <ExploreTasks/>

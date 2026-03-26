@@ -1,5 +1,7 @@
 import { NavLink } from "react-router-dom";
 import "./Header.css";
+import "../../Stylesheets/Themes/Lightmode.css";
+import "../../Stylesheets/Themes/Darkmode.css";
 
 export function Header() {
   return (
