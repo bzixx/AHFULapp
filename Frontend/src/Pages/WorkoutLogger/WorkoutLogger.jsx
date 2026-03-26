@@ -306,6 +306,10 @@ export function WorkoutLogger() {
         throw new Error("Failed to create template");
       }
 
+      const template = await templateRes.json();
+
+      console.log(template);
+
       // 2. Create personalExercises using template._id as workoutId
       for (const ex of exercisesInProgressTable) {
         const personalExPayload = {
@@ -317,9 +321,11 @@ export function WorkoutLogger() {
           distance: ex.distance,
           complete: false,
           userId: user._id,
-          workoutId: templateRes.workout_id,
+          workoutId: template.workout_id,
+          template: true
         };
 
+        console.log(personalExPayload);
         createPersonalExercise(personalExPayload);
       }
 
