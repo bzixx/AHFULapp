@@ -6,23 +6,16 @@ ahfulAppDataDB = getMongoDatabase()
 userSettingsCollection = ahfulAppDataDB['userSettings']
 
 DEFAULT_USER_SETTINGS = {
-    "displayMode": "light",
-    "units": "imperial",
-    "timezone": "UTC",
+    "theme": "light",
     "goals": "maintain",
     "shameLevel": "medium",
-    "availableEquipment": "basic",
-    "locations": [],
+    "units": "imperial",
+    "timezone": "UTC",
     "gender": "",
     "pronouns": "",
     "dateOfBirth": "",
-    "notifications": {
-        "email": True,
-        "push": True,
-        "workoutReminders": True,
-        "mealReminders": True,
-    "tutorialComplete": False
-    }
+    "availableEquipment": "basic",
+    "notifications": "false"
 }
 
 class UserSettingsObject:

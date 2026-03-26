@@ -30,6 +30,13 @@ export function FoodLog() {
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(false);
 
+    // USDA Food Search States
+    const [usda_searchInput, setUsda_searchInput] = useState("");
+    const [usda_searchResults, setUsda_searchResults] = useState([]);
+    const [usda_searching, setUsda_searching] = useState(false);
+    const [showUsda_dropdown, setShowUsda_dropdown] = useState(false);
+    const [usda_searchTimeout, setUsda_searchTimeout] = useState(null);
+
     // Normalize backend food document to the shape the UI expects
     const normalizeFood = (doc) => ({
         id: doc._id,
@@ -40,6 +47,69 @@ export function FoodLog() {
         mealType: doc.type,
         timestamp: new Date(doc.time * 1000).toLocaleTimeString()
     });
+
+    // USDA Food Search - with debouncing
+    const searchUSDAFoods = async (query) => {
+        if (!query || query.length < 2) {
+            setUsda_searchResults([]);
+            setShowUsda_dropdown(false);
+            return;
+        }
+
+        setUsda_searching(true);
+        try {
+            const res = await fetch(`${API_BASE}/search/usda?q=${encodeURIComponent(query)}&limit=8`);
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                console.error("USDA Search error:", errData.error);
+                setUsda_searchResults([]);
+                return;
+            }
+
+            const data = await res.json();
+            setUsda_searchResults(data.foods || []);
+            setShowUsda_dropdown(true);
+        } catch (err) {
+            console.error("Network error searching USDA:", err);
+            setUsda_searchResults([]);
+        } finally {
+            setUsda_searching(false);
+        }
+    };
+
+    // Handle USDA Search Input with Debouncing
+    const handleUsda_searchInputChange = (value) => {
+        setUsda_searchInput(value);
+
+        // Clear previous timeout
+        if (usda_searchTimeout) {
+            clearTimeout(usda_searchTimeout);
+        }
+
+        // Set new timeout to debounce search
+        const newTimeout = setTimeout(() => {
+            searchUSDAFoods(value);
+        }, 500);
+
+        setUsda_searchTimeout(newTimeout);
+    };
+
+    // Select a USDA Food and populate the form
+    const selectUSDAFood = (food) => {
+        setFoodName(food.name || "");
+
+        // If calories are available, use them; otherwise leave blank
+        if (food.calories !== null && food.calories !== undefined) {
+            setCalories(Math.round(food.calories).toString());
+        } else {
+            setCalories("");
+        }
+
+        setServings("1");
+        setUsda_searchInput("");
+        setUsda_searchResults([]);
+        setShowUsda_dropdown(false);
+    };
 
     // Fetch foods for the logged-in user on mount
     useEffect(() => {
@@ -255,6 +325,41 @@ export function FoodLog() {
                 <div className="add-food-section">
                     <h2>Log New Food</h2>
                     <form onSubmit={addFood} className="food-form">
+                        {/* USDA Food Search */}
+                        <div className="form-group usda-search-container">
+                            <label htmlFor="usdaSearch">Search USDA Database (Optional)</label>
+                            <div className="usda-search-wrapper">
+                                <input
+                                    id="usdaSearch"
+                                    type="text"
+                                    placeholder="Search USDA foods... (e.g., 'Apple', 'Chicken Breast')"
+                                    value={usda_searchInput}
+                                    onChange={(e) => handleUsda_searchInputChange(e.target.value)}
+                                    onFocus={() => usda_searchResults.length > 0 && setShowUsda_dropdown(true)}
+                                    className="usda-search-input"
+                                />
+                                {usda_searching && <span className="search-spinner">🔍 Searching...</span>}
+                            </div>
+
+                            {/* USDA Search Results Dropdown */}
+                            {showUsda_dropdown && usda_searchResults.length > 0 && (
+                                <ul className="usda-dropdown-list">
+                                    {usda_searchResults.map((food, idx) => (
+                                        <li key={idx} className="usda-dropdown-item" onClick={() => selectUSDAFood(food)}>
+                                            <div className="food-item-name">{food.name}</div>
+                                            {food.calories !== null && (
+                                                <div className="food-item-detail">
+                                                    {Math.round(food.calories)} cal/serving
+                                                    {food.servingSize && ` (${food.servingSize}${food.servingUnit || ""})`}
+                                                </div>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                            <p className="usda-info-text">💡 Search above to auto-populate food info from USDA FoodData Central, or enter manually below</p>
+                        </div>
+
                         <div className="form-group">
                             <label htmlFor="foodName"> Food Name </label>
                             <input
