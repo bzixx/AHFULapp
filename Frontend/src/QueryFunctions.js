@@ -206,7 +206,7 @@ export async function handle_google_login(response) {
         localStorage.setItem("user_data", userString);
         //If we want to swap to https use below line instead.
         //document.cookie = `user_data=${userString}; path=/; secure; samesite=strict`;
-        return userString;
+        return frontendUserInfo;
       } else {
         //If its not JSON try to parse it into text.
         throw new Error(
@@ -222,6 +222,31 @@ export async function handle_google_login(response) {
       error,
     );
   }
+}
+
+export async function whoami(userDataToVerify) {
+  try {
+    const backendVerificationResponse = await fetch('http://localhost:5000/AHFULauth/whoami', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: userDataToVerify.email,
+        last_login_expire: userDataToVerify.last_login_expire,
+        magic_bits: userDataToVerify.magic_bits
+      }),
+      credentials: 'include'
+    });
+
+    if (backendVerificationResponse.ok) {
+      const data = await backendVerificationResponse.json();
+      return data
+      
+    } else {
+      throw new Error(`Session validation failed: ${backendVerificationResponse.status} ${backendVerificationResponse.statusText}`);
+    }
+  } catch (err) {
+    console.error('Query Function Session validation failed:', err);
+  } 
 }
 
 // ──  Template functions ─────────────────────────────────────────────────────────
@@ -242,23 +267,25 @@ export async function fetchTemplate(userId) {
   return data;
 }
 
+
 // ──  User Settings functions ─────────────────────────────────────────────────────────
 export async function getUserSettings(userId) {
-  const res = await fetch(`http://localhost:5000/AHFULuserSettings/${userId}`);
-  if (res.status === 404) {
+  const foundUserSettingsResponse = await fetch(`http://localhost:5000/AHFULuserSettings/${userId}`);
+  if (foundUserSettingsResponse.status === 404) {
     // Create default settings if not found
-    const createRes = await fetch(
+    const createDefaultSettingsResponse = await fetch(
       `http://localhost:5000/AHFULuserSettings/createDefault/${userId}`,
       {
         method: "POST",
       },
     );
-    if (!createRes.ok) throw new Error("Failed to create default settings");
-    return createRes.json();
+    if (!createDefaultSettingsResponse.ok) throw new Error("Failed to create default settings" + createDefaultSettingsResponse.status);
+    return createDefaultSettingsResponse.json();
   }
-  if (!res.ok) throw new Error("Failed to fetch settings");
-  return res.json();
+  if (!foundUserSettingsResponse.ok) throw new Error("Failed to fetch settings" + foundUserSettingsResponse.status );
+  return foundUserSettingsResponse.json();
 }
+
 
 export async function updateUserSettings(userId, settings) {
   const res = await fetch(
