@@ -313,8 +313,6 @@ export function WorkoutLogger() {
 
       const template = await templateRes.json();
 
-      console.log(template);
-
       // 2. Create personalExercises using template._id as workoutId
       for (const ex of exercisesInProgressTable) {
         const personalExPayload = {
@@ -330,7 +328,6 @@ export function WorkoutLogger() {
           template: true,
         };
 
-        console.log(personalExPayload);
         createPersonalExercise(personalExPayload);
       }
 
@@ -342,12 +339,9 @@ export function WorkoutLogger() {
   };
 
   async function handleApplyTemplate(template) {
-    console.log("Apply template:", template);
 
     try {
       const templateExercises = await fetchPersonalExercises(template._id);
-
-      console.log("Fetched template exercises:", templateExercises);
 
       // Open popup
       setTemplatePreview({
@@ -384,9 +378,6 @@ export function WorkoutLogger() {
 
     // 3. Close popup
     setTemplatePreview(null);
-
-    // 4. Notify user
-    alert("Template has been applied!");
   }
 
   // ─── Submit Workout ───────────────────────────────────────────────────────────
@@ -394,8 +385,6 @@ export function WorkoutLogger() {
 
   const handleSubmit = async () => {
     console.log("Submitting workout...");
-    console.log("Submitting:", exercisesInProgressTable);
-    console.log("Deleting:", personalExToRemove);
 
     try {
       // --- CREATE + UPDATE REQUESTS ---
@@ -577,8 +566,6 @@ export function WorkoutLogger() {
         tomorrow.setDate(today.getDate() + 1);
         const tomorrowUnix = Math.floor(tomorrow.getTime() / 1000);
 
-        console.log("Searching workouts between:", today, tomorrow);
-
         // Fetch all workouts for this user
         const allWorkouts = await fetchWorkout(user._id);
 
@@ -601,8 +588,6 @@ export function WorkoutLogger() {
             title: "Workout (" + today.toDateString() + ")",
             userId: user._id,
           };
-
-          console.log("Creating workout:", newWorkoutPayload);
 
           const newWorkout = await createWorkout(newWorkoutPayload);
 
@@ -636,7 +621,6 @@ export function WorkoutLogger() {
 
     async function getPersonalEx() {
       try {
-        console.log("Fetching personal exercises for workout:", workoutId);
         const data = await fetchPersonalExercises(workoutId);
         setExercisesInProgressTable(Array.isArray(data) ? data : []);
       } catch (err) {
