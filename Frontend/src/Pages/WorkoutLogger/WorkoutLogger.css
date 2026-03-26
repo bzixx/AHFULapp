@@ -5,22 +5,29 @@
 
 @media (max-width: 480px) {
   .page-layout {
-    grid-template-columns: 1fr; /* collapse to single column */
+    grid-template-columns: 1fr;
+    /* collapse to single column */
   }
-  
+
   .center-column {
     padding-top: 20px;
   }
 
-.workout-title input {
-  font-size: 32px;
-  background: transparent;   /* removes white background */
-  border: none;              /* removes border */
-  outline: none;             /* removes blue highlight on click */
-  color: inherit;            /* matches your h1 color */
-  width: 100%;               /* keeps it from shrinking */
-  font-weight: bold;         /* matches heading style */
-}
+  .workout-title input {
+    font-size: 32px;
+    background: transparent;
+    /* removes white background */
+    border: none;
+    /* removes border */
+    outline: none;
+    /* removes blue highlight on click */
+    color: inherit;
+    /* matches your h1 color */
+    width: 100%;
+    /* keeps it from shrinking */
+    font-weight: bold;
+    /* matches heading style */
+  }
 
 
   .workout-timer,
@@ -45,7 +52,8 @@ body {
 
 .page-layout {
   display: grid;
-  grid-template-columns: 1fr minmax(400px, 600px) 1fr; /* left | center | right */
+  grid-template-columns: 1fr minmax(400px, 600px) 1fr;
+  /* left | center | right */
   width: 100%;
   min-height: 100vh;
 }
@@ -66,7 +74,7 @@ body {
 }
 
 .workout-card {
-  background: linear-gradient(90deg,#c3cfe2, #f5f7fa, #c3cfe2);
+  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
   border: 3px solid #000000;
   padding: 8px;
   border-radius: 8px;
@@ -85,12 +93,14 @@ body {
 }
 
 .workout-title input {
-  font-size: 24px;        /* match your old h1 */
+  font-size: 24px;
+  /* match your old h1 */
   background: transparent;
   border: none;
   outline: none;
   color: inherit;
-  text-align: center;     /* to keep it centered */
+  text-align: center;
+  /* to keep it centered */
   width: 100%;
   font-weight: bold;
 }
@@ -111,13 +121,16 @@ body {
 }
 
 .workout-timer-box {
-  width: 120px;        /* identical width */
-  height: 48px;        /* identical height */
-  padding: 0;          /* padding removed so height stays exact */
+  width: 120px;
+  /* identical width */
+  height: 48px;
+  /* identical height */
+  padding: 0;
+  /* padding removed so height stays exact */
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(90deg,#c3cfe2, #f5f7fa, #c3cfe2);
+  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
   border: 2px solid #000;
   border-radius: 6px;
   box-sizing: border-box;
@@ -137,23 +150,30 @@ body {
 .workout-actions {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* vertically centers text + button */
-  gap: 0.5rem; /* space between text and button */
-  margin-top: 0.5rem; /* optional spacing from content above */
+  align-items: center;
+  /* vertically centers text + button */
+  gap: 0.5rem;
+  /* space between text and button */
+  margin-top: 0.5rem;
+  /* optional spacing from content above */
 }
 
-.workout-actions-right-side{
+.workout-actions-right-side {
   display: flex;
   justify-content: flex-end;
-  align-items: center; /* vertically centers text + button */
-  gap: 0.5rem; /* space between text and button */
+  align-items: center;
+  /* vertically centers text + button */
+  gap: 0.5rem;
+  /* space between text and button */
 }
 
-.workout-actions-left-side{
+.workout-actions-left-side {
   display: flex;
   justify-content: flex-start;
-  align-items: center; /* vertically centers text + button */
-  gap: 0.5rem; /* space between text and button */
+  align-items: center;
+  /* vertically centers text + button */
+  gap: 0.5rem;
+  /* space between text and button */
 }
 
 .workout-submit-button {
@@ -187,7 +207,8 @@ body {
 
 .cell input {
   width: 90%;
-  min-width: 50px; /* or 50px if you want more room */
+  min-width: 50px;
+  /* or 50px if you want more room */
   padding: 4px;
   font-size: small;
   text-align: center;
@@ -208,12 +229,13 @@ body {
 
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 }
+
 /* Template container */
 
 .template-container {
   display: flex;
   flex-direction: column;
-  background: linear-gradient(90deg,#c3cfe2, #f5f7fa, #c3cfe2);
+  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
   border: 3px solid #000000;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -235,29 +257,36 @@ body {
   color: black;
   font-size: 14px;
 }
+
 .template-container a:hover {
   color: #c3cfe2;
 }
+
 .template-container input[type="text"] {
   width: 100%;
   padding: 0.6rem 0.75rem;
   font-size: 1rem;
-  color: #041833; /* darker text */
-  background-color: rgba(255,255,255,0.9); /* softer white to fit panel */
-  border: 2px solid rgba(0,0,0,0.6); /* subtle border */
+  color: #041833;
+  /* darker text */
+  background-color: rgba(255, 255, 255, 0.9);
+  /* softer white to fit panel */
+  border: 2px solid rgba(0, 0, 0, 0.6);
+  /* subtle border */
   border-radius: 8px;
   outline: none;
 }
 
 .template-container input[type="text"]:focus {
-  border-color: rgba(0,0,0,0.9);
+  border-color: rgba(0, 0, 0, 0.9);
 }
 
 .apply-btn-wrapper {
   display: flex;
   justify-content: center;
-  margin-top: auto; /* pushes it to the bottom */ 
-  padding-bottom: 10px; /* optional spacing */
+  margin-top: auto;
+  /* pushes it to the bottom */
+  padding-bottom: 10px;
+  /* optional spacing */
 }
 
 .apply-btn {
@@ -265,9 +294,10 @@ body {
   font-weight: bold;
   padding: 10px 14px;
   width: 100%;
-  background: linear-gradient(90deg,#eaf0fb,#ffffff);
+  background: linear-gradient(90deg, #eaf0fb, #ffffff);
   color: #041833;
-  border: 2px solid #000; /* consistent black border */
+  border: 2px solid #000;
+  /* consistent black border */
   border-radius: 6px;
   cursor: pointer;
 }
@@ -276,39 +306,46 @@ body {
   transform: scale(1.08);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
 }
+
 /* Add Exercise container */
 
 .add-exercise {
   display: flex;
   flex-direction: column;
-  background: linear-gradient(90deg,#c3cfe2, #f5f7fa, #c3cfe2);
+  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
   border: 3px solid #000000;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin: 0;
   width: 350px;
 }
+
 .add-exercise a {
   text-decoration: none;
   color: black;
   font-size: 14px;
 }
+
 .add-exercise a:hover {
   color: #c3cfe2;
 }
+
 .add-exercise input[type="text"] {
   width: 100%;
   padding: 0.6rem 0.75rem;
   font-size: 1rem;
-  color: #041833; /* darker text */
-  background-color: rgba(255,255,255,0.9); /* softer white to fit panel */
-  border: 2px solid rgba(0,0,0,0.6); /* subtle border */
+  color: #041833;
+  /* darker text */
+  background-color: rgba(255, 255, 255, 0.9);
+  /* softer white to fit panel */
+  border: 2px solid rgba(0, 0, 0, 0.6);
+  /* subtle border */
   border-radius: 8px;
   outline: none;
 }
 
 .add-exercise input[type="text"]:focus {
-  border-color: rgba(0,0,0,0.9);
+  border-color: rgba(0, 0, 0, 0.9);
 }
 
 /* Add Exercise Form */
@@ -323,7 +360,8 @@ body {
 .dropdown {
   /* render inline inside the blue panel instead of floating popup */
   position: static;
-  background: transparent; /* keep panel background visible */
+  background: transparent;
+  /* keep panel background visible */
   border: none;
   border-radius: 6px;
   width: 100%;
@@ -337,7 +375,8 @@ body {
   padding: 8px 12px;
   cursor: pointer;
   border-radius: 6px;
-  color: #041833; /* darker text for readability on the light-blue background */
+  color: #041833;
+  /* darker text for readability on the light-blue background */
   font-weight: 600;
   max-height: 140px;
 }
@@ -351,16 +390,16 @@ body {
 }
 
 .dropdown-selected {
-  border: 2px solid rgba(0,0,0,0.6);
+  border: 2px solid rgba(0, 0, 0, 0.6);
   border-radius: 6px;
   padding: 6px;
-  background: rgba(255,255,255,0.85);
+  background: rgba(255, 255, 255, 0.85);
   margin-bottom: 8px;
 }
 
 .dropdown-item.selected {
-  background: rgba(0,0,0,0.08);
-  border: 1px solid rgba(0,0,0,0.12);
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 .check {
@@ -376,11 +415,14 @@ body {
   height: 100%;
   gap: 10px;
 }
+
 .add-btn-wrapper {
   display: flex;
   justify-content: center;
-  margin-top: auto; /* pushes it to the bottom */ 
-  padding-bottom: 10px; /* optional spacing */
+  margin-top: auto;
+  /* pushes it to the bottom */
+  padding-bottom: 10px;
+  /* optional spacing */
 }
 
 .add-btn {
@@ -388,9 +430,10 @@ body {
   font-weight: bold;
   padding: 10px 14px;
   width: 100%;
-  background: linear-gradient(90deg,#eaf0fb,#ffffff);
+  background: linear-gradient(90deg, #eaf0fb, #ffffff);
   color: #041833;
-  border: 2px solid #000; /* consistent black border */
+  border: 2px solid #000;
+  /* consistent black border */
   border-radius: 6px;
   cursor: pointer;
 }
@@ -458,20 +501,22 @@ body {
 /* Modal styles - match the app card/panel look used elsewhere */
 .modal-overlay {
   position: fixed;
-  inset: 0; /* top:0; right:0; bottom:0; left:0; */
+  inset: 0;
+  /* top:0; right:0; bottom:0; left:0; */
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2000;
-  padding: 20px; /* spacing on small screens */
+  padding: 20px;
+  /* spacing on small screens */
 }
 
 .modal-content {
-  background: linear-gradient(90deg,#c3cfe2, #f5f7fa, #c3cfe2);
+  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
   border: 3px solid #000000;
   border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   width: 480px;
   max-width: 95%;
   padding: 20px;
@@ -499,8 +544,8 @@ body {
   padding: 8px 10px;
   font-size: 1rem;
   color: #041833;
-  background-color: rgba(255,255,255,0.95);
-  border: 2px solid rgba(0,0,0,0.6);
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(0, 0, 0, 0.6);
   border-radius: 6px;
   outline: none;
   box-sizing: border-box;
@@ -510,7 +555,10 @@ body {
   min-height: 100px;
 }
 
-.modal-content textarea { min-height: 90px; resize: vertical; }
+.modal-content textarea {
+  min-height: 90px;
+  resize: vertical;
+}
 
 .modal-actions {
   display: flex;
@@ -524,7 +572,7 @@ body {
   padding: 6px 12px;
   border: 2px solid #000;
   border-radius: 6px;
-  background: linear-gradient(90deg,#eaf0fb,#ffffff);
+  background: linear-gradient(90deg, #eaf0fb, #ffffff);
   color: #041833;
   cursor: pointer;
 }
@@ -534,8 +582,14 @@ body {
 }
 
 @media (max-width: 480px) {
-  .modal-content { width: 100%; padding: 12px; }
-  .modal-content select[multiple] { min-height: 80px; }
+  .modal-content {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .modal-content select[multiple] {
+    min-height: 80px;
+  }
 }
 
 /* Template Popup AI helped*/
@@ -556,7 +610,7 @@ body {
 
 /* Modal container */
 .template-modal {
-  background: #ffffff;
+  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
   padding: 24px;
   border-radius: 10px;
   width: 90%;
@@ -589,32 +643,78 @@ body {
   font-size: 0.95rem;
 }
 
-/* Buttons */
-.template-modal button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 6px;
-  border: none;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.template-modal button:first-of-type {
-  background: #4caf50;
-  color: white;
-}
-
-.template-modal button:last-of-type {
-  background: #d9534f;
-  color: white;
-}
-
 /* Fade-in animation */
 @keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
+/* Popup grid styled like workout-grid */
+.template-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  /* Exercise | Reps | Sets | Weight */
+  border: 2px solid #333;
+  background: linear-gradient(0deg, #FFF7F2, #f5f5f5);
+  max-height: 300px;
+  overflow-y: auto;
+}
 
+/* Match .cell styling */
+.template-grid .cell {
+  border-right: 1px solid #333;
+  border-bottom: 1px solid #333;
+  padding: 0.75rem;
+  font-size: small;
+  text-align: center;
+}
 
+/* Remove right border on last column */
+.template-grid .cell:nth-child(4n) {
+  border-right: none;
+}
+
+/* Header row styling */
+.template-grid .header {
+  font-weight: bold;
+  border-bottom: 2px solid #333;
+  background-color: #f5f5f5;
+}
+
+/* Buttons */
+
+/* Confirm button (same style as add-btn) */
+.template-confirm-btn {
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 10px 14px;
+  width: 100%;
+  background: #f5f5f5;
+  color: #041833;
+  border: 2px solid #000;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 12px;
+}
+
+/* Cancel button (same shape, different color) */
+.template-cancel-btn {
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 10px 14px;
+  width: 100%;
+  background: #f8d7da;
+  /* soft red */
+  color: #7a1a1a;
+  border: 2px solid #000;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 8px;
+}

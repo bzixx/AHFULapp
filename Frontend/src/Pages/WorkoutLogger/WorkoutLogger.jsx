@@ -287,7 +287,7 @@ export function WorkoutLogger() {
         alert("Cannot save template — missing workout or user.");
         return;
       }
-      if(exercisesInProgressTable === 0){
+      if (exercisesInProgressTable === 0) {
         alert("No exercises to save.");
         return;
       }
@@ -345,7 +345,9 @@ export function WorkoutLogger() {
     console.log("Apply template:", template);
 
     try {
-      const templateExercises = fetchPersonalExercises(template._id);
+      const templateExercises = await fetchPersonalExercises(template._id);
+
+      console.log("Fetched template exercises:", templateExercises);
 
       // Open popup
       setTemplatePreview({
@@ -1176,16 +1178,35 @@ export function WorkoutLogger() {
           <div className="template-modal">
             <h2>{templatePreview.template.templateName}</h2>
 
-            <ul>
-              {templatePreview.exercises.map((ex) => (
-                <li key={ex._id}>
-                  {ex.exerciseName} — {ex.sets} x {ex.reps}
-                </li>
-              ))}
-            </ul>
+            <div className="template-grid">
+              <div className="cell header">Exercise</div>
+              <div className="cell header">Reps</div>
+              <div className="cell header">Sets</div>
+              <div className="cell header">Weight</div>
 
-            <button onClick={handleConfirmTemplateApply}>Confirm</button>
-            <button onClick={() => setTemplatePreview(null)}>Cancel</button>
+              {templatePreview.exercises.map((ex, i) => (
+                <React.Fragment key={ex._id || i}>
+                  <div className="cell">{personalExNames[ex.exerciseId]}</div>
+                  <div className="cell">{ex.reps}</div>
+                  <div className="cell">{ex.sets}</div>
+                  <div className="cell">{ex.weight}</div>
+                </React.Fragment>
+              ))}
+            </div>
+
+            <button
+              className="template-confirm-btn"
+              onClick={handleConfirmTemplateApply}
+            >
+              Confirm
+            </button>
+
+            <button
+              className="template-cancel-btn"
+              onClick={() => setTemplatePreview(null)}
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}
