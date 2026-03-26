@@ -33,6 +33,11 @@ Custom Auth Context component for persistent authentication
   -Follow consistent naming (.component-name, .component-element)
   -Test styles in both different color modes before finalizing
 
+### Muscle Map Library Information
+react-muscle-highlighter
+by:soroojshehryar
+https://github.com/soroojshehryar/react-muscle-highlighter?tab=readme-ov-file
+
 
 ### Frontend Directory Structure
 

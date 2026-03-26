@@ -1,25 +1,55 @@
-import React from "react";
+import Body from "react-muscle-highlighter";
+import "./HeatMap.css";
 
-export function HeatMap() {
+const HEAT_COLORS = ["#22c55e", "#eab308", "#ef4444"];
+
+export function HeatMap({ data = {}, onMuscleClick }) {
+  const bodyData = Object.entries(data)
+    .map(([slug, intensity]) => ({
+      slug,
+      intensity: Math.min(intensity, 3),
+    }))
+    .filter((part) => part.intensity > 0);
+
+  const handleClick = (part, side) => {
+    if (onMuscleClick) {
+      onMuscleClick(part.slug || "", side);
+    }
+  };
+
   return (
-    <div style={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      border: "black solid 4px",
-      borderRadius: "8px",
-      width: "100%",        // takes up width of its parent container
-      overflow: "hidden",   // keeps image from spilling out
-    }}>
-      <img
-        src="../../../images/heatmap.png"
-        alt="Exercise heatmap"
-        style={{
-          width: "100%",      // scales with the container
-          height: "auto",     // maintains aspect ratio
-          display: "block",   // removes weird inline spacing
-        }}
-      />
+    <div className="heatmap-container">
+      <div className="heatmap-view">
+        <h4 className="heatmap-title">Front</h4>
+        <Body
+          data={bodyData}
+          side="front"
+          gender="male"
+          scale={1.4}
+          colors={HEAT_COLORS}
+          onBodyPartPress={handleClick}
+          border="#333"
+          defaultFill="#e5e5e5"
+          hiddenParts={["hair", "head"]}
+        />
+      </div>
+
+      <div className="heatmap-view">
+        <h4 className="heatmap-title">Back</h4>
+        <Body
+          data={bodyData}
+          side="back"
+          gender="male"
+          scale={1.4}
+          colors={HEAT_COLORS}
+          onBodyPartPress={handleClick}
+          border="#333"
+          defaultFill="#e5e5e5"
+          hiddenParts={["hair"]}
+        />
+      </div>
     </div>
   );
 }
+
+export default HeatMap;
