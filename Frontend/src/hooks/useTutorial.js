@@ -128,15 +128,15 @@ export function useTutorial() {
         
         // Step 3: Update Redux store with all fresh settings
         dispatch(setSettings({
-          theme: freshSettings.displayMode === "dark" ? "Dark" : "Light",
-          units: freshSettings.units ? freshSettings.units.charAt(0).toUpperCase() + freshSettings.units.slice(1) : "Imperial",
-          goals: freshSettings.goals || "Lose Fat",
-          shame: freshSettings.shameLevel === "low" ? "Off" : "On",
-          equipment: freshSettings.availableEquipment || "None",
-          gender: freshSettings.gender || "",
-          pronouns: freshSettings.pronouns || "",
-          dateOfBirth: freshSettings.dateOfBirth || "",
-          locations: freshSettings.locations || [],
+          theme: freshSettings.displayMode,
+          units: freshSettings.units,
+          goals: freshSettings.goals ,
+          shame: freshSettings.shameLevel ,
+          equipment: freshSettings.availableEquipment,
+          gender: freshSettings.gender,
+          pronouns: freshSettings.pronouns,
+          dateOfBirth: freshSettings.dateOfBirth,
+          locations: freshSettings.locations,
           tutorialComplete: true
         }));
       } catch (err) {
