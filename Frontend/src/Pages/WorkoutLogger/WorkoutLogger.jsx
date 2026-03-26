@@ -48,7 +48,6 @@ export function WorkoutLogger() {
   // Maps exercise IDs to their display names (fetched from backend)
   const [personalExNames, setPersonalExNames] = useState({});
   // Exercises currently in the workout (reps, sets, weight, completed status)
-  const [templates, setTemplates] = useState([]);
   /* Hook to track state of the InProgressTable on the Workout Page */
   const [exercisesInProgressTable, setExercisesInProgressTable] = useState([]);
 
@@ -97,6 +96,8 @@ export function WorkoutLogger() {
   // ─── Template States
   const [templateSearch, setTemplateSearch] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [templatePreview, setTemplatePreview] = useState(null);
+  const [templates, setTemplates] = useState([]);
 
   // ─── Refs ───────────────────────────────────────────────────────────────────
   const searchTimeoutRef = useRef(null);
@@ -286,6 +287,10 @@ export function WorkoutLogger() {
         alert("Cannot save template — missing workout or user.");
         return;
       }
+      if(exercisesInProgressTable === 0){
+        alert("No exercises to save.");
+        return;
+      }
 
       // 1. Create the template
       const templatePayload = {
@@ -322,7 +327,7 @@ export function WorkoutLogger() {
           complete: false,
           userId: user._id,
           workoutId: template.workout_id,
-          template: true
+          template: true,
         };
 
         console.log(personalExPayload);
@@ -336,8 +341,50 @@ export function WorkoutLogger() {
     }
   };
 
-  function handleApplyTemplate(template) {
+  async function handleApplyTemplate(template) {
     console.log("Apply template:", template);
+
+    try {
+      const templateExercises = fetchPersonalExercises(template._id);
+
+      // Open popup
+      setTemplatePreview({
+        template,
+        exercises: templateExercises,
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to load template exercises.");
+    }
+  }
+
+  function handleConfirmTemplateApply() {
+    // 1. Move current exercises → personalExToRemove
+    setPersonalExToRemove((prev) => {
+      const removed = { ...prev };
+
+      exercisesInProgressTable.forEach((ex) => {
+        const key = ex._id || ex.exerciseId;
+        removed[key] = ex;
+      });
+
+      return removed;
+    });
+
+    // 2. Replace exercisesInProgressTable with template exercises
+    setExercisesInProgressTable(
+      templatePreview.exercises.map((ex) => ({
+        ...ex,
+        _id: null, // mark as new
+        workoutId: null, // ensure backend treats them as new
+      })),
+    );
+
+    // 3. Close popup
+    setTemplatePreview(null);
+
+    // 4. Notify user
+    alert("Template has been applied!");
   }
 
   // ─── Submit Workout ───────────────────────────────────────────────────────────
@@ -413,6 +460,8 @@ export function WorkoutLogger() {
       } else {
         console.log("Workout updated successfully!");
       }
+
+      alert("Workout has been submitted and saved!");
     } catch (err) {
       console.error("Error submitting workout:", err);
     }
@@ -1119,6 +1168,25 @@ export function WorkoutLogger() {
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {templatePreview && (
+        <div className="template-overlay">
+          <div className="template-modal">
+            <h2>{templatePreview.template.templateName}</h2>
+
+            <ul>
+              {templatePreview.exercises.map((ex) => (
+                <li key={ex._id}>
+                  {ex.exerciseName} — {ex.sets} x {ex.reps}
+                </li>
+              ))}
+            </ul>
+
+            <button onClick={handleConfirmTemplateApply}>Confirm</button>
+            <button onClick={() => setTemplatePreview(null)}>Cancel</button>
+          </div>
         </div>
       )}
     </div>

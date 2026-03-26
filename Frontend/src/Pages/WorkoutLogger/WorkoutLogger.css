@@ -537,3 +537,84 @@ body {
   .modal-content { width: 100%; padding: 12px; }
   .modal-content select[multiple] { min-height: 80px; }
 }
+
+/* Template Popup AI helped*/
+
+/* Darkened background overlay */
+.template-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* Modal container */
+.template-modal {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Title */
+.template-modal h2 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Exercise list */
+.template-modal ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.template-modal li {
+  padding: 8px 0;
+  border-bottom: 1px solid #e2e2e2;
+  font-size: 0.95rem;
+}
+
+/* Buttons */
+.template-modal button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.template-modal button:first-of-type {
+  background: #4caf50;
+  color: white;
+}
+
+.template-modal button:last-of-type {
+  background: #d9534f;
+  color: white;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+
+
