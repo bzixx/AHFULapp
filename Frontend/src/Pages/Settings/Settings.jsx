@@ -12,7 +12,6 @@ import { getUserSettings, updateUserSettings } from "../../QueryFunctions";
 
 export function Settings() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const answers = useSelector((state) => state.setting);
   const user = useSelector((state) => state.auth.user);
   const [saving, setSaving] = useState(false);
@@ -29,42 +28,6 @@ export function Settings() {
       document.body.classList.remove("dark");
     }
   }, [answers.theme]);
-
-  const capitalize = (str) =>
-    str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
-
-  useEffect(() => {
-    const fetchSettings = async () => {
-      if (!user || !user._id) return;
-
-      try {
-        const data = await getUserSettings(user._id);
-
-        dispatch(
-          setSettings({
-            theme: data.displayMode === "dark" ? "Dark" : "Light",
-            units: data.units ? capitalize(data.units) : "Imperial",
-            goals: data.goals || "Lose Fat",
-            shame:
-              data.shameLevel === "low"
-                ? "Off"
-                : data.shameLevel === "medium"
-                ? "On"
-                : "On",
-            equipment: data.availableEquipment || "None",
-            gender: data.gender || "",
-            pronouns: data.pronouns || "",
-            dateOfBirth: data.dateOfBirth || "",
-            locations: data.locations || [],
-          })
-        );
-      } catch (err) {
-        console.error("Failed to load settings:", err);
-      }
-    };
-
-    fetchSettings();
-  }, [dispatch, user]);
 
   const handleSave = () => {
     if (!user || !user._id) return;
@@ -133,6 +96,13 @@ export function Settings() {
             options={["Imperial", "Metric"]}
             value={answers.units}
             onChange={(v) => update("units", v)}
+          />          
+          
+          <DropdownRow
+            label="Timezone"
+            options={["PST", "MST", "CST", "EST"]}
+            value={answers.timezone}
+            onChange={(v) => update("timezone", v)}
           />
 
           <div className="setting-row">
