@@ -1,24 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-    activeTab: "personal",
-    theme: "Light",
-    goals: "Lose Fat",
-    shame: "Off",
-    units: "Imperial",
-    gender: "",
-    pronouns: "",
-    dateOfBirth: "",
-    locations: [],
-    equipment: "None",
-    experience: "Beginner",
-    warmup: "On",
-    rest: "On"
-};
 
 export const settingSlice = createSlice({
     name: "setting",
-    initialState,
+    initialState: {},
     reducers: {
     updateSetting: (state, action) => {
         const { key, value } = action.payload;
@@ -27,9 +12,8 @@ export const settingSlice = createSlice({
     setSettings: (state, action) => {
         return { ...state, ...action.payload };
     },
-    resetSettings: () => initialState
     }
 });
 
-export const { updateSetting, setSettings, resetSettings } = settingSlice.actions;
+export const { updateSetting, setSettings } = settingSlice.actions;
 export default settingSlice.reducer;

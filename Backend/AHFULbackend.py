@@ -1,6 +1,7 @@
 from flask import Flask, current_app, send_from_directory #Import Main Flask application class
 import os # Import Function from os to get .env variables
 from flask_cors import CORS #Import Main Flask application class
+from dotenv import load_dotenv # Load environment variables from .env file
 
 #Services/Drivers Imports
 from Services.SignInDriver import SignInDriver
@@ -21,6 +22,9 @@ from APIRoutes.TaskRoutes import taskBlueprint
 
 #Main AHFUL APP Backend Entry Point.
 def create_app():
+    # Load environment variables from .env file
+    load_dotenv()
+
     # Create Flask application instance we will use to run the Backend server and handle requests
     #FUN FACT: __name__ is a special variable that is the name of this file.
     app = Flask(__name__)

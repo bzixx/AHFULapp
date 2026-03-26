@@ -470,6 +470,110 @@
     padding: 1rem;
 }
 
+/* USDA Food Search Styles */
+.usda-search-container {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.usda-search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.usda-search-input {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    padding-right: 40px;
+    font-size: 1rem;
+    color: #041833;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 2px solid #2196F3;
+    border-radius: 8px;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.usda-search-input:focus {
+    outline: none;
+    border-color: #1976D2;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.usda-search-input::placeholder {
+    color: #999;
+}
+
+.search-spinner {
+    position: absolute;
+    right: 12px;
+    color: #2196F3;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* USDA Dropdown List */
+.usda-dropdown-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #2196F3;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.usda-dropdown-item {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e0e0e0;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.usda-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.usda-dropdown-item:hover {
+    background-color: #f0f7ff;
+}
+
+.usda-dropdown-item:active {
+    background-color: #e3f2fd;
+}
+
+.food-item-name {
+    font-weight: 600;
+    color: #041833;
+    margin-bottom: 0.3rem;
+    font-size: 0.95rem;
+    word-break: break-word;
+}
+
+.food-item-detail {
+    font-size: 0.8rem;
+    color: #666;
+    margin-left: 0.5rem;
+}
+
+/* USDA Info Text */
+.usda-info-text {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.4rem;
+    font-style: italic;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .food-log-container {
