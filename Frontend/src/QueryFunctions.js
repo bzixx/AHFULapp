@@ -185,22 +185,23 @@ export async function handle_google_login(response) {
         credentials: "include",
       });
 
+      let backendUserData = await backendResponse.json();
+
+      console.log(backendResponse.status);
       //Error Handeling for if Backend Logic reported Failed to Frontend
       if (!backendResponse.ok) {
         const message = backendUserData?.error || backendResponse.statusText;
         throw new Error(
-          `AHFUL Frontend API response error (${backendResponse.status}): ${message}`,
+          `${message}`
         );
       }
 
       //Explicit check over response from server
       const contentType = backendResponse.headers.get("content-type");
-      let backendUserData = null;
 
       //If it exisits and the content type mathces, then set the frontendUserInfo variable
       //Also Sotre it to local Storage
       if (contentType && contentType.includes("application/json")) {
-        backendUserData = await backendResponse.json();
         const frontendUserInfo = backendUserData.user_info;
         const userString = JSON.stringify(frontendUserInfo);
         localStorage.setItem("user_data", userString);
@@ -218,9 +219,10 @@ export async function handle_google_login(response) {
     console.log("AHFUL context_login Completed successfully.");
   } catch (error) {
     console.log(
-      "AHFUL Error in context_login Func Catch.  Not sure how you got here.  But here is a hint: ",
+      "AHFUL Error in handle_google_login Func Catch.  Not sure how you got here.  But here is a hint: ",
       error,
     );
+    throw error;
   }
 }
 
