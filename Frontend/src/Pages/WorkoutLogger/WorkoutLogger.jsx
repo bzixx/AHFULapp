@@ -19,19 +19,19 @@ import {
   deletePersonalExercise,
   fetchTemplate,
   loadBodyParts,
-  createExercise
+  createExercise,
 } from "../../QueryFunctions";
 
 /**
  * WorkoutLogger - Main workout tracking page
- * 
+ *
  * Features:
  * - Create/manage daily workouts
  * - Add exercises from the database
  * - Create custom exercises
  * - Track reps, sets, weight for each exercise
  * - Workout timer
- * 
+ *
  * Auth Flow:
  * - Gets user from Redux auth state
  * - Creates a default workout for today if none exists
@@ -48,7 +48,6 @@ export function WorkoutLogger() {
   // Maps exercise IDs to their display names (fetched from backend)
   const [personalExNames, setPersonalExNames] = useState({});
   // Exercises currently in the workout (reps, sets, weight, completed status)
-  const [templates, setTemplates] = useState([]);
   /* Hook to track state of the InProgressTable on the Workout Page */
   const [exercisesInProgressTable, setExercisesInProgressTable] = useState([]);
 
@@ -83,7 +82,7 @@ export function WorkoutLogger() {
   // Modal visibility for creating new exercises
   const [showNewExerciseModal, setShowNewExerciseModal] = useState(false);
 
-    // ─── New Exercise Form States 
+  // ─── New Exercise Form States
   const [equipmentOptions, setEquipmentOptions] = useState([]);
   const [equipmentError, setEquipmentError] = useState(null);
   const [BodyPartOptions, setBodyPartOptions] = useState([]);
@@ -94,9 +93,11 @@ export function WorkoutLogger() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  // ─── Template States 
+  // ─── Template States
   const [templateSearch, setTemplateSearch] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [templatePreview, setTemplatePreview] = useState(null);
+  const [templates, setTemplates] = useState([]);
 
   // ─── Refs ───────────────────────────────────────────────────────────────────
   const searchTimeoutRef = useRef(null);
@@ -136,7 +137,10 @@ export function WorkoutLogger() {
       }
 
       // Add the new exercise to the local list
-      setExercises((prev) => [...prev, { ...newExercise, _id: result.data.exercise_id }]);
+      setExercises((prev) => [
+        ...prev,
+        { ...newExercise, _id: result.data.exercise_id },
+      ]);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 2500);
       closeNewExerciseModal();
@@ -151,10 +155,6 @@ export function WorkoutLogger() {
     const values = Array.from(e.target.selectedOptions, (o) => o.value);
     setNewExercise((prev) => ({ ...prev, [field]: values }));
   };
-
-  function handleApplyTemplate(template) {
-    console.log("Apply template:", template);
-  }
 
   // useEffect 1: cleanup debounced search timer on unmount
   useEffect(() => {
@@ -191,7 +191,9 @@ export function WorkoutLogger() {
       if (res && res.error) setBodyPartError(res.error);
     })();
 
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   // ─── Cleanup Search Timeout on Unmount ────────────────────────────────────────
@@ -229,7 +231,7 @@ export function WorkoutLogger() {
       const updated = [...prev];
       updated[index] = {
         ...updated[index],
-        complete: !updated[index].complete
+        complete: !updated[index].complete,
       };
       return updated;
     });
@@ -277,45 +279,143 @@ export function WorkoutLogger() {
     loadNames();
   }, [exercisesInProgressTable]);
 
+  // ─── Save Template ───────────────────────────────────────────────────────────
+  // Saves personal exercises as a template using the workout name
+  const saveTemplate = async () => {
+    try {
+      if (!workoutTitle || !user?._id) {
+        alert("Cannot save template — missing workout or user.");
+        return;
+      }
+      if (exercisesInProgressTable === 0) {
+        alert("No exercises to save.");
+        return;
+      }
+
+      // 1. Create the template
+      const templatePayload = {
+        title: workoutTitle,
+        userId: user._id,
+      };
+
+      const templateRes = await fetch(
+        "http://localhost:5000/AHFULworkout/create/template",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(templatePayload),
+        },
+      );
+
+      if (!templateRes.ok) {
+        throw new Error("Failed to create template");
+      }
+
+      const template = await templateRes.json();
+
+      // 2. Create personalExercises using template._id as workoutId
+      for (const ex of exercisesInProgressTable) {
+        const personalExPayload = {
+          exerciseId: ex.exerciseId,
+          reps: ex.reps,
+          sets: ex.sets,
+          weight: ex.weight,
+          duration: ex.duration,
+          distance: ex.distance,
+          complete: false,
+          userId: user._id,
+          workoutId: template.workout_id,
+          template: true,
+        };
+
+        createPersonalExercise(personalExPayload);
+      }
+
+      alert("Template has been saved!");
+    } catch (err) {
+      console.error("Error saving template:", err);
+      alert("Failed to save template.");
+    }
+  };
+
+  async function handleApplyTemplate(template) {
+
+    try {
+      const templateExercises = await fetchPersonalExercises(template._id);
+
+      // Open popup
+      setTemplatePreview({
+        template,
+        exercises: templateExercises,
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to load template exercises.");
+    }
+  }
+
+  function handleConfirmTemplateApply() {
+    // 1. Move current exercises → personalExToRemove
+    setPersonalExToRemove((prev) => {
+      const removed = { ...prev };
+
+      exercisesInProgressTable.forEach((ex) => {
+        const key = ex._id || ex.exerciseId;
+        removed[key] = ex;
+      });
+
+      return removed;
+    });
+
+    // 2. Replace exercisesInProgressTable with template exercises
+    setExercisesInProgressTable(
+      templatePreview.exercises.map((ex) => ({
+        ...ex,
+        _id: null, // mark as new
+        workoutId: null, // ensure backend treats them as new
+      })),
+    );
+
+    // 3. Close popup
+    setTemplatePreview(null);
+  }
+
   // ─── Submit Workout ───────────────────────────────────────────────────────────
-  // Saves all exercise changes and updates workout end tim
+  // Saves all exercise changes and updates workout end time
 
   const handleSubmit = async () => {
     console.log("Submitting workout...");
-    console.log("Submitting:", exercisesInProgressTable);
-    console.log("Deleting:", personalExToRemove);
 
     try {
       // --- CREATE + UPDATE REQUESTS ---
       const saveRequests = exercisesInProgressTable.map((ex) => {
         const isNew = ex._id === null;
 
-      const peData = isNew
-    ? {
-        complete: ex.complete,
-        distance: ex.distance,
-        duration: ex.duration,
-        exerciseId: ex.exerciseId,
-        reps: ex.reps,
-        sets: ex.sets,
-        userId: ex.userId,
-        weight: ex.weight,
-        workoutId: ex.workoutId
-      }
-    : {
-        complete: ex.complete,
-        distance: ex.distance,
-        duration: ex.duration,
-        reps: ex.reps,
-        sets: ex.sets,
-        weight: ex.weight
-      };
+        const peData = isNew
+          ? {
+              complete: ex.complete,
+              distance: ex.distance,
+              duration: ex.duration,
+              exerciseId: ex.exerciseId,
+              reps: ex.reps,
+              sets: ex.sets,
+              userId: ex.userId,
+              weight: ex.weight,
+              workoutId: ex.workoutId,
+            }
+          : {
+              complete: ex.complete,
+              distance: ex.distance,
+              duration: ex.duration,
+              reps: ex.reps,
+              sets: ex.sets,
+              weight: ex.weight,
+            };
 
-      return isNew
-          ? createPersonalExercises(peData)
-          : updatePersonalExercises(ex._id, peData);
-    });
-
+        return isNew
+          ? createPersonalExercise(peData)
+          : updatePersonalExercise(ex._id, peData);
+      });
 
       // --- DELETE REQUESTS ---
       const deleteRequests = Object.values(personalExToRemove)
@@ -344,18 +444,19 @@ export function WorkoutLogger() {
         title: workoutTitle, // keep original title
       };
 
-    const workoutRes = await updateWorkout(workoutId, workoutUpdatePayload);
+      const workoutRes = await updateWorkout(workoutId, workoutUpdatePayload);
 
-    if (workoutRes.error) {
-      console.error("Failed to update workout:", workoutRes.error);
-    } else {
-      console.log("Workout updated successfully!");
+      if (workoutRes.error) {
+        console.error("Failed to update workout:", workoutRes.error);
+      } else {
+        console.log("Workout updated successfully!");
+      }
+
+      alert("Workout has been submitted and saved!");
+    } catch (err) {
+      console.error("Error submitting workout:", err);
     }
-
-  } catch (err) {
-    console.error("Error submitting workout:", err);
-  }
-};
+  };
 
   // ─── Remove Exercise from Workout ─────────────────────────────────────────────
   // Removes from UI but queues for deletion on submit
@@ -375,18 +476,18 @@ export function WorkoutLogger() {
   // Append selected pending exercises to the in-progress table
   const addExerciseToWorkout = (e) => {
     if (e && typeof e.preventDefault === "function") e.preventDefault();
-    
+
     // Ensure workout is loaded before adding exercises
     if (!workoutId) {
       console.warn("Cannot add exercises - workout not loaded yet");
       return;
     }
-    
+
     if (pendingExercises.length === 0) return;
 
     // Create exercise objects with workout context
-    const newExercises = pendingExercises.map(rawName => ({
-      _id: null,  // null = new exercise, will be assigned ID after DB save
+    const newExercises = pendingExercises.map((rawName) => ({
+      _id: null, // null = new exercise, will be assigned ID after DB save
       exerciseId: rawName,
       workoutId: workoutId,
       userId: user._id,
@@ -406,7 +507,7 @@ export function WorkoutLogger() {
   // ─── Search Exercises ─────────────────────────────────────────────────────────
   const handleSearch = async (query) => {
     const searchQuery = typeof query === "string" ? query : exerciseName;
-    
+
     if (!searchQuery) {
       fetch_exercises();
       return;
@@ -419,7 +520,8 @@ export function WorkoutLogger() {
       setExercises(list);
     } catch (err) {
       console.error("Search failed:", err);
-      const friendly = err && err.name ? `${err.name}: ${err.message}` : String(err);
+      const friendly =
+        err && err.name ? `${err.name}: ${err.message}` : String(err);
       setError(friendly || "Unknown error");
     } finally {
       setExerciseLoading(false);
@@ -456,8 +558,6 @@ export function WorkoutLogger() {
         setWorkoutLoading(true);
         setWorkoutError(null);
 
-        console.log(user._id);
-
         // Calculate today's date range (midnight to midnight)
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -466,14 +566,12 @@ export function WorkoutLogger() {
         tomorrow.setDate(today.getDate() + 1);
         const tomorrowUnix = Math.floor(tomorrow.getTime() / 1000);
 
-        console.log("Searching workouts between:", currentDateUnix, tomorrowUnix);
-
         // Fetch all workouts for this user
         const allWorkouts = await fetchWorkout(user._id);
 
         // Filter to today's workouts only
-        const todaysWorkouts = allWorkouts.filter(w =>
-          w.startTime >= currentDateUnix && w.startTime < tomorrowUnix
+        const todaysWorkouts = allWorkouts.filter(
+          (w) => w.startTime >= currentDateUnix && w.startTime < tomorrowUnix,
         );
 
         // If no workout exists for today, create one
@@ -482,23 +580,21 @@ export function WorkoutLogger() {
 
           // Hardcoded gym ID (should be user preference in future)
           const gymId = "69af3c3e94310c6e29840229";
-          
+
           const newWorkoutPayload = {
             endTime: currentDateUnix,
             gymId: gymId,
             startTime: currentDateUnix,
             title: "Workout (" + today.toDateString() + ")",
-            userId: user._id
+            userId: user._id,
           };
 
-          console.log("Creating workout:", newWorkoutPayload);
-          
           const newWorkout = await createWorkout(newWorkoutPayload);
 
           setWorkout(newWorkout);
           setWorkoutId(newWorkout._id);
           setWorkoutTitle(newWorkout.title);
-          setTime(0);  // Reset timer for new workout
+          setTime(0); // Reset timer for new workout
           return;
         }
 
@@ -508,7 +604,6 @@ export function WorkoutLogger() {
         setWorkoutId(existingWorkout._id);
         setWorkoutTitle(existingWorkout.title);
         setTime(existingWorkout.endTime - existingWorkout.startTime);
-
       } catch (err) {
         console.error("Error fetching workout:", err);
         setWorkoutError(err.message || "Failed to load workout");
@@ -518,7 +613,7 @@ export function WorkoutLogger() {
     }
 
     getWorkout();
-  }, [userAuthenticated]);
+  }, [userAuthenticated, workoutId]);
 
   // ─── Load Personal Exercises for Current Workout ───────────────────────────────
   useEffect(() => {
@@ -526,7 +621,6 @@ export function WorkoutLogger() {
 
     async function getPersonalEx() {
       try {
-        console.log("Fetching personal exercises for workout:", workoutId);
         const data = await fetchPersonalExercises(workoutId);
         setExercisesInProgressTable(Array.isArray(data) ? data : []);
       } catch (err) {
@@ -570,7 +664,6 @@ export function WorkoutLogger() {
       </div>
     );
   }
-  
 
   // ─── Error State ─────────────────────────────────────────────────────────────
   if (workoutError) {
@@ -686,7 +779,7 @@ export function WorkoutLogger() {
             <div className="cell header">Weight</div>
             <div className="cell header">Completed</div>
             <div className="cell header"></div>
-            
+
             {exercisesInProgressTable.map((ex, i) => (
               <React.Fragment key={i}>
                 <div className="cell">
@@ -733,7 +826,10 @@ export function WorkoutLogger() {
                   />
                 </div>
                 <div className="cell">
-                  <button className="delete-button" onClick={() => removePersonalEx(i)}>
+                  <button
+                    className="delete-button"
+                    onClick={() => removePersonalEx(i)}
+                  >
                     🗑️
                   </button>
                 </div>
@@ -743,7 +839,11 @@ export function WorkoutLogger() {
 
           {/* Submit Button */}
           <div className="workout-actions">
-            <div className="workout-actions-left-side"></div>
+            <div className="workout-actions-left-side">
+              <button className="workout-submit-button" onClick={saveTemplate}>
+                Save as Template
+              </button>
+            </div>
             <div className="workout-actions-right-side">
               <button className="workout-submit-button" onClick={handleSubmit}>
                 Submit
@@ -780,7 +880,8 @@ export function WorkoutLogger() {
                   const v = e.target.value;
                   setExerciseName(v);
                   // Debounce search to avoid too many API calls
-                  if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+                  if (searchTimeoutRef.current)
+                    clearTimeout(searchTimeoutRef.current);
                   searchTimeoutRef.current = setTimeout(() => {
                     handleSearch(v);
                   }, 300);
@@ -789,51 +890,60 @@ export function WorkoutLogger() {
               <div className="dropdown-instructions">
                 Click an exercise to select it
               </div>
-              
+
               {/* Exercise List Dropdown */}
               <div className="dropdown">
-                {exerciseLoading && <div className="dropdown-item">Loading...</div>}
+                {exerciseLoading && (
+                  <div className="dropdown-item">Loading...</div>
+                )}
                 {!exerciseLoading && exercises.length === 0 && (
                   <div className="dropdown-item">No exercises found</div>
                 )}
-                  {!exerciseLoading &&
-                    exercises.map((item, i) => {
-                      const name = item.name;
-                      const id = item._id ?? item.exerciseId;
+                {!exerciseLoading &&
+                  exercises.map((item, i) => {
+                    const name = item.name;
+                    const id = item._id ?? item.exerciseId;
 
-                      // Filter by search term
-                      if (exerciseName && !name.toLowerCase().includes(exerciseName.toLowerCase())) {
-                        return null;
-                      }
+                    // Filter by search term
+                    if (
+                      exerciseName &&
+                      !name.toLowerCase().includes(exerciseName.toLowerCase())
+                    ) {
+                      return null;
+                    }
 
-                      // Check if already selected
-                      const isSelected =
-                        typeof id === "string" &&
-                        pendingExercises.includes(id) &&
-                        exercises.some(ex => (ex._id ?? ex.exerciseId) === id);
+                    // Check if already selected
+                    const isSelected =
+                      typeof id === "string" &&
+                      pendingExercises.includes(id) &&
+                      exercises.some((ex) => (ex._id ?? ex.exerciseId) === id);
 
-                      return (
-                        <div
-                          key={`item-${i}`}
-                          className={`dropdown-item ${isSelected ? "selected" : ""}`}
-                          onClick={() => {
-                            setPendingExercises(prev => {
-                              if (!exercises.some(ex => (ex._id ?? ex.exerciseId) === id)) {
-                                console.warn("Invalid exerciseId clicked:", id);
-                                return prev;
-                              }
-                              if (prev.includes(id)) {
-                                return prev.filter(p => p !== id);
-                              }
-                              return [...prev, id];
-                            });
-                          }}
-                        >
-                          <span>{name}</span>
-                          {isSelected && <span className="check">✓</span>}
-                        </div>
-                      );
-                    })}
+                    return (
+                      <div
+                        key={`item-${i}`}
+                        className={`dropdown-item ${isSelected ? "selected" : ""}`}
+                        onClick={() => {
+                          setPendingExercises((prev) => {
+                            if (
+                              !exercises.some(
+                                (ex) => (ex._id ?? ex.exerciseId) === id,
+                              )
+                            ) {
+                              console.warn("Invalid exerciseId clicked:", id);
+                              return prev;
+                            }
+                            if (prev.includes(id)) {
+                              return prev.filter((p) => p !== id);
+                            }
+                            return [...prev, id];
+                          });
+                        }}
+                      >
+                        <span>{name}</span>
+                        {isSelected && <span className="check">✓</span>}
+                      </div>
+                    );
+                  })}
               </div>
             </div>
 
@@ -865,7 +975,10 @@ export function WorkoutLogger() {
             </div>
 
             {/* Action Buttons */}
-            <div className="add-btn-wrapper" style={{ display: "flex", gap: "8px" }}>
+            <div
+              className="add-btn-wrapper"
+              style={{ display: "flex", gap: "8px" }}
+            >
               <button
                 className="workout-add-selected-button add-btn"
                 type="button"
@@ -921,7 +1034,9 @@ export function WorkoutLogger() {
             <input
               type="text"
               value={newExercise.name}
-              onChange={(e) => setNewExercise((p) => ({ ...p, name: e.target.value }))}
+              onChange={(e) =>
+                setNewExercise((p) => ({ ...p, name: e.target.value }))
+              }
               style={{ width: "100%" }}
             />
 
@@ -931,7 +1046,9 @@ export function WorkoutLogger() {
             <input
               type="text"
               value={newExercise.gifUrl}
-              onChange={(e) => setNewExercise((p) => ({ ...p, gifUrl: e.target.value }))}
+              onChange={(e) =>
+                setNewExercise((p) => ({ ...p, gifUrl: e.target.value }))
+              }
               placeholder="https://..."
               style={{ width: "100%" }}
             />
@@ -966,12 +1083,18 @@ export function WorkoutLogger() {
               style={{ width: "100%" }}
             >
               {(muscleOptions || []).map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
               ))}
             </select>
 
             <label style={{ display: "block", marginTop: 8 }}>Body Parts</label>
-            {BodyPartError && <div style={{ color: "red", marginBottom: 6 }}>{BodyPartError}</div>}
+            {BodyPartError && (
+              <div style={{ color: "red", marginBottom: 6 }}>
+                {BodyPartError}
+              </div>
+            )}
             <select
               multiple
               value={newExercise.bodyParts}
@@ -979,12 +1102,18 @@ export function WorkoutLogger() {
               style={{ width: "100%" }}
             >
               {(BodyPartOptions || []).map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
               ))}
             </select>
 
             <label style={{ display: "block", marginTop: 8 }}>Equipment</label>
-            {equipmentError && <div style={{ color: "red", marginBottom: 6 }}>{equipmentError}</div>}
+            {equipmentError && (
+              <div style={{ color: "red", marginBottom: 6 }}>
+                {equipmentError}
+              </div>
+            )}
             <select
               multiple
               value={newExercise.equipment}
@@ -992,22 +1121,77 @@ export function WorkoutLogger() {
               style={{ width: "100%" }}
             >
               {(equipmentOptions || []).map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
               ))}
             </select>
 
-            <label style={{ display: "block", marginTop: 8 }}>Instructions</label>
+            <label style={{ display: "block", marginTop: 8 }}>
+              Instructions
+            </label>
             <textarea
               value={newExercise.instructions}
-              onChange={(e) => setNewExercise((p) => ({ ...p, instructions: e.target.value }))}
+              onChange={(e) =>
+                setNewExercise((p) => ({ ...p, instructions: e.target.value }))
+              }
               style={{ width: "100%" }}
             />
 
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
-              <button type="button" onClick={closeNewExerciseModal}>Cancel</button>
-              <button type="submit" disabled={isSaving}>{isSaving ? "Saving..." : "Save"}</button>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 8,
+                marginTop: 12,
+              }}
+            >
+              <button type="button" onClick={closeNewExerciseModal}>
+                Cancel
+              </button>
+              <button type="submit" disabled={isSaving}>
+                {isSaving ? "Saving..." : "Save"}
+              </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {templatePreview && (
+        <div className="template-overlay">
+          <div className="template-modal">
+            <h2>{templatePreview.template.templateName}</h2>
+
+            <div className="template-grid">
+              <div className="cell header">Exercise</div>
+              <div className="cell header">Reps</div>
+              <div className="cell header">Sets</div>
+              <div className="cell header">Weight</div>
+
+              {templatePreview.exercises.map((ex, i) => (
+                <React.Fragment key={ex._id || i}>
+                  <div className="cell">{personalExNames[ex.exerciseId]}</div>
+                  <div className="cell">{ex.reps}</div>
+                  <div className="cell">{ex.sets}</div>
+                  <div className="cell">{ex.weight}</div>
+                </React.Fragment>
+              ))}
+            </div>
+
+            <button
+              className="template-confirm-btn"
+              onClick={handleConfirmTemplateApply}
+            >
+              Confirm
+            </button>
+
+            <button
+              className="template-cancel-btn"
+              onClick={() => setTemplatePreview(null)}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       )}
     </div>
