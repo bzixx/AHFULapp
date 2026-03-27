@@ -13,60 +13,27 @@ export function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [statusText, setStatusText] = useState("");
-  const [parsedUser, setParsedUser] = useState(null);
-
-  
-  useEffect(() => {
-    const userData = localStorage.getItem("user_data");
-
-    if (!userData) {
-      //If no user data exists, then we are not authenticated.  Clear any potential cookies just in case.
-      localStorage.removeItem("user_data");
-      //document.cookie = "user_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      setParsedUser(null);
-      return;
-    }
-
-    try {
-      setParsedUser(JSON.parse(userData));
-    } catch {
-      localStorage.removeItem("user_data");
-      console.warn(
-        "AHFUL Warning: Failed to parse user_data from localStorage.  Clearing corrupted entry. ",
-        error,
-      );
-    }
-   }, []);
 
   // ----- LOGIN Debug Functions ---------------------------------------------------------------------------
   useEffect(() => {
-    if (isAuthenticated && parsedUser) {
-      setStatusText(`Logged in as ${parsedUser.email}`);
+    if (isAuthenticated && user) {
+      setStatusText(`Logged in as ${user.email}`);
       navigate("/Login", { replace: true });
     }
-  }, [isAuthenticated, parsedUser]);
+  }, [isAuthenticated, user]);
 
   const handle_google_success = async (response) => {
-    // Clear any old auth junk before attempting new login
-    localStorage.removeItem("user_data");
-    dispatch(authLogin(null));
-    try {
-      setStatusText("Logging in...");
-      await handle_google_login(response);
-      dispatch(authLogin(localStorage.getItem("user_data")));
-
-      const storedUser = localStorage.getItem("user_data");
-      if (storedUser) {
-        setParsedUser(JSON.parse(storedUser));
-      }
-    }
-    catch (error) {
+    try{
+      setStatusText(`Loggging in with Google...`);
+      let fetchResponse = await handle_google_login(response);
+      console.log("AHFUL Google Button Login successful. Server Response:", fetchResponse);
+      dispatch(authLogin(fetchResponse));
+    }catch(error){
       console.error("Google login error:", error);
       setStatusText(error.message || "Login failed. Please try again.");
-      // Make sure state stays "not authenticated"
-      localStorage.removeItem("user_data");
-      dispatch(authLogin(null));
     }
+
+
   }
 
   const handle_google_failure = (error) => {
