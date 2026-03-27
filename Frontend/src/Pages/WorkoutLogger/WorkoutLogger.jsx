@@ -339,7 +339,6 @@ export function WorkoutLogger() {
   };
 
   async function handleApplyTemplate(template) {
-
     try {
       const templateExercises = await fetchPersonalExercises(template._id);
 
@@ -901,7 +900,7 @@ export function WorkoutLogger() {
                 )}
                 {!exerciseLoading &&
                   exercises.map((item, i) => {
-                    const name = item.name;
+                    const name = item.name ?? "";
                     const id = item._id ?? item.exerciseId;
 
                     // Filter by search term
@@ -980,7 +979,8 @@ export function WorkoutLogger() {
               style={{ display: "flex", gap: "8px" }}
             >
               <button
-                className="workout-add-selected-button add-btn" id="add-exercises-btn"
+                className="workout-add-selected-button add-btn"
+                id="add-exercises-btn"
                 type="button"
                 onClick={() => addExerciseToWorkout()}
                 disabled={!workoutId}

@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { handle_google_login } from "../../QueryFunctions.js";
 import { authLogin } from "../../Pages/Login/AuthSlice.jsx";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 export function Login() {
   // ----- LOGIN STATE MANAGEMENT ---------------------------------------------------------------------------
@@ -11,28 +12,34 @@ export function Login() {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [statusText, setStatusText] = useState("");
 
   // ----- LOGIN Debug Functions ---------------------------------------------------------------------------
-  const getStatusText = () => {
+  useEffect(() => {
     if (isAuthenticated && user) {
-      return `Logged in as ${user.email}`;
+      setStatusText(`Logged in as ${user.email}`);
+      navigate("/Login", { replace: true });
     }
-    return "";
-  };
+  }, [isAuthenticated, user]);
 
   const handle_google_success = async (response) => {
-    let fetchResponse = await handle_google_login(response);
-    console.log("AHFUL Google Button Login successful. Server Response:", fetchResponse);
-    dispatch(authLogin(fetchResponse));
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    navigate("/Login", { replace: true });
+    try{
+      setStatusText(`Loggging in with Google...`);
+      let fetchResponse = await handle_google_login(response);
+      console.log("AHFUL Google Button Login successful. Server Response:", fetchResponse);
+      dispatch(authLogin(fetchResponse));
+    }catch(error){
+      console.error("Google login error:", error);
+      setStatusText(error.message || "Login failed. Please try again.");
+    }
+
+    //Another Edit
+
   }
 
   const handle_google_failure = (error) => {
-    console.error(
-      "AHFUL Google Button Login failed and returned Error:",
-      error,
-    );
+    console.error("Google Login failed:", error);
+    setStatusText("Google login failed. Please try again.");
   };
 
 // ----- LOGIN Page HTML ---------------------------------------------------------------------------
@@ -71,7 +78,7 @@ export function Login() {
             onError={handle_google_failure}
           />
         </div>
-        <div id="LoggedInStatus">{getStatusText()}</div>
+        <div id="LoggedInStatus">{statusText}</div>
       </div>
     </div>
   );
