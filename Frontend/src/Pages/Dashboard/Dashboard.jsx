@@ -163,7 +163,7 @@ function InternalDashboard() {
           </div>
         </div>
         <div className="dashboard-side-content">
-          <TodayFoodChart />
+          {/* <TodayFoodChart /> */}
           <WorkoutChart defaultWeeks={6} />
         </div>
       </div>

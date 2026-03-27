@@ -8,41 +8,22 @@ import { useNavigate } from "react-router-dom";
 export function Login() {
   // ----- LOGIN STATE MANAGEMENT ---------------------------------------------------------------------------
   //Redux Site Wide Auth State
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  //Local Storage persistent Auth State
-  const userData = localStorage.getItem("user_data");
-  let parsedUser = null;
-  if (!userData) {
-    //If no user data exists, then we are not authenticated.  Clear any potential cookies just in case.
-    localStorage.removeItem("user_data");
-    //document.cookie = "user_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  } else {
-    //If user data exists, we will try to parse it.  If it fails to parse, we will clear it and treat as not authenticated.
-    try {
-      parsedUser = JSON.parse(userData);
-    } catch (error) {
-      localStorage.removeItem("user_data");
-      console.warn(
-        "AHFUL Warning: Failed to parse user_data from localStorage.  Clearing corrupted entry. ",
-        error,
-      );
-    }
-  }
-
   // ----- LOGIN Debug Functions ---------------------------------------------------------------------------
   const getStatusText = () => {
-    if (isAuthenticated && parsedUser) {
-      return `Logged in as ${parsedUser.email}`;
+    if (isAuthenticated && user) {
+      return `Logged in as ${user.email}`;
     }
     return "";
   };
 
   const handle_google_success = async (response) => {
-    handle_google_login(response);
-    dispatch(authLogin(localStorage.getItem("user_data")));
+    let fetchResponse = await handle_google_login(response);
+    console.log("AHFUL Google Button Login successful. Server Response:", fetchResponse);
+    dispatch(authLogin(fetchResponse));
     await new Promise(resolve => setTimeout(resolve, 2000));
     navigate("/Login", { replace: true });
   }

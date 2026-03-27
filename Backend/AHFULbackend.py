@@ -1,6 +1,7 @@
 from flask import Flask, current_app, send_from_directory #Import Main Flask application class
 import os # Import Function from os to get .env variables
 from flask_cors import CORS #Import Main Flask application class
+from dotenv import load_dotenv # Load environment variables from .env file
 
 #Services/Drivers Imports
 from Services.SignInDriver import SignInDriver
@@ -19,14 +20,29 @@ from APIRoutes.UserSettingsRoutes import userSettingsBlueprint
 from APIRoutes.TokenRoutes import tokenBlueprint
 from APIRoutes.TaskRoutes import taskBlueprint
 
+#Firebase Admin SDK
+import firebase_admin
+from firebase_admin import credentials
+
+#Notification Scheduler
+from Services.NotificationScheduler import start_scheduler
+
 #Main AHFUL APP Backend Entry Point.
 def create_app():
+    # Load environment variables from .env file
+    load_dotenv()
+
     # Create Flask application instance we will use to run the Backend server and handle requests
     #FUN FACT: __name__ is a special variable that is the name of this file.
     app = Flask(__name__)
 
     #Make an Appwade SignInDriver to reference later
     app.AHFULSignInDriver = SignInDriver(os.getenv("GOOGLE_CLIENT_ID"))
+
+    #Initialize Firebase Admin SDK
+    cred = credentials.Certificate("./firebaseSecret.json")
+    app.AHFULFirebaseDriver = firebase_admin.initialize_app(cred)
+    print("Firebase Admin SDK initialized successfully")
 
     #Register App Routes and Blueprints
     #Swagger routes add prefix to match server url
@@ -51,6 +67,9 @@ def create_app():
     ]
 
     CORS(app, origins=allowed_origins, supports_credentials=True)
+
+    #Start the notification scheduler
+    start_scheduler()
 
     #Print an list of all Route maps on the AHFUL App after startup.
     print(app.url_map)

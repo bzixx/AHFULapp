@@ -7,6 +7,9 @@ env/
 *.pyd
 __pycache__/
 
+# Backend secret files (CRITICAL - contains secrets!)
+/Backend/firebaseSecret.json
+
 # Backend environment files (CRITICAL - contains secrets!)
 backend/flaskr/.env
 backend/.env
@@ -15,10 +18,6 @@ backend/.env
 .pytest_cache/
 .coverage
 htmlcov/
-
-# Test files with hardcoded credentials (DO NOT COMMIT!)
-backend/flaskr/AWSCore/test_multi_account_quick.py
-backend/flaskr/AWSCore/test_*_quick.py
 
 # Distribution / packaging
 dist/
