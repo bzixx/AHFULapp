@@ -219,7 +219,7 @@ export async function handle_google_login(response) {
     console.log("AHFUL context_login Completed successfully.");
   } catch (error) {
     console.log(
-      "AHFUL Error in context_login Func Catch.  Not sure how you got here.  But here is a hint: ",
+      "AHFUL Error in handle_google_login Func Catch.  Not sure how you got here.  But here is a hint: ",
       error,
     );
     throw error;
