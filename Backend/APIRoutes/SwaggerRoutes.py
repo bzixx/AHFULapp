@@ -24,375 +24,409 @@ swaggerConfig = {
   ],
   "paths": {
 
-    "/AHFULusers/": {
-      "get": {
-        "summary": "Get all users",
-        "tags": ["Users"],
-        "responses": {
-          "200": {
-            "description": "A list of users",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": { "type": "object" }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/AHFULusers/{email}": {
-      "get": {
-        "summary": "Get user by email",
-        "tags": ["Users"],
-        "parameters": [
-          {
-            "name": "email",
-            "in": "path",
-            "required": True,
-            "description": "Email address of the user",
-            "schema": { "type": "string", "format": "email" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User found",
-            
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
-                    "email": { "type": "string", "format": "email", "example": "jane@example.com" },
-                    "name": { "type": "string", "example": "Jane Doe" },
-                    "password": {
-                      "type": "string",
-                      "example": "scrypt:32768:8:1$Hp6N4Svxx8qtF6Eg$7b80288755977aeecb541720c2dd77a1d27b85aee23d905b7e4990f8f776d491082e928817269610897c77e82e2acc04fe2c04cd94dce3aebf5ff9ea44673319"
-                    },
-                    "role": { "type": "integer", "example": 0 }
-                  },
-                "required": ["_id", "email", "name", "password", "role"]
-                }
-              }
-            }
-
-          },
-          "404": {
-            "description": "User not found",
-            "content": {
-              "application/json": {
-                "schema": { 
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/AHFULusers/id/{id}": {
-      "get": {
-        "summary": "Get user by id",
-        "tags": ["Users"],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": True,
-            "description": "User id of the user",
-            "schema": { "type": "string"}
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User found",
-            
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
-                    "email": { "type": "string", "format": "email", "example": "jane@example.com" },
-                    "name": { "type": "string", "example": "Jane Doe" },
-                    "password": {
-                      "type": "string",
-                      "example": "scrypt:32768:8:1$Hp6N4Svxx8qtF6Eg$7b80288755977aeecb541720c2dd77a1d27b85aee23d905b7e4990f8f776d491082e928817269610897c77e82e2acc04fe2c04cd94dce3aebf5ff9ea44673319"
-                    },
-                    "role": { "type": "integer", "example": 0 }
-                  },
-                "required": ["_id", "email", "name", "password", "role"]
-                }
-              }
-            }
-
-          },
-          "404": {
-            "description": "User not found",
-            "content": {
-              "application/json": {
-                "schema": { 
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/AHFULusers/add/roll/id/": {
-      "post": {
-        "summary": "Add role to user by id",
-        "tags": ["Users"],
-        "requestBody": {
-          "required": True,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "user_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
-                  "adder_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
-                  "role": { "type": "string", "example": "Admin" }
-                },
-                "required": ["user_id", "adder_id", "role"]
-              }
-            }
-          }
+"/AHFULusers/": {
+ "get": {
+  "summary": "Get all users",
+  "tags": ["Users"],
+  "responses": {
+   "200": {
+    "description": "All users returned",
+    "content": {
+     "application/json": {
+      "schema": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "properties": {
+         "_id": { "type": "string", "example": "69af32adf43f4d34477c849d" },
+         "name": { "type": "string", "example": "Elijah Turany" },
+         "email": { "type": "string", "format": "email" },
+         "picture": { "type": "string" },
+         "last_login_time": { "type": "integer" },
+         "last_login_expire": { "type": "integer" },
+         "magic_bits": { "type": "string" },
+         "roles": {
+          "type": "array",
+          "items": { "type": "string" },
+          "example": ["User"]
+         },
+         "deactivated": { "type": "boolean", "example": False },
+         "_testObject": { "type": "string" },
+         "updated_at": { "type": "string", "format": "date-time" }
         },
-        "responses": {
-          "200": {
-            "description": "Role added; updated user returned",
-            "content": {
-              "application/json": {
-                "schema": { "type": "object" }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found or validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "Adder does not have permission" }
-                  }
-                }
-              }
-            }
-          }
-        }
+        "required": ["_id", "email", "name", "roles", "updated_at"]
+       }
       }
-    },
+     }
+    }
+   }
+  }
+ }
+},
 
-    "/AHFULusers/add/roll/email/": {
-      "post": {
-        "summary": "Add role to user by email",
-        "tags": ["Users"],
-        "requestBody": {
-          "required": True,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "user_email": { "type": "string", "format": "email", "example": "jane@example.com" },
-                  "adder_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
-                  "role": { "type": "string", "example": "Gym Owner" }
-                },
-                "required": ["user_email", "adder_id", "role"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Role added; updated user returned",
-            "content": {
-              "application/json": {
-                "schema": { "type": "object" }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found or validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "Provided role is unidentified" }
-                  }
-                }
-              }
-            }
-          }
-        }
+"/AHFULusers/{email}": {
+ "get": {
+  "summary": "Get user by email",
+  "tags": ["Users"],
+  "parameters": [
+   {
+    "name": "email",
+    "in": "path",
+    "required": True,
+    "schema": { "type": "string", "format": "email" }
+   }
+  ],
+  "responses": {
+   "200": {
+    "description": "User found",
+    "content": {
+     "application/json": {
+      "schema": {
+       "type": "object",
+       "properties": {
+        "_id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "picture": { "type": "string" },
+        "last_login_time": { "type": "integer" },
+        "last_login_expire": { "type": "integer" },
+        "magic_bits": { "type": "string" },
+        "roles": { "type": "array", "items": { "type": "string" } },
+        "deactivated": { "type": "boolean" },
+        "_testObject": { "type": "string" },
+        "updated_at": { "type": "string", "format": "date-time" }
+       },
+       "required": ["_id", "email", "name", "roles", "updated_at"]
       }
-    },
+     }
+    }
+   },
+   "404": {
+    "description": "User not found",
+    "content": {
+     "application/json": {
+      "schema": {
+       "type": "object",
+       "properties": { "error": { "type": "string" } }
+      }
+     }
+    }
+   }
+  }
+ }
+},
 
-    "/AHFULusers/remove/roll/id/": {
-      "post": {
-        "summary": "Remove role from user by id",
-        "tags": ["Users"],
-        "requestBody": {
-          "required": True,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "user_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
-                  "remover_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
-                  "role": { "type": "string", "example": "Admin" }
-                },
-                "required": ["user_id", "remover_id", "role"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Role removed; updated user returned",
-            "content": {
-              "application/json": {
-                "schema": { "type": "object" }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found or validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "Remover does not have permission" }
-                  }
-                }
-              }
-            }
-          }
-        }
+"/AHFULusers/id/{id}": {
+ "get": {
+  "summary": "Get user by id",
+  "tags": ["Users"],
+  "parameters": [
+   {
+    "name": "id",
+    "in": "path",
+    "required": True,
+    "schema": { "type": "string" }
+   }
+  ],
+  "responses": {
+   "200": {
+    "description": "User found",
+    "content": {
+     "application/json": {
+      "schema": {
+       "type": "object",
+       "properties": {
+        "_id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "picture": { "type": "string" },
+        "last_login_time": { "type": "integer" },
+        "last_login_expire": { "type": "integer" },
+        "magic_bits": { "type": "string" },
+        "roles": { "type": "array", "items": { "type": "string" } },
+        "deactivated": { "type": "boolean" },
+        "_testObject": { "type": "string" },
+        "updated_at": { "type": "string", "format": "date-time" }
+       },
+       "required": ["_id", "email", "name", "roles", "updated_at"]
       }
-    },
+     }
+    }
+   },
+   "404": {
+    "description": "User not found",
+    "content": {
+     "application/json": {
+      "schema": {
+       "type": "object",
+       "properties": { "error": { "type": "string" } }
+      }
+     }
+    }
+   }
+  }
+ }
+},
 
-    "/AHFULusers/remove/roll/email/": {
-      "post": {
-        "summary": "Remove role from user by email",
-        "tags": ["Users"],
-        "requestBody": {
-          "required": True,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "user_email": { "type": "string", "format": "email", "example": "jane@example.com" },
-                  "remover_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
-                  "role": { "type": "string", "example": "Gym Owner" }
-                },
-                "required": ["user_email", "remover_id", "role"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Role removed; updated user returned",
-            "content": {
-              "application/json": {
-                "schema": { "type": "object" }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found or validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "User not found" }
-                  }
-                }
-              }
-            }
-          }
-        }
+"/AHFULusers/add/role/id/": {
+ "post": {
+  "summary": "Add role to user by id",
+  "tags": ["Users"],
+  "requestBody": {
+   "required": True,
+   "content": {
+    "application/json": {
+     "schema": {
+      "type": "object",
+      "properties": {
+       "user_id": { "type": "string" },
+       "adder_id": { "type": "string" },
+       "role": { "type": "string" }
+      },
+      "required": ["user_id", "adder_id", "role"]
+     }
+    }
+   }
+  },
+  "responses": {
+   "200": {
+    "description": "Role added; updated user returned",
+    "content": {
+     "application/json": {
+      "schema": {
+       "type": "object",
+       "properties": {
+        "_id": { "type": "string" },
+        "email": { "type": "string" },
+        "roles": { "type": "array", "items": { "type": "string" } },
+        "updated_at": { "type": "string", "format": "date-time" }
+       }
       }
-    },
+     }
+    }
+   },
+   "404": {
+    "description": "User not found or validation error",
+    "content": {
+     "application/json": {
+      "schema": {
+       "type": "object",
+       "properties": { "error": { "type": "string" } }
+      }
+     }
+    }
+   }
+  }
+ }
+},
 
-    "/AHFULusers/deactivate/id/": {
-      "post": {
-        "summary": "Deactivate user by id",
-        "tags": ["Users"],
-        "requestBody": {
-          "required": True,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "user_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
-                  "deactivator_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
-                },
-                "required": ["user_id", "deactivator_id"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "User deactivated; updated user returned",
-            "content": {
-              "application/json": {
-                "schema": { "type": "object" }
-              }
-            }
-          },
-          "404": {
-            "description": "User not found or validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "Deactivator does not have permission" }
-                  }
-                }
-              }
-            }
-          }
-        }
+"/AHFULusers/add/role/email/": {
+ "post": {
+  "summary": "Add role to user by email",
+  "tags": ["Users"],
+  "requestBody": {
+   "required": True,
+   "content": {
+    "application/json": {
+     "schema": {
+      "type": "object",
+      "properties": {
+       "user_email": { "type": "string", "format": "email" },
+       "adder_id": { "type": "string" },
+       "role": { "type": "string" }
+      },
+      "required": ["user_email", "adder_id", "role"]
+     }
+    }
+   }
+  },
+  "responses": {
+   "200": {
+    "description": "Role added; updated user returned",
+    "content": {
+     "application/json": {
+      "schema": {
+       "type": "object",
+       "properties": {
+        "_id": { "type": "string" },
+        "email": { "type": "string" },
+        "roles": { "type": "array", "items": { "type": "string" } },
+        "updated_at": { "type": "string", "format": "date-time" }
+       }
       }
-    },
+     }
+    }
+   },
+   "404": {
+    "description": "User not found or validation error",
+    "content": {
+     "application/json": {
+      "schema": {
+       "type": "object",
+       "properties": { "error": { "type": "string" } }
+      }
+     }
+    }
+   }
+  }
+ }
+},
+
+"/AHFULusers/remove/role/id/": {
+ "post": {
+  "summary": "Remove role from user by id",
+  "tags": ["Users"],
+  "requestBody": {
+   "required": True,
+   "content": {
+    "application/json": {
+     "schema": {
+      "type": "object",
+      "properties": {
+       "user_id": { "type": "string" },
+       "remover_id": { "type": "string" },
+       "role": { "type": "string" }
+      },
+      "required": ["user_id", "remover_id", "role"]
+     }
+    }
+   }
+  },
+  "responses": {
+   "200": {
+    "description": "Role removed; updated user returned",
+    "content": {
+     "application/json": {
+      "schema": {
+       "type": "object",
+       "properties": {
+        "_id": { "type": "string" },
+        "email": { "type": "string" },
+        "roles": { "type": "array", "items": { "type": "string" } },
+        "updated_at": { "type": "string", "format": "date-time" }
+       }
+      }
+     }
+    }
+   },
+   "404": {
+    "description": "User not found or validation error",
+    "content": {
+     "application/json": {
+      "schema": {
+       "type": "object",
+       "properties": { "error": { "type": "string" } }
+      }
+     }
+    }
+   }
+  }
+ }
+},
+
+"/AHFULusers/remove/role/email/": {
+ "post": {
+  "summary": "Remove role from user by email",
+  "tags": ["Users"],
+  "requestBody": {
+   "required": True,
+   "content": {
+    "application/json": {
+     "schema": {
+      "type": "object",
+      "properties": {
+       "user_email": { "type": "string" },
+       "remover_id": { "type": "string" },
+       "role": { "type": "string" }
+      },
+      "required": ["user_email", "remover_id", "role"]
+     }
+    }
+   }
+  },
+  "responses": {
+   "200": {
+    "description": "Role removed; updated user returned",
+    "content": {
+     "application/json": {
+      "schema": {
+       "type": "object",
+       "properties": {
+        "_id": { "type": "string" },
+        "email": { "type": "string" },
+        "roles": { "type": "array", "items": { "type": "string" } },
+        "updated_at": { "type": "string", "format": "date-time" }
+       }
+      }
+     }
+    }
+   },
+   "404": {
+    "description": "User not found or validation error",
+    "content": {
+     "application/json": {
+      "schema": {
+       "type": "object",
+       "properties": { "error": { "type": "string" } }
+      }
+     }
+    }
+   }
+  }
+ }
+},
+
+"/AHFULusers/deactivate/id/": {
+ "post": {
+  "summary": "Deactivate user by id",
+  "tags": ["Users"],
+  "requestBody": {
+   "required": True,
+   "content": {
+    "application/json": {
+     "schema": {
+      "type": "object",
+      "properties": {
+       "user_id": { "type": "string" },
+       "deactivator_id": { "type": "string" }
+      },
+      "required": ["user_id", "deactivator_id"]
+     }
+    }
+   }
+  },
+  "responses": {
+   "200": {
+    "description": "User deactivated; updated user returned",
+    "content": {
+     "application/json": {
+      "schema": {
+       "type": "object",
+       "properties": {
+        "_id": { "type": "string" },
+        "email": { "type": "string" },
+        "roles": { "type": "array", "items": { "type": "string" } },
+        "deactivated": { "type": "boolean", "example": True },
+        "updated_at": { "type": "string", "format": "date-time" }
+       }
+      }
+     }
+    }
+   },
+   "404": {
+    "description": "User not found or validation error",
+    "content": {
+     "application/json": {
+      "schema": {
+       "type": "object",
+       "properties": { "error": { "type": "string" } }
+      }
+     }
+    }
+   }
+  }
+ }
+},
     
     "/AHFULpersonalEx/": {
         "get": {

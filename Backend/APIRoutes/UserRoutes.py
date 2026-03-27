@@ -28,7 +28,7 @@ def get_user_id(id):
     return jsonify(user), 200
 
 # ── ADD role to user by id ───────────────────────────────────────────────────────────
-@userRouteBlueprint.route("/add/roll/id/", methods=["POST"])
+@userRouteBlueprint.route("/add/role/id/", methods=["POST"])
 def add_role_by_id():
     data = request.get_json()
     if not data:
@@ -40,7 +40,7 @@ def add_role_by_id():
     return jsonify(res), 200
 
 # ── ADD role to user by email ───────────────────────────────────────────────────────────
-@userRouteBlueprint.route("/add/roll/email/", methods=["POST"])
+@userRouteBlueprint.route("/add/role/email/", methods=["POST"])
 def add_role_by_email():
     data = request.get_json()
     if not data:
@@ -52,7 +52,7 @@ def add_role_by_email():
     return jsonify(res), 200
 
 # ── REMOVE role from user by id ───────────────────────────────────────────────────────────
-@userRouteBlueprint.route("/remove/roll/id/", methods=["POST"])
+@userRouteBlueprint.route("/remove/role/id/", methods=["POST"])
 def remove_role_by_id():
     data = request.get_json()
     if not data:
@@ -64,7 +64,7 @@ def remove_role_by_id():
     return jsonify(res), 200
 
 # ── REMOVE role from user by email ───────────────────────────────────────────────────────────
-@userRouteBlueprint.route("/remove/roll/email/", methods=["POST"])
+@userRouteBlueprint.route("/remove/role/email/", methods=["POST"])
 def remove_role_by_email():
     data = request.get_json()
     if not data:

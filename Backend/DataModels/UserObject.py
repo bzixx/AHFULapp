@@ -29,9 +29,9 @@ class UserObject:
         user = userCollection.find_one({"email": email})
         return UserObject._serialize(user)
     
-    def find_email_by_id(id):
-        user = userCollection.find_one({"_id": ObjectId(id)})
-        return UserObject._serialize(user["email"])
+    # def find_email_by_id(id):
+    #     user = userCollection.find_one({"_id": ObjectId(id)})
+    #     return UserObject._serialize(user["email"])
 
     # ── Update ─────────────────────────────────────────────────────────────────
     @staticmethod
