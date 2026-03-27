@@ -20,6 +20,13 @@ from APIRoutes.UserSettingsRoutes import userSettingsBlueprint
 from APIRoutes.TokenRoutes import tokenBlueprint
 from APIRoutes.TaskRoutes import taskBlueprint
 
+#Firebase Admin SDK
+import firebase_admin
+from firebase_admin import credentials
+
+#Notification Scheduler
+from Services.NotificationScheduler import start_scheduler
+
 #Main AHFUL APP Backend Entry Point.
 def create_app():
     # Load environment variables from .env file
@@ -31,6 +38,11 @@ def create_app():
 
     #Make an Appwade SignInDriver to reference later
     app.AHFULSignInDriver = SignInDriver(os.getenv("GOOGLE_CLIENT_ID"))
+
+    #Initialize Firebase Admin SDK
+    cred = credentials.Certificate("./firebaseSecret.json")
+    app.AHFULFirebaseDriver = firebase_admin.initialize_app(cred)
+    print("Firebase Admin SDK initialized successfully")
 
     #Register App Routes and Blueprints
     #Swagger routes add prefix to match server url
@@ -55,6 +67,9 @@ def create_app():
     ]
 
     CORS(app, origins=allowed_origins, supports_credentials=True)
+
+    #Start the notification scheduler
+    start_scheduler()
 
     #Print an list of all Route maps on the AHFUL App after startup.
     print(app.url_map)

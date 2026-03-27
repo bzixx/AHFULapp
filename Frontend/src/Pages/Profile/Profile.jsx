@@ -41,6 +41,14 @@ export function Profile() {
     setIsEditingBio(false);
   };
 
+  const handleEnableNotifications = () => {
+    if (reduxUserData?._id) {
+      registerService(reduxUserData._id);
+    } else {
+      console.error("User ID not available");
+    }
+  };
+
   return (
   <div className="page-layout">
     <ProfileSettingsButton />
@@ -96,7 +104,7 @@ export function Profile() {
         <div className="profile-notifications-section">
           <button
             className="profile-notifications-btn"
-            onClick={registerService}
+            onClick={handleEnableNotifications}
           >
             Enable Push Notifications
           </button>

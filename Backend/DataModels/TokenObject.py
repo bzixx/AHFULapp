@@ -20,6 +20,11 @@ class TokenObject:
         return TokenObject._serialize(token)
 
     @staticmethod
+    def find_all_by_user_id(user_id):
+        tokens = tokenCollection.find({"user_id": ObjectId(user_id)})
+        return [TokenObject._serialize(t) for t in tokens]
+
+    @staticmethod
     def find_by_token(token_str):
         token = tokenCollection.find_one({"token": token_str})
         return TokenObject._serialize(token)
@@ -43,3 +48,13 @@ class TokenObject:
     def delete_by_token(token_str):
         result = tokenCollection.delete_one({"token": token_str})
         return result.deleted_count > 0
+
+    @staticmethod
+    def delete_by_id(token_id):
+        result = tokenCollection.delete_one({"_id": ObjectId(token_id)})
+        return result.deleted_count > 0
+
+    @staticmethod
+    def find_all():
+        tokens = tokenCollection.find()
+        return [TokenObject._serialize(t) for t in tokens]
