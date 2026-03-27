@@ -2,6 +2,7 @@ import { Navbar } from "./components/navbar/navbar";
 import { Outlet } from "react-router-dom";
 import { MenuButton } from "./components/MenuButton/MenuButton";
 import { Header } from "./components/Header/Header.jsx";
+import { Footer } from "./components/Footer/Footer.jsx";
 
 export function Layout() {
     
@@ -12,9 +13,11 @@ export function Layout() {
             */}
             <main>
             <Navbar />
-            <Header />
-            <Outlet />
-            {/* Outlet is used to render the child routes on every page listed in the AHFULApp.jsx file in this case our Navbar*/}
+            <div className="page-content">
+                <Header />
+                <Outlet />
+                <Footer />
+            </div>
             </main>
         </>
     )

@@ -5,7 +5,6 @@ body {
   background: var(--color-bg);
   min-height: 100vh;
 }
-
 main {
   display: flex;
   min-height: 100vh;
@@ -13,4 +12,10 @@ main {
   max-width: 100%;
   background-color: #FFF7F2;
   padding-top: 7vh;
+}
+.page-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 100vh;
 }

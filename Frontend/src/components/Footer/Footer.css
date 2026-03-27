@@ -1,15 +1,9 @@
-
 .gym-footer {
   margin-top: auto;
   padding: 24px 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #1f2937;
-  color: rgba(255,255,255,0.7);
-}
-.gym-footer {
-flex-direction: column;
-gap: 12px;
-text-align: center;
+  background: var(--color-primary);
+  color: var(--text-secondary);
 }

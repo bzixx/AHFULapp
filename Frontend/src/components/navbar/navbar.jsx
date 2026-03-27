@@ -73,17 +73,6 @@ export function Navbar({ minHeight }) {
           >
             Measurement Logger
           </NavLink>
-
-          <NavLink
-            to="/Profile"
-            className={({ isActive }) =>
-              isActive || location.pathname.startsWith("/Settings")
-                ? "active"
-                : ""
-            }
-          >
-            Profile
-          </NavLink> 
           <a
             href="http://localhost:5000/APIDocs"
             target="_blank"
