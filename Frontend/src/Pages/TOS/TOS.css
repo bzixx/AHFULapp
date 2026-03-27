@@ -1,0 +1,37 @@
+
+.tos-page {
+	display: flex;
+	justify-content: center;
+	padding: 24px;
+}
+
+.tos-container {
+	max-width: 800px;
+	background: #fff;
+	border-radius: 8px;
+	padding: 24px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+	color: #222;
+}
+
+.tos-container h1 {
+	margin-top: 0;
+	font-size: 28px;
+}
+
+.tos-container h2 {
+	margin-top: 18px;
+	font-size: 18px;
+}
+
+.tos-container p {
+	line-height: 1.5;
+	margin: 8px 0;
+}
+
+.tos-last-updated {
+	margin-top: 24px;
+	font-size: 12px;
+	color: #666;
+}
+

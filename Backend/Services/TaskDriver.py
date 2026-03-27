@@ -46,6 +46,14 @@ class TaskDriver:
             return None, str(e)
 
     @staticmethod
+    def find_overdue_tasks():
+        try:
+            tasks = TaskObject.find_overdue()
+            return tasks, None
+        except Exception as e:
+            return None, str(e)
+
+    @staticmethod
     def create_task(user_id, task_data):
         if not user_id:
             return None, "user_id is required"
@@ -53,10 +61,8 @@ class TaskDriver:
             return None, "task_data is required"
         if not task_data.get("name"):
             return None, "name is required"
-        # Ensure dueTime is set - default to 0 if not provided
         if "dueTime" not in task_data or task_data.get("dueTime") is None:
             task_data["dueTime"] = 0
-        # Validate dueTime is a valid timestamp if provided
         if task_data.get("dueTime") is not None:
             if not isinstance(task_data.get("dueTime"), (int, float)):
                 return None, "dueTime must be a timestamp (int or float)"

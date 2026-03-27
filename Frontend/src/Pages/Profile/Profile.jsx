@@ -7,6 +7,7 @@ import { authLogout } from "../Login/AuthSlice";
 import {registerService} from "../../firebase.js";
 import {handle_logout} from "../../QueryFunctions.js"
 import {ProfileSettingsButton} from "../../components/ProfileSettings/ProfileSettingsButton"
+import { useNavigate } from "react-router-dom";
 
 export function Profile() {
   const [userData, setUserData] = useState({name: "", email: "", picture: ""});
@@ -16,6 +17,7 @@ export function Profile() {
   const reduxUserData = useSelector((state) => state.auth.user);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     try {
@@ -37,6 +39,14 @@ export function Profile() {
     //TODO: STORE OR ACTUALL SAVE THIS
     localStorage.setItem("user_bio", bio);
     setIsEditingBio(false);
+  };
+
+  const handleEnableNotifications = () => {
+    if (reduxUserData?._id) {
+      registerService(reduxUserData._id);
+    } else {
+      console.error("User ID not available");
+    }
   };
 
   return (
@@ -94,16 +104,26 @@ export function Profile() {
         <div className="profile-notifications-section">
           <button
             className="profile-notifications-btn"
-            onClick={registerService}
+            onClick={handleEnableNotifications}
           >
             Enable Push Notifications
+          </button>
+        </div>
+
+        {/* Terms of Service (visible from profile when logged in) */}
+        <div className="profile-tos-section">
+          <button
+            className="profile-tos-btn"
+            onClick={() => navigate("/TOS")}
+          >
+            Terms of Service
           </button>
         </div>
 
         {/* Logout */}
         <div className="profile-logout-section">
           <button
-            className="profile-logout-btn"
+            className="profile-logout-btn" id="logout-btn"
             onClick={() => {handle_logout(); dispatch(authLogout());}}
           >
             Logout

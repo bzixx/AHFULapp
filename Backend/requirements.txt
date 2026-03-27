@@ -13,4 +13,7 @@ requests ==2.32.5 #- HTTP library for making API requests (used by google-auth a
 # Database Libraries
 pymongo==4.16.0 #- MongoDB driver for Python
 
+#Firebase Admin SDK
+firebase-admin==7.3.0 #- Firebase Admin SDK for Python (used for messaging/notifcations)
+
 

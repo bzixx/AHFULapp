@@ -32,6 +32,31 @@ export function getMessagingService() {
   return messaging;
 }
 
+const BACKEND_URL = "http://localhost:5000";
+
+async function sendTokenToBackend(token, userId) {
+  try {
+    const response = await fetch(`${BACKEND_URL}/AHFULtokens/create/${userId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token: token }),
+      credentials: "include",
+    });
+    
+    if (response.ok) {
+      console.log("FCM token saved to backend successfully");
+      return true;
+    } else {
+      const error = await response.json();
+      console.error("Failed to save FCM token:", error);
+      return false;
+    }
+  } catch (err) {
+    console.error("Error sending token to backend:", err);
+    return false;
+  }
+}
+
 /**
  * Request notification permission (via the browser) and attempt to get an
  * FCM registration token. By default the function uses the environment
@@ -40,17 +65,9 @@ export function getMessagingService() {
  * Returns the token string on success, null if not granted/available.
  * Throws if getToken itself errors.
  */
-export async function registerService() {
+export async function registerService(userId) {
   try {
-
-     // TODO: Request permission
- // TODO: Register with FCM
- // TODO: Set up foreground message handler
- // TODO: Set up background message handler
- // TODO: Subscribe to a topic
-
     const vapidKey = "BCeDiTe-0QFJVPuIt8U-boP2iShVYgIRhd8KbXrntzF7zgUnEBX0HFeAeefqMVjXFb35XqeHrFAHezg8mh6UkLg";
-
 
     // Ask the user for permission to send notifications
     const permission = await Notification.requestPermission();
@@ -61,23 +78,26 @@ export async function registerService() {
 
     const currentToken = await getToken(messaging, vapidKey);
     if (currentToken) {
-      // Optionally: send token to your server here
       console.log('Registration token retrieved:', currentToken);
-
-    }else{
+      
+      // Send token to backend if userId is provided
+      if (userId) {
+        await sendTokenToBackend(currentToken, userId);
+      }
+      
+      return currentToken;
+    } else {
       console.log('No registration token available.');
-
+      return null;
     }
-
-    return null;
   } catch (err) {
     console.error('An error occurred while retrieving token. ', err);
-    
+    return null;
   }
 }
 
 //Safer check of service worker registration
-export const validateAndRegisterSW = async () => {
+export const validateAndRegisterSW = async (userId) => {
   // bail out if browser doesn't support service workers
   if (!('serviceWorker' in navigator)) {
     console.warn('OH MY!  Are you using Netscape? Service workers not supported in this browser');
@@ -122,6 +142,11 @@ export const validateAndRegisterSW = async () => {
     const token = await getToken(messaging, {
       vapidKey: 'YOUR_VAPID_KEY'
     });
+
+    // Send token to backend if userId is provided
+    if (token && userId) {
+      await sendTokenToBackend(token, userId);
+    }
 
     return token;
 

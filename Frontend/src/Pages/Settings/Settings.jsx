@@ -47,6 +47,7 @@ export function Settings() {
       pronouns: answers.pronouns || "",
       dateOfBirth: answers.dateOfBirth || "",
       locations: answers.locations || [],
+      tutorialComplete: answers.tutorialComplete ?? false,
     };
 
     updateUserSettings(user._id, payload)

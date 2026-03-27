@@ -980,7 +980,7 @@ export function WorkoutLogger() {
               style={{ display: "flex", gap: "8px" }}
             >
               <button
-                className="workout-add-selected-button add-btn"
+                className="workout-add-selected-button add-btn" id="add-exercises-btn"
                 type="button"
                 onClick={() => addExerciseToWorkout()}
                 disabled={!workoutId}

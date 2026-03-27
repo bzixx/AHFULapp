@@ -4,6 +4,7 @@ import AHFULApp from './AHFULApp.jsx'
 import './SiteStyles.css'
 import { StoreProvider } from './Store.jsx'
 import { BrowserRouter as Router } from "react-router-dom";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Loading } from './components/Loading/Loading.jsx';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -65,6 +66,7 @@ function AHFULApp_localStorageChecked() {
                   pronouns: settingsData.pronouns,
                   dateOfBirth: settingsData.dateOfBirth,
                   locations: settingsData.locations,
+                  tutorialComplete: settingsData.tutorialComplete,
                 }));
                 
               } catch (settingsErr) {
@@ -102,9 +104,11 @@ function AHFULApp_localStorageChecked() {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <StoreProvider>
-      <Router>
-        <AHFULApp_localStorageChecked />
-      </Router>
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+        <Router>
+          <AHFULApp_localStorageChecked />
+        </Router>
+      </GoogleOAuthProvider>
     </StoreProvider>
   </React.StrictMode>,
 )

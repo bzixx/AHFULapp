@@ -10,6 +10,13 @@ def get_token_by_user(user_id):
         return jsonify({"error": error}), 404
     return jsonify(token), 200
 
+@tokenBlueprint.route("/user/<user_id>/all", methods=["GET"])
+def get_all_tokens_by_user(user_id):
+    tokens, error = TokenDriver.get_all_tokens_by_user(user_id)
+    if error:
+        return jsonify({"error": error}), 404
+    return jsonify(tokens), 200
+
 @tokenBlueprint.route("/value/<token>", methods=["GET"])
 def get_token_by_value(token):
     token, error = TokenDriver.get_token_by_value(token)
