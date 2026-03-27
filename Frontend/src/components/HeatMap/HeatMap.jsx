@@ -1,7 +1,7 @@
 import Body from "react-muscle-highlighter";
 import "./HeatMap.css";
 
-const HEAT_COLORS = ["#22c55e", "#eab308", "#ef4444"];
+const HEAT_COLORS = ["#ef4444", "#ef4444", "#ef4444"];
 
 export function HeatMap({ data = {}, onMuscleClick }) {
   const bodyData = Object.entries(data)
