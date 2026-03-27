@@ -10,6 +10,28 @@ const API_BASE = "http://localhost:5000/AHFULfood";
 export function FoodLog() {
     const user = useSelector((state) => state.auth.user);
 
+    const toLocalDateInput = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    };
+
+    const startOfDay = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    const getWeekStart = (date) => {
+        const d = new Date(date);
+        d.setHours(0, 0, 0, 0);
+        d.setDate(d.getDate() - d.getDay());
+        return d;
+    };
+
+    const getWeekEnd = (date) => {
+        const end = new Date(getWeekStart(date));
+        end.setDate(end.getDate() + 7);
+        return end;
+    };
+
     // Get userId from Redux or fall back to localStorage
     const getUserId = () => {
         if (user?._id) return user._id;
@@ -27,6 +49,7 @@ export function FoodLog() {
     const [mealType, setMealType] = useState("Lunch");
     const [errors, setErrors] = useState("");
     const [timePeriod, setTimePeriod] = useState("daily");
+    const [selectedDate, setSelectedDate] = useState(toLocalDateInput(new Date()));
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(false);
 
@@ -45,6 +68,7 @@ export function FoodLog() {
         servings: doc.servings,
         totalCalories: doc.calsPerServing * doc.servings,
         mealType: doc.type,
+        loggedAt: new Date(doc.time * 1000),
         timestamp: new Date(doc.time * 1000).toLocaleTimeString()
     });
 
@@ -139,8 +163,40 @@ export function FoodLog() {
             .finally(() => setLoading(false));
     }, [userId]);
 
-    // Filter foods based on search term
-    const filteredFoods = foods.filter(food =>
+    const selectedDateObj = new Date(`${selectedDate}T00:00:00`);
+
+    const foodsInPeriod = foods.filter((food) => {
+        const foodDate = food.loggedAt;
+
+        if (timePeriod === "daily") {
+            const selectedStart = startOfDay(selectedDateObj);
+            const selectedEnd = new Date(selectedStart);
+            selectedEnd.setDate(selectedEnd.getDate() + 1);
+            return foodDate >= selectedStart && foodDate < selectedEnd;
+        }
+
+        if (timePeriod === "weekly") {
+            const weekStart = getWeekStart(selectedDateObj);
+            const weekEnd = getWeekEnd(selectedDateObj);
+            return foodDate >= weekStart && foodDate < weekEnd;
+        }
+
+        if (timePeriod === "monthly") {
+            return (
+                foodDate.getFullYear() === selectedDateObj.getFullYear() &&
+                foodDate.getMonth() === selectedDateObj.getMonth()
+            );
+        }
+
+        if (timePeriod === "yearly") {
+            return foodDate.getFullYear() === selectedDateObj.getFullYear();
+        }
+
+        return true;
+    });
+
+    // Apply search only within the selected date range
+    const filteredFoods = foodsInPeriod.filter((food) =>
         food.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -271,37 +327,43 @@ export function FoodLog() {
         cancelEdit();
     };
 
+    const periodTotalCalories = filteredFoods.reduce((sum, food) => sum + food.totalCalories, 0);
 
-    const totalCalories = foods.reduce((sum, food) => sum + food.totalCalories, 0);
+    const formatLongDate = (date) =>
+        date.toLocaleDateString(undefined, {
+            weekday: "long",
+            month: "short",
+            day: "numeric",
+            year: "numeric"
+        });
 
-    const getDateRange = () => {
-        const today = new Date();
-        const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
-        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        const startOfYear = new Date(today.getFullYear(), 0, 1);
+    const rangeLabel = (() => {
+        if (timePeriod === "daily") {
+            return formatLongDate(selectedDateObj);
+        }
 
-        return {startOfWeek, startOfMonth, startOfYear};
+        if (timePeriod === "weekly") {
+            const start = getWeekStart(selectedDateObj);
+            const endInclusive = new Date(getWeekEnd(selectedDateObj));
+            endInclusive.setDate(endInclusive.getDate() - 1);
+            return `${start.toLocaleDateString()} - ${endInclusive.toLocaleDateString()}`;
+        }
+
+        if (timePeriod === "monthly") {
+            return selectedDateObj.toLocaleDateString(undefined, {
+                month: "long",
+                year: "numeric"
+            });
+        }
+
+        return `${selectedDateObj.getFullYear()}`;
+    })();
+
+    const shiftSelectedDate = (days) => {
+        const shifted = new Date(selectedDateObj);
+        shifted.setDate(shifted.getDate() + days);
+        setSelectedDate(toLocalDateInput(shifted));
     };
-
-    //weeklyTotal
-
-    const weeklyTotal = foods.reduce((sum, food) => {
-        const foodDate = new Date(food.id);
-        const {startOfWeek} = getDateRange();
-        return foodDate >= startOfWeek ? sum + food.totalCalories : sum;
-    }, 0);
-
-    const monthlyTotal = foods.reduce((sum, food) => {
-        const foodDate = new Date(food.id);
-        const {startOfMonth} = getDateRange();
-        return foodDate >= startOfMonth ? sum + food.totalCalories : sum;
-    }, 0);
-
-    const yearlyTotal = foods.reduce((sum, food) => {
-        const foodDate = new Date(food.id);
-        const {startOfYear} = getDateRange();
-        return foodDate >= startOfYear ? sum + food.totalCalories : sum;
-    }, 0);
 
     // Group foods by meal type
     const groupedFoods = () => {
@@ -443,6 +505,31 @@ export function FoodLog() {
                     </button>
                 </div>
 
+                <div className="date-navigation">
+                    <button
+                        className="period-btn"
+                        type="button"
+                        onClick={() => shiftSelectedDate(-1)}
+                        aria-label="Previous day"
+                    >
+                        Prev Day
+                    </button>
+                    <input
+                        type="date"
+                        className="date-input"
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                    />
+                    <button
+                        className="period-btn"
+                        type="button"
+                        onClick={() => shiftSelectedDate(1)}
+                        aria-label="Next day"
+                    >
+                        Next Day
+                    </button>
+                </div>
+
                 {/* Nutrition Summary */}
                 <div className="daily-summary">
                     <h2>
@@ -456,10 +543,7 @@ export function FoodLog() {
                       <div className="total-display">
                         <span className="label">Total Calories:</span>
                         <span className="value">
-                            {timePeriod === 'daily' && totalCalories}
-                            {timePeriod === 'weekly' && weeklyTotal}
-                            {timePeriod === 'monthly' && monthlyTotal}
-                            {timePeriod === 'yearly' && yearlyTotal}
+                                                        {periodTotalCalories}
                         </span>
                       </div>
                     </div>
@@ -467,7 +551,7 @@ export function FoodLog() {
                     </div>
                     <div className="food-count">
                         <span className="label">Items Logged:</span>
-                        <span className="value">{foods.length}</span>
+                                                <span className="value">{filteredFoods.length}</span>
                     </div>
                 </div>
 
@@ -484,9 +568,9 @@ export function FoodLog() {
                     className="search-input"
                 />
             </div>
-            <h2>Today's Logged Foods</h2>
+            <h2>{rangeLabel} Logged Foods</h2>
             {filteredFoods.length === 0 ? (
-                <p className="empty-message">No foods logged yet. Start by adding a food item!</p>
+                <p className="empty-message">No foods logged for this date range yet. Try another day or add a food item.</p>
             ) : (
                 <div className="foods-list">
                     {["Breakfast", "Lunch", "Dinner", "Snack"].map((meal) => (

@@ -40,15 +40,15 @@ function ExternalDashboard() {
 
         <div className="hero-visual">
           <div className="streaks-container">
-            <StreakCounter 
-              count={workoutStreak.streak} 
-              type="workout" 
-              loading={workoutStreak.loading} 
+            <StreakCounter
+              count={workoutStreak.streak}
+              type="workout"
+              loading={workoutStreak.loading}
             />
-            <StreakCounter 
-              count={foodStreak.streak} 
-              type="food" 
-              loading={foodStreak.loading} 
+            <StreakCounter
+              count={foodStreak.streak}
+              type="food"
+              loading={foodStreak.loading}
             />
           </div>
         </div>
@@ -121,10 +121,10 @@ function InternalDashboard() {
             fetch(`http://localhost:5000/AHFULworkout/streak/${user._id}`),
             fetch(`http://localhost:5000/AHFULfood/streak/${user._id}`)
           ]);
-          
+
           const workoutData = await workoutRes.json();
           const foodData = await foodRes.json();
-          
+
           setWorkoutStreak({ streak: workoutData.streak || 0, loading: false });
           setFoodStreak({ streak: foodData.streak || 0, loading: false });
         } catch (error) {
@@ -142,15 +142,15 @@ function InternalDashboard() {
       <div className="dashboard-grid">
         <div className="dashboard-main-content">
           <div className="internal-streaks">
-            <StreakCounter 
-              count={workoutStreak.streak} 
-              type="workout" 
-              loading={workoutStreak.loading} 
+            <StreakCounter
+              count={workoutStreak.streak}
+              type="workout"
+              loading={workoutStreak.loading}
             />
-            <StreakCounter 
-              count={foodStreak.streak} 
-              type="food" 
-              loading={foodStreak.loading} 
+            <StreakCounter
+              count={foodStreak.streak}
+              type="food"
+              loading={foodStreak.loading}
             />
           </div>
           <CalendarButton />
@@ -163,7 +163,7 @@ function InternalDashboard() {
           </div>
         </div>
         <div className="dashboard-side-content">
-          {/* <TodayFoodChart /> */}
+          <TodayFoodChart />
           <WorkoutChart defaultWeeks={6} />
         </div>
       </div>
