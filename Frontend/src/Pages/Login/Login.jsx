@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 export function Login() {
   // ----- LOGIN STATE MANAGEMENT ---------------------------------------------------------------------------
   //Redux Site Wide Auth State
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [statusText, setStatusText] = useState("");

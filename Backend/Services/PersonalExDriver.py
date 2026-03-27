@@ -49,7 +49,7 @@ class PersonalExDriver:
             if not workout:
                 return None, "workout not found"
         else:
-            template = WorkoutObject.find_user_templates(workoutId)
+            template = WorkoutObject.find_template(workoutId)
             if not template:
                 return None, "template not found"
 

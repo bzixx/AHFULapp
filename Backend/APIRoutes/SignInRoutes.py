@@ -135,32 +135,57 @@ def logout():
 #── GET whoami (Logged in or not) ────────────────────────────────────────────────────────────
 @signInRouteBlueprint.route('/whoami', methods=['POST'])
 def whoami():
-    #Get POST Data
-    postAuthData = request.get_json()
+    try:
+        # Get POST Data
+        postAuthData = request.get_json()
 
-    #Assign Variables for email, expiryTime, currTime, and magicBits
-    email = postAuthData.get("email")
-    reportedExpiryTime = postAuthData.get("last_login_expire")
-    currTime = trunc(time())
-    reportedMagicBits = postAuthData.get("magic_bits")
+        # Basic validation of incoming payload
+        if not postAuthData:
+            return jsonify({"error": "You came to eat without food, maybe buy something?"}), 400
 
-    #
-    routeUserObject, error = UserDriver.get_user_by_email(email)
+        # Assign Variables for email, expiryTime, currTime, and magicBits
+        email = postAuthData.get("email")
+        reportedExpiryTime = postAuthData.get("last_login_expire")
+        reportedMagicBits = postAuthData.get("magic_bits")
+        currTime = trunc(time())
 
-    foundMagicBits = routeUserObject.get("magic_bits")
-    foundExpiryTime = routeUserObject.get("last_login_expire")
+        # Require all three fields from the client
+        if not (email and reportedMagicBits and reportedExpiryTime):
+            return jsonify({"error": "API Request Error. Missing required fields."}), 400
 
-    if not (email or reportedMagicBits):
-        return jsonify({"error": "API Requesst Error.  Fry the Bits again."}), 200
-    
-    if (currTime > reportedExpiryTime) or (currTime > foundExpiryTime):
-        return jsonify({"error": "Token Expired, User will need to Auth Again"}), 200
+        # Normalize reportedExpiryTime to an int where possible
+        try:
+            reportedExpiryTime = int(reportedExpiryTime)
+        except Exception:
+            return jsonify({"error": "Wait, when did you say the Tacos expired again?"}), 400
 
-    if not (routeUserObject):
-        return jsonify({"error": "Email NOT found, User will need to Auth"}), 200
-    
-    if (reportedMagicBits != foundMagicBits):
-        return jsonify({"error": "Your Bits are overcooked, User will need to Auth Again"}), 200
-        #TODO; Alerting??
-    
-    return jsonify({"message": "Authorized and Found User.","user_info": routeUserObject}), 200
+        # Fetch user from DB; ensure we have a user before accessing its keys
+        routeUserObject, error = UserDriver.get_user_by_email(email)
+        if not routeUserObject:
+            return jsonify({"error": "Email NOT found, User will need to Sign Up."}), 401
+
+        foundMagicBits = routeUserObject.get("magic_bits")
+        foundExpiryTime = routeUserObject.get("last_login_expire", 0)
+
+        # Normalize foundExpiryTime (treat non-numeric as expired)
+        try:
+            foundExpiryTime = int(foundExpiryTime)
+        except Exception:
+            print("Should never Run.  Found expiry time was not an integer, normalizing to 0.")
+            foundExpiryTime = 0
+
+        # Check expirations
+        if (currTime > reportedExpiryTime) or (currTime > foundExpiryTime):
+            return jsonify({"error": "Token Expired, User will need to Sign In Again"}), 401
+
+        # Validate magic bits
+        if (reportedMagicBits != foundMagicBits):
+            return jsonify({"error": "Your Fry Bits are overcooked, User will need to Sign In Again"}), 401
+
+        #Successful Auth, return user info
+        return jsonify({"message": "Authorized and Found User.", "user_info": routeUserObject}), 200
+    except Exception as e:
+        print(f"Error in whoami route: {e}")
+        return jsonify({"error": f"Whatever you sent was not properly handeled yet.  Read more here: {e}."}), 500
+
+
