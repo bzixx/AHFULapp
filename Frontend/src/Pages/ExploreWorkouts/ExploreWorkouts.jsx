@@ -3,8 +3,8 @@ import { useSelector } from "react-redux";
 import "./ExploreWorkouts.css";
 import "../../SiteStyles.css";
 import { Calendar } from "../../components/Calendar/Calendar";
-import { HeatMap } from "../../Components/HeatMap/HeatMap";
-import { WorkoutChart } from "../../Components/WorkoutChart/WorkoutChart";
+import { HeatMap } from "../../components/HeatMap/HeatMap";
+import { WorkoutChart } from "../../components/WorkoutChart/WorkoutChart";
 
 /**
  * ExploreWorkouts - Workout exploration and history page

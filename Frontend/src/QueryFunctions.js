@@ -166,6 +166,8 @@ export async function handle_logout() {
 }
 
 export async function handle_google_login(response) {
+    //TODO: need to fetch UserSettings and Set to Redux on Non-localStroage Logins
+
   try {
     //URL to send POST to later
     const backendPOSTURL = `http://localhost:5000/AHFULauth/google-login`;
