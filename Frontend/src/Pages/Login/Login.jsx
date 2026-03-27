@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { handle_google_login } from "../../QueryFunctions.js";
 import { authLogin } from "../../Pages/Login/AuthSlice.jsx";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 export function Login() {
   // ----- LOGIN STATE MANAGEMENT ---------------------------------------------------------------------------
@@ -11,47 +12,66 @@ export function Login() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [statusText, setStatusText] = useState("");
+  const [parsedUser, setParsedUser] = useState(null);
 
-  //Local Storage persistent Auth State
-  const userData = localStorage.getItem("user_data");
-  let parsedUser = null;
-  if (!userData) {
-    //If no user data exists, then we are not authenticated.  Clear any potential cookies just in case.
-    localStorage.removeItem("user_data");
-    //document.cookie = "user_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  } else {
-    //If user data exists, we will try to parse it.  If it fails to parse, we will clear it and treat as not authenticated.
+  
+  useEffect(() => {
+    const userData = localStorage.getItem("user_data");
+
+    if (!userData) {
+      //If no user data exists, then we are not authenticated.  Clear any potential cookies just in case.
+      localStorage.removeItem("user_data");
+      //document.cookie = "user_data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      setParsedUser(null);
+      return;
+    }
+
     try {
-      parsedUser = JSON.parse(userData);
-    } catch (error) {
+      setParsedUser(JSON.parse(userData));
+    } catch {
       localStorage.removeItem("user_data");
       console.warn(
         "AHFUL Warning: Failed to parse user_data from localStorage.  Clearing corrupted entry. ",
         error,
       );
     }
-  }
+   }, []);
 
   // ----- LOGIN Debug Functions ---------------------------------------------------------------------------
-  const getStatusText = () => {
+  useEffect(() => {
     if (isAuthenticated && parsedUser) {
-      return `Logged in as ${parsedUser.email}`;
+      setStatusText(`Logged in as ${parsedUser.email}`);
+      navigate("/Login", { replace: true });
     }
-    return "";
-  };
+  }, [isAuthenticated, parsedUser]);
 
   const handle_google_success = async (response) => {
-    handle_google_login(response);
-    dispatch(authLogin(localStorage.getItem("user_data")));
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    navigate("/Login", { replace: true });
+    // Clear any old auth junk before attempting new login
+    localStorage.removeItem("user_data");
+    dispatch(authLogin(null));
+    try {
+      setStatusText("Logging in...");
+      await handle_google_login(response);
+      dispatch(authLogin(localStorage.getItem("user_data")));
+
+      const storedUser = localStorage.getItem("user_data");
+      if (storedUser) {
+        setParsedUser(JSON.parse(storedUser));
+      }
+    }
+    catch (error) {
+      console.error("Google login error:", error);
+      setStatusText(error.message || "Login failed. Please try again.");
+      // Make sure state stays "not authenticated"
+      localStorage.removeItem("user_data");
+      dispatch(authLogin(null));
+    }
   }
 
   const handle_google_failure = (error) => {
-    console.error(
-      "AHFUL Google Button Login failed and returned Error:",
-      error,
-    );
+    console.error("Google Login failed:", error);
+    setStatusText("Google login failed. Please try again.");
   };
 
 // ----- LOGIN Page HTML ---------------------------------------------------------------------------
@@ -90,7 +110,7 @@ export function Login() {
             onError={handle_google_failure}
           />
         </div>
-        <div id="LoggedInStatus">{getStatusText()}</div>
+        <div id="LoggedInStatus">{statusText}</div>
       </div>
     </div>
   );
