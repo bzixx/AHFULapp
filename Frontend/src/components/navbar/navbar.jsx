@@ -14,7 +14,7 @@ export function Navbar({ minHeight }) {
         Dashboard Home
       </NavLink>
 
-      {/* {!isAuthenticated ? ( */}
+      {!isAuthenticated ? (
         <>
           <NavLink
             to="/Login"
@@ -30,7 +30,7 @@ export function Navbar({ minHeight }) {
             Terms of Service
           </NavLink>
         </>
-      {/* ) : ( */}
+      ):(
         <>
           <NavLink
             to="/WorkoutLogger"
@@ -84,14 +84,6 @@ export function Navbar({ minHeight }) {
           >
             Profile
           </NavLink> 
-
-          <NavLink
-            to="/TOS"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            Terms of Service
-          </NavLink>
-
           <a
             href="http://localhost:5000/APIDocs"
             target="_blank"
@@ -100,7 +92,7 @@ export function Navbar({ minHeight }) {
             Documentation
           </a>
         </>
-      {/* )} */}
+        )}
     </nav>
   );
 }

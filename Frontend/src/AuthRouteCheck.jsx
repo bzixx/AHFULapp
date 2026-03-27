@@ -6,16 +6,16 @@ export function AuthRouteCheck({ children }) {
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
-  // if (!isAuthenticated) {
-  //   return <Navigate to="/Login" replace />;
-  // }
+  if (!isAuthenticated) {
+    return <Navigate to="/Login" replace />;
+  }
 
-  // const now = Math.floor(Date.now() / 1000);
+  const now = Math.floor(Date.now() / 1000);
 
-  // if (user?.last_login_expire && user.last_login_expire < now) {
-  //   dispatch(authLogout());
-  //   return <Navigate to="/Login" replace />;
-  // }
+  if (user?.last_login_expire && user.last_login_expire < now) {
+    dispatch(authLogout());
+    return <Navigate to="/Login" replace />;
+  }
 
   return children;
 }
