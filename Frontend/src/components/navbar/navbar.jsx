@@ -40,31 +40,10 @@ export function Navbar({ minHeight }) {
           </NavLink>
 
           <NavLink
-            to="/ExploreWorkout"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            Explore Workouts
-          </NavLink>
-
-          <NavLink
             to="/FoodLog"
             className={({ isActive }) => (isActive ? "active" : "")}
           >
-            Food Log
-          </NavLink>
-
-          <NavLink
-            to="/ExploreTasks"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            Tasks
-          </NavLink>
-
-          <NavLink
-            to="/Map"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            Map
+            Food Logger
           </NavLink>
 
           <NavLink
@@ -73,6 +52,39 @@ export function Navbar({ minHeight }) {
           >
             Measurement Logger
           </NavLink>
+
+          <NavLink
+            to="/ExploreWorkout"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            Explore Workouts
+          </NavLink>
+
+          <NavLink
+            to="/ExploreTasks"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            Explore Tasks
+          </NavLink>
+
+          <NavLink
+            to="/Map"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            Gym's & Map
+          </NavLink>
+
+          <NavLink
+            to="/Profile"
+            className={({ isActive }) =>
+              isActive || location.pathname.startsWith("/Settings")
+                ? "active"
+                : ""
+            }
+          >
+            Profile
+          </NavLink> 
+
           <a
             href="http://localhost:5000/APIDocs"
             target="_blank"

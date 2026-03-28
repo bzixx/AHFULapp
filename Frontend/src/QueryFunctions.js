@@ -481,10 +481,8 @@ export async function fetchWorkout(userId) {
 
     const data = await res.json();
     // Ensure we always return an array
-    if (Array.isArray(data)) return data;
-    if (data && Array.isArray(data.workouts)) return data.workouts;
-    if (data && Array.isArray(data.data)) return data.data;
-    return [];
+    return data
+
   } catch (err) {
     console.error("fetchWorkout error:", err);
     // Return empty array for network errors on new user accounts
@@ -540,6 +538,7 @@ export async function fetchPersonalExercises(workoutId) {
 }
 
 export async function createPersonalExercise(data) {
+  console.warn("Creating personal exercise with data:", data);
   const res = await fetch("http://localhost:5000/AHFULpersonalEx/create", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
