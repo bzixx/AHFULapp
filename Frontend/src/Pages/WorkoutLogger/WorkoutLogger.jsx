@@ -772,12 +772,12 @@ export function WorkoutLogger() {
 
           {/* Exercise Table */}
           <div className="workout-grid">
-            <div className="cell header">Exercise</div>
-            <div className="cell header">Reps</div>
-            <div className="cell header">Sets</div>
-            <div className="cell header">Weight</div>
-            <div className="cell header">Completed</div>
-            <div className="cell header"></div>
+            <div className="cell workout-grid-header">Exercise</div>
+            <div className="cell workout-grid-header">Reps</div>
+            <div className="cell workout-grid-header">Sets</div>
+            <div className="cell workout-grid-header">Weight</div>
+            <div className="cell workout-grid-header">Completed</div>
+            <div className="cell workout-grid-header"></div>
 
             {exercisesInProgressTable.map((ex, i) => (
               <React.Fragment key={i}>
@@ -1163,10 +1163,10 @@ export function WorkoutLogger() {
             <h2>{templatePreview.template.templateName}</h2>
 
             <div className="template-grid">
-              <div className="cell header">Exercise</div>
-              <div className="cell header">Reps</div>
-              <div className="cell header">Sets</div>
-              <div className="cell header">Weight</div>
+              <div className="cell template-grid-header">Exercise</div>
+              <div className="cell template-grid-header">Reps</div>
+              <div className="cell template-grid-header">Sets</div>
+              <div className="cell template-grid-header">Weight</div>
 
               {templatePreview.exercises.map((ex, i) => (
                 <React.Fragment key={ex._id || i}>
