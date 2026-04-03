@@ -249,20 +249,30 @@ export function WorkoutLogger() {
   };
 
   // ─── Load Exercise Names for Display ─────────────────────────────────────────
-  // When exercises are added to the workout, we need to fetch their display names
+  // When exercises are added to the workout or showing the template preview ,
+  // we need to fetch their display names
   useEffect(() => {
-    if (!exercisesInProgressTable.length) return;
+    // Collect IDs from workout table
+    const workoutIds = exercisesInProgressTable.map((ex) => ex.exerciseId);
 
-    const ids = exercisesInProgressTable.map((ex) => ex.exerciseId);
-    const missing = ids.filter((id) => !personalExNames[id]);
+    // Collect IDs from template preview
+    const templateIds =
+      templatePreview?.exercises?.map((ex) => ex.exerciseId) || [];
 
-    if (missing.length === 0) {
-      return;
-    }
+    // Combine and dedupe
+    const allIds = [...new Set([...workoutIds, ...templateIds])];
+
+    if (allIds.length === 0) return;
+
+    // Filter missing names
+    const missing = allIds.filter((id) => !personalExNames[id]);
+
+    if (missing.length === 0) return;
 
     const loadNames = async () => {
       try {
         const results = {};
+
         for (const id of missing) {
           try {
             const data = await fetchExerciseById(id);
@@ -272,6 +282,7 @@ export function WorkoutLogger() {
             results[id] = "Unknown Exercise";
           }
         }
+
         setPersonalExNames((prev) => ({ ...prev, ...results }));
       } catch (err) {
         console.error("Error fetching exercise names:", err);
@@ -279,7 +290,7 @@ export function WorkoutLogger() {
     };
 
     loadNames();
-  }, [exercisesInProgressTable]);
+  }, [exercisesInProgressTable, templatePreview]);
 
   // ─── Save Template ───────────────────────────────────────────────────────────
   // Saves personal exercises as a template using the workout name
@@ -1176,14 +1187,25 @@ export function WorkoutLogger() {
               <div className="cell template-grid-header">Sets</div>
               <div className="cell template-grid-header">Weight</div>
 
-              {templatePreview.exercises.map((ex, i) => (
-                <React.Fragment key={ex._id || i}>
-                  <div className="cell">{personalExNames[ex.exerciseId]}</div>
-                  <div className="cell">{ex.reps}</div>
-                  <div className="cell">{ex.sets}</div>
-                  <div className="cell">{ex.weight}</div>
-                </React.Fragment>
-              ))}
+              {templatePreview.exercises.map(
+                (ex, i) => (
+                  console.log(personalExNames[ex.exerciseId]),
+                  (
+                    <React.Fragment key={ex._id || i}>
+                      <div
+                        className="cell"
+                        title={personalExNames[ex.exerciseId]}
+                      >
+                        {personalExNames[ex.exerciseId]}
+                      </div>
+
+                      <div className="cell">{ex.reps}</div>
+                      <div className="cell">{ex.sets}</div>
+                      <div className="cell">{ex.weight}</div>
+                    </React.Fragment>
+                  )
+                ),
+              )}
             </div>
 
             <button
