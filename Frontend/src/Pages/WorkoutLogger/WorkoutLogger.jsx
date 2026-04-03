@@ -77,6 +77,8 @@ export function WorkoutLogger() {
 
   // ─── Exercise Selection State ────────────────────────────────────────────────
   const [exerciseName, setExerciseName] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
   // Selected exercise IDs pending to be added to workout
   const [pendingExercises, setPendingExercises] = useState([]);
   // Modal visibility for creating new exercises
@@ -508,8 +510,8 @@ export function WorkoutLogger() {
     const searchQuery = typeof query === "string" ? query : exerciseName;
 
     if (!searchQuery) {
-      fetch_exercises();
-      return;
+      setSearchTerm(exerciseName);
+      fetchExercises(exerciseName);
     }
 
     setExerciseLoading(true);
@@ -682,7 +684,7 @@ export function WorkoutLogger() {
   // ─── Main Render ─────────────────────────────────────────────────────────────
   return (
     <div className="page-layout">
-      {/* Left Column: Template/History (placeholder for future feature) */}
+      {/* Left Column: Template/History */}
       <div className="left-column">
         <div className="template-container">
           <div className="add-template-form">
@@ -871,21 +873,23 @@ export function WorkoutLogger() {
           <div className="add-exercise-form">
             {/* Search Input */}
             <div className="dropdown-wrapper">
-              <input
-                type="text"
-                placeholder="Search exercises..."
-                value={exerciseName}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setExerciseName(v);
-                  // Debounce search to avoid too many API calls
-                  if (searchTimeoutRef.current)
-                    clearTimeout(searchTimeoutRef.current);
-                  searchTimeoutRef.current = setTimeout(() => {
-                    handleSearch(v);
-                  }, 300);
-                }}
-              />
+              <div className="search-row">
+                <input
+                  type="text"
+                  placeholder="Search exercises..."
+                  value={exerciseName}
+                  onChange={(e) => setExerciseName(e.target.value)}
+                />
+
+                <button
+                  type="button"
+                  className="search-btn"
+                  onClick={() => handleSearch(exerciseName)}
+                >
+                  Search
+                </button>
+              </div>
+
               <div className="dropdown-instructions">
                 Click an exercise to select it
               </div>
@@ -899,50 +903,54 @@ export function WorkoutLogger() {
                   <div className="dropdown-item">No exercises found</div>
                 )}
                 {!exerciseLoading &&
-                  exercises.map((item, i) => {
-                    const name = item.name ?? "";
-                    const id = item._id ?? item.exerciseId;
+                  exercises
+                    .filter((ex) => ex && (ex.name || ex._id || ex.exerciseId)) // remove empty objects
+                    .map((item, i) => {
+                      const name = item.name ?? "";
+                      const id = item._id ?? item.exerciseId;
 
-                    // Filter by search term
-                    if (
-                      exerciseName &&
-                      !name.toLowerCase().includes(exerciseName.toLowerCase())
-                    ) {
-                      return null;
-                    }
+                      // Filter by search term
+                      if (
+                        searchTerm &&
+                        !name.toLowerCase().includes(searchTerm.toLowerCase())
+                      ) {
+                        return;
+                      }
 
-                    // Check if already selected
-                    const isSelected =
-                      typeof id === "string" &&
-                      pendingExercises.includes(id) &&
-                      exercises.some((ex) => (ex._id ?? ex.exerciseId) === id);
+                      // Check if already selected
+                      const isSelected =
+                        typeof id === "string" &&
+                        pendingExercises.includes(id) &&
+                        exercises.some(
+                          (ex) => (ex._id ?? ex.exerciseId) === id,
+                        );
 
-                    return (
-                      <div
-                        key={`item-${i}`}
-                        className={`dropdown-item ${isSelected ? "selected" : ""}`}
-                        onClick={() => {
-                          setPendingExercises((prev) => {
-                            if (
-                              !exercises.some(
-                                (ex) => (ex._id ?? ex.exerciseId) === id,
-                              )
-                            ) {
-                              console.warn("Invalid exerciseId clicked:", id);
-                              return prev;
-                            }
-                            if (prev.includes(id)) {
-                              return prev.filter((p) => p !== id);
-                            }
-                            return [...prev, id];
-                          });
-                        }}
-                      >
-                        <span>{name}</span>
-                        {isSelected && <span className="check">✓</span>}
-                      </div>
-                    );
-                  })}
+                      return (
+                        <div
+                          key={`item-${i}`}
+                          className={`dropdown-item ${isSelected ? "selected" : ""}`}
+                          onClick={() => {
+                            setPendingExercises((prev) => {
+                              if (
+                                !exercises.some(
+                                  (ex) => (ex._id ?? ex.exerciseId) === id,
+                                )
+                              ) {
+                                console.warn("Invalid exerciseId clicked:", id);
+                                return prev;
+                              }
+                              if (prev.includes(id)) {
+                                return prev.filter((p) => p !== id);
+                              }
+                              return [...prev, id];
+                            });
+                          }}
+                        >
+                          <span>{name}</span>
+                          {isSelected && <span className="check">✓</span>}
+                        </div>
+                      );
+                    })}
               </div>
             </div>
 
