@@ -196,6 +196,7 @@ body {
   overflow-y: auto;
   border: 2px solid #333;
   background: linear-gradient(0deg, #FFF7F2, #f5f5f5);
+  max-height:50vh;
 }
 
 .workout-grid .cell {
@@ -347,6 +348,28 @@ body {
 
 .add-exercise input[type="text"]:focus {
   border-color: rgba(0, 0, 0, 0.9);
+}
+
+.add-exercise .search-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.add-exercise .search-btn {
+  padding: 0.6rem 1rem;
+  background-color: #041833;      /* matches your dark text tone */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-exercise .search-btn:hover {
+  background-color: #0a2a5c;      /* slightly lighter hover */
 }
 
 /* Add Exercise Form */
@@ -673,6 +696,7 @@ body {
   border-right: 1px solid #333;
   border-bottom: 1px solid #333;
   padding: 0.75rem;
+  text-overflow: ellipsis;
   font-size: small;
   text-align: center;
 }
