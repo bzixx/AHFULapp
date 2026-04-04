@@ -74,7 +74,7 @@ export function Navbar({ minHeight }) {
             Measurement Logger
           </NavLink>
           <a
-            href="http://localhost:5000/APIDocs"
+            href="https://www.ahful.app/api/APIDocs"
             target="_blank"
             rel="noreferrer"
           >

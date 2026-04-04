@@ -312,7 +312,7 @@ export function WorkoutLogger() {
       };
 
       const templateRes = await fetch(
-        "http://localhost:5000/AHFULworkout/create/template",
+        "https://www.ahful.app/api/AHFULworkout/create/template",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -433,7 +433,7 @@ export function WorkoutLogger() {
       const deleteRequests = Object.values(personalExToRemove)
         .filter((ex) => ex._id) // only delete DB-backed exercises
         .map((ex) =>
-          fetch(`http://localhost:5000/AHFULpersonalEx/delete/${ex._id}`, {
+          fetch(`https://www.ahful.app/api/AHFULpersonalEx/delete/${ex._id}`, {
             method: "DELETE",
           }),
         );

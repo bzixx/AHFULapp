@@ -42,9 +42,9 @@ export function ExploreWorkouts() {
     setLoading(true);
     setError(null);
     try {
-      let url = "http://localhost:5000/AHFULworkout";
+      let url = "https://www.ahful.app/api/AHFULworkout";
       if (!showAll && userId) {
-        url = `http://localhost:5000/AHFULworkout/${userId}`;
+        url = `https://www.ahful.app/api/AHFULworkout/${userId}`;
       }
 
       const res = await fetch(url);
