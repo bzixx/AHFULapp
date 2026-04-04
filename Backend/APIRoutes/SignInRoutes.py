@@ -42,6 +42,8 @@ def google_login():
             "picture": decodedUserInfo.get("picture"),
             "last_login_time": trunc(time()),
             "last_login_expire" : decodedUserInfo.get("exp"),
+            "roles": ["user"],
+            "updated_at": datetime.now(),
             "magic_bits" : tokenBits
         })
     else: 

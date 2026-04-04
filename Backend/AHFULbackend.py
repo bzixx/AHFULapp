@@ -56,7 +56,6 @@ def create_app():
     AHFULAPI.register_blueprint(foodRouteBlueprint)
     AHFULAPI.register_blueprint(measurementRouteBlueprint)
     AHFULAPI.register_blueprint(personalExRouteBlueprint)
-    AHFULAPI.register_blueprint(swaggerUIBlueprint)
     AHFULAPI.register_blueprint(signInRouteBlueprint)
     AHFULAPI.register_blueprint(exerciseRouteBlueprint)
     AHFULAPI.register_blueprint(userSettingsBlueprint)
@@ -64,6 +63,8 @@ def create_app():
     AHFULAPI.register_blueprint(taskBlueprint)
 
     app.register_blueprint(AHFULAPI)
+    app.register_blueprint(swaggerUIBlueprint)
+
 
 
     # Enable CORS - includes CloudFront production URL and custom domain
