@@ -76,3 +76,10 @@ def create_app():
 
     #Return AHFUL
     return app
+
+
+# Create a module-level WSGI application so servers like gunicorn can import
+# this module and find the `app` callable (the error reported by gunicorn
+# happens when it can't find `app` in the module). Also provide `application`
+# alias for servers that expect that name.
+app = create_app()

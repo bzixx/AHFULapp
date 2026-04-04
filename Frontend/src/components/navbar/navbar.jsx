@@ -47,6 +47,13 @@ export function Navbar({ minHeight }) {
           </NavLink>
 
           <NavLink
+            to="/AIChat"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            AI Chat
+          </NavLink>
+
+          <NavLink
             to="/MeasurementLogger"
             className={({ isActive }) => (isActive ? "active" : "")}
           >
