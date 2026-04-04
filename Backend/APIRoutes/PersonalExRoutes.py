@@ -3,13 +3,13 @@ from Services.PersonalExDriver import PersonalExDriver
 
 personalExRouteBlueprint = Blueprint("personalEx", __name__, url_prefix="/AHFULpersonalEx")
 
-# ── GET all personalExs ────────────────────────────────────────
-@personalExRouteBlueprint.route("/", methods=["GET"])
-def get_all_personal_exs():
-    personalExs, error = PersonalExDriver.get_all_personal_exs()
-    if error:
-        return jsonify({"error": error}), 500
-    return jsonify(personalExs), 200
+# ── GET all personalExs Not Active in Prod ────────────────────────────────────────
+# @personalExRouteBlueprint.route("/", methods=["GET"])
+# def get_all_personal_exs():
+#     personalExs, error = PersonalExDriver.get_all_personal_exs()
+#     if error:
+#         return jsonify({"error": error}), 500
+#     return jsonify(personalExs), 200
 
 # ── GET all personalExs for a specific user ──────────────────────────────────────
 @personalExRouteBlueprint.route("/<userId>", methods=["GET"])

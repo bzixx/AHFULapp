@@ -42,8 +42,7 @@ export function ExploreWorkouts() {
     setLoading(true);
     setError(null);
     try {
-      let url = "https://www.ahful.app/api/AHFULworkout";
-      if (!showAll && userId) {
+      if (userId) {
         url = `https://www.ahful.app/api/AHFULworkout/${userId}`;
       }
 

@@ -12,6 +12,11 @@ export function TOS() {
                     These Terms of Service ("Terms") govern your access to and use of the AHFUL app and related services (the "Service"). By accessing or using the Service you agree to be bound by these Terms. If you do not agree to all of the terms, then you may not access the Service.
                 </p>
 
+                <h2>This website is a UW-Stout Student Group Project for Spring 2026</h2>
+                <p>
+                    The authors of this website are students at the University of Wisconsin-Stout implementing their skills to show off the functional secure website they have built over the semester.
+                </p>
+
                 <h2>1. Using the Service</h2>
                 <p>
                     You may use the Service only in compliance with these Terms and all applicable laws. You are responsible for any activity that occurs under your account.

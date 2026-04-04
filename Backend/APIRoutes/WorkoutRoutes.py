@@ -3,13 +3,13 @@ from Services.WorkoutDriver import WorkoutDriver
 
 workoutRouteBlueprint = Blueprint("workouts", __name__, url_prefix="/AHFULworkout")
 
-# ── GET all workouts ──────────────────────────────────────
-@workoutRouteBlueprint.route("/", methods=["GET"])
-def get_all_workouts():
-    workouts, error = WorkoutDriver.get_all_workouts()
-    if error:
-        return jsonify({"error": error}), 500
-    return jsonify(workouts), 200
+# ── GET all workouts NOT ACTIVE IN PROD ───────────────────────────────────────
+# @workoutRouteBlueprint.route("/", methods=["GET"])
+# def get_all_workouts():
+#     workouts, error = WorkoutDriver.get_all_workouts()
+#     if error:
+#         return jsonify({"error": error}), 500
+#     return jsonify(workouts), 200
 
 # ── GET all workouts for a specific user ──────────────────────────────────────
 @workoutRouteBlueprint.route("/<userId>", methods=["GET"])
