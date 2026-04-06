@@ -2,6 +2,7 @@
 #   Intermediate between Routes and Objects.  Ensures validations and rules are applied before
 #   Calling Objects to interact with DB
 from DataModels.UserObject import UserObject
+from DataModels.VerificationObject import VerificationObject
 from datetime import datetime
 from bson import ObjectId, errors as bson_errors
 from flask_mail import Message
@@ -20,8 +21,31 @@ class EmailDriver:
         except (bson_errors.InvalidId, TypeError, ValueError):
             return None, f"Invalid {name} format; must be a 24-hex string"
         
+    # Email
+    @staticmethod
+    def verify_email(user_id, email):
+        verifies = VerificationObject.find_type_by_user(user_id, "email")
+        print(verifies)
+
+        if verifies:
+            return "email already sent", None
+
+        try:
+            response = EmailDriver.send_not_verified_email(user_id, email)
+            return response, None
+        except Exception as e:
+            return None, str(e)
+        
     # Send Email
-    def send_not_verified_email(email):
+    @staticmethod
+    def send_not_verified_email(user_id, email):
+        token = "1234abcd"
+        try:
+            response = VerificationObject.create("email", token, user_id)
+            print(response)
+        except Exception as e:
+            return None, str(e)
+
         msg = Message(
             subject="Your email is not verified",
             recipients=[email],
@@ -30,10 +54,10 @@ class EmailDriver:
                 "Our records show that your email has not been verified yet.\n\n"
                 "You currently may have limited access to the application.\n\n"
                 "Please verify your email to unlock full access.\n\n"
+                "Your verification code is {token}"
                 "— AHFUL Team"
             )
         )
         current_app.mail.send(msg)
 
-
-
+        return "Verification email sent", None

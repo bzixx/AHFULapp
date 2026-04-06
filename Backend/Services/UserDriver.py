@@ -279,9 +279,8 @@ class UserDriver:
                 if not user.get("email"):
                     return None, "User lacks email"
                 
-                EmailDriver.send_not_verified_email(user.get("email"))
-                return None, "User not verified"
-
+                response = EmailDriver.verify_email(user_id, user.get("email"))
+                return response, None
         except Exception as e:
             return None, str(e)
         
@@ -314,6 +313,7 @@ class UserDriver:
     def create_user(userJSONObject):
         UserObject.create(userJSONObject)
 
+    @staticmethod
     def update_user_info(dataToBeUpdated: dict):
 
         user_id = dataToBeUpdated.get("_id")
