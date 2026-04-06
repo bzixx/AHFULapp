@@ -23,14 +23,14 @@ def test_find_food_by_id():
     assert err is None
     assert food is not None
     assert food.get("_id") == oid
-    assert food.get("userId") == "699d0093795741a59fe13616"
+    assert food.get("user_id") == "699d0093795741a59fe13616"
     assert food.get("name") == "Apple"
     assert food.get("calsPerServing") == 95
     assert food.get("servings") == 1
     assert food.get("type") == "Lunch"
     assert food.get("time") == 1708473601
 
-    # Give a bad userId
+    # Give a bad user_id
     bad_oid = "699d0f5f888d8f649698307"
     food, err = FoodDriver.get_food_by_id(bad_oid)
 
@@ -44,7 +44,7 @@ def test_find_food_by_id():
     assert food is None
     assert err == bad_err_code
 
-    # Give an invalid userId
+    # Give an invalid user_id
     inv_oid = "000000000000000000000000"
     food, err = FoodDriver.get_food_by_id(inv_oid)
 
@@ -60,8 +60,8 @@ def test_find_food_by_id():
 
 def test_find_food_by_user():
     # Give a valid email
-    userId = "699d0093795741a59fe13616"
-    foods, err = FoodDriver.get_food_by_user(userId)
+    user_id = "699d0093795741a59fe13616"
+    foods, err = FoodDriver.get_food_by_user(user_id)
 
     food = next((item for item in foods if item["_id"] == "699d0f5f888d8f649698307e"), None)
 
@@ -72,14 +72,14 @@ def test_find_food_by_user():
     assert err is None
     assert food is not None
     assert food.get("_id") == "699d0f5f888d8f649698307e"
-    assert food.get("userId") == userId
+    assert food.get("user_id") == user_id
     assert food.get("name") == "Apple"
     assert food.get("calsPerServing") == 95
     assert food.get("servings") == 1
     assert food.get("type") == "Lunch"
     assert food.get("time") == 1708473601
 
-   # Give a bad userId
+   # Give a bad user_id
     bad_userId = "699d0093795741a59fe1361"
     food, err = FoodDriver.get_food_by_user(bad_userId)
 
@@ -93,7 +93,7 @@ def test_find_food_by_user():
     assert food is None
     assert err == bad_err_code
 
-    # Give an invalid userId
+    # Give an invalid user_id
     inv_oid = "000000000000000000000000"
     food, err = FoodDriver.get_food_by_id(inv_oid)
 
@@ -109,13 +109,13 @@ def test_find_food_by_user():
 
 def test_create_delete_food():
     # Give a valid user
-    userId = "699d0093795741a59fe13616"
+    user_id = "699d0093795741a59fe13616"
     name = "Lettuce"
     calsPerServing = 0
     servings = 99
     type = "Snack"
     time = 0
-    responseId, err = FoodDriver.create_food(userId, name, calsPerServing, servings, type, time)
+    responseId, err = FoodDriver.create_food(user_id, name, calsPerServing, servings, type, time)
 
     if err is not None:
         print(responseId, err)
@@ -136,7 +136,7 @@ def test_create_delete_food():
     assert err is None
     assert food is not None
     assert food.get("_id") == responseId
-    assert food.get("userId") == "699d0093795741a59fe13616"
+    assert food.get("user_id") == "699d0093795741a59fe13616"
     assert food.get("name") == "Lettuce"
     assert food.get("calsPerServing") == 0
     assert food.get("servings") == 99
@@ -163,7 +163,7 @@ def test_update_food_roundtrip():
     assert original.get("_id") == food_id
 
     # Save original values for restore
-    orig_userId         = original.get("userId")
+    orig_userId         = original.get("user_id")
     orig_name           = original.get("name")
     orig_calsPerServing = original.get("calsPerServing")
     orig_servings       = original.get("servings")
@@ -194,7 +194,7 @@ def test_update_food_roundtrip():
     assert updated.get("_id") == food_id
 
     # Assert updated values persisted
-    assert updated.get("userId") == orig_userId
+    assert updated.get("user_id") == orig_userId
     assert updated.get("name") == new_values["name"]
     assert updated.get("calsPerServing") == new_values["calsPerServing"]
     assert updated.get("servings") == new_values["servings"]
@@ -256,7 +256,7 @@ def test_food_invalid_inputs():
     # CREATE FOOD — INVALID INPUTS
     # ===============================================================
     base_create = {
-        "userId": valid_user_id,
+        "user_id": valid_user_id,
         "name": "Apple",
         "calsPerServing": 95,
         "servings": 1,
@@ -266,7 +266,7 @@ def test_food_invalid_inputs():
 
     # Missing required values
     missing_cases = [
-        {**base_create, "userId": None},
+        {**base_create, "user_id": None},
         {**base_create, "name": ""},
         {**base_create, "calsPerServing": None},
         {**base_create, "servings": 0},
@@ -279,7 +279,7 @@ def test_food_invalid_inputs():
         assert resp is None
         assert err == "You are missing a value. Please fix, then attempt to create food again"
 
-    # Invalid userId formats
+    # Invalid user_id formats
     resp, err = FoodDriver.create_food("nothex", "Apple", 95, 1, "Snack", 100)
     assert resp is None
     assert err == "Invalid userid format; must be a 24-hex string"
@@ -384,7 +384,7 @@ def test_food_partial_empty_unknown_updates():
     assert err == "You must provide at least one field to update" or err == "No valid fields to update"
 
     # UPDATE — ONLY UNKNOWN FIELDS
-    unknown_update = {"notARealField": 123, "userId": "SHOULD_NOT_BE_ALLOWED"}
+    unknown_update = {"notARealField": 123, "user_id": "SHOULD_NOT_BE_ALLOWED"}
 
     resp, err = FoodDriver.update_food(valid_food_id, unknown_update)
     assert resp is None
@@ -725,12 +725,12 @@ def test_find_personal_ex_by_id():
     assert ex.get("complete") == False
     assert ex.get("distance") == "0"
     assert ex.get("duration") == 120
-    assert ex.get("exerciseId") == "69b4885e542988e24fee392e"
+    assert ex.get("exercise_id") == "69b4885e542988e24fee392e"
     assert ex.get("reps") == "10"
     assert ex.get("sets") == "35"
-    assert ex.get("userId") == "699d0093795741a59fe13616"
+    assert ex.get("user_id") == "699d0093795741a59fe13616"
     assert ex.get("weight") == "150"
-    assert ex.get("workoutId") == "699d05d8f1677119323250bc"
+    assert ex.get("workout_id") == "699d05d8f1677119323250bc"
 
     # Give a bad _id
     bad_oid = "69ab5596dc5dee4f518a01c"
@@ -780,12 +780,12 @@ def test_find_personal_ex_by_workout():
     assert filtered[0].get("complete") == False
     assert filtered[0].get("distance") == "0"
     assert filtered[0].get("duration") == 120
-    assert filtered[0].get("exerciseId") == "69b4885e542988e24fee392e"
+    assert filtered[0].get("exercise_id") == "69b4885e542988e24fee392e"
     assert filtered[0].get("reps") == "10"
     assert filtered[0].get("sets") == "35"
-    assert filtered[0].get("userId") == "699d0093795741a59fe13616"
+    assert filtered[0].get("user_id") == "699d0093795741a59fe13616"
     assert filtered[0].get("weight") == "150"
-    assert filtered[0].get("workoutId") == "699d05d8f1677119323250bc"
+    assert filtered[0].get("workout_id") == "699d05d8f1677119323250bc"
 
     # Give a bad _id
     bad_oid = "699d05d8f1677119323250b"
@@ -795,7 +795,7 @@ def test_find_personal_ex_by_workout():
         print(exs, err)
 
     # Expected
-    bad_err_code = "Invalid workoutId format; must be a 24-hex string"
+    bad_err_code = "Invalid workout_id format; must be a 24-hex string"
     
     # Assertions
     assert exs is None
@@ -835,12 +835,12 @@ def test_find_personal_ex_by_user():
     assert filtered[0].get("complete") == False
     assert filtered[0].get("distance") == "0"
     assert filtered[0].get("duration") == 120
-    assert filtered[0].get("exerciseId") == "69b4885e542988e24fee392e"
+    assert filtered[0].get("exercise_id") == "69b4885e542988e24fee392e"
     assert filtered[0].get("reps") == "10"
     assert filtered[0].get("sets") == "35"
-    assert filtered[0].get("userId") == "699d0093795741a59fe13616"
+    assert filtered[0].get("user_id") == "699d0093795741a59fe13616"
     assert filtered[0].get("weight") == "150"
-    assert filtered[0].get("workoutId") == "699d05d8f1677119323250bc"
+    assert filtered[0].get("workout_id") == "699d05d8f1677119323250bc"
 
     # Give a bad _id
     bad_oid = "699d0093795741a59fe1361"
@@ -850,7 +850,7 @@ def test_find_personal_ex_by_user():
         print(exs, err)
 
     # Expected
-    bad_err_code = "Invalid userId format; must be a 24-hex string"
+    bad_err_code = "Invalid user_id format; must be a 24-hex string"
     
     # Assertions
     assert exs is None
@@ -875,13 +875,13 @@ def test_create_delete_personal_ex():
     completed = False
     distance = "0"
     duration = 240
-    exerciseId = "698d0bc06e5117c22dd7774b"
-    workoutId = "69c063229f8c3c92b650445b"
+    exercise_id = "698d0bc06e5117c22dd7774b"
+    workout_id = "69c063229f8c3c92b650445b"
     reps = 1
     sets = 1
-    userId = "699d0093795741a59fe13616"
+    user_id = "699d0093795741a59fe13616"
     weight = 600
-    responseId, err = PersonalExDriver.create_personal_ex(userId, exerciseId, workoutId, reps, sets, weight, duration, distance, completed)
+    responseId, err = PersonalExDriver.create_personal_ex(user_id, exercise_id, workout_id, reps, sets, weight, duration, distance, completed)
 
     if err is not None:
         print(responseId, err)
@@ -905,11 +905,11 @@ def test_create_delete_personal_ex():
     assert personalEx.get("complete") == False
     assert personalEx.get("distance") == "0"
     assert personalEx.get("duration") == 240
-    assert personalEx.get("exerciseId") == "698d0bc06e5117c22dd7774b"
-    assert personalEx.get("workoutId") == "69c063229f8c3c92b650445b"
+    assert personalEx.get("exercise_id") == "698d0bc06e5117c22dd7774b"
+    assert personalEx.get("workout_id") == "69c063229f8c3c92b650445b"
     assert personalEx.get("reps") == 1
     assert personalEx.get("sets") == 1
-    assert personalEx.get("userId") == "699d0093795741a59fe13616"
+    assert personalEx.get("user_id") == "699d0093795741a59fe13616"
     assert personalEx.get("weight") == 600
 
     # Delete created gym
@@ -1032,7 +1032,7 @@ def test_personal_ex_invalid_inputs_combined():
             reps=1, sets=1, weight=100, duration=60, distance="0", complete=False
         )
         assert resp is None
-        assert err == "You are missing a userId, workoutId or exerciseId. Please fix, then attempt to create personalEx again"
+        assert err == "You are missing a user_id, workout_id or exercise_id. Please fix, then attempt to create personalEx again"
 
     # Invalid user / workout IDs
     for bad in ["nothex", 123, [], {}, ""]:
@@ -1041,7 +1041,7 @@ def test_personal_ex_invalid_inputs_combined():
             reps=1, sets=1, weight=100, duration=60, distance="0", complete=False
         )
         assert resp is None
-        assert err == "You are missing a userId, workoutId or exerciseId. Please fix, then attempt to create personalEx again" or "Invalid userId format; must be a 24-hex string"
+        assert err == "You are missing a user_id, workout_id or exercise_id. Please fix, then attempt to create personalEx again" or "Invalid user_id format; must be a 24-hex string"
 
     for bad in ["nothex", 123, [], {}, ""]:
         resp, err = PersonalExDriver.create_personal_ex(
@@ -1049,7 +1049,7 @@ def test_personal_ex_invalid_inputs_combined():
             reps=1, sets=1, weight=100, duration=60, distance="0", complete=False
         )
         assert resp is None
-        assert err == "You are missing a userId, workoutId or exerciseId. Please fix, then attempt to create personalEx again" or "Invalid userId format; must be a 24-hex string"
+        assert err == "You are missing a user_id, workout_id or exercise_id. Please fix, then attempt to create personalEx again" or "Invalid user_id format; must be a 24-hex string"
 
     # GET PERSONAL EX BY ID — INVALID INPUTS
 
@@ -1067,7 +1067,7 @@ def test_personal_ex_invalid_inputs_combined():
     for bad in [None, "", 123, [], {}, "nothex"]:
         resp, err = PersonalExDriver.get_personal_exs_by_user(bad)
         assert resp is None
-        assert "Invalid userId format" in err or err is not None
+        assert "Invalid user_id format" in err or err is not None
 
     resp, err = PersonalExDriver.get_personal_exs_by_user("000000000000000000000000")
     assert resp is None
@@ -1078,7 +1078,7 @@ def test_personal_ex_invalid_inputs_combined():
     for bad in [None, "", 123, [], {}, "nothex"]:
         resp, err = PersonalExDriver.get_personal_exs_by_workout(bad)
         assert resp is None
-        assert "Invalid workoutId format" in err or err is not None
+        assert "Invalid workout_id format" in err or err is not None
 
     resp, err = PersonalExDriver.get_personal_exs_by_workout("000000000000000000000000")
     assert resp is None
@@ -1183,7 +1183,7 @@ def test_find_user_by_id():
     assert user.get("last_login_expire") == 1000000009
     assert user.get("magic_bits") == "010101010101010101010101010101_0"
 
-    # Give a bad userId
+    # Give a bad user_id
     bad_oid = "699d0093795741a59fe1361"
     user, err = UserDriver.get_user_by_id(bad_oid)
 
@@ -1191,13 +1191,13 @@ def test_find_user_by_id():
         print(user, err)
 
     # Expected
-    bad_err_code = "Invalid userId format; must be a 24-hex string"
+    bad_err_code = "Invalid user_id format; must be a 24-hex string"
     
     # Assertions
     assert user is None
     assert err == bad_err_code
 
-    # Give an invalid userId
+    # Give an invalid user_id
     inv_oid = "000000000000000000000000"
     user, err = UserDriver.get_user_by_id(inv_oid)
 
@@ -1336,7 +1336,7 @@ def test_user_invalid_inputs_combined():
     for bad in [None, "", 123, [], {}, "nothex"]:
         user, err = UserDriver.get_user_by_id(bad)
         assert user is None
-        assert err == "Invalid userId format; must be a 24-hex string" or err is not None
+        assert err == "Invalid user_id format; must be a 24-hex string" or err is not None
 
     user, err = UserDriver.get_user_by_id("000000000000000000000000")
     assert user is None
@@ -1452,7 +1452,7 @@ def test_find_workout_by_id():
     assert err is None
     assert ex is not None
     assert ex.get("_id") == oid
-    assert ex.get("userId") == "699d0093795741a59fe13616"
+    assert ex.get("user_id") == "699d0093795741a59fe13616"
     assert ex.get("gymId") == "699cff88400d9d43a32e924d"
     assert ex.get("title") == "Leg Day"
     assert ex.get("startTime") == 1742443200
@@ -1503,7 +1503,7 @@ def test_find_workout_by_user():
     assert err is None
     assert filtered[0] is not None
     assert filtered[0].get("_id") == wo_oid
-    assert filtered[0].get("userId") == "699d0093795741a59fe13616"
+    assert filtered[0].get("user_id") == "699d0093795741a59fe13616"
     assert filtered[0].get("gymId") == "699cff88400d9d43a32e924d"
     assert filtered[0].get("title") == "Leg Day"
     assert filtered[0].get("startTime") == 1742443200
@@ -1554,7 +1554,7 @@ def test_find_template_by_user():
     assert err is None
     assert filtered[0] is not None
     assert filtered[0].get("_id") == tp_oid
-    assert filtered[0].get("userId") == "699d0093795741a59fe13616"
+    assert filtered[0].get("user_id") == "699d0093795741a59fe13616"
     assert filtered[0].get("title") == "My Weekend Workout Template"
     assert filtered[0].get("template") == "True"
     assert filtered[0].get("startTime") == 0
@@ -1604,8 +1604,8 @@ def test_create_delete_workout():
     startTime = "1"
     endTime = "2"
     title = "A test workout"
-    userId = "699d0093795741a59fe13616"
-    responseId, err = WorkoutDriver.create_workout(userId, gymId, title, startTime, endTime)
+    user_id = "699d0093795741a59fe13616"
+    responseId, err = WorkoutDriver.create_workout(user_id, gymId, title, startTime, endTime)
 
     if err is not None:
         print(responseId, err)
@@ -1616,7 +1616,7 @@ def test_create_delete_workout():
     except (bson_errors.InvalidId, TypeError, ValueError):
         assert(False)
 
-    # Give created workoutId
+    # Give created workout_id
     workout, err = WorkoutDriver.get_workout_by_id(responseId)
 
     if err is not None:
@@ -1629,7 +1629,7 @@ def test_create_delete_workout():
     assert workout.get("gymId") == "699cff88400d9d43a32e924d"
     assert workout.get("startTime") == 1
     assert workout.get("endTime") == 2
-    assert workout.get("userId") == "699d0093795741a59fe13616"
+    assert workout.get("user_id") == "699d0093795741a59fe13616"
     
     # Delete created gym
     response, err = WorkoutDriver.delete_workout(responseId)
@@ -1641,8 +1641,8 @@ def test_create_delete_workout():
 def test_create_delete_template():
     # Give a valid gymId
     title = "A test template"
-    userId = "699d0093795741a59fe13616"
-    responseId, err = WorkoutDriver.create_template(userId, title)
+    user_id = "699d0093795741a59fe13616"
+    responseId, err = WorkoutDriver.create_template(user_id, title)
 
     if err is not None:
         print(responseId, err)
@@ -1653,8 +1653,8 @@ def test_create_delete_template():
     except (bson_errors.InvalidId, TypeError, ValueError):
         assert(False)
 
-    # Give created workoutId
-    templates, err = WorkoutDriver.get_user_templates(userId)
+    # Give created workout_id
+    templates, err = WorkoutDriver.get_user_templates(user_id)
 
     if err is not None:
         print(templates, err)
@@ -1666,7 +1666,7 @@ def test_create_delete_template():
     assert filtered is not None
     assert filtered[0].get("_id") == responseId
     assert filtered[0].get("startTime") == 0
-    assert filtered[0].get("userId") == "699d0093795741a59fe13616"
+    assert filtered[0].get("user_id") == "699d0093795741a59fe13616"
     assert filtered[0].get("title") == "A test template"
     assert filtered[0].get("template") == "True"
     
@@ -1789,17 +1789,17 @@ def test_workout_invalid_inputs_combined():
     # Missing required
     resp, err = WorkoutDriver.create_workout(None, valid_gym_id, "Test", "1", "2")
     assert resp is None
-    assert err == "You are missing a userId or startTime. Please fix, then attempt to create workout again"
+    assert err == "You are missing a user_id or startTime. Please fix, then attempt to create workout again"
 
     resp, err = WorkoutDriver.create_workout(valid_user_id, valid_gym_id, "Test", None, "2")
     assert resp is None
-    assert err == "You are missing a userId or startTime. Please fix, then attempt to create workout again"
+    assert err == "You are missing a user_id or startTime. Please fix, then attempt to create workout again"
 
     # Invalid userIds
     for bad in ["nothex", 123, [], {}, ""]:
         resp, err = WorkoutDriver.create_workout(bad, valid_gym_id, "Test", "1", "2")
         assert resp is None
-        assert err == "Invalid userId format; must be a 24-hex string" or "You are missing a userId or startTime. Please fix, then attempt to create workout again"
+        assert err == "Invalid user_id format; must be a 24-hex string" or "You are missing a user_id or startTime. Please fix, then attempt to create workout again"
 
     # Invalid gymIds
     for bad in ["nothex", 123, [], {}, ""]:
@@ -1818,11 +1818,11 @@ def test_workout_invalid_inputs_combined():
     # CREATE TEMPLATE — INVALID INPUTS
     resp, err = WorkoutDriver.create_template(None, "TestTemplate")
     assert resp is None
-    assert err == "You are missing a userId. Please fix, then attempt to create workout again"
+    assert err == "You are missing a user_id. Please fix, then attempt to create workout again"
 
     resp, err = WorkoutDriver.create_template("nothex", "TestTemplate")
     assert resp is None
-    assert err == "Invalid userId format; must be a 24-hex string"
+    assert err == "Invalid user_id format; must be a 24-hex string"
 
     resp, err = WorkoutDriver.create_template("000000000000000000000000", "TestTemplate")
     assert resp is None
@@ -1918,7 +1918,7 @@ def test_find_measurement_by_id():
     assert err is None
     assert m is not None
     assert m.get("_id") == oid
-    assert m.get("userId") == "699f79394048f9ec8b5b0ed2"
+    assert m.get("user_id") == "699f79394048f9ec8b5b0ed2"
     assert m.get("date") == "2026-03-13T00:00:00.000Z"
     assert m.get("arms") == 70
     assert m.get("hips") == 130
@@ -1942,8 +1942,8 @@ def test_find_measurement_by_id():
     assert err == "Measurement not found"
 
 def test_find_measurements_by_user():
-    userId = "699f79394048f9ec8b5b0ed2"
-    m, err = MeasurementDriver.get_measurements_by_user(userId)
+    user_id = "699f79394048f9ec8b5b0ed2"
+    m, err = MeasurementDriver.get_measurements_by_user(user_id)
 
     assert err is None
     assert isinstance(m, list)
@@ -1954,13 +1954,13 @@ def test_find_measurements_by_user():
     assert known is not None
     assert known.get("arms") == 70
 
-    # Bad userId format
+    # Bad user_id format
     bad_uid = "699f79394048f9ec8b5b0ed"
     m, err = MeasurementDriver.get_measurements_by_user(bad_uid)
     assert m is None or m == []
 
 def test_create_delete_measurement():
-    userId = "699f79394048f9ec8b5b0ed2"
+    user_id = "699f79394048f9ec8b5b0ed2"
 
     data = {
         "date": "2026-03-20T00:00:00.000Z",
@@ -1969,7 +1969,7 @@ def test_create_delete_measurement():
         "weight": 200
     }
 
-    new_id, err = MeasurementDriver.create_measurement(userId, data)
+    new_id, err = MeasurementDriver.create_measurement(user_id, data)
     if err is not None:
         print(new_id, err)
 
@@ -2057,33 +2057,33 @@ def test_update_measurement_roundtrip():
     assert restored.get("thighs") == orig_thighs
 
 def test_create_measurement_missing_date():
-    userId = "699f79394048f9ec8b5b0ed2"
+    user_id = "699f79394048f9ec8b5b0ed2"
     data = {
         "arms": 40
     }
 
-    resp, err = MeasurementDriver.create_measurement(userId, data)
+    resp, err = MeasurementDriver.create_measurement(user_id, data)
     assert resp is None
     assert err == "You must provide a measurement date"
 
 def test_create_measurement_no_values():
-    userId = "699f79394048f9ec8b5b0ed2"
+    user_id = "699f79394048f9ec8b5b0ed2"
     data = {
         "date": "2026-03-20T00:00:00.000Z"
     }
 
-    resp, err = MeasurementDriver.create_measurement(userId, data)
+    resp, err = MeasurementDriver.create_measurement(user_id, data)
     assert resp is None
     assert err == "You must provide at least one measurement value"
 
 def test_create_measurement_invalid_field_value():
-    userId = "699f79394048f9ec8b5b0ed2"
+    user_id = "699f79394048f9ec8b5b0ed2"
     data = {
         "date": "2026-03-20T00:00:00.000Z",
         "weight": "abc"     # invalid
     }
 
-    resp, err = MeasurementDriver.create_measurement(userId, data)
+    resp, err = MeasurementDriver.create_measurement(user_id, data)
     assert resp is None
     assert "Invalid weight" in err
 
