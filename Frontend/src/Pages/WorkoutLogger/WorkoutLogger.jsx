@@ -625,7 +625,7 @@ export function WorkoutLogger() {
     }
 
     getWorkout();
-  }, [userAuthenticated, workoutId]);
+  }, [userAuthenticated]);
 
   // ─── Load Personal Exercises for Current Workout ───────────────────────────────
   useEffect(() => {
@@ -780,7 +780,7 @@ export function WorkoutLogger() {
               value={workoutTitle}
               onChange={(e) => setWorkoutTitle(e.target.value)}
             />
-            {workout && <h3>{unixToDate(workout.startTime)}</h3>}
+            <h3>{workout?.startTime ? unixToDate(workout.startTime) : ""}</h3>
           </div>
 
           {/* Exercise Table */}
@@ -1189,7 +1189,6 @@ export function WorkoutLogger() {
 
               {templatePreview.exercises.map(
                 (ex, i) => (
-                  console.log(personalExNames[ex.exerciseId]),
                   (
                     <React.Fragment key={ex._id || i}>
                       <div

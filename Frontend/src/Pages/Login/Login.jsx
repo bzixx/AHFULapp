@@ -26,7 +26,6 @@ export function Login() {
     try{
       setStatusText(`Loggging in with Google...`);
       let fetchResponse = await handle_google_login(response);
-      console.log("AHFUL Google Button Login successful. Server Response:", fetchResponse);
       dispatch(authLogin(fetchResponse));
     }catch(error){
       console.error("Google login error:", error);
