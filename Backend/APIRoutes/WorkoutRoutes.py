@@ -51,8 +51,8 @@ def create_workout():
         return jsonify({"error": "No data provided"}), 400
 
     workout_id, error = WorkoutDriver.create_workout(
-        userId=data.get("userId"),
-        gymId=data.get("gymId"),
+        user_id=data.get("user_id"),
+        gym_id=data.get("gym_id"),
         title=data.get("title"),
         startTime=data.get("startTime"),
         endTime=data.get("endTime"),
@@ -70,7 +70,7 @@ def create_template():
         return jsonify({"error": "No data provided"}), 400
 
     workout_id, error = WorkoutDriver.create_template(
-        userId=data.get("userId"),
+        user_id=data.get("user_id"),
         title=data.get("title")
     )
     
@@ -110,9 +110,9 @@ def delete_workout(workout_id):
         return jsonify({"error": error}), 400
     return jsonify({"message": "Workout deleted", "workout_id": response}), 200
 # ── GET workout streak for user ──────────────────────────────────────
-@workoutRouteBlueprint.route("/streak/<userId>", methods=["GET"])
-def get_workout_streak(userId):
-    streak_data, error = WorkoutDriver.get_streak(userId)
+@workoutRouteBlueprint.route("/streak/<user_id>", methods=["GET"])
+def get_workout_streak(user_id):
+    streak_data, error = WorkoutDriver.get_streak(user_id)
     if error:
         return jsonify({"error": error}), 404
     return jsonify(streak_data), 200
