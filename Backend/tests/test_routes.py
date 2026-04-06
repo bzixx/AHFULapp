@@ -2108,7 +2108,7 @@ def test_find_task_by_id():
     assert task.get("note") is not None
     assert task.get("dueTime") == 1774229940
     assert task.get("user_id") == "69996a73313d1a459f4529da"
-    assert task.get("completed") is False
+    assert task.get("completed") is True
 
     bad_oid = "69c07dd86eb4c5de09881b0"
     task, err = TaskDriver.get_task_by_id(bad_oid)

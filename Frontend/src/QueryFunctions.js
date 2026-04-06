@@ -166,6 +166,8 @@ export async function handle_logout() {
 }
 
 export async function handle_google_login(response) {
+    //TODO: need to fetch UserSettings and Set to Redux on Non-localStroage Logins
+
   try {
     //URL to send POST to later
     const backendPOSTURL = `http://localhost:5000/AHFULauth/google-login`;
@@ -242,13 +244,13 @@ export async function whoami(userDataToVerify) {
     if (backendVerificationResponse.ok) {
       const data = await backendVerificationResponse.json();
       return data
-      
+
     } else {
       throw new Error(`Session validation failed: ${backendVerificationResponse.status} ${backendVerificationResponse.statusText}`);
     }
   } catch (err) {
     console.error('Query Function Session validation failed:', err);
-  } 
+  }
 }
 
 // ──  Template functions ─────────────────────────────────────────────────────────
@@ -341,6 +343,19 @@ export async function forwardGeocode(address) {
     return null;
   } catch (err) {
     console.error("forwardGeocode error:", err);
+    return null;
+  }
+}
+
+export async function fetchGym(gymId) {
+  try {
+    const res = await fetch(`http://localhost:5000/AHFULgyms/${gymId}`);
+    if (!res.ok) {
+      throw new Error(`Failed to fetch gym: ${res.status} ${res.statusText}`);
+    }
+    return res.json();
+  } catch (err) {
+    console.error("fetchGym error:", err);
     return null;
   }
 }

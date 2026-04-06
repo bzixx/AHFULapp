@@ -82,7 +82,7 @@ class WorkoutDriver:
             "userId": ObjectId(userId),
             "title": title,
             "template": True,
-            "startTime": int(0),
+            "startTime": int(0)
         }
 
         try:

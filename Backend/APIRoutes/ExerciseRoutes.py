@@ -20,7 +20,7 @@ def get_more_metadata():
 
     if trueNext_falsePrev is None:
         return jsonify({"error": "No search query provided"}), 400
-    
+
     if trueNext_falsePrev == "next":
         metadata, error = ExerciseDriver.get_next_metadata(providedPage)
     elif trueNext_falsePrev == "prev":
@@ -49,7 +49,7 @@ def get_more_exercises():
 
     if trueNext_falsePrev is None:
         return jsonify({"error": "No search query provided"}), 400
-    
+
     if trueNext_falsePrev == "next":
         metadata, error = ExerciseDriver.get_next_exercises(providedPage)
     elif trueNext_falsePrev == "prev":
@@ -89,7 +89,7 @@ def create_exercise():
         return jsonify({"error": "No data provided"}), 400
 
     exercise_id, error = ExerciseDriver.create_exercise(data)
-    
+
     if error:
         return jsonify({"error": error}), 400
     return jsonify({"exercise_id": exercise_id, "message": "Exercise created"}), 201

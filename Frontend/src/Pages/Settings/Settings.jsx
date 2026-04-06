@@ -2,7 +2,7 @@ import "./Settings.css";
 import "../../Stylesheets/Themes/Lightmode.css";
 import "../../Stylesheets/Themes/Darkmode.css";
 import { Navbar } from "../../components/navbar/navbar.jsx";
-
+import { Header } from "../../components/Header/Header.jsx";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -67,7 +67,7 @@ export function Settings() {
     <div className="settings-page">
       <div className="settings-container">
         <Navbar/>
-
+        <Header />
         <div className="settings-content">
           <h2>Personal Settings</h2>
 

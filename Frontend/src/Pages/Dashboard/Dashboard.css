@@ -182,16 +182,6 @@
   line-height: 1.5;
 }
 
-.gym-footer {
-  margin-top: auto;
-  padding: 24px 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #1f2937;
-  color: rgba(255,255,255,0.7);
-}
-
 /* Internal Dashboard Styles */
 .dashboard-internal {
   padding: 16px;
@@ -262,11 +252,6 @@
     grid-template-columns: 1fr;
   }
   
-  .gym-footer {
-    flex-direction: column;
-    gap: 12px;
-    text-align: center;
-  }
 }
 
 .streaks-container {
