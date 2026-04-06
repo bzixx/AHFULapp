@@ -10,7 +10,7 @@ class VerificationObject:
     def _serialize(verify):
         if verify:
             verify["_id"] = str(verify["_id"])
-            verify["user_id"] = str(verify["user_id"])
+            #verify["user_id"] = str(verify["user_id"])
         return verify
 
     @staticmethod

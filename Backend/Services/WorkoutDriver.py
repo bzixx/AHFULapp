@@ -25,14 +25,14 @@ class WorkoutDriver:
     def create_workout(userId, gymId, title, startTime, endTime):
         # Validate required fields
         if (not userId) or (startTime is None):
-            return None, "You are missing a userId or startTime. Please fix, then attempt to create workout again"
+            return None, "You are missing a user_id or startTime. Please fix, then attempt to create workout again"
         
         oid, err = WorkoutDriver._validate_obj_id(userId, "userId")
         if err:
             return None, err
         gym_oid = None
         if gymId is not None:
-            gym_oid, err = WorkoutDriver._validate_obj_id(gymId, "gymId")
+            gym_oid, err = WorkoutDriver._validate_obj_id(gymId, "gym_id")
             if err:
                 return None, err
 

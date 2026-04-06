@@ -55,10 +55,10 @@ class PersonalExDriver:
 
 
         personal_ex_data = {
-            "userId": ObjectId(user_id),
+            "user_id": ObjectId(user_id),
             # "exercise_id": ObjectId(exercise_id),
-            "exerciseId": exercise_id,
-            "workoutId": ObjectId(workout_id),
+            "exercise_id": exercise_id,
+            "workout_id": ObjectId(workout_id),
             "reps": reps,
             "sets": sets,
             "weight": weight,

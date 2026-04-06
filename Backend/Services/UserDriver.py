@@ -44,7 +44,7 @@ class UserDriver:
     def get_user_by_id(id):
         if not id:
             return None, "You must provide a user id to grab"
-        oid, err = UserDriver._validate_obj_id(id, "userId")
+        oid, err = UserDriver._validate_obj_id(id, "user_id")
         if err:
             return None, err
         try:
