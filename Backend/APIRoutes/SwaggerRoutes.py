@@ -1255,235 +1255,27 @@ swaggerConfig = {
   }
 },
 
-
-    "/AHFULworkout/": {
-      "get": {
-        "summary": "Get all workouts",
-        "tags": ["Workout"],
-        "responses": {
-          "200": {
-            "description": "A list of workouts",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": { "type": "object" }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/AHFULworkout/{userId}": {
-      "get": {
-        "summary": "Get workouts by user id",
-        "tags": ["Workout"],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": True,
-            "description": "User Id of the user",
-            "schema": { "type": "string"}
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User found",
-            
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
-                    "userId": { "type": "string", "format": "email", "example": "anEmail@email.com" },
-                    "title": { "type": "string", "example": "Daily workout" },
-                    "gymId": { "type": "string", "example": 0 },
-                    "startTime": { "type": "integer", "example": 0 },
-                    "endTime": { "type": "integer", "example": 0 }
-                  },
-                "required": ["_id", "email", "startTime"]
-                }
-              }
-            }
-
-          },
-          "404": {
-            "description": "Workouts not found",
-            "content": {
-              "application/json": {
-                "schema": { 
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/AHFULworkout/templates/{userId}": {
-      "get": {
-        "summary": "Get templates by user id",
-        "tags": ["Workout"],
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "required": True,
-            "description": "User Id of the user",
-            "schema": { "type": "string"}
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Templates found",
-            
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "_id": { "type": "string", "example": "6993a3b2b684e1023202a5e9" },
-                    "userId": { "type": "string", "format": "email", "example": "anEmail@email.com" },
-                    "title": { "type": "string", "example": "Daily workout" },
-                    "startTime": { "type": "integer", "example": 0 },
-                  },
-                "required": ["_id", "email", "startTime"]
-                }
-              }
-            }
-
-          },
-          "404": {
-            "description": "Templates not found",
-            "content": {
-              "application/json": {
-                "schema": { 
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/AHFULworkout/id/{id}": {
-      "get": {
-        "summary": "Get workout by id",
-        "tags": ["Workout"],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": True,
-            "description": "id of the workout",
-            "schema": { "type": "string"}
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Workout found",
-            
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
-                  },
-                "required": ["_id"]
-                }
-              }
-            }
-
-          },
-          "404": {
-            "description": "Workout not found",
-            "content": {
-              "application/json": {
-                "schema": { 
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/AHFULworkout/create": {
-      "post": {
-        "summary": "Create a new workout",
-        "tags": ["Workout"],
-        "requestBody": {
-          "required": True,
+"/AHFULworkout/": {
+    "get": {
+      "summary": "Get all workouts",
+      "tags": ["Workout"],
+      "responses": {
+        "200": {
+          "description": "List of all workouts",
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "required": ["email", "start_time"],
-                "properties": {
-                  "title": { "type": "string", "example": "A workout" },
-                  "userId": { "type": "string", "example": "699d0093795741a59fe13616" },
-                  "gymId": { "type": "string", "example": "699d022c795741a59fe1361f" },
-                  "startTime": { "type": "int", "example": "0" },
-                  "endTime": { "type": "int", "example": "0" }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Workout created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
+                "type": "array",
+                "items": {
                   "type": "object",
                   "properties": {
-                    "email": { "type": "string", "format": "email" },
-                    "message": { "type": "string", "example": "User created successfully" }
-                  },
-                  "required": ["email", "message"]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input or creation error",
-            "content": {
-              "application/json": {
-                "schema": { 
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
+                    "_id": { "type": "string" },
+                    "userId": { "type": "string" },
+                    "gymId": { "type": "string" },
+                    "title": { "type": "string" },
+                    "startTime": { "type": "integer" },
+                    "endTime": { "type": "integer" },
+                    "template": { "type": "boolean", "example": False }
                   }
                 }
               }
@@ -1491,187 +1283,305 @@ swaggerConfig = {
           }
         }
       }
-    },
+    }
+  },
 
-    "/AHFULworkout/delete/{workout_id}": {
-      "delete": {
-        "summary": "Delete workout by id",
-        "tags": ["Workout"],
-        "parameters": [
-          {
-            "name": "workout_id",
-            "in": "path",
-            "required": True,
-            "description": "The id of the workout (Mongo ObjectId as string)",
-            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Workout deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string", "example": "Workout deleted" },
-                    "gym_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
-                  },
-                  "required": ["message", "workout_id"]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Workout not found or already deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "Workout not found or already deleted" }
-                  },
-                  "required": ["error"]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid id format or missing id",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "You must provide a workout id to delete" }
-                  },
-                  "required": ["error"]
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  },
-                  "required": ["error"]
-                }
-              }
-            }
-          }
-        }
+"/AHFULworkout/{user_id}": {
+  "get": {
+    "summary": "Get workouts by user id",
+    "tags": ["Workout"],
+    "parameters": [
+      {
+        "name": "user_id",
+        "in": "path",
+        "required": True,
+        "schema": { "type": "string" }
       }
-    },
-
-    "/AHFULworkout/update/{workout_id}": {
-      "put": {
-        "summary": "Update a workout",
-        "description": "Updates allowed fields of a workout by id. Server treats PUT as a partial update of allowed fields.",
-        "tags": ["Workout"],
-        "parameters": [
-          {
-            "name": "workout_id",
-            "in": "path",
-            "required": True,
-            "description": "The id of the workout (Mongo ObjectId as string)",
-            "schema": { "type": "string", "example": "698d07b26e5117c22dd7772e" }
-          }
-        ],
-        "requestBody": {
-          "required": True,
-          "content": {
-            "application/json": {
-              "schema": {
+    ],
+    "responses": {
+      "200": {
+        "description": "Workouts for the user",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
                 "type": "object",
                 "properties": {
-                  "startTime":     { "type": "integer", "example": 100 },
-                  "endTime":     { "type": "integer", "example": 200 },
-                  "title":   { "type": "string",  "example": "An example workout" }
-                },
-                "additionalProperties": False
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Workout updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string", "example": "Workout updated" },
-                    "workout": {
-                      "type": "object",
-                      "properties": {
-                        "_id":        { "type": "string", "example": "69af2a4598d0f4227b25ed71" },
-                        "gymId":{ "type": "string", "example": "698d0bc06e5117c22dd7774b" },
-                        "userId":    { "type": "string", "example": "699d0093795741a59fe13616" },
-                        "endTime":      { "type": "integer", "example": 10 },
-                        "startTime":      { "type": "integer", "example": 5 },
-                        "title":    { "type": "string",  "example": "A workout"}
-                      },
-                      "required": ["_id", "userId"]
-                    }
-                  },
-                  "required": ["message", "workout"]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input or no valid fields to update",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "You must provide a JSON body with at least one field to update" }
-                  },
-                  "required": ["error"]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Workout not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "Workout not found" }
-                  },
-                  "required": ["error"]
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  },
-                  "required": ["error"]
+                  "_id": { "type": "string" },
+                  "userId": { "type": "string" },
+                  "gymId": { "type": "string" },
+                  "title": { "type": "string" },
+                  "startTime": { "type": "integer" },
+                  "endTime": { "type": "integer" },
+                  "template": { "type": "boolean", "example": False }
                 }
               }
             }
           }
         }
       }
-    },
+    }
+  }
+},
 
-    
+"/AHFULworkout/templates/user/{user_id}": {
+  "get": {
+    "summary": "Get workout templates for a user",
+    "tags": ["Workout"],
+    "parameters": [
+      {
+        "name": "user_id",
+        "in": "path",
+        "required": True,
+        "schema": { "type": "string" }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Templates for the user",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "_id": { "type": "string" },
+                  "userId": { "type": "string" },
+                  "title": { "type": "string" },
+                  "startTime": { "type": "integer", "example": 0 },
+                  "endTime": { "type": "integer", "example": 0 },
+                  "template": { "type": "boolean", "example": True }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+},
+
+"/AHFULworkout/templates/{id}": {
+  "get": {
+    "summary": "Get template by id",
+    "tags": ["Workout"],
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": True,
+        "schema": { "type": "string" }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Template found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "_id": { "type": "string" },
+                "userId": { "type": "string" },
+                "title": { "type": "string" },
+                "startTime": { "type": "integer", "example": 0 },
+                "endTime": { "type": "integer", "example": 0 },
+                "template": { "type": "boolean", "example": True }
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Template not found"
+      }
+    }
+  }
+},
+
+"/AHFULworkout/id/{id}": {
+  "get": {
+    "summary": "Get workout by id",
+    "tags": ["Workout"],
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": True,
+        "schema": { "type": "string" }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Workout found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "_id": { "type": "string" },
+                "userId": { "type": "string" },
+                "gymId": { "type": "string" },
+                "title": { "type": "string" },
+                "startTime": { "type": "integer" },
+                "endTime": { "type": "integer" },
+                "template": { "type": "boolean", "example": False }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+},
+
+"/AHFULworkout/create": {
+  "post": {
+    "summary": "Create a workout",
+    "tags": ["Workout"],
+    "requestBody": {
+      "required": True,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "required": ["userId", "startTime"],
+            "properties": {
+              "userId": { "type": "string" },
+              "gymId": { "type": "string" },
+              "title": { "type": "string" },
+              "startTime": { "type": "integer" },
+              "endTime": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "Workout created"
+      }
+    }
+  }
+},
+
+"/AHFULworkout/create/template": {
+  "post": {
+    "summary": "Create a workout template",
+    "tags": ["Workout"],
+    "requestBody": {
+      "required": True,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "required": ["userId", "title"],
+            "properties": {
+              "userId": { "type": "string" },
+              "title": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "Template created"
+      }
+    }
+  }
+},
+
+"/AHFULworkout/update/{workout_id}": {
+  "put": {
+    "summary": "Update a workout",
+    "tags": ["Workout"],
+    "parameters": [
+      {
+        "name": "workout_id",
+        "in": "path",
+        "required": True,
+        "schema": { "type": "string" }
+      }
+    ],
+    "requestBody": {
+      "required": True,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "startTime": { "type": "integer" },
+              "endTime": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Workout updated"
+      }
+    }
+  }
+},
+
+"/AHFULworkout/delete/{workout_id}": {
+  "delete": {
+    "summary": "Delete a workout",
+    "tags": ["Workout"],
+    "parameters": [
+      {
+        "name": "workout_id",
+        "in": "path",
+        "required": True,
+        "schema": { "type": "string" }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Workout deleted"
+      }
+    }
+  }
+},
+
+"/AHFULworkout/streak/{userId}": {
+  "get": {
+    "summary": "Get workout streak",
+    "tags": ["Workout"],
+    "parameters": [
+      {
+        "name": "userId",
+        "in": "path",
+        "required": True,
+        "schema": { "type": "string" }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Workout streak data",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "streak": { "type": "integer" },
+                "lastWorkoutDate": { "type": "string", "nullable": True }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+},
+
+
+
     "/AHFULgyms/": {
       "get": {
         "summary": "Get all gyms",
@@ -2381,6 +2291,7 @@ swaggerConfig = {
         }
       }
     },
+    
     "/AHFULmeasurements/": {
       "get": {
         "summary": "Get all measurements",
@@ -3588,59 +3499,5 @@ swaggerConfig = {
         }
       }
     },
-
-    "/AHFULworkout/create/template": {
-      "post": {
-        "summary": "Create a workout template",
-        "tags": ["Workout"],
-        "requestBody": {
-          "required": True,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["userId"],
-                "properties": {
-                  "userId": { "type": "string", "example": "699d0093795741a59fe13616" },
-                  "title": { "type": "string", "example": "My Workout Template" }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Workout template created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "workout_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" },
-                    "message": { "type": "string", "example": "Workout created" }
-                  },
-                  "required": ["workout_id", "message"]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input or creation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-
   }
 }
