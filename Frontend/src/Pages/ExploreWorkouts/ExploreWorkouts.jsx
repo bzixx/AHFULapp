@@ -413,12 +413,6 @@ export function ExploreWorkouts() {
                             <span>{exercise.duration}s</span>
                           </div>
                         )}
-                        {exercise.distance && exercise.distance > 0 && (
-                          <div className="exercise-item-detail">
-                            <span className="exercise-detail-label">Distance:</span>{" "}
-                            <span>{exercise.distance} mi</span>
-                          </div>
-                        )}
                         {(exercise.complete || exercise.completed) && (
                           <div className="exercise-item-detail">
                             <span className="exercise-item-completed">✓ Completed</span>
