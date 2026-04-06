@@ -13,9 +13,9 @@ class PersonalExObject:
         """Convert MongoDB document to JSON-safe dict."""
         if personalEx:
             personalEx["_id"] = str(personalEx["_id"])
-            personalEx["userId"] = str(personalEx["userId"])
-            personalEx["workoutId"] = str(personalEx["workoutId"])
-            personalEx["exerciseId"] = str(personalEx["exerciseId"])
+            personalEx["user_id"] = str(personalEx["user_id"])
+            personalEx["workout_id"] = str(personalEx["workout_id"])
+            personalEx["exercise_id"] = str(personalEx["exercise_id"])
         return personalEx
     
     # ── Create ─────────────────────────────────────────────────────────────────
@@ -37,12 +37,12 @@ class PersonalExObject:
     
     @staticmethod
     def find_by_user(user_id):
-        personalEx = personalExCollection.find({"userId": ObjectId(user_id)})
+        personalEx = personalExCollection.find({"user_id": ObjectId(user_id)})
         return [PersonalExObject._serialize(w) for w in personalEx]
     
     @staticmethod
     def find_by_workout(workout_id):
-        personalEx = personalExCollection.find({"workoutId": ObjectId(workout_id)})
+        personalEx = personalExCollection.find({"workout_id": ObjectId(workout_id)})
         return [PersonalExObject._serialize(w) for w in personalEx]
     
     # ── Update ──────────────────────────────────────────────────────────────────

@@ -13,8 +13,8 @@ class WorkoutObject:
         """Convert MongoDB document to JSON-safe dict."""
         if workout:
             workout["_id"] = str(workout["_id"])
-            workout["userId"] = str(workout["userId"])
-            workout["gymId"] = str(workout["gymId"])
+            workout["user_id"] = str(workout["user_id"])
+            workout["gym_id"] = str(workout["gym_id"])
         return workout
     
     @staticmethod
@@ -22,7 +22,7 @@ class WorkoutObject:
         """Convert MongoDB document to JSON-safe dict."""
         if workout:
             workout["_id"] = str(workout["_id"])
-            workout["userId"] = str(workout["userId"])
+            workout["user_id"] = str(workout["user_id"])
         return workout
     
     # ── Create ─────────────────────────────────────────────────────────────────
@@ -55,9 +55,9 @@ class WorkoutObject:
         return WorkoutObject._serialize(workout)
     
     @staticmethod
-    def find_by_user(userId):
+    def find_by_user(user_id):
         workout = workoutCollection.find({
-            "userId": ObjectId(userId),
+            "user_id": ObjectId(user_id),
             "template": False,
             "startTime": {"$ne": 0}
         })
@@ -73,9 +73,9 @@ class WorkoutObject:
         return WorkoutObject._serialize_template(template)
 
     @staticmethod
-    def find_user_templates(userId):
+    def find_user_templates(user_id):
         template = workoutCollection.find({
-            "userId": ObjectId(userId),
+            "user_id": ObjectId(user_id),
             "template": True,
             "startTime": 0
         })

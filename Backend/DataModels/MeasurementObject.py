@@ -10,7 +10,7 @@ class MeasurementObject:
     def _serialize(measurement):
         if measurement:
             measurement["_id"] = str(measurement["_id"])
-            measurement["userId"] = str(measurement["userId"])
+            measurement["user_id"] = str(measurement["user_id"])
         return measurement
 
     @staticmethod
@@ -27,7 +27,7 @@ class MeasurementObject:
         return MeasurementObject._serialize(measurement)
 
     def find_by_user(user_id):
-        measurements = measurementCollection.find({"userId": ObjectId(user_id)}).sort("date", 1)
+        measurements = measurementCollection.find({"user_id": ObjectId(user_id)}).sort("date", 1)
         return [MeasurementObject._serialize(m) for m in measurements]
 
     @staticmethod

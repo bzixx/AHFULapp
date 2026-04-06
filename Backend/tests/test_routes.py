@@ -12,7 +12,7 @@ from Services.TaskDriver import TaskDriver
 # Food
 
 def test_find_food_by_id():
-    # Give a valid gymId
+    # Give a valid gym_id
     oid = "699d0f5f888d8f649698307e"
     food, err = FoodDriver.get_food_by_id(oid)
 
@@ -80,8 +80,8 @@ def test_find_food_by_user():
     assert food.get("time") == 1708473601
 
    # Give a bad user_id
-    bad_userId = "699d0093795741a59fe1361"
-    food, err = FoodDriver.get_food_by_user(bad_userId)
+    bad_user_id = "699d0093795741a59fe1361"
+    food, err = FoodDriver.get_food_by_user(bad_user_id)
 
     if err is not None:
         print(food, err)
@@ -115,19 +115,19 @@ def test_create_delete_food():
     servings = 99
     type = "Snack"
     time = 0
-    responseId, err = FoodDriver.create_food(user_id, name, calsPerServing, servings, type, time)
+    response_id, err = FoodDriver.create_food(user_id, name, calsPerServing, servings, type, time)
 
     if err is not None:
-        print(responseId, err)
+        print(response_id, err)
         
     # Check if response is valid id
     try:
-        responseObj = ObjectId(str(responseId))
+        responseObj = ObjectId(str(response_id))
     except (bson_errors.InvalidId, TypeError, ValueError):
         assert(False)
 
-    # Give created gymId
-    food, err = FoodDriver.get_food_by_id(responseId)
+    # Give created gym_id
+    food, err = FoodDriver.get_food_by_id(response_id)
 
     if err is not None:
         print(food, err)
@@ -135,7 +135,7 @@ def test_create_delete_food():
     # Assertions
     assert err is None
     assert food is not None
-    assert food.get("_id") == responseId
+    assert food.get("_id") == response_id
     assert food.get("user_id") == "699d0093795741a59fe13616"
     assert food.get("name") == "Lettuce"
     assert food.get("calsPerServing") == 0
@@ -144,11 +144,11 @@ def test_create_delete_food():
     assert food.get("time") == 0
 
     # Delete created gym
-    response, err = FoodDriver.delete_food(responseId)
+    response, err = FoodDriver.delete_food(response_id)
     if err is not None:
         print(response, err)
     # Assertions
-    assert response == responseId
+    assert response == response_id
 
 def test_update_food_roundtrip():
     # Known existing document id from your tests/fixtures
@@ -163,7 +163,7 @@ def test_update_food_roundtrip():
     assert original.get("_id") == food_id
 
     # Save original values for restore
-    orig_userId         = original.get("user_id")
+    orig_user_id         = original.get("user_id")
     orig_name           = original.get("name")
     orig_calsPerServing = original.get("calsPerServing")
     orig_servings       = original.get("servings")
@@ -194,7 +194,7 @@ def test_update_food_roundtrip():
     assert updated.get("_id") == food_id
 
     # Assert updated values persisted
-    assert updated.get("user_id") == orig_userId
+    assert updated.get("user_id") == orig_user_id
     assert updated.get("name") == new_values["name"]
     assert updated.get("calsPerServing") == new_values["calsPerServing"]
     assert updated.get("servings") == new_values["servings"]
@@ -423,7 +423,7 @@ def test_food_partial_empty_unknown_updates():
 # Gym
 
 def test_find_gym_by_id():
-    # Give a valid gymId
+    # Give a valid gym_id
     oid = "699cff88400d9d43a32e924d"
     gym, err = GymDriver.get_gym_by_id(oid)
 
@@ -439,7 +439,7 @@ def test_find_gym_by_id():
     assert gym.get("cost") == 49.99
     assert gym.get("link") == "https://examplegym.com"
 
-    # Give a bad gymId
+    # Give a bad gym_id
     bad_oid = "699cff88400d9d43a32e924"
     gym, err = GymDriver.get_gym_by_id(bad_oid)
 
@@ -453,7 +453,7 @@ def test_find_gym_by_id():
     assert gym is None
     assert err == bad_err_code
 
-    # Give an invalid gymId
+    # Give an invalid gym_id
     inv_oid = "000000000000000000000000"
     gym, err = GymDriver.get_gym_by_id(inv_oid)
 
@@ -468,7 +468,7 @@ def test_find_gym_by_id():
     assert err == inv_err_code    
 
 def test_create_delete_gym():
-    # Give a valid gymId
+    # Give a valid gym_id
     name = "A test Gym, you shouldnt see this"
     address = "Hell"
     type = "General"
@@ -477,21 +477,21 @@ def test_create_delete_gym():
     lat = 1
     long = 2
     notes = "test"
-    responseId, err = GymDriver.create_gym(name, address, type, cost, link, lat, long, notes)
+    response_id, err = GymDriver.create_gym(name, address, type, cost, link, lat, long, notes)
 
-    print("Response: ", responseId)
+    print("Response: ", response_id)
 
     if err is not None:
-        print(responseId, err)
+        print(response_id, err)
 
     # Check if response is valid id
     try:
-        responseObj = ObjectId(str(responseId))
+        responseObj = ObjectId(str(response_id))
     except (bson_errors.InvalidId, TypeError, ValueError):
         assert(False)
 
-    # Give created gymId
-    gym, err = GymDriver.get_gym_by_id(responseId)
+    # Give created gym_id
+    gym, err = GymDriver.get_gym_by_id(response_id)
 
     if err is not None:
         print(gym, err)
@@ -499,18 +499,18 @@ def test_create_delete_gym():
     # Assertions
     assert err is None
     assert gym is not None
-    assert gym.get("_id") == responseId
+    assert gym.get("_id") == response_id
     assert gym.get("name") == "A test Gym, you shouldnt see this"
     assert gym.get("address") == "Hell"
     assert gym.get("cost") == 0.0
     assert gym.get("link") == "www.testgym.com"
 
     # Delete created gym
-    response, err = GymDriver.delete_gym(responseId)
+    response, err = GymDriver.delete_gym(response_id)
     if err is not None:
         print(response, err)
     # Assertions
-    assert response == responseId
+    assert response == response_id
 
 def test_update_gym_roundtrip():
     gym_id = "699cff88400d9d43a32e924d"  # replace with a known existing id in your test DB
@@ -643,12 +643,12 @@ def test_gym_invalid_inputs_combined():
     # DELETE GYM INVALID INPUTS
     resp, err = GymDriver.delete_gym(None)
     assert resp is None
-    assert err == "You must provide a gym id to delete"
+    assert err == "You must provide a gym_id to delete"
 
     for bad in ["", [], {}, 123]:
         resp, err = GymDriver.delete_gym(bad)
         assert resp is None
-        assert err == "Invalid gym_id format; must be a 24-hex string" or "You must provide a gym id to delete"
+        assert err == "Invalid gym_id format; must be a 24-hex string" or "You must provide a gym_id to delete"
 
     resp, err = GymDriver.delete_gym("000000000000000000000000")
     assert resp is None
@@ -871,7 +871,7 @@ def test_find_personal_ex_by_user():
     assert err == inv_err_code 
 
 def test_create_delete_personal_ex():
-    # Give a valid gymId
+    # Give a valid gym_id
     completed = False
     distance = "0"
     duration = 240
@@ -881,19 +881,19 @@ def test_create_delete_personal_ex():
     sets = 1
     user_id = "699d0093795741a59fe13616"
     weight = 600
-    responseId, err = PersonalExDriver.create_personal_ex(user_id, exercise_id, workout_id, reps, sets, weight, duration, distance, completed)
+    response_id, err = PersonalExDriver.create_personal_ex(user_id, exercise_id, workout_id, reps, sets, weight, duration, distance, completed)
 
     if err is not None:
-        print(responseId, err)
+        print(response_id, err)
 
     # Check if response is valid id
     try:
-        responseObj = ObjectId(str(responseId))
+        responseObj = ObjectId(str(response_id))
     except (bson_errors.InvalidId, TypeError, ValueError):
         assert(False)
 
-    # Give created gymId
-    personalEx, err = PersonalExDriver.get_personal_ex_by_id(responseId)
+    # Give created gym_id
+    personalEx, err = PersonalExDriver.get_personal_ex_by_id(response_id)
 
     if err is not None:
         print(personalEx, err)
@@ -901,7 +901,7 @@ def test_create_delete_personal_ex():
     # Assertions
     assert err is None
     assert personalEx is not None
-    assert personalEx.get("_id") == responseId
+    assert personalEx.get("_id") == response_id
     assert personalEx.get("complete") == False
     assert personalEx.get("distance") == "0"
     assert personalEx.get("duration") == 240
@@ -913,11 +913,11 @@ def test_create_delete_personal_ex():
     assert personalEx.get("weight") == 600
 
     # Delete created gym
-    response, err = PersonalExDriver.delete_personal_ex(responseId)
+    response, err = PersonalExDriver.delete_personal_ex(response_id)
     if err is not None:
         print(response, err)
     # Assertions
-    assert response == responseId
+    assert response == response_id
    
 def test_update_personal_ex_roundtrip():
     personal_ex_id = "69ab5596dc5dee4f518a01cd"
@@ -1165,7 +1165,7 @@ def test_personal_ex_partial_empty_unknown_updates():
 # User
 
 def test_find_user_by_id():
-    # Give a valid gymId
+    # Give a valid gym_id
     oid = "699d0093795741a59fe13616"
     user, err = UserDriver.get_user_by_id(oid)
 
@@ -1453,7 +1453,7 @@ def test_find_workout_by_id():
     assert ex is not None
     assert ex.get("_id") == oid
     assert ex.get("user_id") == "699d0093795741a59fe13616"
-    assert ex.get("gymId") == "699cff88400d9d43a32e924d"
+    assert ex.get("gym_id") == "699cff88400d9d43a32e924d"
     assert ex.get("title") == "Leg Day"
     assert ex.get("startTime") == 1742443200
     assert ex.get("endTime") == 1742446800
@@ -1504,7 +1504,7 @@ def test_find_workout_by_user():
     assert filtered[0] is not None
     assert filtered[0].get("_id") == wo_oid
     assert filtered[0].get("user_id") == "699d0093795741a59fe13616"
-    assert filtered[0].get("gymId") == "699cff88400d9d43a32e924d"
+    assert filtered[0].get("gym_id") == "699cff88400d9d43a32e924d"
     assert filtered[0].get("title") == "Leg Day"
     assert filtered[0].get("startTime") == 1742443200
     assert filtered[0].get("endTime") == 1742446800
@@ -1599,25 +1599,25 @@ def test_find_template_by_user():
     assert err == "You are missing an id. Please fix, then attempt to create workout again"
 
 def test_create_delete_workout():
-    # Give a valid gymId
-    gymId = "699cff88400d9d43a32e924d"
+    # Give a valid gym_id
+    gym_id = "699cff88400d9d43a32e924d"
     startTime = "1"
     endTime = "2"
     title = "A test workout"
     user_id = "699d0093795741a59fe13616"
-    responseId, err = WorkoutDriver.create_workout(user_id, gymId, title, startTime, endTime)
+    response_id, err = WorkoutDriver.create_workout(user_id, gym_id, title, startTime, endTime)
 
     if err is not None:
-        print(responseId, err)
+        print(response_id, err)
 
     # Check if response is valid id
     try:
-        responseObj = ObjectId(str(responseId))
+        responseObj = ObjectId(str(response_id))
     except (bson_errors.InvalidId, TypeError, ValueError):
         assert(False)
 
     # Give created workout_id
-    workout, err = WorkoutDriver.get_workout_by_id(responseId)
+    workout, err = WorkoutDriver.get_workout_by_id(response_id)
 
     if err is not None:
         print(workout, err)
@@ -1625,31 +1625,31 @@ def test_create_delete_workout():
     # Assertions
     assert err is None
     assert workout is not None
-    assert workout.get("_id") == responseId
-    assert workout.get("gymId") == "699cff88400d9d43a32e924d"
+    assert workout.get("_id") == response_id
+    assert workout.get("gym_id") == "699cff88400d9d43a32e924d"
     assert workout.get("startTime") == 1
     assert workout.get("endTime") == 2
     assert workout.get("user_id") == "699d0093795741a59fe13616"
     
     # Delete created gym
-    response, err = WorkoutDriver.delete_workout(responseId)
+    response, err = WorkoutDriver.delete_workout(response_id)
     if err is not None:
         print(response, err)
     # Assertions
-    assert response == responseId
+    assert response == response_id
 
 def test_create_delete_template():
-    # Give a valid gymId
+    # Give a valid gym_id
     title = "A test template"
     user_id = "699d0093795741a59fe13616"
-    responseId, err = WorkoutDriver.create_template(user_id, title)
+    response_id, err = WorkoutDriver.create_template(user_id, title)
 
     if err is not None:
-        print(responseId, err)
+        print(response_id, err)
 
     # Check if response is valid id
     try:
-        responseObj = ObjectId(str(responseId))
+        responseObj = ObjectId(str(response_id))
     except (bson_errors.InvalidId, TypeError, ValueError):
         assert(False)
 
@@ -1659,23 +1659,23 @@ def test_create_delete_template():
     if err is not None:
         print(templates, err)
 
-    filtered = [d for d in templates if d.get("_id") == responseId]
+    filtered = [d for d in templates if d.get("_id") == response_id]
 
     # Assertions
     assert err is None
     assert filtered is not None
-    assert filtered[0].get("_id") == responseId
+    assert filtered[0].get("_id") == response_id
     assert filtered[0].get("startTime") == 0
     assert filtered[0].get("user_id") == "699d0093795741a59fe13616"
     assert filtered[0].get("title") == "A test template"
     assert filtered[0].get("template") == "True"
     
     # Delete created template
-    response, err = WorkoutDriver.delete_workout(responseId)
+    response, err = WorkoutDriver.delete_workout(response_id)
     if err is not None:
         print(response, err)
     # Assertions
-    assert response == responseId
+    assert response == response_id
    
 def test_update_workout_roundtrip():
     # Known existing document id from your tests/fixtures
@@ -1801,11 +1801,11 @@ def test_workout_invalid_inputs_combined():
         assert resp is None
         assert err == "Invalid user_id format; must be a 24-hex string" or "You are missing a user_id or startTime. Please fix, then attempt to create workout again"
 
-    # Invalid gymIds
+    # Invalid gym_ids
     for bad in ["nothex", 123, [], {}, ""]:
         resp, err = WorkoutDriver.create_workout(valid_user_id, bad, "Test", "1", "2")
         assert resp is None
-        assert err == "Invalid gymId format; must be a 24-hex string"
+        assert err == "Invalid gym_id format; must be a 24-hex string"
 
     resp, err = WorkoutDriver.create_workout("000000000000000000000000", valid_gym_id, "Test", "1", "2")
     assert resp is None
