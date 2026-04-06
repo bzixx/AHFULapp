@@ -311,6 +311,8 @@ export function WorkoutLogger() {
         userId: user._id,
       };
 
+      console.log(templatePayload);
+
       const templateRes = await fetch(
         "http://localhost:5000/AHFULworkout/create/template",
         {
@@ -625,7 +627,7 @@ export function WorkoutLogger() {
     }
 
     getWorkout();
-  }, [userAuthenticated, workoutId]);
+  }, [userAuthenticated]);
 
   // ─── Load Personal Exercises for Current Workout ───────────────────────────────
   useEffect(() => {
@@ -780,7 +782,7 @@ export function WorkoutLogger() {
               value={workoutTitle}
               onChange={(e) => setWorkoutTitle(e.target.value)}
             />
-            {workout && <h3>{unixToDate(workout.startTime)}</h3>}
+            <h3>{workout?.startTime ? unixToDate(workout.startTime) : ""}</h3>
           </div>
 
           {/* Exercise Table */}
