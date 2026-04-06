@@ -25,20 +25,24 @@ class PersonalExObject:
         return str(result.inserted_id)
 
     # ── Read ──────────────────────────────────────────────────────────────────
+    @staticmethod
     def find_all():
         personalEx = personalExCollection.find()
         return [PersonalExObject._serialize(w) for w in personalEx]
 
+    @staticmethod
     def find_by_id(id):
         personalEx = personalExCollection.find_one({"_id": ObjectId(id)})
         return PersonalExObject._serialize(personalEx)
     
-    def find_by_user(userId):
-        personalEx = personalExCollection.find({"userId": ObjectId(userId)})
+    @staticmethod
+    def find_by_user(user_id):
+        personalEx = personalExCollection.find({"userId": ObjectId(user_id)})
         return [PersonalExObject._serialize(w) for w in personalEx]
     
-    def find_by_workout(workoutId):
-        personalEx = personalExCollection.find({"workoutId": ObjectId(workoutId)})
+    @staticmethod
+    def find_by_workout(workout_id):
+        personalEx = personalExCollection.find({"workoutId": ObjectId(workout_id)})
         return [PersonalExObject._serialize(w) for w in personalEx]
     
     # ── Update ──────────────────────────────────────────────────────────────────
@@ -64,4 +68,4 @@ class PersonalExObject:
     @staticmethod
     def delete(id):
         result = personalExCollection.delete_one({"_id": ObjectId(id)})
-        return str((result.deleted_count == 1) * id)
+        return id if result.deleted_count == 1 else None

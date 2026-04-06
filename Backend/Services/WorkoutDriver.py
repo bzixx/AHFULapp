@@ -30,6 +30,7 @@ class WorkoutDriver:
         oid, err = WorkoutDriver._validate_obj_id(userId, "userId")
         if err:
             return None, err
+        gym_oid = None
         if gymId is not None:
             gym_oid, err = WorkoutDriver._validate_obj_id(gymId, "gymId")
             if err:
@@ -48,11 +49,13 @@ class WorkoutDriver:
 
         workout_data = {
             "userId": ObjectId(userId),
-            "gymId": ObjectId(gymId),
             "title": title,
             "startTime": int(startTime),
-            "endTime": int(endTime)
+            "endTime": int(endTime),
+            "template": False,
         }
+        if gymId:
+            workout_data["gymId"] = ObjectId(gymId)
 
         try:
             response = WorkoutObject.create(workout_data)
@@ -78,8 +81,8 @@ class WorkoutDriver:
         template_data = {
             "userId": ObjectId(userId),
             "title": title,
-            "template": "True",
-            "startTime": int(0)
+            "template": True,
+            "startTime": int(0),
         }
 
         try:
@@ -162,7 +165,7 @@ class WorkoutDriver:
     def update_workout(id, updates):
         # Validate target id
         if not id:
-            return None, "You must provide a personal ex id to update"
+            return None, "You must provide a workout id to update"
 
         obj, err = WorkoutDriver._validate_obj_id(id, "workout_id")
         if err:

@@ -8,23 +8,32 @@ personalExRouteBlueprint = Blueprint("personalEx", __name__, url_prefix="/AHFULp
 def get_all_personal_exs():
     personalExs, error = PersonalExDriver.get_all_personal_exs()
     if error:
-        return jsonify({"error": error}), 500
+        if "not found" in error.lower():
+            return jsonify({"error": error}), 404
+        elif error:
+            return jsonify({"error": error}), 400
     return jsonify(personalExs), 200
 
 # ── GET all personalExs for a specific user ──────────────────────────────────────
-@personalExRouteBlueprint.route("/<userId>", methods=["GET"])
-def get_personal_exs_by_user(userId):
-    personalExs, error = PersonalExDriver.get_personal_exs_by_user(userId=userId)
+@personalExRouteBlueprint.route("/<user_id>", methods=["GET"])
+def get_personal_exs_by_user(user_id):
+    personalExs, error = PersonalExDriver.get_personal_exs_by_user(user_id=user_id)
     if error:
-        return jsonify({"error": error}), 500
+        if "not found" in error.lower():
+            return jsonify({"error": error}), 404
+        elif error:
+            return jsonify({"error": error}), 400
     return jsonify(personalExs), 200
 
 # ── GET all personalExs for a specific workout ──────────────────────────────────────
-@personalExRouteBlueprint.route("/workout/<workoutId>", methods=["GET"])
-def get_personal_exs_by_workout(workoutId):
-    personalExs, error = PersonalExDriver.get_personal_exs_by_workout(workoutId=workoutId)
+@personalExRouteBlueprint.route("/workout/<workout_id>", methods=["GET"])
+def get_personal_exs_by_workout(workout_id):
+    personalExs, error = PersonalExDriver.get_personal_exs_by_workout(workout_id=workout_id)
     if error:
-        return jsonify({"error": error}), 500
+        if "not found" in error.lower():
+            return jsonify({"error": error}), 404
+        elif error:
+            return jsonify({"error": error}), 400
     return jsonify(personalExs), 200
 
 # ── GET single personalEx ────────────────────────────────────────────────────────
@@ -32,7 +41,10 @@ def get_personal_exs_by_workout(workoutId):
 def get_personal_ex(id):
     personalEx, error = PersonalExDriver.get_personal_ex_by_id(id)
     if error:
-        return jsonify({"error": error}), 404
+        if "not found" in error.lower():
+            return jsonify({"error": error}), 404
+        elif error:
+            return jsonify({"error": error}), 400
     return jsonify(personalEx), 200
 
 # ── CREATE personalEx ────────────────────────────────────────────────────────────
@@ -49,9 +61,9 @@ def create_personal_ex():
         template = True
 
     personal_ex_id, error = PersonalExDriver.create_personal_ex(
-        userId=data.get("userId"),
-        exerciseId=data.get("exerciseId"),
-        workoutId=data.get("workoutId"),
+        user_id=data.get("user_id"),
+        exercise_id=data.get("exercise_id"),
+        workout_id=data.get("workout_id"),
         reps=data.get("reps"),
         sets=data.get("sets"),
         weight=data.get("weight"),
@@ -80,9 +92,6 @@ def update_personal_ex(personal_ex_id):
     updated, error = PersonalExDriver.update_personal_ex(id=personal_ex_id, updates=data)
 
     if error:
-        err_lower = error.lower()
-        if "not found" in err_lower:
-            return jsonify({"error": error}), 404
         return jsonify({"error": error}), 400
     
     return jsonify({"message": "Personal ex updated", "personal_ex": updated}), 200

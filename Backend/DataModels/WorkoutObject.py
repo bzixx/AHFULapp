@@ -37,41 +37,46 @@ class WorkoutObject:
         return str(result.inserted_id)
 
     # ── Read ──────────────────────────────────────────────────────────────────
+    @staticmethod
     def find_all():
         workout = workoutCollection.find({
-            "template": {"$exists": False},
+            "template": False,
             "startTime": {"$ne": 0}
         })
         return [WorkoutObject._serialize(w) for w in workout]
 
+    @staticmethod   
     def find_by_id(id):
         workout = workoutCollection.find_one({
             "_id": ObjectId(id),
-            "template": {"$exists": False},
+            "template": False,
             "startTime": {"$ne": 0}
         })
         return WorkoutObject._serialize(workout)
     
+    @staticmethod
     def find_by_user(userId):
         workout = workoutCollection.find({
             "userId": ObjectId(userId),
-            "template": {"$exists": False},
+            "template": False,
             "startTime": {"$ne": 0}
         })
         return [WorkoutObject._serialize(w) for w in workout]
 
+    @staticmethod
     def find_template(id):
         template = workoutCollection.find_one({
             "_id": ObjectId(id),
-            "template": {"$exists": True},
+            "template": True,
             "startTime": 0
         })
         return WorkoutObject._serialize_template(template)
 
+    @staticmethod
     def find_user_templates(userId):
         template = workoutCollection.find({
             "userId": ObjectId(userId),
-            "template": {"$exists": True},
+            "template": True,
             "startTime": 0
         })
         return [WorkoutObject._serialize_template(t) for t in template]
@@ -99,4 +104,4 @@ class WorkoutObject:
     @staticmethod
     def delete(id):
         result = workoutCollection.delete_one({"_id": ObjectId(id)})
-        return str((result.deleted_count == 1) * id)
+        return id if result.deleted_count == 1 else None

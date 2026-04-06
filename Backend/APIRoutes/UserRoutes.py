@@ -8,7 +8,10 @@ userRouteBlueprint = Blueprint("users", __name__, url_prefix="/AHFULusers")
 def get_all_users():
     users, error = UserDriver.get_all_users()
     if error:
-        return jsonify({"error": error}), 500
+        if "not found" in error.lower():
+            return jsonify({"error": error}), 404
+        elif error:
+            return jsonify({"error": error}), 400
     return jsonify(users), 200
 
 # ── GET single user by email ───────────────────────────────────────────────────────────
@@ -16,7 +19,10 @@ def get_all_users():
 def get_user(email):
     user, error = UserDriver.get_user_by_email(email)
     if error:
-        return jsonify({"error": error}), 404
+        if "not found" in error.lower():
+            return jsonify({"error": error}), 404
+        elif error:
+            return jsonify({"error": error}), 400
     return jsonify(user), 200
 
 # ── GET single user by id ───────────────────────────────────────────────────────────
@@ -24,7 +30,10 @@ def get_user(email):
 def get_user_id(id):
     user, error = UserDriver.get_user_by_id(id)
     if error:
-        return jsonify({"error": error}), 404
+        if "not found" in error.lower():
+            return jsonify({"error": error}), 404
+        elif error:
+            return jsonify({"error": error}), 400
     return jsonify(user), 200
 
 # ── ADD role to user by id ───────────────────────────────────────────────────────────
@@ -36,7 +45,7 @@ def add_role_by_id():
     
     res, err = UserDriver.add_role_by_id(data.get("user_id"), data.get("adder_id"), data.get("role"))
     if err: 
-        return jsonify({"error": err}), 404
+        return jsonify({"error": err}), 400
     return jsonify(res), 200
 
 # ── ADD role to user by email ───────────────────────────────────────────────────────────
@@ -48,7 +57,7 @@ def add_role_by_email():
     
     res, err = UserDriver.add_role_by_email(data.get("user_email"), data.get("adder_id"), data.get("role"))
     if err: 
-        return jsonify({"error": err}), 404
+        return jsonify({"error": err}), 400
     return jsonify(res), 200
 
 # ── REMOVE role from user by id ───────────────────────────────────────────────────────────
@@ -60,7 +69,7 @@ def remove_role_by_id():
     
     res, err = UserDriver.remove_role_by_id(data.get("user_id"), data.get("remover_id"), data.get("role"))
     if err: 
-        return jsonify({"error": err}), 404
+        return jsonify({"error": err}), 400
     return jsonify(res), 200
 
 # ── REMOVE role from user by email ───────────────────────────────────────────────────────────
@@ -72,9 +81,8 @@ def remove_role_by_email():
     
     res, err = UserDriver.remove_role_by_email(data.get("user_email"), data.get("remover_id"), data.get("role"))
     if err: 
-        return jsonify({"error": err}), 404
+        return jsonify({"error": err}), 400
     return jsonify(res), 200
-
 
 # ── DEACTIVATE user by id ─────────────────────────────────────────────────────
 @userRouteBlueprint.route("/deactivate/id/", methods=["POST"])
@@ -85,5 +93,40 @@ def deactivate_user_by_id():
 
     res, err = UserDriver.deactivate_user_by_id(data.get("user_id"), data.get("deactivator_id"))
     if err:
-        return jsonify({"error": err}), 404
+        return jsonify({"error": err}), 400
     return jsonify(res), 200
+
+# ── VERIFY email by id ─────────────────────────────────────────────────────
+@userRouteBlueprint.route("/verify/email/id/", methods=["POST"])
+def verify_email_by_id():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    user_id = data.get("user_id")
+    res, err = UserDriver.verify_email(user_id)
+
+    if err:
+        if "not found" in err.lower():
+            return jsonify({"error": err}), 404
+        return jsonify({"error": err}), 400
+
+    return jsonify({"message": res}), 200
+
+# ── VERIFY phone by id ─────────────────────────────────────────────────────
+@userRouteBlueprint.route("/verify/phone/id/", methods=["POST"])
+def verify_phone_by_id():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    user_id = data.get("user_id")
+    res, err = UserDriver.verify_phone_number(user_id)
+
+    if err:
+        if "not found" in err.lower():
+            return jsonify({"error": err}), 404
+        return jsonify({"error": err}), 400
+
+    return jsonify({"message": res}), 200
+

@@ -8,7 +8,7 @@ workoutRouteBlueprint = Blueprint("workouts", __name__, url_prefix="/AHFULworkou
 def get_all_workouts():
     workouts, error = WorkoutDriver.get_all_workouts()
     if error:
-        return jsonify({"error": error}), 500
+        return jsonify({"error": error}), 404
     return jsonify(workouts), 200
 
 # ── GET all workouts for a specific user ──────────────────────────────────────
@@ -24,7 +24,7 @@ def get_workouts_by_user(userId):
 def get_templates(userId):
     workouts, error = WorkoutDriver.get_user_templates(userId)
     if error:
-        return jsonify({"error": error}), 500
+        return jsonify({"error": error}), 404
     return jsonify(workouts), 200
 
 # ── GET all templates for a specific user ──────────────────────────────────────
@@ -97,7 +97,7 @@ def update_workout(workout_id):
             return jsonify({"error": error}), 404
         return jsonify({"error": error}), 400
     
-    return jsonify({"message": "Workout updated", "Workout": updated}), 200
+    return jsonify({"message": "Workout updated", "workout": updated}), 200
 
 # ── DELETE workout ────────────────────────────────────────────────────────────────
 @workoutRouteBlueprint.route("/delete/<workout_id>", methods=["DELETE"])
@@ -114,5 +114,5 @@ def delete_workout(workout_id):
 def get_workout_streak(userId):
     streak_data, error = WorkoutDriver.get_streak(userId)
     if error:
-        return jsonify({"error": error}), 500
+        return jsonify({"error": error}), 404
     return jsonify(streak_data), 200

@@ -427,790 +427,834 @@ swaggerConfig = {
   }
  }
 },
-    
-    "/AHFULpersonalEx/": {
-        "get": {
-          "summary": "Get all personal exercises",
-          "tags": ["PersonalEx"],
-          "responses": {
-            "200": {
-              "description": "A list of personal exercises",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "_id":        { "type": "string", "example": "698d07b26e5117c22dd7772e" },
-                        "exerciseId":{ "type": "string", "example": "698d0bc06e5117c22dd7774b" },
-                        "workoutId": { "type": "string", "example": "699d05d8f1677119323250bc" },
-                        "userId":    { "type": "string", "example": "699d0093795741a59fe13616" },
-                        "reps":      { "type": "integer", "example": 1 },
-                        "sets":      { "type": "integer", "example": 1 },
-                        "weight":    { "type": "string",  "example": "1" },
-                        "duration":  { "type": "number",  "example": 0 },
-                        "distance":  { "type": "string",  "example": "0" },
-                        "complete":  { "type": "boolean", "example": True }
-                      }
-                    }
-                  }
-                }
+
+"/AHFULusers/verify/email/id/": {
+  "post": {
+    "summary": "Verify user email by id",
+    "description": "Marks a user's email as verified if it has not already been verified.",
+    "tags": ["Users"],
+    "requestBody": {
+      "required": True,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "user_id": {
+                "type": "string",
+                "example": "69af32adf43f4d34477c849d"
               }
             },
-            "500": {
-              "description": "Server error",
-              "content": {
-                "application/json": {
-                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
+            "required": ["user_id"]
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Email successfully verified or already verified",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Email successfully verified"
                 }
               }
             }
           }
         }
       },
-
-      "/AHFULpersonalEx/{userId}": {
-        "get": {
-          "summary": "Get all personal exercises for a specific user",
-          "tags": ["PersonalEx"],
-          "parameters": [
-            {
-              "name": "userId",
-              "in": "path",
-              "required": True,
-              "description": "User ObjectId",
-              "schema": { "type": "string", "example": "699d0093795741a59fe13616" }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "A list of personal exercises for the user",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "_id":        { "type": "string", "example": "698d07b26e5117c22dd7772e" },
-                        "exerciseId":{ "type": "string", "example": "698d0bc06e5117c22dd7774b" },
-                        "workoutId": { "type": "string", "example": "699d05d8f1677119323250bc" },
-                        "userId":    { "type": "string", "example": "699d0093795741a59fe13616" },
-                        "reps":      { "type": "integer", "example": 1 },
-                        "sets":      { "type": "integer", "example": 1 },
-                        "weight":    { "type": "string",  "example": "1" },
-                        "duration":  { "type": "number",  "example": 0 },
-                        "distance":  { "type": "string",  "example": "0" },
-                        "complete":  { "type": "boolean", "example": True }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "500": {
-              "description": "Server error",
-              "content": {
-                "application/json": {
-                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
+      "400": {
+        "description": "Invalid request or email not verifiable",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "user_id is required"
                 }
               }
             }
           }
         }
       },
-
-      "/AHFULpersonalEx/workout/{workoutId}": {
-        "get": {
-          "summary": "Get all personal exercises for a specific workout",
-          "tags": ["PersonalEx"],
-          "parameters": [
-            {
-              "name": "workoutId",
-              "in": "path",
-              "required": True,
-              "description": "Workout ObjectId",
-              "schema": { "type": "string", "example": "699d05d8f1677119323250bc" }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "A list of personal exercises for the workout",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "_id":        { "type": "string", "example": "698d07b26e5117c22dd7772e" },
-                        "exerciseId":{ "type": "string", "example": "698d0bc06e5117c22dd7774b" },
-                        "workoutId": { "type": "string", "example": "699d05d8f1677119323250bc" },
-                        "userId":    { "type": "string", "example": "699d0093795741a59fe13616" },
-                        "reps":      { "type": "integer", "example": 1 },
-                        "sets":      { "type": "integer", "example": 1 },
-                        "weight":    { "type": "string",  "example": "1" },
-                        "duration":  { "type": "number",  "example": 0 },
-                        "distance":  { "type": "string",  "example": "0" },
-                        "complete":  { "type": "boolean", "example": True }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "500": {
-              "description": "Server error",
-              "content": {
-                "application/json": {
-                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
-                }
-              }
-            }
-          }
-        }
-      },
-
-      "/AHFULpersonalEx/id/{id}": {
-        "get": {
-          "summary": "Get a single personal exercise by id",
-          "tags": ["PersonalEx"],
-          "parameters": [
-            {
-              "name": "id",
-              "in": "path",
-              "required": True,
-              "description": "Personal exercise document ObjectId",
-              "schema": { "type": "string", "example": "698d07b26e5117c22dd7772e" }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Personal exercise found",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "_id":        { "type": "string", "example": "698d07b26e5117c22dd7772e" },
-                      "exerciseId":{ "type": "string", "example": "698d0bc06e5117c22dd7774b" },
-                      "workoutId": { "type": "string", "example": "699d05d8f1677119323250bc" },
-                      "userId":    { "type": "string", "example": "699d0093795741a59fe13616" },
-                      "reps":      { "type": "integer", "example": 1 },
-                      "sets":      { "type": "integer", "example": 1 },
-                      "weight":    { "type": "string",  "example": "1" },
-                      "duration":  { "type": "number",  "example": 0 },
-                      "distance":  { "type": "string",  "example": "0" },
-                      "complete":  { "type": "boolean", "example": True }
-                    },
-                    "required": ["_id", "userId"]
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "Personal exercise not found",
-              "content": {
-                "application/json": {
-                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
-                }
-              }
-            }
-          }
-        }
-      },
-
-      "/AHFULpersonalEx/create": {
-        "post": {
-          "summary": "Create a personal exercise",
-          "tags": ["PersonalEx"],
-          "requestBody": {
-            "required": True,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": ["userId", "name", "gifUrl"],
-                  "properties": {
-                    "userId": {
-                      "type": "string",
-                      "description": "User ObjectId",
-                      "example": "699d0093795741a59fe13616"
-                    },
-                    "exercise": {
-                      "type": "object",
-                      "description": "Full exercise definition object",
-                      "properties": {
-                        "_id": {
-                          "type": "object",
-                          "properties": {
-                            "$oid": {
-                              "type": "string",
-                              "example": "69b22a2344f2bd681112ca8a"
-                            }
-                          }
-                        },
-                        "name": {
-                          "type": "string",
-                          "example": "AHFUL arm circles"
-                        },
-                        "gifUrl": {
-                          "type": "string",
-                          "example": "https://static.exercisedb.dev/media/2zNKRUB.gif"
-                        },
-                        "targetMuscles": {
-                          "type": "array",
-                          "items": { "type": "string" },
-                          "example": ["forearms"]
-                        },
-                        "bodyParts": {
-                          "type": "array",
-                          "items": { "type": "string" },
-                          "example": ["lower arms"]
-                        },
-                        "equipments": {
-                          "type": "array",
-                          "items": { "type": "string" },
-                          "example": []
-                        },
-                        "secondaryMuscles": {
-                          "type": "array",
-                          "items": { "type": "string" },
-                          "example": ["hands"]
-                        },
-                        "instructions": {
-                          "type": "array",
-                          "items": { "type": "string" },
-                          "example": [
-                            "Step:1 Extend your arms straight out in front of you.",
-                            "Step:2 Make a fist with both hands.",
-                            "Step:3 Rotate your arms in a circular motion, keeping your arms still.",
-                            "Step:4 Continue the arms circles for the desired number of repetitions."
-                          ]
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "responses": {
-            "201": {
-              "description": "Personal exercise created",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "personal_ex_id": {
-                        "type": "string",
-                        "example": "698d07b26e5117c22dd7772e"
-                      },
-                      "message": {
-                        "type": "string",
-                        "example": "Personal Ex created"
-                      }
-                    },
-                    "required": ["personal_ex_id", "message"]
-                  }
-                }
-              }
-            },
-            "400": {
-              "description": "Invalid input or creation error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "error": { "type": "string" }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-
-      "/AHFULpersonalEx/delete/{personal_ex_id}": {
-      "delete": {
-        "summary": "Delete personal ex by id",
-        "tags": ["PersonalEx"],
-        "parameters": [
-          {
-            "name": "personal_ex_id",
-            "in": "path",
-            "required": True,
-            "description": "The id of the personal ex (Mongo ObjectId as string)",
-            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Personal ex deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string", "example": "Personal ex deleted" },
-                    "gym_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
-                  },
-                  "required": ["message", "personal_ex_id"]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Personal ex not found or already deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "Personal ex not found or already deleted" }
-                  },
-                  "required": ["error"]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid id format or missing id",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "You must provide a personal ex id to delete" }
-                  },
-                  "required": ["error"]
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  },
-                  "required": ["error"]
+      "404": {
+        "description": "User not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "User not found"
                 }
               }
             }
           }
         }
       }
-    },
+    }
+  }
+},
 
-    
-    "/AHFULpersonalEx/update/{personal_ex_id}": {
-      "put": {
-        "summary": "Update a personal exercise",
-        "description": "Updates allowed fields of a personal exercise by id. Server treats PUT as a partial update of allowed fields.",
-        "tags": ["PersonalEx"],
-        "parameters": [
-          {
-            "name": "personal_ex_id",
-            "in": "path",
-            "required": True,
-            "description": "The id of the personal exercise (Mongo ObjectId as string)",
-            "schema": { "type": "string", "example": "698d07b26e5117c22dd7772e" }
+"/AHFULusers/verify/phone/id/": {
+  "post": {
+    "summary": "Verify user phone number by id",
+    "description": "Marks a user's phone number as verified if it has not already been verified.",
+    "tags": ["Users"],
+    "requestBody": {
+      "required": True,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "user_id": {
+                "type": "string",
+                "example": "69af32adf43f4d34477c849d"
+              }
+            },
+            "required": ["user_id"]
           }
-        ],
-        "requestBody": {
-          "required": True,
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Phone number verified successfully or already verified",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Phone number verified successfully"
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Invalid request or verification failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "user_id is required"
+                }
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "User not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "User not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+},
+
+"/AHFULpersonalEx/": {
+  "get": {
+    "summary": "Get all personal exercises",
+    "tags": ["PersonalEx"],
+    "responses": {
+      "200": {
+        "description": "A list of all personal exercises",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "_id":        { "type": "string" },
+                  "exerciseId":{ "type": "string" },
+                  "workoutId": { "type": "string" },
+                  "userId":    { "type": "string" },
+                  "reps":      { "type": "string" },
+                  "sets":      { "type": "string" },
+                  "weight":    { "type": "string" },
+                  "duration":  { "type": "integer" },
+                  "distance":  { "type": "string" },
+                  "complete":  { "type": "boolean" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": { "error": { "type": "string" } }
+            }
+          }
+        }
+      }
+    }
+  }
+},
+
+"/AHFULpersonalEx/{user_id}": {
+  "get": {
+    "summary": "Get all personal exercises for a specific user",
+    "tags": ["PersonalEx"],
+    "parameters": [
+      {
+        "name": "user_id",
+        "in": "path",
+        "required": True,
+        "description": "User ObjectId",
+        "schema": { "type": "string" }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "List of personal exercises (empty list if none exist)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/components/schemas/PersonalEx" }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Invalid user_id",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      },
+      "500": {
+        "description": "Server error",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      }
+    }
+  }
+},
+
+"/AHFULpersonalEx/workout/{workout_id}": {
+  "get": {
+    "summary": "Get all personal exercises for a specific workout",
+    "tags": ["PersonalEx"],
+    "parameters": [
+      {
+        "name": "workout_id",
+        "in": "path",
+        "required": True,
+        "description": "Workout ObjectId",
+        "schema": { "type": "string" }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "List of personal exercises (empty array if none exist)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": { "$ref": "#/components/schemas/PersonalEx" }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Invalid workout_id",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      },
+      "500": {
+        "description": "Server error",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      }
+    }
+  }
+},
+
+"/AHFULpersonalEx/id/{id}": {
+  "get": {
+    "summary": "Get a single personal exercise by id",
+    "tags": ["PersonalEx"],
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": True,
+        "description": "PersonalEx ObjectId",
+        "schema": { "type": "string" }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Personal exercise found",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/PersonalEx" }
+          }
+        }
+      },
+      "404": {
+        "description": "Personal exercise not found",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      },
+      "400": {
+        "description": "Invalid id format",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      }
+    }
+  }
+},
+
+"/AHFULpersonalEx/create": {
+  "post": {
+    "summary": "Create a personal exercise",
+    "tags": ["PersonalEx"],
+    "requestBody": {
+      "required": True,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "required": ["user_id", "exercise_id", "workout_id"],
+            "properties": {
+              "user_id":     { "type": "string" },
+              "exercise_id": { "type": "string" },
+              "workout_id":  { "type": "string" },
+              "reps":        { "type": "string" },
+              "sets":        { "type": "string" },
+              "weight":      { "type": "string" },
+              "duration":    { "type": "integer" },
+              "distance":    { "type": "string" },
+              "complete":    { "type": "boolean" },
+              "template":    { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "Personal exercise created",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "personal_ex_id": { "type": "string" },
+                "message": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Invalid input or missing fields",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      }
+    }
+  }
+},
+
+"/AHFULpersonalEx/update/{personal_ex_id}": {
+  "put": {
+    "summary": "Update a personal exercise",
+    "tags": ["PersonalEx"],
+    "parameters": [
+      {
+        "name": "personal_ex_id",
+        "in": "path",
+        "required": True,
+        "description": "Personal exercise ObjectId",
+        "schema": { "type": "string" }
+      }
+    ],
+    "requestBody": {
+      "required": True,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "reps":     { "type": "string" },
+              "sets":     { "type": "string" },
+              "weight":   { "type": "string" },
+              "duration": { "type": "integer" },
+              "distance": { "type": "string" },
+              "complete": { "type": "boolean" }
+            },
+            "additionalProperties": False
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Personal exercise updated",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" },
+                "personal_ex": { "$ref": "#/components/schemas/PersonalEx" }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Invalid request or no allowed fields provided",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      },
+      "404": {
+        "description": "Personal exercise not found",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      }
+    }
+  }
+},
+
+"/AHFULpersonalEx/delete/{personal_ex_id}": {
+  "delete": {
+    "summary": "Delete a personal exercise",
+    "tags": ["PersonalEx"],
+    "parameters": [
+      {
+        "name": "personal_ex_id",
+        "in": "path",
+        "required": True,
+        "description": "Personal exercise ObjectId",
+        "schema": { "type": "string" }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Personal exercise deleted",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" },
+                "personal_ex_id": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Personal exercise not found",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      },
+      "400": {
+        "description": "Invalid ID format",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      }
+    }
+  }
+},
+
+"/AHFULexercises/": {
+    "get": {
+      "summary": "Get first page of exercises (internal + external)",
+      "tags": ["Exercises"],
+      "responses": {
+        "200": {
+          "description": "List of exercises",
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "reps":     { "type": "integer", "example": 10 },
-                  "sets":     { "type": "integer", "example": 5 },
-                  "weight":   { "type": "string",  "example": "135" },
-                  "duration": { "type": "number",  "example": 0 },
-                  "distance": { "type": "string",  "example": "0" },
-                  "complete": { "type": "boolean", "example": True }
-                },
-                "additionalProperties": False
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "_id": { "type": "string", "example": "69b229e944f2bd681112ca89" },
+                    "name": { "type": "string", "example": "AHFUL wrist circles" },
+                    "gifUrl": {
+                      "type": "string",
+                      "example": "https://static.exercisedb.dev/media/2zNKRUB.gif"
+                    },
+                    "targetMuscles": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "bodyParts": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "equipments": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "secondaryMuscles": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    },
+                    "instructions": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  }
+                }
               }
             }
           }
         },
-        "responses": {
-          "200": {
-            "description": "Personal exercise updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string", "example": "Personal ex updated" },
-                    "personal_ex": {
-                      "type": "object",
-                      "properties": {
-                        "_id":        { "type": "string", "example": "698d07b26e5117c22dd7772e" },
-                        "exerciseId":{ "type": "string", "example": "698d0bc06e5117c22dd7774b" },
-                        "workoutId": { "type": "string", "example": "699d05d8f1677119323250bc" },
-                        "userId":    { "type": "string", "example": "699d0093795741a59fe13616" },
-                        "reps":      { "type": "integer", "example": 10 },
-                        "sets":      { "type": "integer", "example": 5 },
-                        "weight":    { "type": "string",  "example": "135" },
-                        "duration":  { "type": "number",  "example": 0 },
-                        "distance":  { "type": "string",  "example": "0" },
-                        "complete":  { "type": "boolean", "example": True }
-                      },
-                      "required": ["_id", "userId"]
-                    }
-                  },
-                  "required": ["message", "personal_ex"]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input or no valid fields to update",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "You must provide a JSON body with at least one field to update" }
-                  },
-                  "required": ["error"]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Personal exercise not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "PersonalEx not found" }
-                  },
-                  "required": ["error"]
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  },
-                  "required": ["error"]
-                }
+        "500": {
+          "description": "Server error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "error": { "type": "string" } }
               }
             }
           }
         }
       }
     },
-
-      "/AHFULexercises/": {
-        "get": {
-          "summary": "Get all exercises",
-          "tags": ["Exercises"],
-          "responses": {
-            "200": {
-              "description": "A list of exercises",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "_id":          { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
-                        "name":         { "type": "string", "example": "Dumbbell Bench Press" },
-                        "muscle_group": { "type": "string", "example": "Chest" },
-                        "difficulty":   { "type": "string", "example": "Intermediate" },
-                        "equipment":    { "type": "string", "example": "Dumbbells, Flat Bench" },
-                        "instructions": { "type": "string", "example": "Lie on a flat bench with a dumbbell in each hand..." },
-                        "type":         { "type": "string", "example": "Strength" }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "500": {
-              "description": "Server error",
-              "content": {
-                "application/json": {
-                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
-                }
-              }
-            }
+    "post": {
+      "summary": "Get next or previous page of exercises",
+      "tags": ["Exercises"],
+      "parameters": [
+        {
+          "name": "search",
+          "in": "query",
+          "required": True,
+          "schema": { "type": "string", "enum": ["next", "prev"] }
+        }
+      ],
+      "requestBody": {
+        "required": True,
+        "content": {
+          "application/json": {
+            "schema": { "type": "object" }
           }
         }
       },
-
-      "/AHFULexercises/id/{exercise_id}": {
-        "get": {
-          "summary": "Get a single exercise by id",
-          "tags": ["Exercises"],
-          "parameters": [
-            {
-              "name": "exercise_id",
-              "in": "path",
-              "required": True,
-              "description": "Exercise ObjectId",
-              "schema": { "type": "string", "example": "698d0bc06e5117c22dd7774b" }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Exercise found",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "_id":          { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
-                      "name":         { "type": "string", "example": "Dumbbell Row" },
-                      "muscle_group": { "type": "string", "example": "Back" },
-                      "difficulty":   { "type": "string", "example": "Beginner" },
-                      "equipment":    { "type": "string", "example": "Dumbbells, Bench" },
-                      "instructions": { "type": "string", "example": "Support one knee and hand on a bench..." },
-                      "type":         { "type": "string", "example": "Strength" }
-                    },
-                    "required": ["_id", "name"]
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "Exercise not found",
-              "content": {
-                "application/json": {
-                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
-                }
-              }
-            },
-            "500": {
-              "description": "Server error",
-              "content": {
-                "application/json": {
-                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
-                }
-              }
-            }
-          }
-        }
-      },
-
-      "/AHFULexercises/search": {
-        "get": {
-          "summary": "Search exercises",
-          "tags": ["Exercises"],
-          "parameters": [
-            {
-              "name": "search",
-              "in": "query",
-              "required": True,
-              "description": "Free-text search query",
-              "schema": { "type": "string", "example": "dumbbell" }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Matching exercises",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "_id":          { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
-                        "name":         { "type": "string", "example": "Incline Dumbbell Bench Press" },
-                        "muscle_group": { "type": "string", "example": "Chest" },
-                        "difficulty":   { "type": "string", "example": "Intermediate" },
-                        "equipment":    { "type": "string", "example": "Dumbbells, Incline Bench" },
-                        "instructions": { "type": "string", "example": "Set bench to 30–45°, press dumbbells upward..." },
-                        "type":         { "type": "string", "example": "Strength" }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "400": {
-              "description": "Missing or invalid search query",
-              "content": {
-                "application/json": {
-                  "schema": { "type": "object", "properties": { "error": { "type": "string", "example": "No search query provided" } } }
-                }
-              }
-            },
-            "404": {
-              "description": "No results or search error",
-              "content": {
-                "application/json": {
-                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
-                }
-              }
-            },
-            "500": {
-              "description": "Server error",
-              "content": {
-                "application/json": {
-                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
-                }
-              }
-            }
-          }
-        }
-      },
-
-      "/AHFULexercises/create/": {
-        "post": {
-          "summary": "Create an exercise",
-          "tags": ["Exercises"],
-          "requestBody": {
-            "required": True,
-            "content": {
-              "application/json": {
-                "schema": {
+      "responses": {
+        "200": {
+          "description": "Paged exercise results",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
                   "type": "object",
-                  "required": ["name"],
                   "properties": {
-                    "name":         { "type": "string", "description": "Exercise name", "example": "Barbell Back Squat" },
-                    "muscle_group": { "type": "string", "description": "Primary muscle group", "example": "Legs" },
-                    "difficulty":   { "type": "string", "description": "Difficulty level", "example": "Intermediate" },
-                    "equipment":    { "type": "string", "description": "Equipment required", "example": "Barbell, Squat Rack" },
-                    "instructions": { "type": "string", "description": "Step-by-step instructions", "example": "Position the barbell across your traps..." },
-                    "type":         { "type": "string", "description": "Exercise category/type", "example": "Strength" }
+                    "_id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "gifUrl": { "type": "string" },
+                    "targetMuscles": { "type": "array", "items": { "type": "string" } },
+                    "bodyParts": { "type": "array", "items": { "type": "string" } },
+                    "equipments": { "type": "array", "items": { "type": "string" } },
+                    "secondaryMuscles": { "type": "array", "items": { "type": "string" } },
+                    "instructions": { "type": "array", "items": { "type": "string" } }
                   }
-                }
-              }
-            }
-          },
-          "responses": {
-            "201": {
-              "description": "Exercise created",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "exercise_id": { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
-                      "message":     { "type": "string", "example": "Exercise created" }
-                    },
-                    "required": ["exercise_id", "message"]
-                  }
-                }
-              }
-            },
-            "400": {
-              "description": "Invalid input or creation error",
-              "content": {
-                "application/json": {
-                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
-                }
-              }
-            },
-            "500": {
-              "description": "Server error",
-              "content": {
-                "application/json": {
-                  "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
                 }
               }
             }
           }
         }
-      },
+      }
+    }
+  },
 
-      "/AHFULexercises/delete/{exercise_id}": {
-        "delete": {
-          "summary": "Delete an exercise by id",
-          "tags": ["Exercises"],
-          "parameters": [
-            {
-              "name": "exercise_id",
-              "in": "path",
-              "required": True,
-              "description": "The id of the exercise (Mongo ObjectId as string)",
-              "schema": { "type": "string", "example": "698d0bc06e5117c22dd7774b" }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Exercise deleted successfully",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "message":     { "type": "string", "example": "Exercise deleted successfully" },
-                      "exercise_id": { "type": "string", "example": "698d0bc06e5117c22dd7774b" }
-                    },
-                    "required": ["message", "exercise_id"]
-                  }
-                }
-              }
-            },
-            "400": {
-              "description": "Invalid id format or missing id",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "error": { "type": "string", "example": "You must provide an exercise id to delete" }
-                    },
-                    "required": ["error"]
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "Exercise not found or already deleted",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "error": { "type": "string", "example": "Exercise not found or already deleted" }
-                    },
-                    "required": ["error"]
-                  }
-                }
-              }
-            },
-            "500": {
-              "description": "Server error",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object",
-                    "properties": {
-                      "error": { "type": "string" }
-                    },
-                    "required": ["error"]
-                  }
-                }
+"/AHFULexercises/id/{exercise_id}": {
+  "get": {
+    "summary": "Get exercise by id (internal or external)",
+    "tags": ["Exercises"],
+    "parameters": [
+      {
+        "name": "exercise_id",
+        "in": "path",
+        "required": True,
+        "schema": { "type": "string" }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Exercise found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "_id": { "type": "string" },
+                "name": { "type": "string" },
+                "gifUrl": { "type": "string" },
+                "targetMuscles": { "type": "array", "items": { "type": "string" } },
+                "bodyParts": { "type": "array", "items": { "type": "string" } },
+                "equipments": { "type": "array", "items": { "type": "string" } },
+                "secondaryMuscles": { "type": "array", "items": { "type": "string" } },
+                "instructions": { "type": "array", "items": { "type": "string" } }
               }
             }
           }
         }
       },
+      "404": {
+        "description": "Exercise not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": { "error": { "type": "string" } }
+            }
+          }
+        }
+      }
+    }
+  }
+},
+
+"/AHFULexercises/search": {
+  "get": {
+    "summary": "Search exercises by name",
+    "tags": ["Exercises"],
+    "parameters": [
+      {
+        "name": "search",
+        "in": "query",
+        "required": True,
+        "schema": { "type": "string" }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Search results",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "_id": { "type": "string" },
+                  "name": { "type": "string" },
+                  "gifUrl": { "type": "string" },
+                  "targetMuscles": { "type": "array", "items": { "type": "string" } },
+                  "bodyParts": { "type": "array", "items": { "type": "string" } },
+                  "equipments": { "type": "array", "items": { "type": "string" } },
+                  "secondaryMuscles": { "type": "array", "items": { "type": "string" } },
+                  "instructions": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+},
+
+"/AHFULexercises/create/": {
+  "post": {
+    "summary": "Create a new internal exercise",
+    "tags": ["Exercises"],
+    "requestBody": {
+      "required": True,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string" },
+              "gifUrl": { "type": "string" },
+              "targetMuscles": { "type": "array", "items": { "type": "string" } },
+              "bodyParts": { "type": "array", "items": { "type": "string" } },
+              "equipments": { "type": "array", "items": { "type": "string" } },
+              "secondaryMuscles": { "type": "array", "items": { "type": "string" } },
+              "instructions": {
+                "type": "string",
+                "description": "Newline-separated instructions; stored as array"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "Exercise successfully created",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "exercise_id": { "type": "string" },
+                "message": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+},
+
+"/AHFULexercises/delete/{exercise_id}": {
+  "delete": {
+    "summary": "Delete internal exercise by id",
+    "tags": ["Exercises"],
+    "parameters": [
+      {
+        "name": "exercise_id",
+        "in": "path",
+        "required": True,
+        "schema": { "type": "string" }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Exercise deleted",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Exercise not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": { "error": { "type": "string" } }
+            }
+          }
+        }
+      }
+    }
+  }
+},
+
+"/AHFULexercises/metadata": {
+  "get": {
+    "summary": "Get metadata for first exercise page",
+    "tags": ["Exercises"],
+    "responses": {
+      "200": {
+        "description": "Exercise metadata",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "additionalProperties": True
+            }
+          }
+        }
+      }
+    }
+  },
+  "post": {
+    "summary": "Get metadata for next or previous page",
+    "tags": ["Exercises"],
+    "parameters": [
+      {
+        "name": "search",
+        "in": "query",
+        "required": True,
+        "schema": { "type": "string", "enum": ["next", "prev"] }
+      }
+    ],
+    "requestBody": {
+      "required": True,
+      "content": {
+        "application/json": {
+          "schema": { "type": "object" }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Metadata response",
+        "content": {
+          "application/json": {
+            "schema": { "type": "object", "additionalProperties": True }
+          }
+        }
+      }
+    }
+  }
+},
+
 
     "/AHFULworkout/": {
       "get": {
@@ -3530,243 +3574,6 @@ swaggerConfig = {
           },
           "404": {
             "description": "Settings not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/AHFULexercises/metadata": {
-      "get": {
-        "summary": "Get initial metadata for exercises (Page 1)",
-        "tags": ["Exercises"],
-        "responses": {
-          "200": {
-            "description": "Initial metadata for exercises pagination",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Get next or previous page of metadata",
-        "description": "Use the 'search' query parameter with value 'next' for next page or 'prev' for previous page. Pass the current page data in the request body.",
-        "tags": ["Exercises"],
-        "parameters": [
-          {
-            "name": "search",
-            "in": "query",
-            "required": True,
-            "description": "Pagination direction: 'next' for next page, 'prev' for previous page",
-            "schema": { "type": "string", "enum": ["next", "prev"], "example": "next" }
-          }
-        ],
-        "requestBody": {
-          "required": True,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "description": "Current page data for pagination",
-                "example": { "currentPage": 1 }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Metadata for requested page",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid search query or no page data provided",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "Invalid search query" }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/AHFULexercises/": {
-      "post": {
-        "summary": "Get next or previous page of exercises",
-        "description": "Use the 'search' query parameter with value 'next' for next page or 'prev' for previous page. Pass the current page data in the request body.",
-        "tags": ["Exercises"],
-        "parameters": [
-          {
-            "name": "search",
-            "in": "query",
-            "required": True,
-            "description": "Pagination direction: 'next' for next page, 'prev' for previous page",
-            "schema": { "type": "string", "enum": ["next", "prev"], "example": "next" }
-          }
-        ],
-        "requestBody": {
-          "required": True,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "description": "Current page data for pagination",
-                "example": { "currentPage": 1 }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Exercises for requested page",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "_id": { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
-                      "name": { "type": "string", "example": "Dumbbell Bench Press" },
-                      "muscle_group": { "type": "string", "example": "Chest" },
-                      "difficulty": { "type": "string", "example": "Intermediate" },
-                      "equipment": { "type": "string", "example": "Dumbbells, Flat Bench" },
-                      "instructions": { "type": "string", "example": "Lie on a flat bench..." },
-                      "type": { "type": "string", "example": "Strength" }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid search query or no page data provided",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "Invalid search query" }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
-    "/AHFULexercises/{exercise_id}": {
-      "put": {
-        "summary": "Update an exercise",
-        "tags": ["Exercises"],
-        "parameters": [
-          {
-            "name": "exercise_id",
-            "in": "path",
-            "required": True,
-            "description": "Exercise ObjectId",
-            "schema": { "type": "string", "example": "698d0bc06e5117c22dd7774b" }
-          }
-        ],
-        "requestBody": {
-          "required": True,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": { "type": "string", "example": "Barbell Back Squat" },
-                  "muscle_group": { "type": "string", "example": "Legs" },
-                  "difficulty": { "type": "string", "example": "Intermediate" },
-                  "equipment": { "type": "string", "example": "Barbell, Squat Rack" },
-                  "instructions": { "type": "string", "example": "Position the barbell..." },
-                  "type": { "type": "string", "example": "Strength" }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Exercise updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string", "example": "Exercise updated successfully" }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input or update error",
             "content": {
               "application/json": {
                 "schema": {
