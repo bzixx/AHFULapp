@@ -1,5 +1,5 @@
-#Services & Drivers know how to implement business Logic related to the Route operations.  
-#   Intermediate between Routes and Objects.  Ensures validations and rules are applied before 
+#Services & Drivers know how to implement business Logic related to the Route operations.
+#   Intermediate between Routes and Objects.  Ensures validations and rules are applied before
 #   Calling Objects to interact with DB
 from DataModels.PersonalExObject import PersonalExObject
 from DataModels.UserObject import UserObject
@@ -7,8 +7,8 @@ from DataModels.WorkoutObject import WorkoutObject
 from bson import ObjectId, errors as bson_errors
 
 # The PersonalExDriver is responsible for implementing the business logic related to personalEx operations.
-#   It acts as an intermediary between the API routes and the data models, 
-#   ensuring that all necessary validations and rules are applied before interacting with 
+#   It acts as an intermediary between the API routes and the data models,
+#   ensuring that all necessary validations and rules are applied before interacting with
 #   the database.
 class PersonalExDriver:
     # ── Helper ─────────────────────────────────────────────────────────────────
@@ -25,7 +25,7 @@ class PersonalExDriver:
         # Validate required fields
         if (not userId) or (not exerciseId) or (not workoutId):
             return None, "You are missing a userId, workoutId or exerciseId. Please fix, then attempt to create personalEx again"
-        
+
         oid, err = PersonalExDriver._validate_obj_id(userId, "userId")
         if err:
             return None, err
@@ -37,7 +37,7 @@ class PersonalExDriver:
         user = UserObject.find_by_id(userId)
         if not user:
             return None, "User not found"
-        
+
         # Ensure the exercise exists, in data base or external
         # exercise = ExerciseObject.find_by_id(exerciseId)
         # if not exercise:
@@ -72,7 +72,7 @@ class PersonalExDriver:
             return response, None
         except Exception as e:
             return None, str(e)
-        
+
     # ── Read ─────────────────────────────────────────────────────────────────
     @staticmethod
     def get_all_personal_exs():
@@ -96,7 +96,7 @@ class PersonalExDriver:
             return personalEx, None
         except Exception as e:
             return None, str(e)
-        
+
     @staticmethod
     def get_personal_exs_by_user(userId):
         if not userId:
@@ -111,7 +111,7 @@ class PersonalExDriver:
             return personalEx, None
         except Exception as e:
             return None, str(e)
-        
+
     @staticmethod
     def get_personal_exs_by_workout(workoutId):
         # Validate target id
@@ -122,8 +122,6 @@ class PersonalExDriver:
             return None, err
         try:
             personalEx = PersonalExObject.find_by_workout(workoutId)
-            if not personalEx:
-                return None, "PersonalEx not found"
             return personalEx, None
         except Exception as e:
             return None, str(e)
@@ -154,7 +152,7 @@ class PersonalExDriver:
 
         # Filter only allowed fields
         sanitized_updates = {k: v for k, v in updates.items() if k in allowed_fields}
-        
+
         # Perform the update via the data model
         updated = PersonalExObject.update(id, sanitized_updates)
         if not updated:
