@@ -35,8 +35,8 @@ class ExerciseDriver:
             if not isinstance(item, dict):
                 continue
             new_item = dict(item)  # shallow copy
-            if "exerciseId" in new_item and "_id" not in new_item:
-                new_item["_id"] = new_item.pop("exerciseId")
+            if "exercise_id" in new_item and "_id" not in new_item:
+                new_item["_id"] = new_item.pop("exercise_id")
             out.append(new_item)
         return out
 

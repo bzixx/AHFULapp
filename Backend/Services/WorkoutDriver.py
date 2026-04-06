@@ -22,40 +22,40 @@ class WorkoutDriver:
         
     # ── Create ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def create_workout(userId, gymId, title, startTime, endTime):
+    def create_workout(user_id, gym_id, title, startTime, endTime):
         # Validate required fields
-        if (not userId) or (startTime is None):
+        if (not user_id) or (startTime is None):
             return None, "You are missing a user_id or startTime. Please fix, then attempt to create workout again"
         
-        oid, err = WorkoutDriver._validate_obj_id(userId, "userId")
+        oid, err = WorkoutDriver._validate_obj_id(user_id, "user_id")
         if err:
             return None, err
         gym_oid = None
-        if gymId is not None:
-            gym_oid, err = WorkoutDriver._validate_obj_id(gymId, "gym_id")
+        if gym_id is not None:
+            gym_oid, err = WorkoutDriver._validate_obj_id(gym_id, "gym_id")
             if err:
                 return None, err
 
         # Ensure the user exists
-        user = UserObject.find_by_id(userId)
+        user = UserObject.find_by_id(user_id)
         if not user:
             return None, "User not found"
 
         # Ensure the gym exists if provided
         if gym_oid is not None:
-            gym = GymObject.find_by_id(gymId)
+            gym = GymObject.find_by_id(gym_id)
             if not gym:
                 return None, "Gym not found"
 
         workout_data = {
-            "userId": ObjectId(userId),
+            "user_id": ObjectId(user_id),
             "title": title,
             "startTime": int(startTime),
             "endTime": int(endTime),
             "template": False,
         }
-        if gymId:
-            workout_data["gymId"] = ObjectId(gymId)
+        if gym_id:
+            workout_data["gym_id"] = ObjectId(gym_id)
 
         try:
             response = WorkoutObject.create(workout_data)
@@ -64,22 +64,22 @@ class WorkoutDriver:
             return None, str(e)
         
     @staticmethod
-    def create_template(userId, title):
+    def create_template(user_id, title):
         # Validate required fields
-        if (not userId):
-            return None, "You are missing a userId. Please fix, then attempt to create workout again"
+        if (not user_id):
+            return None, "You are missing a user_id. Please fix, then attempt to create workout again"
         
-        oid, err = WorkoutDriver._validate_obj_id(userId, "userId")
+        oid, err = WorkoutDriver._validate_obj_id(user_id, "user_id")
         if err:
             return None, err
 
         # Ensure the user exists
-        user = UserObject.find_by_id(userId)
+        user = UserObject.find_by_id(user_id)
         if not user:
             return None, "User not found"
 
         template_data = {
-            "userId": ObjectId(userId),
+            "user_id": ObjectId(user_id),
             "title": title,
             "template": True,
             "startTime": int(0)
@@ -116,14 +116,14 @@ class WorkoutDriver:
             return None, str(e)
         
     @staticmethod
-    def get_workouts_by_user(userId):
-        if (not userId):
+    def get_workouts_by_user(user_id):
+        if (not user_id):
             return None, "You are missing a user id. Please fix, then attempt to create workout again"
-        oid, err = WorkoutDriver._validate_obj_id(userId, "user_id")
+        oid, err = WorkoutDriver._validate_obj_id(user_id, "user_id")
         if err:
             return None, err
         try:
-            workouts = WorkoutObject.find_by_user(userId)
+            workouts = WorkoutObject.find_by_user(user_id)
             if not workouts:
                 return None, "Workout not found"
             return workouts, None
@@ -131,14 +131,14 @@ class WorkoutDriver:
             return None, str(e)
         
     @staticmethod
-    def get_user_templates(userId):
-        if (not userId):
+    def get_user_templates(user_id):
+        if (not user_id):
             return None, "You are missing a user id. Please fix, then attempt to create workout again"
-        oid, err = WorkoutDriver._validate_obj_id(userId, "user_id")
+        oid, err = WorkoutDriver._validate_obj_id(user_id, "user_id")
         if err:
             return None, err
         try:
-            templates = WorkoutObject.find_user_templates(userId)
+            templates = WorkoutObject.find_user_templates(user_id)
             if not templates:
                 return None, "Templates not found"
             return templates, None
@@ -211,18 +211,18 @@ class WorkoutDriver:
             return None, str(e)
     # ── Streak Calculation ─────────────────────────────────────────────────────
     @staticmethod
-    def get_streak(userId):
+    def get_streak(user_id):
         try:
-            # Validate userId
-            if not userId:
+            # Validate user_id
+            if not user_id:
                 return None, "User ID is required"
             
-            oid, err = WorkoutDriver._validate_obj_id(userId, "userId")
+            oid, err = WorkoutDriver._validate_obj_id(user_id, "user_id")
             if err:
                 return None, err
             
             # Get all workouts for user, sorted by startTime descending
-            workouts = WorkoutObject.find_by_user(userId)
+            workouts = WorkoutObject.find_by_user(user_id)
             if not workouts:
                 return {"streak": 0, "lastWorkoutDate": None}, None
             
