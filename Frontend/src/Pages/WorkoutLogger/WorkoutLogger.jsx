@@ -311,8 +311,6 @@ export function WorkoutLogger() {
         userId: user._id,
       };
 
-      console.log(templatePayload);
-
       const templateRes = await fetch(
         "http://localhost:5000/AHFULworkout/create/template",
         {
@@ -1191,7 +1189,6 @@ export function WorkoutLogger() {
 
               {templatePreview.exercises.map(
                 (ex, i) => (
-                  console.log(personalExNames[ex.exerciseId]),
                   (
                     <React.Fragment key={ex._id || i}>
                       <div
