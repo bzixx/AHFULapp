@@ -27,8 +27,8 @@ class EmailDriver:
         verifies = VerificationObject.find_type_by_user(user_id, "email")
         print(verifies)
 
-        if verifies:
-            return "email already sent", None
+        # if verifies:
+        #     return "email already sent", None
 
         try:
             response = EmailDriver.send_not_verified_email(user_id, email)

@@ -593,9 +593,9 @@ swaggerConfig = {
                 "type": "object",
                 "properties": {
                   "_id":        { "type": "string" },
-                  "exerciseId":{ "type": "string" },
-                  "workoutId": { "type": "string" },
-                  "userId":    { "type": "string" },
+                  "exercise_id":{ "type": "string" },
+                  "workout_id": { "type": "string" },
+                  "user_id":    { "type": "string" },
                   "reps":      { "type": "string" },
                   "sets":      { "type": "string" },
                   "weight":    { "type": "string" },
@@ -1270,8 +1270,8 @@ swaggerConfig = {
                   "type": "object",
                   "properties": {
                     "_id": { "type": "string" },
-                    "userId": { "type": "string" },
-                    "gymId": { "type": "string" },
+                    "user_id": { "type": "string" },
+                    "gym_id": { "type": "string" },
                     "title": { "type": "string" },
                     "startTime": { "type": "integer" },
                     "endTime": { "type": "integer" },
@@ -1309,8 +1309,8 @@ swaggerConfig = {
                 "type": "object",
                 "properties": {
                   "_id": { "type": "string" },
-                  "userId": { "type": "string" },
-                  "gymId": { "type": "string" },
+                  "user_id": { "type": "string" },
+                  "gym_id": { "type": "string" },
                   "title": { "type": "string" },
                   "startTime": { "type": "integer" },
                   "endTime": { "type": "integer" },
@@ -1348,7 +1348,7 @@ swaggerConfig = {
                 "type": "object",
                 "properties": {
                   "_id": { "type": "string" },
-                  "userId": { "type": "string" },
+                  "user_id": { "type": "string" },
                   "title": { "type": "string" },
                   "startTime": { "type": "integer", "example": 0 },
                   "endTime": { "type": "integer", "example": 0 },
@@ -1384,7 +1384,7 @@ swaggerConfig = {
               "type": "object",
               "properties": {
                 "_id": { "type": "string" },
-                "userId": { "type": "string" },
+                "user_id": { "type": "string" },
                 "title": { "type": "string" },
                 "startTime": { "type": "integer", "example": 0 },
                 "endTime": { "type": "integer", "example": 0 },
@@ -1422,8 +1422,8 @@ swaggerConfig = {
               "type": "object",
               "properties": {
                 "_id": { "type": "string" },
-                "userId": { "type": "string" },
-                "gymId": { "type": "string" },
+                "user_id": { "type": "string" },
+                "gym_id": { "type": "string" },
                 "title": { "type": "string" },
                 "startTime": { "type": "integer" },
                 "endTime": { "type": "integer" },
@@ -1447,10 +1447,10 @@ swaggerConfig = {
         "application/json": {
           "schema": {
             "type": "object",
-            "required": ["userId", "startTime"],
+            "required": ["user_id", "startTime"],
             "properties": {
-              "userId": { "type": "string" },
-              "gymId": { "type": "string" },
+              "user_id": { "type": "string" },
+              "gym_id": { "type": "string" },
               "title": { "type": "string" },
               "startTime": { "type": "integer" },
               "endTime": { "type": "integer" }
@@ -1477,9 +1477,9 @@ swaggerConfig = {
         "application/json": {
           "schema": {
             "type": "object",
-            "required": ["userId", "title"],
+            "required": ["user_id", "title"],
             "properties": {
-              "userId": { "type": "string" },
+              "user_id": { "type": "string" },
               "title": { "type": "string" }
             }
           }
@@ -1549,13 +1549,13 @@ swaggerConfig = {
   }
 },
 
-"/AHFULworkout/streak/{userId}": {
+"/AHFULworkout/streak/{user_id}": {
   "get": {
     "summary": "Get workout streak",
     "tags": ["Workout"],
     "parameters": [
       {
-        "name": "userId",
+        "name": "user_id",
         "in": "path",
         "required": True,
         "schema": { "type": "string" }
@@ -1927,14 +1927,14 @@ swaggerConfig = {
                     "type": "object",
                     "properties": {
                       "_id": { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
-                      "userId": { "type": "string", "example": "abc123" },
+                      "user_id": { "type": "string", "example": "abc123" },
                       "name": { "type": "string", "example": "Apple" },
                       "calsPerServing": { "type": "number", "example": 95 },
                       "servings": { "type": "number", "example": 1 },
                       "type": { "type": "string", "example": "Lunch" },
                       "time": { "type": "integer", "example": 1708473600 }
                     },
-                    "required": ["_id", "userId", "name", "calsPerServing", "servings", "time"]
+                    "required": ["_id", "user_id", "name", "calsPerServing", "servings", "time"]
                   }
                 }
               }
@@ -1957,13 +1957,13 @@ swaggerConfig = {
       }
     },
 
-    "/AHFULfood/{userId}": {
+    "/AHFULfood/{user_id}": {
       "get": {
-        "summary": "Get foods by userId",
+        "summary": "Get foods by user_id",
         "tags": ["Food"],
         "parameters": [
           {
-            "name": "userId",
+            "name": "user_id",
             "in": "path",
             "required": True,
             "description": "The user id associated with the foods",
@@ -1981,14 +1981,14 @@ swaggerConfig = {
                     "type": "object",
                     "properties": {
                       "_id": { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
-                      "userId": { "type": "string", "example": "abc123" },
+                      "user_id": { "type": "string", "example": "abc123" },
                       "name": { "type": "string", "example": "Apple" },
                       "calsPerServing": { "type": "number", "example": 95 },
                       "servings": { "type": "number", "example": 1 },
                       "type": { "type": "string", "example": "Lunch" },
                       "time": { "type": "integer", "example": 1708473600 }
                     },
-                    "required": ["_id", "userId", "name", "calsPerServing", "servings", "time"]
+                    "required": ["_id", "user_id", "name", "calsPerServing", "servings", "time"]
                   }
                 }
               }
@@ -2033,14 +2033,14 @@ swaggerConfig = {
                   "type": "object",
                   "properties": {
                       "_id": { "type": "string", "example": "698d0bc06e5117c22dd7774b" },
-                      "userId": { "type": "string", "example": "abc123" },
+                      "user_id": { "type": "string", "example": "abc123" },
                       "name": { "type": "string", "example": "Apple" },
                       "calsPerServing": { "type": "number", "example": 95 },
                       "servings": { "type": "number", "example": 1 },
                       "type": { "type": "string", "example": "Lunch" },
                       "time": { "type": "integer", "example": 1708473600 }
                     },
-                    "required": ["_id", "userId", "name", "calsPerServing", "servings", "time"]
+                    "required": ["_id", "user_id", "name", "calsPerServing", "servings", "time"]
                 }
               }
             }
@@ -2072,9 +2072,9 @@ swaggerConfig = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["userId", "name", "calsPerServing", "servings", "time"],
+                "required": ["user_id", "name", "calsPerServing", "servings", "time"],
                 "properties": {
-                  "userId": { "type": "string", "example": "abc123" },
+                  "user_id": { "type": "string", "example": "abc123" },
                   "name": { "type": "string", "example": "Apple" },
                   "calsPerServing": { "type": "number", "example": 95 },
                   "servings": { "type": "number", "example": 1 },
@@ -2234,14 +2234,14 @@ swaggerConfig = {
                   "type": "object",
                   "properties": {
                     "_id":            { "type": "string",  "example": "699d0f5f888d8f649698307e" },
-                    "userId":         { "type": "string",  "example": "699d0093795741a59fe13616" },
+                    "user_id":         { "type": "string",  "example": "699d0093795741a59fe13616" },
                     "name":           { "type": "string",  "example": "Banana" },
                     "calsPerServing": { "type": "integer", "example": 105 },
                     "servings":       { "type": "integer", "example": 2 },
                     "type":           { "type": "string",  "example": "Snack" },
                     "time":           { "type": "number",  "example": 1708473601 }
                   },
-                  "required": ["_id", "userId", "name", "calsPerServing", "servings", "type", "time"]
+                  "required": ["_id", "user_id", "name", "calsPerServing", "servings", "type", "time"]
                 }
               }
             }
@@ -2389,7 +2389,7 @@ swaggerConfig = {
                   "type": "object",
                   "properties": {
                     "_id": { "type": "string", "example": "698d039a6e5117c22dd7771d" },
-                    "userId": { "type": "string", "example": "699d0093795741a59fe13616" }
+                    "user_id": { "type": "string", "example": "699d0093795741a59fe13616" }
                   }
                 }
               }
@@ -2422,9 +2422,9 @@ swaggerConfig = {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["userId"],
+                "required": ["user_id"],
                 "properties": {
-                  "userId": { "type": "string", "description": "User ObjectId", "example": "699d0093795741a59fe13616" }
+                  "user_id": { "type": "string", "description": "User ObjectId", "example": "699d0093795741a59fe13616" }
                 }
               }
             }
