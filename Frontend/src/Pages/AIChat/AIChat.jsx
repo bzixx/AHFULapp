@@ -1,12 +1,11 @@
 import "./AIChat.css";
 import "../../SiteStyles.css";
-import { Chat } from "../../components/CompanionAI/Chat"
+import { CompanionAI } from "../../components/CompanionAI/CompanionAI"
 
 export function AIChat() {
     return (
         <div className="ai-chat-page">
-            <h1>AI Chat</h1>
-            <Chat />
+            <CompanionAI />
         </div>
     );
 }
