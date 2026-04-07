@@ -1556,7 +1556,7 @@ def test_find_template_by_user():
     assert filtered[0].get("_id") == tp_oid
     assert filtered[0].get("user_id") == "699d0093795741a59fe13616"
     assert filtered[0].get("title") == "My Weekend Workout Template"
-    assert filtered[0].get("template") == "True"
+    assert filtered[0].get("template") == True
     assert filtered[0].get("startTime") == 0
 
     # Give a bad _id
@@ -1668,7 +1668,7 @@ def test_create_delete_template():
     assert filtered[0].get("startTime") == 0
     assert filtered[0].get("user_id") == "699d0093795741a59fe13616"
     assert filtered[0].get("title") == "A test template"
-    assert filtered[0].get("template") == "True"
+    assert filtered[0].get("template") == True
     
     # Delete created template
     response, err = WorkoutDriver.delete_workout(response_id)
