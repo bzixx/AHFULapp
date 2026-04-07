@@ -1442,7 +1442,7 @@ def test_user_invalid_inputs_combined():
 
 def test_find_workout_by_id():
     # Give a valid _id
-    oid = "69c063229f8c3c92b650445b"
+    oid = "69d43248f826ab5daa4431af"
     ex, err = WorkoutDriver.get_workout_by_id(oid)
 
     if err is not None:
@@ -1454,9 +1454,9 @@ def test_find_workout_by_id():
     assert ex.get("_id") == oid
     assert ex.get("user_id") == "699d0093795741a59fe13616"
     assert ex.get("gym_id") == "699cff88400d9d43a32e924d"
-    assert ex.get("title") == "Leg Day"
-    assert ex.get("startTime") == 1742443200
-    assert ex.get("endTime") == 1742446800
+    assert ex.get("title") == "A test workout"
+    assert ex.get("startTime") == 1
+    assert ex.get("endTime") == 2
 
     # Give a bad _id
     bad_oid = "69af2a4598d0f4227b25ed7"
@@ -1494,7 +1494,7 @@ def test_find_workout_by_user():
     if err is not None:
         print(exs, err)
     
-    wo_oid = "69c063229f8c3c92b650445b"
+    wo_oid = "69d43248f826ab5daa4431af"
     filtered = [d for d in exs if d.get("_id") == wo_oid]
 
     assert len(filtered) == 1
@@ -1505,9 +1505,9 @@ def test_find_workout_by_user():
     assert filtered[0].get("_id") == wo_oid
     assert filtered[0].get("user_id") == "699d0093795741a59fe13616"
     assert filtered[0].get("gym_id") == "699cff88400d9d43a32e924d"
-    assert filtered[0].get("title") == "Leg Day"
-    assert filtered[0].get("startTime") == 1742443200
-    assert filtered[0].get("endTime") == 1742446800
+    assert filtered[0].get("title") == "A test workout"
+    assert filtered[0].get("startTime") == 1
+    assert filtered[0].get("endTime") == 2
 
     # Give a bad _id
     bad_oid = "699d0093795741a59fe1361"
