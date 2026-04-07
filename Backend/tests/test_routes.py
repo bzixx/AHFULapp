@@ -723,13 +723,13 @@ def test_find_personal_ex_by_id():
     assert ex is not None
     assert ex.get("_id") == oid
     assert ex.get("complete") == False
-    assert ex.get("distance") == "0"
+    assert ex.get("distance") == 0
     assert ex.get("duration") == 120
     assert ex.get("exercise_id") == "69b4885e542988e24fee392e"
-    assert ex.get("reps") == "10"
-    assert ex.get("sets") == "35"
+    assert ex.get("reps") == 10
+    assert ex.get("sets") == 35
     assert ex.get("user_id") == "699d0093795741a59fe13616"
-    assert ex.get("weight") == "150"
+    assert ex.get("weight") == 150
     assert ex.get("workout_id") == "699d05d8f1677119323250bc"
 
     # Give a bad _id
@@ -778,13 +778,13 @@ def test_find_personal_ex_by_workout():
     assert filtered[0] is not None
     assert filtered[0].get("_id") == pe_oid
     assert filtered[0].get("complete") == False
-    assert filtered[0].get("distance") == "0"
+    assert filtered[0].get("distance") == 0
     assert filtered[0].get("duration") == 120
     assert filtered[0].get("exercise_id") == "69b4885e542988e24fee392e"
-    assert filtered[0].get("reps") == "10"
-    assert filtered[0].get("sets") == "35"
+    assert filtered[0].get("reps") == 10
+    assert filtered[0].get("sets") == 35
     assert filtered[0].get("user_id") == "699d0093795741a59fe13616"
-    assert filtered[0].get("weight") == "150"
+    assert filtered[0].get("weight") == 150
     assert filtered[0].get("workout_id") == "699d05d8f1677119323250bc"
 
     # Give a bad _id
@@ -833,13 +833,13 @@ def test_find_personal_ex_by_user():
     assert filtered[0] is not None
     assert filtered[0].get("_id") == pe_oid
     assert filtered[0].get("complete") == False
-    assert filtered[0].get("distance") == "0"
+    assert filtered[0].get("distance") == 0
     assert filtered[0].get("duration") == 120
     assert filtered[0].get("exercise_id") == "69b4885e542988e24fee392e"
-    assert filtered[0].get("reps") == "10"
-    assert filtered[0].get("sets") == "35"
+    assert filtered[0].get("reps") == 10
+    assert filtered[0].get("sets") == 35
     assert filtered[0].get("user_id") == "699d0093795741a59fe13616"
-    assert filtered[0].get("weight") == "150"
+    assert filtered[0].get("weight") == 150
     assert filtered[0].get("workout_id") == "699d05d8f1677119323250bc"
 
     # Give a bad _id
@@ -873,7 +873,7 @@ def test_find_personal_ex_by_user():
 def test_create_delete_personal_ex():
     # Give a valid gym_id
     completed = False
-    distance = "0"
+    distance = 0
     duration = 240
     exercise_id = "698d0bc06e5117c22dd7774b"
     workout_id = "69d43248f826ab5daa4431af"
@@ -903,7 +903,7 @@ def test_create_delete_personal_ex():
     assert personalEx is not None
     assert personalEx.get("_id") == response_id
     assert personalEx.get("complete") == False
-    assert personalEx.get("distance") == "0"
+    assert personalEx.get("distance") == 0
     assert personalEx.get("duration") == 240
     assert personalEx.get("exercise_id") == "698d0bc06e5117c22dd7774b"
     assert personalEx.get("workout_id") == "69d43248f826ab5daa4431af"
@@ -939,9 +939,9 @@ def test_update_personal_ex_roundtrip():
     new_values = {
         "reps": 999,
         "sets": 999,
-        "weight": "999",    
+        "weight": 999,    
         "duration": 999,    
-        "distance": "999",  
+        "distance": 999,  
         "complete": True
     }
 
@@ -1038,7 +1038,7 @@ def test_personal_ex_invalid_inputs_combined():
     for bad in ["nothex", 123, [], {}, ""]:
         resp, err = PersonalExDriver.create_personal_ex(
             bad, "ex", valid_workout_id,
-            reps=1, sets=1, weight=100, duration=60, distance="0", complete=False
+            reps=1, sets=1, weight=100, duration=60, distance=0, complete=False
         )
         assert resp is None
         assert err == "You are missing a user_id, workout_id or exercise_id. Please fix, then attempt to create personalEx again" or "Invalid user_id format; must be a 24-hex string"
@@ -1046,7 +1046,7 @@ def test_personal_ex_invalid_inputs_combined():
     for bad in ["nothex", 123, [], {}, ""]:
         resp, err = PersonalExDriver.create_personal_ex(
             valid_user_id, "ex", bad,
-            reps=1, sets=1, weight=100, duration=60, distance="0", complete=False
+            reps=1, sets=1, weight=100, duration=60, distance=0, complete=False
         )
         assert resp is None
         assert err == "You are missing a user_id, workout_id or exercise_id. Please fix, then attempt to create personalEx again" or "Invalid user_id format; must be a 24-hex string"
