@@ -1963,7 +1963,7 @@ def test_create_delete_measurement():
     user_id = "699f79394048f9ec8b5b0ed2"
 
     data = {
-        "date": "2026-03-20T00:00:00.000Z",
+        "date": 1773964800,
         "arms": 50,
         "waist": 100,
         "weight": 200
@@ -2069,7 +2069,7 @@ def test_create_measurement_missing_date():
 def test_create_measurement_no_values():
     user_id = "699f79394048f9ec8b5b0ed2"
     data = {
-        "date": "2026-03-20T00:00:00.000Z"
+        "date": 1773964800
     }
 
     resp, err = MeasurementDriver.create_measurement(user_id, data)
@@ -2079,13 +2079,22 @@ def test_create_measurement_no_values():
 def test_create_measurement_invalid_field_value():
     user_id = "699f79394048f9ec8b5b0ed2"
     data = {
-        "date": "2026-03-20T00:00:00.000Z",
+        "date": 1773360000,
         "weight": "abc"     # invalid
     }
 
     resp, err = MeasurementDriver.create_measurement(user_id, data)
     assert resp is None
     assert "Invalid weight" in err
+
+    data = {
+        "date": "2026-03-20T00:00:00.000Z", # invalid
+        "weight": 20     
+    }
+
+    resp, err = MeasurementDriver.create_measurement(user_id, data)
+    assert resp is None
+    assert "Invalid date" in err
 
 def test_delete_measurement_invalid_id():
     resp, err = MeasurementDriver.delete_measurement("123")
