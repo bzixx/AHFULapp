@@ -876,7 +876,7 @@ def test_create_delete_personal_ex():
     distance = "0"
     duration = 240
     exercise_id = "698d0bc06e5117c22dd7774b"
-    workout_id = "69c063229f8c3c92b650445b"
+    workout_id = "69d43248f826ab5daa4431af"
     reps = 1
     sets = 1
     user_id = "699d0093795741a59fe13616"
@@ -906,7 +906,7 @@ def test_create_delete_personal_ex():
     assert personalEx.get("distance") == "0"
     assert personalEx.get("duration") == 240
     assert personalEx.get("exercise_id") == "698d0bc06e5117c22dd7774b"
-    assert personalEx.get("workout_id") == "69c063229f8c3c92b650445b"
+    assert personalEx.get("workout_id") == "69d43248f826ab5daa4431af"
     assert personalEx.get("reps") == 1
     assert personalEx.get("sets") == 1
     assert personalEx.get("user_id") == "699d0093795741a59fe13616"
@@ -1015,7 +1015,7 @@ def test_update_personal_ex_roundtrip():
 
 def test_personal_ex_invalid_inputs_combined():
     valid_user_id = "699d0093795741a59fe13616"
-    valid_workout_id = "69c063229f8c3c92b650445b"
+    valid_workout_id = "69d43248f826ab5daa4431af"
     valid_personal_ex_id = "69ab5596dc5dee4f518a01cd"
 
     # CREATE — INVALID INPUTS
@@ -1679,7 +1679,7 @@ def test_create_delete_template():
    
 def test_update_workout_roundtrip():
     # Known existing document id from your tests/fixtures
-    workout_id = "69c063229f8c3c92b650445b"
+    workout_id = "69d43248f826ab5daa4431af"
 
     original, err = WorkoutDriver.get_workout_by_id(workout_id)
     if err is not None:
@@ -1753,7 +1753,7 @@ def test_update_workout_roundtrip():
 def test_workout_invalid_inputs_combined():
     valid_user_id = "699d0093795741a59fe13616"
     valid_gym_id = "699cff88400d9d43a32e924d"
-    valid_workout_id = "69c063229f8c3c92b650445b"
+    valid_workout_id = "69d43248f826ab5daa4431af"
 
     # GET WORKOUT BY ID — INVALID INPUTS
     for bad in [None, "", 123, [], {}, "nothex"]:
@@ -1864,7 +1864,7 @@ def test_workout_invalid_inputs_combined():
     assert err == "Template not found"
 
 def test_workout_partial_empty_unknown_updates():
-    workout_id = "69c063229f8c3c92b650445b"
+    workout_id = "69d43248f826ab5daa4431af"
 
     original, err = WorkoutDriver.get_workout_by_id(workout_id)
     assert err is None
@@ -2094,7 +2094,7 @@ def test_create_measurement_invalid_field_value():
 
     resp, err = MeasurementDriver.create_measurement(user_id, data)
     assert resp is None
-    assert "Invalid date" in err
+    assert "type did not match" in err
 
 def test_delete_measurement_invalid_id():
     resp, err = MeasurementDriver.delete_measurement("123")
