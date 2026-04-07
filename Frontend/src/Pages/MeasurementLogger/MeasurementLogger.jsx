@@ -112,7 +112,7 @@ export function MeasurementLogger() {
             setLoading(true);
 
             const payload = {
-                userId,
+                user_id: userId,
                 ...formData,
                 date: new Date(formData.date).toISOString()
             };
