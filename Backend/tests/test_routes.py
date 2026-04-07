@@ -1864,6 +1864,7 @@ def test_workout_invalid_inputs_combined():
     assert err == "Template not found"
 
 def test_workout_partial_empty_unknown_updates():
+    
     workout_id = "69d43248f826ab5daa4431af"
 
     original, err = WorkoutDriver.get_workout_by_id(workout_id)
@@ -2092,6 +2093,7 @@ def test_create_measurement_invalid_field_value():
         "weight": 20     
     }
 
+    
     resp, err = MeasurementDriver.create_measurement(user_id, data)
     assert resp is None
     assert "type did not match" in err

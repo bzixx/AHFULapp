@@ -308,7 +308,7 @@ export function WorkoutLogger() {
       // 1. Create the template
       const templatePayload = {
         title: workoutTitle,
-        userId: user._id,
+        user_id: user._id,
       };
 
       const templateRes = await fetch(
@@ -329,15 +329,15 @@ export function WorkoutLogger() {
       // 2. Create personalExercises using template._id as workoutId
       for (const ex of exercisesInProgressTable) {
         const personalExPayload = {
-          exerciseId: ex.exerciseId,
+          exercise_id: ex.exerciseId,
           reps: ex.reps,
           sets: ex.sets,
           weight: ex.weight,
           duration: ex.duration,
           distance: ex.distance,
           complete: false,
-          userId: user._id,
-          workoutId: template.workout_id,
+          user_id: user._id,
+          workout_id: template.workout_id,
           template: true,
         };
 
@@ -408,12 +408,12 @@ export function WorkoutLogger() {
               complete: ex.complete,
               distance: ex.distance,
               duration: ex.duration,
-              exerciseId: ex.exerciseId,
+              exercise_id: ex.exerciseId,
               reps: ex.reps,
               sets: ex.sets,
-              userId: ex.userId,
+              user_id: ex.userId,
               weight: ex.weight,
-              workoutId: ex.workoutId,
+              workout_id: ex.workoutId,
             }
           : {
               complete: ex.complete,
@@ -500,9 +500,9 @@ export function WorkoutLogger() {
     // Create exercise objects with workout context
     const newExercises = pendingExercises.map((rawName) => ({
       _id: null, // null = new exercise, will be assigned ID after DB save
-      exerciseId: rawName,
-      workoutId: workoutId,
-      userId: user._id,
+      exercise_id: rawName,
+      workout_id: workoutId,
+      user_id: user._id,
       complete: false,
       reps: 0,
       sets: 0,
@@ -595,10 +595,10 @@ export function WorkoutLogger() {
 
           const newWorkoutPayload = {
             endTime: currentDateUnix,
-            gymId: gymId,
+            gym_id: gymId,
             startTime: currentDateUnix,
             title: "Workout (" + today.toDateString() + ")",
-            userId: user._id,
+            user_id: user._id,
           };
 
           const newWorkout = await createWorkout(newWorkoutPayload);
