@@ -1919,7 +1919,7 @@ def test_find_measurement_by_id():
     assert m is not None
     assert m.get("_id") == oid
     assert m.get("user_id") == "699f79394048f9ec8b5b0ed2"
-    assert m.get("date") == "2026-03-13T00:00:00.000Z"
+    assert m.get("date") == 1773360000
     assert m.get("arms") == 70
     assert m.get("hips") == 130
     assert m.get("chest") == 108

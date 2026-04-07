@@ -102,7 +102,13 @@ export function MeasurementLogger() {
             return;
         }
 
-        const hasAtLeastOne = measurements_to_track.some(m => formData[m.key].trim());
+        
+        const hasAtLeastOne = measurements_to_track.some(
+        m =>
+            formData[m.key] !== "" &&
+            formData[m.key] !== null &&
+            formData[m.key] !== undefined
+        );
         if (!hasAtLeastOne) {
             setErrors("Please enter at least one measurement");
             return;
@@ -161,13 +167,14 @@ export function MeasurementLogger() {
 
     const handleEditMeasurement = (measurement) => {
         setFormData({
-            chest: measurement.chest ?? "",
-            waist: measurement.waist ?? "",
-            hips: measurement.hips ?? "",
-            thighs: measurement.thighs ?? "",
-            arms: measurement.arms ?? "",
-            weight: measurement.weight ?? "",
-            date: measurement.date.split('T')[0]
+            chest: measurement.chest?.toString() ?? "",
+            waist: measurement.waist?.toString() ?? "",
+            hips: measurement.hips?.toString() ?? "",
+            thighs: measurement.thighs?.toString() ?? "",
+            arms: measurement.arms?.toString() ?? "",
+            weight: measurement.weight?.toString() ?? "",
+            date: new Date(measurement.date * 1000).toISOString().split("T")[0]
+
         });
         setEditingId(measurement._id);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -212,9 +219,9 @@ export function MeasurementLogger() {
     // Prepare chart data
     const chartData = measurements
         .slice()
-        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .sort((a, b) => a.date - b.date)
         .map((measurement) => ({
-            date: new Date(measurement.date).toLocaleDateString(),
+            date: new Date(measurement.date * 1000).toLocaleDateString(),
             chest: measurement.chest ?? null,
             waist: measurement.waist ?? null,
             hips: measurement.hips ?? null,
@@ -340,7 +347,7 @@ export function MeasurementLogger() {
                             {measurements.slice().reverse().map(measurement => (
                                 <div key={measurement._id} className="measurement-card">
                                     <div className="measurement-date">
-                                        {new Date(measurement.date).toLocaleDateString()}
+                                        {new Date(measurement.date * 1000).toLocaleDateString()}
                                     </div>
                                     <div className="measurement-values">
                                         {measurement.weight && <p><strong>Weight:</strong> {measurement.weight} lbs</p>}
