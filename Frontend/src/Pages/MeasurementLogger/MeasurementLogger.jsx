@@ -114,7 +114,7 @@ export function MeasurementLogger() {
             const payload = {
                 user_id: userId,
                 ...formData,
-                date: new Date(formData.date).toISOString()
+                date: Math.floor(new Date(formData.date).getTime() / 1000)
             };
 
             const endpoint = editingId
