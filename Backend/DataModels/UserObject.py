@@ -44,7 +44,7 @@ class UserObject:
             {
                 # add only if not present; if roles is missing, it becomes [role]
                 "$addToSet": {"roles": role},
-                "$set": {"updated_at": datetime.now()}
+                "$set": {"updated_at": datetime.now().timestamp()}
             }
         )
         if result.matched_count == 0:
@@ -59,7 +59,7 @@ class UserObject:
             {"_id": ObjectId(user_id)},
             {
                 "$pull": {"roles": role},
-                "$set": {"updated_at": datetime.now()}
+                "$set": {"updated_at": datetime.now().timestamp()}
             }
         )
         if result.matched_count == 0:
@@ -74,7 +74,7 @@ class UserObject:
             {
                 "$set": {
                     "deactivated": True,
-                    "updated_at": datetime.now()
+                    "updated_at": datetime.now().timestamp()
                 }
             }
         )
