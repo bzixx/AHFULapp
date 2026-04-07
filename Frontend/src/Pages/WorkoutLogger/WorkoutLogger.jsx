@@ -388,12 +388,15 @@ export function WorkoutLogger() {
       return removed;
     });
 
+    // response = handleSubmit()
+    // console.log(response)
+
     // 2. Replace exercisesInProgressTable with template exercises
     setExercisesInProgressTable(
       templatePreview.exercises.map((ex) => ({
         ...ex,
         _id: null, // mark as new
-        workoutId: null, // ensure backend treats them as new
+        workout_id: workoutId, // ensure backend treats them as new
       })),
     );
 
