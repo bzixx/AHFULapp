@@ -37,14 +37,14 @@ class UserSettingsObject:
         if settings_data is None:
             settings_data = DEFAULT_USER_SETTINGS.copy()
         settings_data["user_id"] = ObjectId(user_id)
-        settings_data["created_at"] = datetime.now().timestamp()
-        settings_data["updated_at"] = datetime.now().timestamp()
+        settings_data["created_at"] = int(datetime.now().timestamp())
+        settings_data["updated_at"] = int(datetime.now().timestamp())
         result = userSettingsCollection.insert_one(settings_data)
         return str(result.inserted_id)
 
     @staticmethod
     def update(user_id, updates):
-        updates["updated_at"] = datetime.now().timestamp()
+        updates["updated_at"] = int(datetime.now().timestamp())
         result = userSettingsCollection.update_one(
             {"user_id": ObjectId(user_id)},
             {"$set": updates}

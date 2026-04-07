@@ -37,7 +37,7 @@ class VerificationObject:
             "type": type,
             "token": token,
             "user_id": ObjectId(user_id),
-            "created_at": datetime.now().timestamp()
+            "created_at": int(datetime.now().timestamp())
         }
         result = verificationCollection.insert_one(verify_data)
         return str(result.inserted_id)

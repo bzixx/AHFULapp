@@ -396,7 +396,8 @@ export function WorkoutLogger() {
       templatePreview.exercises.map((ex) => ({
         ...ex,
         _id: null, // mark as new
-        workout_id: workoutId, // ensure backend treats them as new
+        workout_id: workoutId,
+        user_id: user._id,  // ensure backend treats them as new
       })),
     );
 
