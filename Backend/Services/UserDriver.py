@@ -321,9 +321,6 @@ class UserDriver:
             # Work on a copy so the original dict keeps its _id
             update_copy = {k: v for k, v in dataToBeUpdated.items() if k != "_id"}
 
-            # Add updated timestamp
-            update_copy['updated_at'] = datetime.now().timestamp()
-
             #Passing in user_id here tracks who is being updated
             UserObject.update(user_id, update_copy)
         except Exception as e:
@@ -336,13 +333,10 @@ class UserDriver:
         # Password changes should go through a dedicated change-password flow
         updates.pop("password", None)
         updates.pop("_id", None)
-        updates.pop("updated_at", None)
 
         if not updates:
             return None, "No valid fields to update"
         
-        updates["updated_at"] = datetime.now().timestamp()
-
         try:
             UserObject.update(email, updates)
             return True, None

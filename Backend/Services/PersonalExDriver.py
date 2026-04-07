@@ -59,11 +59,11 @@ class PersonalExDriver:
             # "exercise_id": ObjectId(exercise_id),
             "exercise_id": exercise_id,
             "workout_id": ObjectId(workout_id),
-            "reps": reps,
-            "sets": sets,
-            "weight": weight,
-            "duration": duration,
-            "distance": distance,
+            "reps": int(reps),
+            "sets": int(sets),
+            "weight": int(weight) if str(weight).isdigit() else weight, # sets to int if possible
+            "duration": int(duration) if str(duration).isdigit() else duration, # sets to int if possible
+            "distance": int(distance) if str(distance).isdigit() else distance, # sets to int if possible
             "complete": complete
         }
 
