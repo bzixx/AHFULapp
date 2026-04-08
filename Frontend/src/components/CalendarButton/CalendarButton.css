@@ -12,19 +12,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: transparent;
-    border: none;
+    background-color: var(--button-bg);
+    border: 2px solid var(--color-border);
     border-radius: 50%;
     height: 50px;
     width: 50px;
     cursor: pointer;
     font-size: 18px;
     transition: background-color 0.2s ease;
+    color: var(--text-primary);
 }
 
 .calendar-button-trigger:hover,
 .calendar-button-trigger.active {
-    background-color: #f0f0f0;
+    background-color: var(--button-hover);
 }
 
 .calendar-button-popup.closed {
@@ -33,10 +34,10 @@
 
 .calendar-button-popup a {
     text-decoration: none;
-    color: black;
+    color: var(--accent-blue);
     font-size: 14px;
 }
 
 .calendar-button-popup a:hover {
-    color: #007bff;
+    color: var(--button-active);
 }

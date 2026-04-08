@@ -24,6 +24,29 @@
   text-decoration: none;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.theme-toggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-toggle:hover {
+  background-color: var(--button-hover);
+}
+
 .profile-link {
   font-size: var(--text-md);
   color: var(--text-secondary);
@@ -55,12 +78,22 @@
     display: flex;
   }
 
+  .header-right {
+    display: flex;
+    gap: 8px;
+  }
+
+  .theme-toggle {
+    font-size: 1.2rem;
+    padding: 6px;
+  }
+
   .profile-link {
-    display: none;
+    font-size: 0.9rem;
   }
 
   .header {
-    padding: 0 16px;
+    padding: 0 12px;
   }
 }
 

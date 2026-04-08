@@ -4,11 +4,11 @@
   height: 300px;
   display: flex;
   justify-content: flex-end;
-  border: 3px solid #000000;
+  border: 3px solid var(--color-border);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
+  box-shadow: var(--shadow-md);
+  background: var(--gradient-card);
 }
 
 .dashboard-workout-todo-item {
@@ -16,7 +16,7 @@
   flex-direction: column;
   height: 100%;
   width: 100%;
-  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
+  background: var(--gradient-card);
   border: none;
   border-radius: 0;
   overflow: hidden;
@@ -27,10 +27,10 @@
   text-align: center;
   font-weight: bold;
   padding: 12px;
-  border-bottom: 2px solid #333;
-  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
+  border-bottom: 2px solid var(--color-border);
+  background: var(--gradient-card);
   font-size: 1rem;
-  color: #041833;
+  color: var(--text-primary);
 }
 
 .dashboard-task-section {
@@ -40,7 +40,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  background: linear-gradient(0deg, #FFF7F2, #f5f5f5);
+  background: var(--color-surface);
 }
 
 .dashboard-task-section table {
@@ -49,8 +49,8 @@
 }
 
 .dashboard-cell {
-  background: linear-gradient(0deg, #FFF7F2, #f5f5f5);
-  border: 1px solid #333;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   padding: 10px;
   text-align: center;
@@ -58,14 +58,14 @@
   display: block;
   margin-bottom: 6px;
   font-size: 0.95rem;
-  color: #041833;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
 .dashboard-footer {
   flex-shrink: 0;
-  border-top: 2px solid #333;
-  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
+  border-top: 2px solid var(--color-border);
+  background: var(--gradient-card);
 }
 
 .workout-button {
@@ -75,15 +75,15 @@
   border: none;
   font-size: 1rem;
   font-weight: bold;
-  background: linear-gradient(90deg, #eaf0fb, #ffffff);
-  color: #041833;
+  background: var(--gradient-button);
+  color: var(--text-primary);
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.2s ease;
-  border-left: 2px solid #000;
+  border-left: 2px solid var(--color-border);
 }
 
 .workout-button:hover {
-  background: linear-gradient(90deg, #d4e4f7, #f5f5f5);
+  background: var(--button-hover);
   transform: scale(1.02);
 }
 
@@ -92,21 +92,21 @@
 }
 
 .dashboard-todo-list {
-  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
-  border: 3px solid #000000;
+  background: var(--gradient-card);
+  border: 3px solid var(--color-border);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 .dashboard-todo-title {
   margin: 0;
   padding: 12px;
-  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
-  border-bottom: 2px solid #333;
+  background: var(--gradient-card);
+  border-bottom: 2px solid var(--color-border);
   font-size: 1rem;
   font-weight: 600;
-  color: #041833;
+  color: var(--text-primary);
   text-align: center;
 }
 
@@ -114,7 +114,7 @@
 .dashboard-todo-empty {
   padding: 24px;
   text-align: center;
-  color: #041833;
+  color: var(--text-primary);
   font-weight: 600;
 }
 
@@ -125,8 +125,8 @@
 
 .dashboard-todo-item {
   padding: 8px 12px;
-  border-bottom: 1px solid #333;
-  background: linear-gradient(0deg, #FFF7F2, #f5f5f5);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
   border-radius: 0;
   transition: background-color 0.2s ease;
 }
@@ -145,21 +145,21 @@
 .dashboard-todo-item-title {
   font-weight: 600;
   font-size: 0.9rem;
-  color: #041833;
+  color: var(--text-primary);
 }
 
 .dashboard-todo-item-date {
   font-size: 0.75rem;
-  color: #666;
-  background: #f5f5f5;
-  border: 1px solid #333;
+  color: var(--text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   padding: 2px 6px;
 }
 
 .dashboard-todo-item-meta {
   font-size: 0.8rem;
-  color: #555;
+  color: var(--text-secondary);
 }
 
 .dashboard-todo-item-sub {
@@ -168,13 +168,13 @@
   align-items: center;
   margin-top: 4px;
   font-size: 0.8rem;
-  color: #041833;
+  color: var(--text-primary);
 }
 
 .dashboard-todo-item-sub span:first-child {
-  background: linear-gradient(90deg, #eaf0fb, #ffffff);
-  color: #041833;
-  border: 2px solid #000;
+  background: var(--gradient-button);
+  color: var(--text-primary);
+  border: 2px solid var(--color-border);
   border-radius: 4px;
   padding: 3px 6px;
   font-weight: 600;
@@ -183,32 +183,32 @@
 
 .dashboard-todo-footer {
   padding: 10px 12px;
-  border-top: 2px solid #333;
-  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
+  border-top: 2px solid var(--color-border);
+  background: var(--gradient-card);
   text-align: center;
 }
 
 .view-more-link {
-  color: #041833;
+  color: var(--text-primary);
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 600;
-  transition: opacity 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .view-more-link:hover {
-  opacity: 0.7;
+  color: var(--accent-blue);
 }
 
 .task-completed {
-  background: linear-gradient(0deg, #f0fdf4, #e8f5e9);
-  border: 1px solid #4caf50;
+  background: var(--success-bg);
+  border: 1px solid var(--accent-green);
 }
 
 .task-status-badge {
-  color: #2e7d32;
+  color: var(--text-primary);
   font-weight: bold;
-  background: #c8e6c9;
+  background: var(--accent-green);
   padding: 2px 6px;
   border-radius: 3px;
 }

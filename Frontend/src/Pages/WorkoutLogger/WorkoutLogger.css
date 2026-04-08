@@ -34,11 +34,11 @@ body {
 }
 
 .workout-card {
-  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
-  border: 3px solid #000000;
+  background: var(--gradient-card);
+  border: 3px solid var(--color-border);
   padding: 8px;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
   margin: 0;
   width: 100%;
   max-width: 600px;
@@ -59,7 +59,7 @@ body {
   background: transparent;
   border: none;
   outline: none;
-  color: inherit;
+  color: var(--text-primary);
   text-align: center;
   /* to keep it centered */
   width: 100%;
@@ -91,8 +91,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
-  border: 2px solid #000;
+  background: var(--gradient-card);
+  border: 2px solid var(--color-border);
   border-radius: 6px;
   box-sizing: border-box;
 }
@@ -141,12 +141,13 @@ body {
   font-size: 1.1rem;
   font-weight: bold;
   padding: 6px 12px;
-  background: #f5f5f5;
-  border: 2px solid #000;
+  background: var(--button-bg);
+  border: 2px solid var(--color-border);
   border-radius: 6px;
   cursor: pointer;
   min-width: 80px;
   text-align: center;
+  color: var(--text-primary);
 }
 
 /* AI Grid css */
@@ -154,17 +155,18 @@ body {
   display: grid;
   grid-template-columns: repeat(5, 1fr) 0.33fr;
   overflow-y: auto;
-  border: 2px solid #333;
-  background: linear-gradient(0deg, #FFF7F2, #f5f5f5);
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
   max-height:50vh;
 }
 
 .workout-grid .cell {
-  border-right: 1px solid #333;
-  border-bottom: 1px solid #333;
+  border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
   padding: 0.75rem;
   font-size: small;
   text-align: center;
+  color: var(--text-primary);
 }
 
 .cell input {
@@ -184,12 +186,11 @@ body {
   position: sticky;
   top: 0;
   z-index: 5;
-
   font-weight: bold;
-  border-bottom: 2px solid #333;
-  background-color: #f5f5f5;
-
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  border-bottom: 2px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Template container */
@@ -197,10 +198,10 @@ body {
 .template-container {
   display: flex;
   flex-direction: column;
-  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
-  border: 3px solid #000000;
+  background: var(--gradient-card);
+  border: 3px solid var(--color-border);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
   margin: 0;
   width: 200px;
   min-height: 275px;
@@ -216,39 +217,34 @@ body {
 
 .template-container a {
   text-decoration: none;
-  color: black;
+  color: var(--text-primary);
   font-size: 14px;
 }
 
 .template-container a:hover {
-  color: #c3cfe2;
+  color: var(--accent-blue);
 }
 
 .template-container input[type="text"] {
   width: 100%;
   padding: 0.6rem 0.75rem;
   font-size: 1rem;
-  color: #041833;
-  /* darker text */
-  background-color: rgba(255, 255, 255, 0.9);
-  /* softer white to fit panel */
-  border: 2px solid rgba(0, 0, 0, 0.6);
-  /* subtle border */
+  color: var(--input-text);
+  background-color: var(--input-bg);
+  border: 2px solid var(--input-border);
   border-radius: 8px;
   outline: none;
 }
 
 .template-container input[type="text"]:focus {
-  border-color: rgba(0, 0, 0, 0.9);
+  border-color: var(--accent-blue);
 }
 
 .apply-btn-wrapper {
   display: flex;
   justify-content: center;
   margin-top: auto;
-  /* pushes it to the bottom */
   padding-bottom: 10px;
-  /* optional spacing */
 }
 
 .apply-btn {
@@ -256,10 +252,9 @@ body {
   font-weight: bold;
   padding: 10px 14px;
   width: 100%;
-  background: linear-gradient(90deg, #eaf0fb, #ffffff);
-  color: #041833;
-  border: 2px solid #000;
-  /* consistent black border */
+  background: var(--gradient-button);
+  color: var(--text-primary);
+  border: 2px solid var(--color-border);
   border-radius: 6px;
   cursor: pointer;
 }
@@ -274,40 +269,37 @@ body {
 .add-exercise {
   display: flex;
   flex-direction: column;
-  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
-  border: 3px solid #000000;
+  background: var(--gradient-card);
+  border: 3px solid var(--color-border);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
   margin: 0;
   width: 350px;
 }
 
 .add-exercise a {
   text-decoration: none;
-  color: black;
+  color: var(--text-primary);
   font-size: 14px;
 }
 
 .add-exercise a:hover {
-  color: #c3cfe2;
+  color: var(--accent-blue);
 }
 
 .add-exercise input[type="text"] {
   width: 100%;
   padding: 0.6rem 0.75rem;
   font-size: 1rem;
-  color: #041833;
-  /* darker text */
-  background-color: rgba(255, 255, 255, 0.9);
-  /* softer white to fit panel */
-  border: 2px solid rgba(0, 0, 0, 0.6);
-  /* subtle border */
+  color: var(--input-text);
+  background-color: var(--input-bg);
+  border: 2px solid var(--input-border);
   border-radius: 8px;
   outline: none;
 }
 
 .add-exercise input[type="text"]:focus {
-  border-color: rgba(0, 0, 0, 0.9);
+  border-color: var(--accent-blue);
 }
 
 .add-exercise .search-row {
@@ -318,7 +310,7 @@ body {
 
 .add-exercise .search-btn {
   padding: 0.6rem 1rem;
-  background-color: #041833;      /* matches your dark text tone */
+  background-color: var(--accent-blue);
   color: white;
   border: none;
   border-radius: 8px;
@@ -329,7 +321,7 @@ body {
 }
 
 .add-exercise .search-btn:hover {
-  background-color: #0a2a5c;      /* slightly lighter hover */
+  background-color: var(--button-active);
 }
 
 /* Add Exercise Form */
@@ -480,8 +472,8 @@ body {
     overflow-x: auto;
     overflow-y: visible;
     max-height: 50vh;
-    border: 2px solid #333;
-    background: linear-gradient(0deg, #FFF7F2, #f5f5f5);
+    border: 2px solid var(--color-border);
+    background: var(--color-surface);
   }
 
   .workout-grid .cell {
@@ -489,6 +481,9 @@ body {
     padding: 8px;
     font-size: 0.85rem;
     text-align: center;
+    border-right: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--text-primary);
   }
 
   .cell input {
@@ -609,8 +604,8 @@ body {
     overflow-y: visible;
     max-height: 40vh;
     min-width: 420px;
-    border: 2px solid #333;
-    background: linear-gradient(0deg, #FFF7F2, #f5f5f5);
+    border: 2px solid var(--color-border);
+    background: var(--color-surface);
   }
 
   .workout-grid .cell {
@@ -618,8 +613,9 @@ body {
     padding: 6px 4px;
     font-size: 0.75rem;
     text-align: center;
-    border-right: 1px solid #333;
-    border-bottom: 1px solid #333;
+    border-right: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--text-primary);
   }
 
   .workout-grid-header {
@@ -681,179 +677,6 @@ body {
   }
 }
 
-.workout-grid .cell {
-  border-right: 1px solid #333;
-  border-bottom: 1px solid #333;
-  padding: 0.75rem;
-  font-size: small;
-  text-align: center;
-}
-
-.cell input {
-  width: 90%;
-  min-width: 50px;
-  /* or 50px if you want more room */
-  padding: 4px;
-  font-size: small;
-  text-align: center;
-}
-
-.cell:nth-child(6n) {
-  border-right: none;
-}
-
-.workout-grid-header {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-
-  font-weight: bold;
-  border-bottom: 2px solid #333;
-  background-color: #f5f5f5;
-
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-}
-
-/* Template container */
-
-.template-container {
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
-  border: 3px solid #000000;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin: 0;
-  width: 200px;
-  min-height: 275px;
-}
-
-.add-template-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-  gap: 10px;
-}
-
-.template-container a {
-  text-decoration: none;
-  color: black;
-  font-size: 14px;
-}
-
-.template-container a:hover {
-  color: #c3cfe2;
-}
-
-.template-container input[type="text"] {
-  width: 100%;
-  padding: 0.6rem 0.75rem;
-  font-size: 1rem;
-  color: #041833;
-  /* darker text */
-  background-color: rgba(255, 255, 255, 0.9);
-  /* softer white to fit panel */
-  border: 2px solid rgba(0, 0, 0, 0.6);
-  /* subtle border */
-  border-radius: 8px;
-  outline: none;
-}
-
-.template-container input[type="text"]:focus {
-  border-color: rgba(0, 0, 0, 0.9);
-}
-
-.apply-btn-wrapper {
-  display: flex;
-  justify-content: center;
-  margin-top: auto;
-  /* pushes it to the bottom */
-  padding-bottom: 10px;
-  /* optional spacing */
-}
-
-.apply-btn {
-  font-size: 1rem;
-  font-weight: bold;
-  padding: 10px 14px;
-  width: 100%;
-  background: linear-gradient(90deg, #eaf0fb, #ffffff);
-  color: #041833;
-  border: 2px solid #000;
-  /* consistent black border */
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.apply-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-}
-
-/* Add Exercise container */
-
-.add-exercise {
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
-  border: 3px solid #000000;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin: 0;
-  width: 350px;
-}
-
-.add-exercise a {
-  text-decoration: none;
-  color: black;
-  font-size: 14px;
-}
-
-.add-exercise a:hover {
-  color: #c3cfe2;
-}
-
-.add-exercise input[type="text"] {
-  width: 100%;
-  padding: 0.6rem 0.75rem;
-  font-size: 1rem;
-  color: #041833;
-  /* darker text */
-  background-color: rgba(255, 255, 255, 0.9);
-  /* softer white to fit panel */
-  border: 2px solid rgba(0, 0, 0, 0.6);
-  /* subtle border */
-  border-radius: 8px;
-  outline: none;
-}
-
-.add-exercise input[type="text"]:focus {
-  border-color: rgba(0, 0, 0, 0.9);
-}
-
-.add-exercise .search-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.add-exercise .search-btn {
-  padding: 0.6rem 1rem;
-  background-color: #041833;      /* matches your dark text tone */
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.add-exercise .search-btn:hover {
-  background-color: #0a2a5c;      /* slightly lighter hover */
-}
-
 /* Add Exercise Form */
 
 .dropdown-wrapper {
@@ -881,8 +704,7 @@ body {
   padding: 8px 12px;
   cursor: pointer;
   border-radius: 6px;
-  color: #041833;
-  /* darker text for readability on the light-blue background */
+  color: var(--text-primary);
   font-weight: 600;
   max-height: 140px;
 }
@@ -891,15 +713,15 @@ body {
   width: 100%;
   text-align: center;
   font-weight: 700;
-  color: #041833;
+  color: var(--text-primary);
   margin-bottom: 6px;
 }
 
 .dropdown-selected {
-  border: 2px solid rgba(0, 0, 0, 0.6);
+  border: 2px solid var(--input-border);
   border-radius: 6px;
   padding: 6px;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--input-bg);
   margin-bottom: 8px;
 }
 
@@ -911,7 +733,7 @@ body {
 .check {
   float: right;
   font-weight: 700;
-  color: #0a7b00;
+  color: var(--accent-green);
 }
 
 .add-exercise-form {
@@ -936,10 +758,9 @@ body {
   font-weight: bold;
   padding: 10px 14px;
   width: 100%;
-  background: linear-gradient(90deg, #eaf0fb, #ffffff);
-  color: #041833;
-  border: 2px solid #000;
-  /* consistent black border */
+  background: var(--gradient-button);
+  color: var(--text-primary);
+  border: 2px solid var(--color-border);
   border-radius: 6px;
   cursor: pointer;
 }
@@ -953,9 +774,9 @@ body {
   margin-top: 10px;
   display: flex;
   flex-direction: column;
-  border: 2px solid #000;
+  border: 2px solid var(--color-border);
   border-radius: 6px;
-  background-color: #f5f5f5;
+  background-color: var(--color-surface);
   gap: 6px;
   width: 90%;
   overflow-y: auto;
@@ -968,6 +789,7 @@ body {
   align-items: center;
   padding: 6px 10px;
   font-weight: bold;
+  color: var(--text-primary);
 }
 
 .remove-btn {
@@ -1000,7 +822,7 @@ body {
 }
 
 .delete-button:hover {
-  background-color: #f5f5f5;
+  background-color: var(--color-surface);
 }
 
 
@@ -1008,38 +830,36 @@ body {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  /* top:0; right:0; bottom:0; left:0; */
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2000;
   padding: 20px;
-  /* spacing on small screens */
 }
 
 .modal-content {
-  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
-  border: 3px solid #000000;
+  background: var(--gradient-card);
+  border: 3px solid var(--color-border);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   width: 480px;
   max-width: 95%;
   padding: 20px;
-  color: #041833;
+  color: var(--text-primary);
   font-family: inherit;
 }
 
 .modal-content h3 {
   margin: 0 0 8px 0;
-  color: #041833;
+  color: var(--text-primary);
 }
 
 .modal-content label {
   display: block;
   margin-top: 8px;
   font-weight: 600;
-  color: #041833;
+  color: var(--text-primary);
 }
 
 .modal-content input[type="text"],
@@ -1049,9 +869,9 @@ body {
   width: 100%;
   padding: 8px 10px;
   font-size: 1rem;
-  color: #041833;
-  background-color: rgba(255, 255, 255, 0.95);
-  border: 2px solid rgba(0, 0, 0, 0.6);
+  color: var(--input-text);
+  background-color: var(--input-bg);
+  border: 2px solid var(--input-border);
   border-radius: 6px;
   outline: none;
   box-sizing: border-box;
@@ -1076,15 +896,15 @@ body {
 .modal-content button {
   font-weight: bold;
   padding: 6px 12px;
-  border: 2px solid #000;
+  border: 2px solid var(--color-border);
   border-radius: 6px;
-  background: linear-gradient(90deg, #eaf0fb, #ffffff);
-  color: #041833;
+  background: var(--gradient-button);
+  color: var(--text-primary);
   cursor: pointer;
 }
 
 .modal-content button[type="button"] {
-  background: #f5f5f5;
+  background: var(--button-bg);
 }
 
 @media (max-width: 480px) {
@@ -1116,7 +936,7 @@ body {
 
 /* Modal container */
 .template-modal {
-  background: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
+  background: var(--gradient-card);
   padding: 24px;
   border-radius: 10px;
   width: 90%;
@@ -1132,6 +952,7 @@ body {
   font-size: 1.4rem;
   font-weight: 600;
   text-align: center;
+  color: var(--text-primary);
 }
 
 /* Exercise list */
@@ -1145,7 +966,7 @@ body {
 
 .template-modal li {
   padding: 8px 0;
-  border-bottom: 1px solid #e2e2e2;
+  border-bottom: 1px solid var(--color-border);
   font-size: 0.95rem;
 }
 
@@ -1166,33 +987,27 @@ body {
 .template-grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
-  /* Exercise | Reps | Sets | Weight */
-  border: 2px solid #333;
-  background: linear-gradient(0deg, #FFF7F2, #f5f5f5);
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
   max-height: 300px;
   overflow-y: auto;
 }
 
-/* Match .cell styling */
 .template-grid .cell {
-  border-right: 1px solid #333;
-  border-bottom: 1px solid #333;
+  border-right: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
   padding: 0.75rem;
   text-overflow: ellipsis;
   font-size: small;
   text-align: center;
+  color: var(--text-primary);
 }
 
-/* Remove right border on last column */
-.template-grid .cell:nth-child(4n) {
-  border-right: none;
-}
-
-/* Header row styling */
 .template-grid-header {
   font-weight: bold;
-  border-bottom: 2px solid #333;
-  background-color: #f5f5f5;
+  border-bottom: 2px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--text-primary);
 }
 
 /* Buttons */
@@ -1203,24 +1018,22 @@ body {
   font-weight: bold;
   padding: 10px 14px;
   width: 100%;
-  background: #f5f5f5;
-  color: #041833;
-  border: 2px solid #000;
+  background: var(--button-bg);
+  color: var(--text-primary);
+  border: 2px solid var(--color-border);
   border-radius: 6px;
   cursor: pointer;
   margin-top: 12px;
 }
 
-/* Cancel button (same shape, different color) */
 .template-cancel-btn {
   font-size: 1rem;
   font-weight: bold;
   padding: 10px 14px;
   width: 100%;
-  background: #f8d7da;
-  /* soft red */
-  color: #7a1a1a;
-  border: 2px solid #000;
+  background: var(--accent-red);
+  color: white;
+  border: 2px solid var(--accent-red);
   border-radius: 6px;
   cursor: pointer;
   margin-top: 8px;

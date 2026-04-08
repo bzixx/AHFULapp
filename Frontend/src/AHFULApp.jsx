@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { WorkoutLogger } from "./Pages/WorkoutLogger/WorkoutLogger.jsx";
 import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
 import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
@@ -16,22 +17,34 @@ import { ExploreTasks } from "./Pages/ExploreTasks/ExploreTasks.jsx";
 import { useTutorial } from "./hooks/useTutorial.js";
 import { TutorialOverlay } from "./components/Tutorial/TutorialOverlay.jsx";
 import "./SiteStyles.css";
+import "./Stylesheets/Themes/Lightmode.css";
+import "./Stylesheets/Themes/Darkmode.css";
 
 
-function AHFULApp() { 
+function AHFULApp() {
     // Example: detect page changes and refresh a value when the route changes.
   // This component is rendered inside a <Router> (see `main.jsx`), so useLocation works here.
   const location = useLocation();
   const [pageChangeCount, setPageChangeCount] = useState(0);
-  const { 
-    isActive: tutorialActive, 
-    currentStep, 
-    totalSteps, 
+  const theme = useSelector((state) => state.setting.theme);
+  const {
+    isActive: tutorialActive,
+    currentStep,
+    totalSteps,
     currentStepData,
-    skipTutorial, 
+    skipTutorial,
     nextStep,
-    completeTutorial 
+    completeTutorial
   } = useTutorial();
+
+  // Apply theme globally - runs on all pages
+  useEffect(() => {
+    if (theme === "Dark") {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }, [theme]);
 
   useEffect(() => {
         // increment a counter every time the pathname changes — used for debugging route changes
