@@ -435,7 +435,7 @@ export function WorkoutLogger() {
       // --- RUN EVERYTHING IN PARALLEL ---
       const responses = await Promise.all([...saveRequests, ...deleteRequests]);
 
-      const failed = responses.filter((r) => !r.ok);
+      const failed = responses.filter((r) => r == null || r.error);
 
       if (failed.length > 0) {
         console.error("Some operations failed:", failed);
