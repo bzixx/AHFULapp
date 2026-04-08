@@ -15,7 +15,7 @@
 .heatmap-title {
   margin: 0 0 10px 0;
   font-size: 14px;
-  color: #333;
+  color: var(--text-primary);
   text-transform: uppercase;
   letter-spacing: 2px;
   font-weight: 600;
