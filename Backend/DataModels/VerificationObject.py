@@ -18,11 +18,18 @@ class VerificationObject:
         verifies = verificationCollection.find()
         return [VerificationObject._serialize(t) for t in verifies]
 
+    @staticmethod   
+    def find_by_id(id):
+        verification = verificationCollection.find_one({
+            "_id": ObjectId(id)
+        })
+        return VerificationObject._serialize(verification)
+
     @staticmethod
     def find_type_by_user(user_id, type):
         verify = verificationCollection.find(
-            {"user_id": ObjectId(user_id)},
-            {"type": type})
+            {"user_id": ObjectId(user_id),
+            "type": type})
         return [VerificationObject._serialize(t) for t in verify]
     
     @staticmethod
@@ -33,14 +40,17 @@ class VerificationObject:
 
     @staticmethod
     def create(type, token, user_id):
-        verify_data = {
-            "type": type,
-            "token": token,
-            "user_id": ObjectId(user_id),
-            "created_at": int(datetime.now().timestamp())
-        }
-        result = verificationCollection.insert_one(verify_data)
-        return str(result.inserted_id)
+        try:
+            verify_data = {
+                "type": type,
+                "token": token,
+                "user_id": ObjectId(user_id),
+                "created_at": int(datetime.now().timestamp())
+            }
+            result = verificationCollection.insert_one(verify_data)
+            return str(result.inserted_id), None
+        except Exception as e:
+                return None, str(e)
 
     @staticmethod
     def delete(verify_id):

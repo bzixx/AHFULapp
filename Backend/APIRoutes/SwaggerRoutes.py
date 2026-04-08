@@ -428,11 +428,11 @@ swaggerConfig = {
  }
 },
 
-"/AHFULusers/verify/email/id/": {
+"/AHFULverify/verify/email/user_id/": {
   "post": {
     "summary": "Verify user email by id",
     "description": "Marks a user's email as verified if it has not already been verified.",
-    "tags": ["Users"],
+    "tags": ["Verify"],
     "requestBody": {
       "required": True,
       "content": {
@@ -503,11 +503,11 @@ swaggerConfig = {
   }
 },
 
-"/AHFULusers/verify/phone/id/": {
+"/AHFULverify/verify/phone/user_id/": {
   "post": {
     "summary": "Verify user phone number by id",
     "description": "Marks a user's phone number as verified if it has not already been verified.",
-    "tags": ["Users"],
+    "tags": ["Verify"],
     "requestBody": {
       "required": True,
       "content": {

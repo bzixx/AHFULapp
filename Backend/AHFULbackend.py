@@ -20,6 +20,7 @@ from APIRoutes.ExerciseRoutes import exerciseRouteBlueprint
 from APIRoutes.UserSettingsRoutes import userSettingsBlueprint
 from APIRoutes.TokenRoutes import tokenBlueprint
 from APIRoutes.TaskRoutes import taskBlueprint
+from APIRoutes.VerificationRoutes import verificationRouteBlueprint
 
 #Firebase Admin SDK
 import firebase_admin
@@ -74,6 +75,7 @@ def create_app():
     app.register_blueprint(userSettingsBlueprint)
     app.register_blueprint(tokenBlueprint)
     app.register_blueprint(taskBlueprint)
+    app.register_blueprint(verificationRouteBlueprint)
 
     # Enable CORS - includes CloudFront production URL and custom domain
     allowed_origins = [

@@ -2,7 +2,6 @@
 #   Intermediate between Routes and Objects.  Ensures validations and rules are applied before
 #   Calling Objects to interact with DB
 from DataModels.UserObject import UserObject
-from Services.EmailDriver import EmailDriver
 from datetime import datetime
 from bson import ObjectId, errors as bson_errors
 
@@ -257,58 +256,7 @@ class UserDriver:
         except Exception as e:
             return None, f"Failed to deactivate user: {e}"
 
-    # ── Untested ─────────────────────────────────────────────────────────────────
-    @staticmethod
-    def verify_email(user_id):
-        # Validate inputs
-        if not user_id:
-            return None, "user_id is required"
-
-        # Validate ObjectIds
-        oid, err = UserDriver._validate_obj_id(user_id, "user_id")
-        if err:
-            return None, err
-        
-        try:
-            user = UserObject.find_by_id(user_id)
-            if not user:
-                return None, "User not found"
-            else:
-                if user.get("email_verified"):
-                    return "User already verified", None
-                if not user.get("email"):
-                    return None, "User lacks email"
-                
-                response = EmailDriver.verify_email(user_id, user.get("email"))
-                return response, None
-        except Exception as e:
-            return None, str(e)
-        
-    @staticmethod
-    def verify_phone_number(user_id):
-        # Validate inputs
-        if not user_id:
-            return None, "user_id is required"
-
-        # Validate ObjectIds
-        oid, err = UserDriver._validate_obj_id(user_id, "user_id")
-        if err:
-            return None, err
-        
-        try:
-            user = UserObject.find_by_id(user_id)
-            if not user:
-                return None, "User not found"
-            else:
-                if user.get("phone_verified"):
-                    return "User already verified", None
-                
-                if not user.get("phone"):
-                    return None, "User lacks phone number"
-
-        except Exception as e:
-            return None, str(e)
-
+    # ── Untested ────────────────────────────────────────────────────────────────
     @staticmethod
     def create_user(userJSONObject):
         UserObject.create(userJSONObject)

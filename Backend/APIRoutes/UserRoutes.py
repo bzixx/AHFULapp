@@ -95,38 +95,3 @@ def deactivate_user_by_id():
     if err:
         return jsonify({"error": err}), 400
     return jsonify(res), 200
-
-# ── VERIFY email by id ─────────────────────────────────────────────────────
-@userRouteBlueprint.route("/verify/email/id/", methods=["POST"])
-def verify_email_by_id():
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-
-    user_id = data.get("user_id")
-    res, err = UserDriver.verify_email(user_id)
-
-    if err:
-        if "not found" in err.lower():
-            return jsonify({"error": err}), 404
-        return jsonify({"error": err}), 400
-
-    return jsonify({"message": res}), 200
-
-# ── VERIFY phone by id ─────────────────────────────────────────────────────
-@userRouteBlueprint.route("/verify/phone/id/", methods=["POST"])
-def verify_phone_by_id():
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-
-    user_id = data.get("user_id")
-    res, err = UserDriver.verify_phone_number(user_id)
-
-    if err:
-        if "not found" in err.lower():
-            return jsonify({"error": err}), 404
-        return jsonify({"error": err}), 400
-
-    return jsonify({"message": res}), 200
-
