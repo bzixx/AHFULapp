@@ -5,7 +5,7 @@ import character
 import asyncio
 import os
 
-chatRouteBlueprint = Blueprint("chat", __name__,  url_prefix='/AHFULChat')
+chatRouteBlueprint = Blueprint("chat", __name__,  url_prefix="/AHFULChat")
 
 adk_session = None
 session_lock = asyncio.Lock()
@@ -15,9 +15,9 @@ runner = InMemoryRunner(
     app_name="Demo App",
 )
 
-@chatRouteBlueprint.route('/', methods=['POST'])
+@chatRouteBlueprint.route("/", methods=["POST"])
 async def chat():
-    user_message = request.json.get('message')
+    user_message = request.json.get("message")
 
     global adk_session
     if adk_session is None:

@@ -1,6 +1,6 @@
 import "./AIChat.css";
 import "../../SiteStyles.css";
-import { CompanionAI } from "../../components/CompanionAI/CompanionAI"
+import { CompanionAI } from "../../components/CompanionAI/CompanionAI.jsx"
 
 export function AIChat() {
     return (
