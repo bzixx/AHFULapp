@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import "./WorkoutLogger.css";
 import "../../SiteStyles.css";
+import {CalendarButton} from "../../components/CalendarButton/CalendarButton.jsx";
 import {
   getDefaultNewExercise,
   formatTime as formatTimeFn,
@@ -41,6 +42,7 @@ export function WorkoutLogger() {
   // ─── Redux Auth State ─────────────────────────────────────────────────────────
   const user = useSelector((state) => state.auth.user);
   const userAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const selectedDate = useSelector((state) => state.calendar.selectedDate);
 
   // ─── Personal Exercise State ──────────────────────────────────────────────────
   // Tracks exercises to be deleted when workout is submitted (removed from UI but need DB deletion)
@@ -584,7 +586,7 @@ export function WorkoutLogger() {
         setWorkoutError(null);
 
         // Calculate today's date range (midnight to midnight)
-        const today = new Date();
+        const today = selectedDate ? new Date(selectedDate) : new Date();
         today.setHours(0, 0, 0, 0);
         const currentDateUnix = Math.floor(today.getTime() / 1000);
         const tomorrow = new Date(today);
@@ -709,6 +711,7 @@ export function WorkoutLogger() {
   // ─── Main Render ─────────────────────────────────────────────────────────────
   return (
     <div className="page-layout">
+      <CalendarButton />  
       {/* Left Column: Template/History */}
       <div className="left-column">
         <div className="template-container">
