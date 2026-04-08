@@ -216,7 +216,7 @@
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .dashboard-side-content {
     order: -1;
   }
@@ -227,23 +227,43 @@
 }
 
 @media (max-width: 768px) {
+  .dashboard-internal {
+    padding: 12px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .dashboard-main-content {
+    gap: 16px;
+    order: 1;
+  }
+
+  .dashboard-side-content {
+    gap: 16px;
+    order: 2;
+  }
+
+  .dashboard-tasks-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
   .hero {
     flex-direction: column;
     padding: 24px 16px;
   }
-  
+
   .hero-content h1 {
     font-size: 1.8rem;
   }
-  
+
   .hero-visual {
     order: -1;
   }
-  
-  .dashboard-tasks-row {
-    grid-template-columns: 1fr;
-  }
-  
+
   .features {
     padding: 24px 16px;
   }
@@ -251,7 +271,106 @@
   .features-grid {
     grid-template-columns: 1fr;
   }
-  
+}
+
+@media (max-width: 480px) {
+  .dashboard-internal {
+    padding: 8px;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .dashboard-main-content {
+    gap: 12px;
+  }
+
+  .dashboard-side-content {
+    gap: 12px;
+  }
+
+  .dashboard-tasks-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .internal-streaks {
+    gap: 12px;
+  }
+
+  .hero {
+    flex-direction: column;
+    padding: 16px 12px;
+    gap: 12px;
+  }
+
+  .hero-content h1 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+  }
+
+  .hero-content p.lead {
+    font-size: 1rem;
+    margin-bottom: 16px;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .primary-cta,
+  .secondary-cta {
+    width: 100%;
+    text-align: center;
+    margin-left: 0;
+  }
+
+  .hero-visual {
+    order: -1;
+    width: 100%;
+  }
+
+  .streaks-container {
+    width: 100%;
+  }
+
+  .features {
+    padding: 16px 12px;
+  }
+
+  .features h2 {
+    font-size: 1.5rem;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .feature {
+    padding: 16px;
+  }
+
+  .feature-icon {
+    font-size: 1.8rem;
+  }
+
+  .feature h3 {
+    font-size: 1rem;
+  }
+
+  .feature p {
+    font-size: 0.9rem;
+  }
+
+  .gym-footer {
+    padding: 12px;
+    font-size: 0.85rem;
+  }
 }
 
 .streaks-container {

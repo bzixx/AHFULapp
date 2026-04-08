@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import "./WorkoutLogger.css";
 import "../../SiteStyles.css";
-import {CalendarButton} from "../../components/CalendarButton/CalendarButton.jsx";
+import { CalendarButton } from "../../components/CalendarButton/CalendarButton.jsx";
 import {
   getDefaultNewExercise,
   formatTime as formatTimeFn,
@@ -11,6 +11,7 @@ import {
   fetchExercisesFromBackend,
   searchExercises,
   fetchWorkout,
+  fetchWorkoutById,
   fetchPersonalExercises,
   fetchExerciseById,
   createWorkout,
@@ -19,6 +20,7 @@ import {
   updatePersonalExercise,
   deletePersonalExercise,
   fetchTemplate,
+  createTemplate,
   loadBodyParts,
   createExercise,
 } from "../../QueryFunctions";
@@ -257,11 +259,6 @@ export function WorkoutLogger() {
     // Collect IDs from workout table
     //const workoutIds = exercisesInProgressTable.map((ex) => ex.exerciseId);
     const workoutIds = exercisesInProgressTable.map((ex) => {
-      console.log(
-        "LOADER DEBUG →",
-        "exercise_id:", ex.exercise_id,
-        "exerciseId:", ex.exerciseId
-      );
       return ex.exercise_id;
     });
 
@@ -321,20 +318,11 @@ export function WorkoutLogger() {
         user_id: user._id,
       };
 
-      const templateRes = await fetch(
-        "http://localhost:5000/AHFULworkout/create/template",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(templatePayload),
-        },
-      );
+      const template = await createTemplate(templatePayload);
 
-      if (!templateRes.ok) {
+      if (!template.success) {
         throw new Error("Failed to create template");
       }
-
-      const template = await templateRes.json();
 
       // 2. Create personalExercises using template._id as workoutId
       for (const ex of exercisesInProgressTable) {
@@ -347,10 +335,9 @@ export function WorkoutLogger() {
           distance: ex.distance,
           complete: false,
           user_id: user._id,
-          workout_id: template.workout_id,
+          workout_id: template.data.workout_id,
           template: true,
         };
-        console.log("Personal Exercise Payload:", personalExPayload);
         createPersonalExercise(personalExPayload);
       }
 
@@ -389,16 +376,13 @@ export function WorkoutLogger() {
       return removed;
     });
 
-    // response = handleSubmit()
-    // console.log(response)
-
     // 2. Replace exercisesInProgressTable with template exercises
     setExercisesInProgressTable(
       templatePreview.exercises.map((ex) => ({
         ...ex,
         _id: null, // mark as new
         workout_id: workoutId,
-        user_id: user._id,  // ensure backend treats them as new
+        user_id: user._id, // ensure backend treats them as new
       })),
     );
 
@@ -446,11 +430,7 @@ export function WorkoutLogger() {
       // --- DELETE REQUESTS ---
       const deleteRequests = Object.values(personalExToRemove)
         .filter((ex) => ex._id) // only delete DB-backed exercises
-        .map((ex) =>
-          fetch(`http://localhost:5000/AHFULpersonalEx/delete/${ex._id}`, {
-            method: "DELETE",
-          }),
-        );
+        .map((ex) => deletePersonalExercise(ex._id));
 
       // --- RUN EVERYTHING IN PARALLEL ---
       const responses = await Promise.all([...saveRequests, ...deleteRequests]);
@@ -617,10 +597,13 @@ export function WorkoutLogger() {
 
           const newWorkout = await createWorkout(newWorkoutPayload);
 
-          setWorkout(newWorkout);
-          setWorkoutId(newWorkout._id);
-          setWorkoutTitle(newWorkout.title);
-          setTime(0); // Reset timer for new workout
+          // Immediately fetch the persisted version
+          const persisted = await fetchWorkoutById(newWorkout._id);
+
+          setWorkout(persisted);
+          setWorkoutId(persisted._id);
+          setWorkoutTitle(persisted.title);
+          setTime(0);
           return;
         }
 
@@ -639,7 +622,7 @@ export function WorkoutLogger() {
     }
 
     getWorkout();
-  }, [userAuthenticated]);
+  }, [userAuthenticated, workoutId]);
 
   // ─── Load Personal Exercises for Current Workout ───────────────────────────────
   useEffect(() => {
@@ -662,7 +645,6 @@ export function WorkoutLogger() {
     async function getTemplates() {
       try {
         const allTemplates = await fetchTemplate(user._id);
-        console.log(allTemplates)
 
         // Normalize if needed (backend might return null or object)
         if (Array.isArray(allTemplates)) {
@@ -710,7 +692,7 @@ export function WorkoutLogger() {
   // ─── Main Render ─────────────────────────────────────────────────────────────
   return (
     <div className="page-layout">
-      <CalendarButton />  
+      <CalendarButton />
       {/* Left Column: Template/History */}
       <div className="left-column">
         <div className="template-container">
@@ -1203,24 +1185,17 @@ export function WorkoutLogger() {
               <div className="cell template-grid-header">Sets</div>
               <div className="cell template-grid-header">Weight</div>
 
-              {templatePreview.exercises.map(
-                (ex, i) => (
-                  (
-                    <React.Fragment key={ex._id || i}>
-                      <div
-                        className="cell"
-                        title={personalExNames[ex.exercise_id]}
-                      >
-                        {personalExNames[ex.exercise_id]}
-                      </div>
+              {templatePreview.exercises.map((ex, i) => (
+                <React.Fragment key={ex._id || i}>
+                  <div className="cell" title={personalExNames[ex.exercise_id]}>
+                    {personalExNames[ex.exercise_id]}
+                  </div>
 
-                      <div className="cell">{ex.reps}</div>
-                      <div className="cell">{ex.sets}</div>
-                      <div className="cell">{ex.weight}</div>
-                    </React.Fragment>
-                  )
-                ),
-              )}
+                  <div className="cell">{ex.reps}</div>
+                  <div className="cell">{ex.sets}</div>
+                  <div className="cell">{ex.weight}</div>
+                </React.Fragment>
+              ))}
             </div>
 
             <button
