@@ -265,7 +265,6 @@ export function WorkoutLogger() {
       return ex.exercise_id;
     });
 
-
     // Collect IDs from template preview
     const templateIds =
       templatePreview?.exercises?.map((ex) => ex.exercise_id) || [];

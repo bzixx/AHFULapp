@@ -68,7 +68,7 @@ def get_exercise(exercise_id):
     if error:
         return jsonify({"error": error}), 404
     return jsonify(exercise), 200
-
+#
 # ── GET exercise search ───────────────────────────────────────────────────────
 @exerciseRouteBlueprint.route("/search", methods=["GET"])
 def search_exercises():
