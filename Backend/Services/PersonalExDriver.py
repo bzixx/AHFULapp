@@ -25,7 +25,7 @@ class PersonalExDriver:
         # Validate required fields
         if (not user_id) or (not exercise_id) or (not workout_id):
             return None, "You are missing a user_id, workout_id or exercise_id. Please fix, then attempt to create personalEx again"
-        
+
         oid, err = PersonalExDriver._validate_obj_id(user_id, "user_id")
         if err:
             return None, err
