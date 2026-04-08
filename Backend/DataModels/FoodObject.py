@@ -13,7 +13,7 @@ class FoodObject:
         """Convert MongoDB document to JSON-safe dict."""
         if food:
             food["_id"] = str(food["_id"])
-            food["userId"] = str(food["userId"])
+            food["user_id"] = str(food["user_id"])
         return food
 
     # ── Create ──────────────────────────────────────────────────────────────────
@@ -32,7 +32,7 @@ class FoodObject:
         return FoodObject._serialize(food)
 
     def find_by_user(id):
-        food = foodCollection.find({"userId": ObjectId(id)})
+        food = foodCollection.find({"user_id": ObjectId(id)})
         return [FoodObject._serialize(g) for g in food]
 
     # ── Update ─────────────────────────────────────────────────────────────────

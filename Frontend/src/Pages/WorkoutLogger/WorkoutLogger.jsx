@@ -253,11 +253,20 @@ export function WorkoutLogger() {
   // we need to fetch their display names
   useEffect(() => {
     // Collect IDs from workout table
-    const workoutIds = exercisesInProgressTable.map((ex) => ex.exerciseId);
+    //const workoutIds = exercisesInProgressTable.map((ex) => ex.exerciseId);
+    const workoutIds = exercisesInProgressTable.map((ex) => {
+      console.log(
+        "LOADER DEBUG →",
+        "exercise_id:", ex.exercise_id,
+        "exerciseId:", ex.exerciseId
+      );
+      return ex.exercise_id;
+    });
+
 
     // Collect IDs from template preview
     const templateIds =
-      templatePreview?.exercises?.map((ex) => ex.exerciseId) || [];
+      templatePreview?.exercises?.map((ex) => ex.exercise_id) || [];
 
     // Combine and dedupe
     const allIds = [...new Set([...workoutIds, ...templateIds])];
@@ -308,7 +317,7 @@ export function WorkoutLogger() {
       // 1. Create the template
       const templatePayload = {
         title: workoutTitle,
-        userId: user._id,
+        user_id: user._id,
       };
 
       const templateRes = await fetch(
@@ -329,18 +338,18 @@ export function WorkoutLogger() {
       // 2. Create personalExercises using template._id as workoutId
       for (const ex of exercisesInProgressTable) {
         const personalExPayload = {
-          exerciseId: ex.exerciseId,
+          exercise_id: ex.exercise_id,
           reps: ex.reps,
           sets: ex.sets,
           weight: ex.weight,
           duration: ex.duration,
           distance: ex.distance,
           complete: false,
-          userId: user._id,
-          workoutId: template.workout_id,
+          user_id: user._id,
+          workout_id: template.workout_id,
           template: true,
         };
-
+        console.log("Personal Exercise Payload:", personalExPayload);
         createPersonalExercise(personalExPayload);
       }
 
@@ -372,19 +381,23 @@ export function WorkoutLogger() {
       const removed = { ...prev };
 
       exercisesInProgressTable.forEach((ex) => {
-        const key = ex._id || ex.exerciseId;
+        const key = ex._id || ex.exercise_id;
         removed[key] = ex;
       });
 
       return removed;
     });
 
+    // response = handleSubmit()
+    // console.log(response)
+
     // 2. Replace exercisesInProgressTable with template exercises
     setExercisesInProgressTable(
       templatePreview.exercises.map((ex) => ({
         ...ex,
         _id: null, // mark as new
-        workoutId: null, // ensure backend treats them as new
+        workout_id: workoutId,
+        user_id: user._id,  // ensure backend treats them as new
       })),
     );
 
@@ -408,12 +421,12 @@ export function WorkoutLogger() {
               complete: ex.complete,
               distance: ex.distance,
               duration: ex.duration,
-              exerciseId: ex.exerciseId,
+              exercise_id: ex.exercise_id,
               reps: ex.reps,
               sets: ex.sets,
-              userId: ex.userId,
+              user_id: ex.user_id,
               weight: ex.weight,
-              workoutId: ex.workoutId,
+              workout_id: ex.workout_id,
             }
           : {
               complete: ex.complete,
@@ -500,9 +513,9 @@ export function WorkoutLogger() {
     // Create exercise objects with workout context
     const newExercises = pendingExercises.map((rawName) => ({
       _id: null, // null = new exercise, will be assigned ID after DB save
-      exerciseId: rawName,
-      workoutId: workoutId,
-      userId: user._id,
+      exercise_id: rawName,
+      workout_id: workoutId,
+      user_id: user._id,
       complete: false,
       reps: 0,
       sets: 0,
@@ -595,10 +608,10 @@ export function WorkoutLogger() {
 
           const newWorkoutPayload = {
             endTime: currentDateUnix,
-            gymId: gymId,
+            gym_id: gymId,
             startTime: currentDateUnix,
             title: "Workout (" + today.toDateString() + ")",
-            userId: user._id,
+            user_id: user._id,
           };
 
           const newWorkout = await createWorkout(newWorkoutPayload);
@@ -648,6 +661,7 @@ export function WorkoutLogger() {
     async function getTemplates() {
       try {
         const allTemplates = await fetchTemplate(user._id);
+        console.log(allTemplates)
 
         // Normalize if needed (backend might return null or object)
         if (Array.isArray(allTemplates)) {
@@ -795,7 +809,7 @@ export function WorkoutLogger() {
             {exercisesInProgressTable.map((ex, i) => (
               <React.Fragment key={i}>
                 <div className="cell">
-                  {personalExNames[ex.exerciseId] || "Loading..."}
+                  {personalExNames[ex.exercise_id] || "Loading..."}
                 </div>
                 <div className="cell">
                   {ex.complete ? (
@@ -915,7 +929,7 @@ export function WorkoutLogger() {
                 )}
                 {!exerciseLoading &&
                   exercises
-                    .filter((ex) => ex && (ex.name || ex._id || ex.exerciseId)) // remove empty objects
+                    .filter((ex) => ex && (ex.name || ex._id || ex.exercise_id)) // remove empty objects
                     .map((item, i) => {
                       const name = item.name ?? "";
                       const id = item._id ?? item.exerciseId;
@@ -1193,9 +1207,9 @@ export function WorkoutLogger() {
                     <React.Fragment key={ex._id || i}>
                       <div
                         className="cell"
-                        title={personalExNames[ex.exerciseId]}
+                        title={personalExNames[ex.exercise_id]}
                       >
-                        {personalExNames[ex.exerciseId]}
+                        {personalExNames[ex.exercise_id]}
                       </div>
 
                       <div className="cell">{ex.reps}</div>

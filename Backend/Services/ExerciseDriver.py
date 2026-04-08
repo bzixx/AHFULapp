@@ -1,6 +1,5 @@
 #Services & Drivers know how to implement business Logic related to the Route operations.  Intermediate between Routes and Objects.  Ensures validations and rules are applied before Calling Objects to interact with
 from DataModels.ExerciseObject import ExerciseObject
-from urllib.parse import urlencode
 from http.client import HTTPSConnection
 import ssl
 import certifi
@@ -36,8 +35,8 @@ class ExerciseDriver:
             if not isinstance(item, dict):
                 continue
             new_item = dict(item)  # shallow copy
-            if "exerciseId" in new_item and "_id" not in new_item:
-                new_item["_id"] = new_item.pop("exerciseId")
+            if "exercise_id" in new_item and "_id" not in new_item:
+                new_item["_id"] = new_item.pop("exercise_id")
             out.append(new_item)
         return out
 
@@ -328,26 +327,26 @@ class ExerciseDriver:
         except Exception as e:
             return None, str(e)
 
-    # def update_exercise(exercise_id, update_data):
-    #     try:
-    #         existing_exercise = ExerciseObject.find_by_id(exercise_id)
-    #         if not existing_exercise:
-    #             return False, "Exercise not found"
+    def update_exercise(exercise_id, update_data):
+        try:
+            existing_exercise = ExerciseObject.find_by_id(exercise_id)
+            if not existing_exercise:
+                return False, "Exercise not found"
 
-    #         # Update fields
-    #         for key in ["name", "body_part", "difficulty", "equipment", "instructions", "type"]:
-    #             if key in update_data:
-    #                 existing_exercise[key] = update_data[key]
+            # Update fields
+            for key in ["name", "body_part", "difficulty", "equipment", "instructions", "type"]:
+                if key in update_data:
+                    existing_exercise[key] = update_data[key]
 
-    #         # Save updated exercise
-    #         ExerciseObject.update(exercise_id, existing_exercise)
-    #         return True, None
-    #     except Exception as e:
-    #         return False, str(e)
+            # Save updated exercise
+            ExerciseObject.update(exercise_id, existing_exercise)
+            return True, None
+        except Exception as e:
+            return False, str(e)
         
     @staticmethod
     def delete_exercise(exercise_id):
-        exercise_id, err = ExerciseDriver._validate_obj_id(exercise_id, "userid")
+        exercise_id, err = ExerciseDriver._validate_obj_id(exercise_id, "exercise_id")
         if err:
             return None, err
         try:

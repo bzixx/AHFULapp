@@ -78,11 +78,11 @@ def search_exercises():
 
     exercises, error = ExerciseDriver.search_exercises(search_string)
     if error:
-        return jsonify({"error": error}), 404
+        return jsonify({"error": error}), 400
     return jsonify(exercises), 200
 
 # ── CREATE exercise ───────────────────────────────────────────────────────────
-@exerciseRouteBlueprint.route("create/", methods=["POST"])
+@exerciseRouteBlueprint.route("/create/", methods=["POST"])
 def create_exercise():
     data = request.get_json()
     if not data:
@@ -112,7 +112,10 @@ def delete_exercise(exercise_id):
     deleted, error = ExerciseDriver.delete_exercise(exercise_id)
     if error:
         return jsonify({"error": error}), 400
-    return jsonify({"message": "Exercise deleted successfully"}), 200
+    if not deleted:
+        return jsonify({"error": "Exercise not found"}), 404
+    else: 
+        return jsonify({"error": "Exercise not deleted"}), 400
 
 # ── GET bodyparts ───────────────────────────────────────────────────────────
 @exerciseRouteBlueprint.route('/bodyparts/')
