@@ -73,7 +73,7 @@ class NotificationScheduler:
                 ),
                 token=token,
                 data={
-                    "taskId": task_id,
+                    "task_id": task_id,
                     "type": "task_reminder"
                 }
             )

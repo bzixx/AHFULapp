@@ -34,7 +34,7 @@ class TokenObject:
         token_data = {
             "token": token_str,
             "user_id": ObjectId(user_id),
-            "created_at": datetime.now()
+            "created_at": int(datetime.now().timestamp())
         }
         result = tokenCollection.insert_one(token_data)
         return str(result.inserted_id)

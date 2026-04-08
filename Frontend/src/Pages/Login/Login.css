@@ -46,3 +46,48 @@ html, body {
     display: flex;
     justify-content: center;
 }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .login-page {
+        padding: 20px;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 400px;
+        padding: 24px;
+    }
+
+    .login-title {
+        margin-bottom: 30px;
+    }
+
+    .login-title h1 {
+        font-size: 36px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-page {
+        padding: 16px;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 100%;
+        padding: 16px;
+    }
+
+    .login-title {
+        margin-bottom: 24px;
+    }
+
+    .login-title h1 {
+        font-size: 28px;
+    }
+
+    .login-title p {
+        font-size: 14px;
+    }
+}

@@ -16,4 +16,6 @@ pymongo==4.16.0 #- MongoDB driver for Python
 #Firebase Admin SDK
 firebase-admin==7.3.0 #- Firebase Admin SDK for Python (used for messaging/notifcations)
 
+flask-mail==0.10.0 # used for sending emails
+
 
