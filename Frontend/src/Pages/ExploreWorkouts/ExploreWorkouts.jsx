@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import "./ExploreWorkouts.css";
 import "../../SiteStyles.css";
-import { Calendar } from "../../components/Calendar/Calendar";
+import { CalendarButton } from "../../components/CalendarButton/CalendarButton.jsx";
 import { HeatMap } from "../../components/HeatMap/HeatMap";
 import { WorkoutChart } from "../../components/WorkoutChart/WorkoutChart";
 import { fetchPersonalExercises, fetchGym, fetchExerciseById } from "../../QueryFunctions";
@@ -293,8 +293,8 @@ export function ExploreWorkouts() {
         </div>
       </div>
 
-      {/* Calendar Component */}
-      <Calendar />
+      {/* CalendarButton Component */}
+      <CalendarButton />
 
       {/* Workout Details Modal */}
       {selectedWorkout && (
