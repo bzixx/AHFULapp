@@ -13,8 +13,8 @@ class WorkoutObject:
         """Convert MongoDB document to JSON-safe dict."""
         if workout:
             workout["_id"] = str(workout["_id"])
-            workout["userId"] = str(workout["userId"])
-            workout["gymId"] = str(workout["gymId"])
+            workout["user_id"] = str(workout["user_id"])
+            workout["gym_id"] = str(workout["gym_id"])
         return workout
     
     @staticmethod
@@ -22,7 +22,7 @@ class WorkoutObject:
         """Convert MongoDB document to JSON-safe dict."""
         if workout:
             workout["_id"] = str(workout["_id"])
-            workout["userId"] = str(workout["userId"])
+            workout["user_id"] = str(workout["user_id"])
         return workout
     
     # ── Create ─────────────────────────────────────────────────────────────────
@@ -37,41 +37,46 @@ class WorkoutObject:
         return str(result.inserted_id)
 
     # ── Read ──────────────────────────────────────────────────────────────────
+    @staticmethod
     def find_all():
         workout = workoutCollection.find({
-            "template": {"$exists": False},
+            "template": False,
             "startTime": {"$ne": 0}
         })
         return [WorkoutObject._serialize(w) for w in workout]
 
+    @staticmethod   
     def find_by_id(id):
         workout = workoutCollection.find_one({
             "_id": ObjectId(id),
-            "template": {"$exists": False},
+            "template": False,
             "startTime": {"$ne": 0}
         })
         return WorkoutObject._serialize(workout)
     
-    def find_by_user(userId):
+    @staticmethod
+    def find_by_user(user_id):
         workout = workoutCollection.find({
-            "userId": ObjectId(userId),
-            "template": {"$exists": False},
+            "user_id": ObjectId(user_id),
+            "template": False,
             "startTime": {"$ne": 0}
         })
         return [WorkoutObject._serialize(w) for w in workout]
 
+    @staticmethod
     def find_template(id):
         template = workoutCollection.find_one({
             "_id": ObjectId(id),
-            "template": {"$exists": True},
+            "template": True,
             "startTime": 0
         })
         return WorkoutObject._serialize_template(template)
 
-    def find_user_templates(userId):
+    @staticmethod
+    def find_user_templates(user_id):
         template = workoutCollection.find({
-            "userId": ObjectId(userId),
-            "template": {"$exists": True},
+            "user_id": ObjectId(user_id),
+            "template": True,
             "startTime": 0
         })
         return [WorkoutObject._serialize_template(t) for t in template]
@@ -99,4 +104,4 @@ class WorkoutObject:
     @staticmethod
     def delete(id):
         result = workoutCollection.delete_one({"_id": ObjectId(id)})
-        return str((result.deleted_count == 1) * id)
+        return id if result.deleted_count == 1 else None

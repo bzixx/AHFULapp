@@ -10,6 +10,7 @@ export function Login() {
   // ----- LOGIN STATE MANAGEMENT ---------------------------------------------------------------------------
   //Redux Site Wide Auth State
   const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const theme = useSelector((state) => state.setting?.theme || "Light");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [statusText, setStatusText] = useState("");
@@ -26,7 +27,6 @@ export function Login() {
     try{
       setStatusText(`Loggging in with Google...`);
       let fetchResponse = await handle_google_login(response);
-      console.log("AHFUL Google Button Login successful. Server Response:", fetchResponse);
       dispatch(authLogin(fetchResponse));
     }catch(error){
       console.error("Google login error:", error);
@@ -72,7 +72,7 @@ export function Login() {
             size="large"
             width="200"
             text="signin_with"
-            theme="filled_black"
+            theme={theme === "Dark" ? "filled_black" : "outline"}
             shape="pill"
             onSuccess={handle_google_success}
             onError={handle_google_failure}

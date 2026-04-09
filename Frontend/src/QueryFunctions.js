@@ -166,7 +166,7 @@ export async function handle_logout() {
 }
 
 export async function handle_google_login(response) {
-    //TODO: need to fetch UserSettings and Set to Redux on Non-localStroage Logins
+  //TODO: need to fetch UserSettings and Set to Redux on Non-localStroage Logins
 
   try {
     //URL to send POST to later
@@ -193,9 +193,7 @@ export async function handle_google_login(response) {
       //Error Handeling for if Backend Logic reported Failed to Frontend
       if (!backendResponse.ok) {
         const message = backendUserData?.error || backendResponse.statusText;
-        throw new Error(
-          `${message}`
-        );
+        throw new Error(`${message}`);
       }
 
       //Explicit check over response from server
@@ -230,33 +228,38 @@ export async function handle_google_login(response) {
 
 export async function whoami(userDataToVerify) {
   try {
-    const backendVerificationResponse = await fetch('http://localhost:5000/AHFULauth/whoami', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: userDataToVerify.email,
-        last_login_expire: userDataToVerify.last_login_expire,
-        magic_bits: userDataToVerify.magic_bits
-      }),
-      credentials: 'include'
-    });
+    const backendVerificationResponse = await fetch(
+      "http://localhost:5000/AHFULauth/whoami",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: userDataToVerify.email,
+          last_login_expire: userDataToVerify.last_login_expire,
+          magic_bits: userDataToVerify.magic_bits,
+        }),
+        credentials: "include",
+      },
+    );
 
     if (backendVerificationResponse.ok) {
       const data = await backendVerificationResponse.json();
-      return data
-      
+      return data;
     } else {
-      throw new Error(`Session validation failed: ${backendVerificationResponse.status} ${backendVerificationResponse.statusText}`);
+      throw new Error(
+        `Session validation failed: ${backendVerificationResponse.status} ${backendVerificationResponse.statusText}`,
+      );
     }
   } catch (err) {
-    console.error('Query Function Session validation failed:', err);
-  } 
+    console.error("Query Function Session validation failed:", err);
+  }
 }
 
 // ──  Template functions ─────────────────────────────────────────────────────────
 export async function fetchTemplate(userId) {
+  console.log(userId);
   const res = await fetch(
-    `http://localhost:5000/AHFULworkout/templates/${userId}`,
+    `http://localhost:5000/AHFULworkout/templates/user/${userId}`,
   );
   if (!res.ok) {
     let bodyText = "";
@@ -271,10 +274,38 @@ export async function fetchTemplate(userId) {
   return data;
 }
 
+export async function createTemplate(templateData) {
+  try {
+    const res = await fetch(
+      "http://localhost:5000/AHFULworkout/create/template",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(templateData),
+      },
+    );
+    const data = await res.json();
+
+    if (!res.ok) {
+      return { error: data.error || `Server returned ${res.status}` };
+    }
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("createTemplate error:", err);
+    const msg = err && err.message ? err.message : "Failed to create template";
+    return { error: msg };
+  }
+}
 
 // ──  User Settings functions ─────────────────────────────────────────────────────────
 export async function getUserSettings(userId) {
-  const foundUserSettingsResponse = await fetch(`http://localhost:5000/AHFULuserSettings/${userId}`);
+  const foundUserSettingsResponse = await fetch(
+    `http://localhost:5000/AHFULuserSettings/${userId}`,
+  );
   if (foundUserSettingsResponse.status === 404) {
     // Create default settings if not found
     const createDefaultSettingsResponse = await fetch(
@@ -283,13 +314,19 @@ export async function getUserSettings(userId) {
         method: "POST",
       },
     );
-    if (!createDefaultSettingsResponse.ok) throw new Error("Failed to create default settings" + createDefaultSettingsResponse.status);
+    if (!createDefaultSettingsResponse.ok)
+      throw new Error(
+        "Failed to create default settings" +
+          createDefaultSettingsResponse.status,
+      );
     return createDefaultSettingsResponse.json();
   }
-  if (!foundUserSettingsResponse.ok) throw new Error("Failed to fetch settings" + foundUserSettingsResponse.status );
+  if (!foundUserSettingsResponse.ok)
+    throw new Error(
+      "Failed to fetch settings" + foundUserSettingsResponse.status,
+    );
   return foundUserSettingsResponse.json();
 }
-
 
 export async function updateUserSettings(userId, settings) {
   const res = await fetch(
@@ -343,6 +380,19 @@ export async function forwardGeocode(address) {
     return null;
   } catch (err) {
     console.error("forwardGeocode error:", err);
+    return null;
+  }
+}
+
+export async function fetchGym(gymId) {
+  try {
+    const res = await fetch(`http://localhost:5000/AHFULgyms/${gymId}`);
+    if (!res.ok) {
+      throw new Error(`Failed to fetch gym: ${res.status} ${res.statusText}`);
+    }
+    return res.json();
+  } catch (err) {
+    console.error("fetchGym error:", err);
     return null;
   }
 }
@@ -483,6 +533,35 @@ export async function fetchWorkout(userId) {
     // Ensure we always return an array
     return data
 
+  } catch (err) {
+    console.error("fetchWorkout error:", err);
+    // Return empty array for network errors on new user accounts
+    throw err;
+  }
+}
+
+export async function fetchWorkoutById(workoutId) {
+  try {
+    const res = await fetch(`http://localhost:5000/AHFULworkout/${workoutId}`);
+
+    // Handle empty or not found responses for new users
+    if (res.status === 404 || res.status === 204) {
+      return [];
+    }
+
+    if (!res.ok) {
+      const bodyText = await res.text().catch(() => "");
+      throw new Error(
+        `Server returned ${res.status} ${res.statusText} ${bodyText}`,
+      );
+    }
+
+    const data = await res.json();
+    // Ensure we always return an array
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.workouts)) return data.workouts;
+    if (data && Array.isArray(data.data)) return data.data;
+    return [];
   } catch (err) {
     console.error("fetchWorkout error:", err);
     // Return empty array for network errors on new user accounts

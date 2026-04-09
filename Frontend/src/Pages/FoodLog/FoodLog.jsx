@@ -230,7 +230,7 @@ export function FoodLog() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    userId: userId,
+                    user_id: userId,
                     name: foodName,
                     calsPerServing: parseInt(calories),
                     servings: parseInt(servings),
@@ -307,7 +307,8 @@ export function FoodLog() {
                     name: foodName,
                     calsPerServing: parseInt(calories),
                     servings: parseInt(servings),
-                    type: mealType
+                    type: mealType,
+                    time: Math.trunc(Date.now() / 1000)
                 })
             });
 

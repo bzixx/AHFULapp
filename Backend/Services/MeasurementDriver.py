@@ -55,15 +55,15 @@ class MeasurementDriver:
         return sanitized, None
 
     @staticmethod
-    def create_measurement(userId, data):
-        if not userId:
-            return None, "You must provide a userId"
+    def create_measurement(user_id, data):
+        if not user_id:
+            return None, "You must provide a user_id"
 
-        oid, err = MeasurementDriver._validate_obj_id(userId, "userId")
+        oid, err = MeasurementDriver._validate_obj_id(user_id, "user_id")
         if err:
             return None, err
 
-        user = UserObject.find_by_id(userId)
+        user = UserObject.find_by_id(user_id)
         if not user:
             return None, "User not found"
 
@@ -72,7 +72,7 @@ class MeasurementDriver:
             return None, err
 
         measurement_data = {
-            "userId": oid,
+            "user_id": oid,
             **sanitized,
         }
 
@@ -106,14 +106,14 @@ class MeasurementDriver:
             return None, str(e)
 
     @staticmethod
-    def get_measurements_by_user(userId):
-        if not userId:
-            return None, "You must provide a userId to get"
-        oid, err = MeasurementDriver._validate_obj_id(userId, "measurement_id")
+    def get_measurements_by_user(user_id):
+        if not user_id:
+            return None, "You must provide a user_id to get"
+        oid, err = MeasurementDriver._validate_obj_id(user_id, "measurement_id")
         if err:
             return None, err
         try:
-            measurements = MeasurementObject.find_by_user(userId)
+            measurements = MeasurementObject.find_by_user(user_id)
             return measurements, None
         except Exception as e:
             return None, str(e)

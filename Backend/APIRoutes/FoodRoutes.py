@@ -54,7 +54,7 @@ def create_food():
         return jsonify({"error": "No data provided"}), 400
 
     food_id, error = FoodDriver.create_food(
-        userId=data.get("userId"),
+        user_id=data.get("user_id"),
         name=data.get("name"),
         calsPerServing=data.get("calsPerServing"),
         servings=data.get("servings"),
@@ -101,9 +101,9 @@ def delete_food(food_id):
     return jsonify({"message": "Food deleted", "food_id": response}), 200
 
 # ── GET food streak for user ──────────────────────────────────────
-@foodRouteBlueprint.route("/streak/<userId>", methods=["GET"])
-def get_food_streak(userId):
-    streak_data, error = FoodDriver.get_streak(userId)
+@foodRouteBlueprint.route("/streak/<user_id>", methods=["GET"])
+def get_food_streak(user_id):
+    streak_data, error = FoodDriver.get_streak(user_id)
     if error:
         return jsonify({"error": error}), 500
     return jsonify(streak_data), 200

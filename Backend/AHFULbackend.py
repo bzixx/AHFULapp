@@ -2,6 +2,7 @@ from flask import Flask, current_app, send_from_directory #Import Main Flask app
 import os # Import Function from os to get .env variables
 from flask_cors import CORS #Import Main Flask application class
 from dotenv import load_dotenv # Load environment variables from .env file
+from flask_mail import Mail
 
 #Services/Drivers Imports
 from Services.SignInDriver import SignInDriver
@@ -28,6 +29,9 @@ from firebase_admin import credentials
 #Notification Scheduler
 from Services.NotificationScheduler import start_scheduler
 
+# Start mail obj
+mail = Mail()
+
 #Main AHFUL APP Backend Entry Point.
 def create_app():
     # Load environment variables from .env file
@@ -44,6 +48,18 @@ def create_app():
     cred = credentials.Certificate("./firebaseSecret.json")
     app.AHFULFirebaseDriver = firebase_admin.initialize_app(cred)
     print("Firebase Admin SDK initialized successfully")
+
+    # Configure mail server
+    app.config.update(
+        MAIL_SERVER="smtp.gmail.com",
+        MAIL_PORT=587,
+        MAIL_USE_TLS=True,
+        MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
+        MAIL_PASSWORD=os.getenv("MAIL_PASSWORD"),
+        MAIL_DEFAULT_SENDER=("AHFUL", os.getenv("MAIL_USERNAME"))
+    )
+    mail.init_app(app)
+    app.mail = mail
 
     #Register App Routes and Blueprints
     #Swagger routes add prefix to match server url

@@ -2,14 +2,21 @@ import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "./Navbar.css";
 
-export function Navbar({ minHeight }) {
+export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
+  const handleNavClick = () => {
+    if (onNavClick) {
+      onNavClick();
+    }
+  };
+
   return (
-    <nav className="sidebar" style={{ minHeight }}>
+    <nav className={`sidebar ${isOpen ? "open" : "closed"}`} style={{ minHeight }}>
       <NavLink
         to="/"
         className={({ isActive }) => (isActive ? "active" : "")}
+        onClick={handleNavClick}
       >
         Dashboard Home
       </NavLink>
@@ -19,6 +26,7 @@ export function Navbar({ minHeight }) {
           <NavLink
             to="/Login"
             className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={handleNavClick}
           >
             Login
           </NavLink>
@@ -26,6 +34,7 @@ export function Navbar({ minHeight }) {
           <NavLink
             to="/TOS"
             className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={handleNavClick}
           >
             Terms of Service
           </NavLink>
@@ -35,15 +44,9 @@ export function Navbar({ minHeight }) {
           <NavLink
             to="/WorkoutLogger"
             className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={handleNavClick}
           >
             Workout Logger
-          </NavLink>
-
-          <NavLink
-            to="/FoodLog"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            Food Logger
           </NavLink>
 
           <NavLink
@@ -54,22 +57,24 @@ export function Navbar({ minHeight }) {
           </NavLink>
 
           <NavLink
-            to="/MeasurementLogger"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
-            Measurement Logger
-          </NavLink>
-
-          <NavLink
             to="/ExploreWorkout"
             className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={handleNavClick}
           >
             Explore Workouts
+          </NavLink>
+          <NavLink
+            to="/FoodLog"
+            className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={handleNavClick}
+          >
+            Food Log
           </NavLink>
 
           <NavLink
             to="/ExploreTasks"
             className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={handleNavClick}
           >
             Explore Tasks
           </NavLink>
@@ -77,17 +82,15 @@ export function Navbar({ minHeight }) {
           <NavLink
             to="/Map"
             className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={handleNavClick}
           >
             Gym's & Map
           </NavLink>
 
           <NavLink
-            to="/Profile"
-            className={({ isActive }) =>
-              isActive || location.pathname.startsWith("/Settings")
-                ? "active"
-                : ""
-            }
+            to="/MeasurementLogger"
+            className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={handleNavClick}
           >
             Profile
           </NavLink> 
@@ -96,6 +99,7 @@ export function Navbar({ minHeight }) {
             href="http://localhost:5000/APIDocs"
             target="_blank"
             rel="noreferrer"
+            onClick={handleNavClick}
           >
             Documentation
           </a>

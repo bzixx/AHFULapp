@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import "./WorkoutLogger.css";
 import "../../SiteStyles.css";
+import { CalendarButton } from "../../components/CalendarButton/CalendarButton.jsx";
 import {
   getDefaultNewExercise,
   formatTime as formatTimeFn,
@@ -10,6 +11,7 @@ import {
   fetchExercisesFromBackend,
   searchExercises,
   fetchWorkout,
+  fetchWorkoutById,
   fetchPersonalExercises,
   fetchExerciseById,
   createWorkout,
@@ -18,6 +20,7 @@ import {
   updatePersonalExercise,
   deletePersonalExercise,
   fetchTemplate,
+  createTemplate,
   loadBodyParts,
   createExercise,
 } from "../../QueryFunctions";
@@ -41,6 +44,7 @@ export function WorkoutLogger() {
   // ─── Redux Auth State ─────────────────────────────────────────────────────────
   const user = useSelector((state) => state.auth.user);
   const userAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const selectedDate = useSelector((state) => state.calendar.selectedDate);
 
   // ─── Personal Exercise State ──────────────────────────────────────────────────
   // Tracks exercises to be deleted when workout is submitted (removed from UI but need DB deletion)
@@ -77,6 +81,8 @@ export function WorkoutLogger() {
 
   // ─── Exercise Selection State ────────────────────────────────────────────────
   const [exerciseName, setExerciseName] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
   // Selected exercise IDs pending to be added to workout
   const [pendingExercises, setPendingExercises] = useState([]);
   // Modal visibility for creating new exercises
@@ -247,20 +253,33 @@ export function WorkoutLogger() {
   };
 
   // ─── Load Exercise Names for Display ─────────────────────────────────────────
-  // When exercises are added to the workout, we need to fetch their display names
+  // When exercises are added to the workout or showing the template preview ,
+  // we need to fetch their display names
   useEffect(() => {
-    if (!exercisesInProgressTable.length) return;
+    // Collect IDs from workout table
+    //const workoutIds = exercisesInProgressTable.map((ex) => ex.exerciseId);
+    const workoutIds = exercisesInProgressTable.map((ex) => {
+      return ex.exercise_id;
+    });
 
-    const ids = exercisesInProgressTable.map((ex) => ex.exerciseId);
-    const missing = ids.filter((id) => !personalExNames[id]);
+    // Collect IDs from template preview
+    const templateIds =
+      templatePreview?.exercises?.map((ex) => ex.exercise_id) || [];
 
-    if (missing.length === 0) {
-      return;
-    }
+    // Combine and dedupe
+    const allIds = [...new Set([...workoutIds, ...templateIds])];
+
+    if (allIds.length === 0) return;
+
+    // Filter missing names
+    const missing = allIds.filter((id) => !personalExNames[id]);
+
+    if (missing.length === 0) return;
 
     const loadNames = async () => {
       try {
         const results = {};
+
         for (const id of missing) {
           try {
             const data = await fetchExerciseById(id);
@@ -270,6 +289,7 @@ export function WorkoutLogger() {
             results[id] = "Unknown Exercise";
           }
         }
+
         setPersonalExNames((prev) => ({ ...prev, ...results }));
       } catch (err) {
         console.error("Error fetching exercise names:", err);
@@ -277,7 +297,7 @@ export function WorkoutLogger() {
     };
 
     loadNames();
-  }, [exercisesInProgressTable]);
+  }, [exercisesInProgressTable, templatePreview]);
 
   // ─── Save Template ───────────────────────────────────────────────────────────
   // Saves personal exercises as a template using the workout name
@@ -295,39 +315,29 @@ export function WorkoutLogger() {
       // 1. Create the template
       const templatePayload = {
         title: workoutTitle,
-        userId: user._id,
+        user_id: user._id,
       };
 
-      const templateRes = await fetch(
-        "http://localhost:5000/AHFULworkout/create/template",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(templatePayload),
-        },
-      );
+      const template = await createTemplate(templatePayload);
 
-      if (!templateRes.ok) {
+      if (!template.success) {
         throw new Error("Failed to create template");
       }
-
-      const template = await templateRes.json();
 
       // 2. Create personalExercises using template._id as workoutId
       for (const ex of exercisesInProgressTable) {
         const personalExPayload = {
-          exerciseId: ex.exerciseId,
+          exercise_id: ex.exercise_id,
           reps: ex.reps,
           sets: ex.sets,
           weight: ex.weight,
           duration: ex.duration,
           distance: ex.distance,
           complete: false,
-          userId: user._id,
-          workoutId: template.workout_id,
+          user_id: user._id,
+          workout_id: template.data.workout_id,
           template: true,
         };
-
         createPersonalExercise(personalExPayload);
       }
 
@@ -359,7 +369,7 @@ export function WorkoutLogger() {
       const removed = { ...prev };
 
       exercisesInProgressTable.forEach((ex) => {
-        const key = ex._id || ex.exerciseId;
+        const key = ex._id || ex.exercise_id;
         removed[key] = ex;
       });
 
@@ -371,7 +381,8 @@ export function WorkoutLogger() {
       templatePreview.exercises.map((ex) => ({
         ...ex,
         _id: null, // mark as new
-        workoutId: null, // ensure backend treats them as new
+        workout_id: workoutId,
+        user_id: user._id, // ensure backend treats them as new
       })),
     );
 
@@ -395,12 +406,12 @@ export function WorkoutLogger() {
               complete: ex.complete,
               distance: ex.distance,
               duration: ex.duration,
-              exerciseId: ex.exerciseId,
+              exercise_id: ex.exercise_id,
               reps: ex.reps,
               sets: ex.sets,
-              userId: ex.userId,
+              user_id: ex.user_id,
               weight: ex.weight,
-              workoutId: ex.workoutId,
+              workout_id: ex.workout_id,
             }
           : {
               complete: ex.complete,
@@ -419,16 +430,12 @@ export function WorkoutLogger() {
       // --- DELETE REQUESTS ---
       const deleteRequests = Object.values(personalExToRemove)
         .filter((ex) => ex._id) // only delete DB-backed exercises
-        .map((ex) =>
-          fetch(`http://localhost:5000/AHFULpersonalEx/delete/${ex._id}`, {
-            method: "DELETE",
-          }),
-        );
+        .map((ex) => deletePersonalExercise(ex._id));
 
       // --- RUN EVERYTHING IN PARALLEL ---
       const responses = await Promise.all([...saveRequests, ...deleteRequests]);
 
-      const failed = responses.filter((r) => !r.ok);
+      const failed = responses.filter((r) => r == null || r.error);
 
       if (failed.length > 0) {
         console.error("Some operations failed:", failed);
@@ -487,9 +494,9 @@ export function WorkoutLogger() {
     // Create exercise objects with workout context
     const newExercises = pendingExercises.map((rawName) => ({
       _id: null, // null = new exercise, will be assigned ID after DB save
-      exerciseId: rawName,
-      workoutId: workoutId,
-      userId: user._id,
+      exercise_id: rawName,
+      workout_id: workoutId,
+      user_id: user._id,
       complete: false,
       reps: 0,
       sets: 0,
@@ -508,8 +515,8 @@ export function WorkoutLogger() {
     const searchQuery = typeof query === "string" ? query : exerciseName;
 
     if (!searchQuery) {
-      fetch_exercises();
-      return;
+      setSearchTerm(exerciseName);
+      fetchExercises(exerciseName);
     }
 
     setExerciseLoading(true);
@@ -558,7 +565,7 @@ export function WorkoutLogger() {
         setWorkoutError(null);
 
         // Calculate today's date range (midnight to midnight)
-        const today = new Date();
+        const today = selectedDate ? new Date(selectedDate) : new Date();
         today.setHours(0, 0, 0, 0);
         const currentDateUnix = Math.floor(today.getTime() / 1000);
         const tomorrow = new Date(today);
@@ -582,18 +589,21 @@ export function WorkoutLogger() {
 
           const newWorkoutPayload = {
             endTime: currentDateUnix,
-            gymId: gymId,
+            gym_id: gymId,
             startTime: currentDateUnix,
             title: "Workout (" + today.toDateString() + ")",
-            userId: user._id,
+            user_id: user._id,
           };
 
           const newWorkout = await createWorkout(newWorkoutPayload);
 
-          setWorkout(newWorkout);
-          setWorkoutId(newWorkout._id);
-          setWorkoutTitle(newWorkout.title);
-          setTime(0); // Reset timer for new workout
+          // Immediately fetch the persisted version
+          const persisted = await fetchWorkoutById(newWorkout._id);
+
+          setWorkout(persisted);
+          setWorkoutId(persisted._id);
+          setWorkoutTitle(persisted.title);
+          setTime(0);
           return;
         }
 
@@ -682,7 +692,8 @@ export function WorkoutLogger() {
   // ─── Main Render ─────────────────────────────────────────────────────────────
   return (
     <div className="page-layout">
-      {/* Left Column: Template/History (placeholder for future feature) */}
+      <CalendarButton />
+      {/* Left Column: Template/History */}
       <div className="left-column">
         <div className="template-container">
           <div className="add-template-form">
@@ -767,22 +778,22 @@ export function WorkoutLogger() {
               value={workoutTitle}
               onChange={(e) => setWorkoutTitle(e.target.value)}
             />
-            {workout && <h3>{unixToDate(workout.startTime)}</h3>}
+            <h3>{workout?.startTime ? unixToDate(workout.startTime) : ""}</h3>
           </div>
 
           {/* Exercise Table */}
           <div className="workout-grid">
-            <div className="cell header">Exercise</div>
-            <div className="cell header">Reps</div>
-            <div className="cell header">Sets</div>
-            <div className="cell header">Weight</div>
-            <div className="cell header">Completed</div>
-            <div className="cell header"></div>
+            <div className="cell workout-grid-header">Exercise</div>
+            <div className="cell workout-grid-header">Reps</div>
+            <div className="cell workout-grid-header">Sets</div>
+            <div className="cell workout-grid-header">Weight</div>
+            <div className="cell workout-grid-header">Completed</div>
+            <div className="cell workout-grid-header"></div>
 
             {exercisesInProgressTable.map((ex, i) => (
               <React.Fragment key={i}>
                 <div className="cell">
-                  {personalExNames[ex.exerciseId] || "Loading..."}
+                  {personalExNames[ex.exercise_id] || "Loading..."}
                 </div>
                 <div className="cell">
                   {ex.complete ? (
@@ -871,21 +882,23 @@ export function WorkoutLogger() {
           <div className="add-exercise-form">
             {/* Search Input */}
             <div className="dropdown-wrapper">
-              <input
-                type="text"
-                placeholder="Search exercises..."
-                value={exerciseName}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setExerciseName(v);
-                  // Debounce search to avoid too many API calls
-                  if (searchTimeoutRef.current)
-                    clearTimeout(searchTimeoutRef.current);
-                  searchTimeoutRef.current = setTimeout(() => {
-                    handleSearch(v);
-                  }, 300);
-                }}
-              />
+              <div className="search-row">
+                <input
+                  type="text"
+                  placeholder="Search exercises..."
+                  value={exerciseName}
+                  onChange={(e) => setExerciseName(e.target.value)}
+                />
+
+                <button
+                  type="button"
+                  className="search-btn"
+                  onClick={() => handleSearch(exerciseName)}
+                >
+                  Search
+                </button>
+              </div>
+
               <div className="dropdown-instructions">
                 Click an exercise to select it
               </div>
@@ -899,50 +912,54 @@ export function WorkoutLogger() {
                   <div className="dropdown-item">No exercises found</div>
                 )}
                 {!exerciseLoading &&
-                  exercises.map((item, i) => {
-                    const name = item.name ?? "";
-                    const id = item._id ?? item.exerciseId;
+                  exercises
+                    .filter((ex) => ex && (ex.name || ex._id || ex.exercise_id)) // remove empty objects
+                    .map((item, i) => {
+                      const name = item.name ?? "";
+                      const id = item._id ?? item.exerciseId;
 
-                    // Filter by search term
-                    if (
-                      exerciseName &&
-                      !name.toLowerCase().includes(exerciseName.toLowerCase())
-                    ) {
-                      return null;
-                    }
+                      // Filter by search term
+                      if (
+                        searchTerm &&
+                        !name.toLowerCase().includes(searchTerm.toLowerCase())
+                      ) {
+                        return;
+                      }
 
-                    // Check if already selected
-                    const isSelected =
-                      typeof id === "string" &&
-                      pendingExercises.includes(id) &&
-                      exercises.some((ex) => (ex._id ?? ex.exerciseId) === id);
+                      // Check if already selected
+                      const isSelected =
+                        typeof id === "string" &&
+                        pendingExercises.includes(id) &&
+                        exercises.some(
+                          (ex) => (ex._id ?? ex.exerciseId) === id,
+                        );
 
-                    return (
-                      <div
-                        key={`item-${i}`}
-                        className={`dropdown-item ${isSelected ? "selected" : ""}`}
-                        onClick={() => {
-                          setPendingExercises((prev) => {
-                            if (
-                              !exercises.some(
-                                (ex) => (ex._id ?? ex.exerciseId) === id,
-                              )
-                            ) {
-                              console.warn("Invalid exerciseId clicked:", id);
-                              return prev;
-                            }
-                            if (prev.includes(id)) {
-                              return prev.filter((p) => p !== id);
-                            }
-                            return [...prev, id];
-                          });
-                        }}
-                      >
-                        <span>{name}</span>
-                        {isSelected && <span className="check">✓</span>}
-                      </div>
-                    );
-                  })}
+                      return (
+                        <div
+                          key={`item-${i}`}
+                          className={`dropdown-item ${isSelected ? "selected" : ""}`}
+                          onClick={() => {
+                            setPendingExercises((prev) => {
+                              if (
+                                !exercises.some(
+                                  (ex) => (ex._id ?? ex.exerciseId) === id,
+                                )
+                              ) {
+                                console.warn("Invalid exerciseId clicked:", id);
+                                return prev;
+                              }
+                              if (prev.includes(id)) {
+                                return prev.filter((p) => p !== id);
+                              }
+                              return [...prev, id];
+                            });
+                          }}
+                        >
+                          <span>{name}</span>
+                          {isSelected && <span className="check">✓</span>}
+                        </div>
+                      );
+                    })}
               </div>
             </div>
 
@@ -1163,14 +1180,17 @@ export function WorkoutLogger() {
             <h2>{templatePreview.template.templateName}</h2>
 
             <div className="template-grid">
-              <div className="cell header">Exercise</div>
-              <div className="cell header">Reps</div>
-              <div className="cell header">Sets</div>
-              <div className="cell header">Weight</div>
+              <div className="cell template-grid-header">Exercise</div>
+              <div className="cell template-grid-header">Reps</div>
+              <div className="cell template-grid-header">Sets</div>
+              <div className="cell template-grid-header">Weight</div>
 
               {templatePreview.exercises.map((ex, i) => (
                 <React.Fragment key={ex._id || i}>
-                  <div className="cell">{personalExNames[ex.exerciseId]}</div>
+                  <div className="cell" title={personalExNames[ex.exercise_id]}>
+                    {personalExNames[ex.exercise_id]}
+                  </div>
+
                   <div className="cell">{ex.reps}</div>
                   <div className="cell">{ex.sets}</div>
                   <div className="cell">{ex.weight}</div>

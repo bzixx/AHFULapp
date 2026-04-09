@@ -53,7 +53,7 @@ class GymDriver:
     @staticmethod
     def get_gym_by_id(id):
         if not id:
-            return None, "You must provide a gym id to get"
+            return None, "You must provide a gym_id to get"
         oid, err = GymDriver._validate_obj_id(id, "gym_id")
         if err:
             return None, err
@@ -70,7 +70,7 @@ class GymDriver:
     def update_gym(id, updates):
         # Validate input
         if not id:
-            return None, "You must provide a gym id to update"
+            return None, "You must provide a gym_id to update"
         oid, err = GymDriver._validate_obj_id(id, "gym_id")
         if err:
             return None, err
@@ -109,7 +109,7 @@ class GymDriver:
     def delete_gym(id):
         # Validate input
         if not id:
-            return None, "You must provide a gym id to delete"
+            return None, "You must provide a gym_id to delete"
         oid, err = GymDriver._validate_obj_id(id, "gym_id")
         if err:
             return None, err

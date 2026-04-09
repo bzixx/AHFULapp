@@ -3,13 +3,13 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    background: linear-gradient(90deg,#c3cfe2, #f5f7fa, #c3cfe2);
+    background: var(--gradient-card);
     border-radius: 8px;
 }
 
 .measurement-container h1 {
     text-align: center;
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 30px;
     font-size: 2.5em;
 }
@@ -22,14 +22,14 @@
 
 /* Form Styling */
 .add-measurement-section {
-    background: white;
+    background: var(--input-bg);
     padding: 25px;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
 }
 
 .add-measurement-section h2 {
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 20px;
     font-size: 1.8em;
 }
@@ -48,27 +48,30 @@
 .form-group label {
     margin-bottom: 8px;
     font-weight: 600;
-    color: #555;
+    color: var(--text-secondary);
     font-size: 0.95em;
 }
 
 .form-group input {
     padding: 12px;
-    border: 2px solid #ddd;
+    border: 2px solid var(--color-border);
     border-radius: 5px;
     font-size: 1em;
     transition: border-color 0.3s;
+    background: var(--input-bg);
+    color: var(--input-text);
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
 }
 
 .form-group input:disabled {
-    background-color: #f0f0f0;
+    background-color: var(--color-surface);
     cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .form-buttons {
@@ -97,52 +100,52 @@
 }
 
 .btn-primary {
-    background-color: #007bff;
+    background-color: var(--accent-blue);
     color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-    background-color: #0056b3;
+    background-color: var(--accent-blue-dark);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .btn-secondary {
-    background-color: #6c757d;
+    background-color: var(--text-secondary);
     color: white;
 }
 
 .btn-secondary:hover:not(:disabled) {
-    background-color: #545b62;
+    background-color: var(--button-secondary-hover);
 }
 
 .btn-edit {
-    background-color: #28a745;
+    background-color: var(--accent-green);
     color: white;
     padding: 8px 16px;
     font-size: 0.9em;
 }
 
 .btn-edit:hover:not(:disabled) {
-    background-color: #218838;
+    background-color: var(--accent-green-dark);
 }
 
 .btn-delete {
-    background-color: #dc3545;
+    background-color: var(--accent-red);
     color: white;
     padding: 8px 16px;
     font-size: 0.9em;
 }
 
 .btn-delete:hover:not(:disabled) {
-    background-color: #c82333;
+    background-color: var(--accent-red-dark);
 }
 
 /* Error Message */
 .error-message {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background-color: rgba(239, 68, 68, 0.15);
+    color: var(--accent-red);
+    border: 1px solid rgba(239, 68, 68, 0.3);
     border-radius: 5px;
     padding: 12px;
     margin-bottom: 20px;
@@ -151,14 +154,14 @@
 
 /* Charts Section */
 .charts-section {
-    background: white;
+    background: var(--input-bg);
     padding: 25px;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
 }
 
 .charts-section h2 {
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 25px;
     font-size: 1.8em;
     text-align: center;
@@ -167,27 +170,27 @@
 .chart-container {
     margin-bottom: 40px;
     padding: 20px;
-    background-color: #fafafa;
+    background-color: var(--color-surface);
     border-radius: 8px;
-    border: 1px solid #eee;
+    border: 1px solid var(--color-border);
 }
 
 .chart-container h3 {
-    color: #555;
+    color: var(--text-secondary);
     margin-bottom: 15px;
     font-size: 1.2em;
 }
 
 /* Measurement History */
 .measurement-history {
-    background: white;
+    background: var(--input-bg);
     padding: 25px;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
 }
 
 .measurement-history h2 {
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 20px;
     font-size: 1.8em;
 }
@@ -199,8 +202,8 @@
 }
 
 .measurement-card {
-    background: #f9f9f9;
-    border: 1px solid #ddd;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 20px;
     transition: all 0.3s;
@@ -210,16 +213,16 @@
 }
 
 .measurement-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-md);
     transform: translateY(-2px);
 }
 
 .measurement-date {
     font-weight: 700;
     font-size: 1.1em;
-    color: #007bff;
+    color: var(--accent-blue);
     padding-bottom: 10px;
-    border-bottom: 2px solid #007bff;
+    border-bottom: 2px solid var(--accent-blue);
 }
 
 .measurement-values {
@@ -228,12 +231,12 @@
 
 .measurement-values p {
     margin: 8px 0;
-    color: #555;
+    color: var(--text-secondary);
     font-size: 0.95em;
 }
 
 .measurement-values strong {
-    color: #333;
+    color: var(--text-primary);
 }
 
 .measurement-actions {
