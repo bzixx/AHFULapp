@@ -13,6 +13,7 @@ import { Layout } from "./layout.jsx"
 import { AuthRouteCheck } from "./AuthRouteCheck.jsx";
 import { Settings } from "./Pages/Settings/Settings.jsx";
 import { ExploreTasks } from "./Pages/ExploreTasks/ExploreTasks.jsx";
+import { Test } from "./Pages/Test/Test.jsx";
 import { useTutorial } from "./hooks/useTutorial.js";
 import { TutorialOverlay } from "./components/Tutorial/TutorialOverlay.jsx";
 import "./SiteStyles.css";
@@ -75,6 +76,7 @@ function AHFULApp() {
             <AuthRouteCheck>
               <ExploreTasks/>
             </AuthRouteCheck>}/>
+          <Route path="/Test" element={<Test/>}/>
         </Route>
         <Route path="Settings" element={<Settings/>} />
       </Routes>

@@ -5,6 +5,7 @@ import { handle_google_login } from "../../QueryFunctions.js";
 import { authLogin } from "../../Pages/Login/AuthSlice.jsx";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { onLoginCache } from "../../components/Cache/OnLoginCache/OnLoginCache.jsx";
 
 export function Login() {
   // ----- LOGIN STATE MANAGEMENT ---------------------------------------------------------------------------
@@ -27,6 +28,7 @@ export function Login() {
       setStatusText(`Loggging in with Google...`);
       let fetchResponse = await handle_google_login(response);
       dispatch(authLogin(fetchResponse));
+      onLoginCache();
     }catch(error){
       console.error("Google login error:", error);
       setStatusText(error.message || "Login failed. Please try again.");

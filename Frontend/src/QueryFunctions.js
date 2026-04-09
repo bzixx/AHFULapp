@@ -449,7 +449,12 @@ export async function createExercise(exerciseData) {
 }
 
 export async function fetchExercisesFromBackend() {
-  const res = await fetch("http://localhost:5000/AHFULexercises");
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+  const res = await fetch("http://localhost:5000/AHFULexercises", {
+    signal: controller.signal,
+  });
+  clearTimeout(timeoutId);
   if (!res.ok) {
     let bodyText = "";
     try {
