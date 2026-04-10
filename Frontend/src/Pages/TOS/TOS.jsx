@@ -57,7 +57,15 @@ export function TOS() {
                     If you have questions about these Terms, please contact the app owners or maintainers as described on the project repository.
                 </p>
 
-                <p className="tos-last-updated">Last updated: March 25, 2026</p>
+                <h2>10. Contact</h2>
+                <p>
+                The Gemini API Additional Terms of Service and the Google Privacy Policy apply. Prompts and responses may be reviewed and used to train Google AI, so don’t submit sensitive or personal information. Learn more about data use. Google AI models can make mistakes, so double-check responses before relying on, publishing, or otherwise using generated content.
+                </p>
+
+
+
+
+                <p className="tos-last-updated">Last updated: April 9, 2026</p>
             </div>
         </div>
     );
