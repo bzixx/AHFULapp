@@ -66,7 +66,7 @@ export function Profile() {
       );
 
       //const data = await res.json();
-      const data = await res.json(); // ✅ parse JSON
+      const data = await res.json(); // parse JSON
       console.log("Response JSON:", data);
 
       if (!res.ok) {
