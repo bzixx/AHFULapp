@@ -78,6 +78,7 @@ def create_app():
     AHFULAPI.register_blueprint(userSettingsBlueprint)
     AHFULAPI.register_blueprint(tokenBlueprint)
     AHFULAPI.register_blueprint(taskBlueprint)
+    AHFULAPI.register_blueprint(chatRouteBlueprint)
 
     app.register_blueprint(AHFULAPI)
     app.register_blueprint(swaggerUIBlueprint)

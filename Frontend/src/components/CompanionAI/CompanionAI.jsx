@@ -42,7 +42,7 @@ export function CompanionAI(){
                 <h1>AI Companion</h1>
             </header>
             <div className="ai-character-viewer">
-                <img ref={imgRef} id="ai-character-image" src="../../../images/char-mouth-closed.png" alt="WakuWaku" />
+                <img ref={imgRef} id="ai-character-image" src="https://www.ahful.app/images/char-mouth-closed.png" alt="WakuWaku" />
             </div>
             <p ref={statusRef} id="ai-status">Ask me something!</p>
             <footer className="ai-chat-input-area">
