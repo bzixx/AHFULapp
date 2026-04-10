@@ -3,27 +3,21 @@ from Services.UserDriver import UserDriver
 
 userRouteBlueprint = Blueprint("users", __name__, url_prefix="/AHFULusers")
 
-# ── GET all users ─────────────────────────────────────────────────────────────
-@userRouteBlueprint.route("/", methods=["GET"])
-def get_all_users():
-    users, error = UserDriver.get_all_users()
-    if error:
-        if "not found" in error.lower():
-            return jsonify({"error": error}), 404
-        elif error:
-            return jsonify({"error": error}), 400
-    return jsonify(users), 200
+# ── GET all users NOT ACTIVE IN PROD ──────────────────────────────────────────────────────────────
+# @userRouteBlueprint.route("/", methods=["GET"])
+# def get_all_users():
+#     users, error = UserDriver.get_all_users()
+#     if error:
+#         return jsonify({"error": error}), 500
+#     return jsonify(users), 200
 
-# ── GET single user by email ───────────────────────────────────────────────────────────
-@userRouteBlueprint.route("/<email>", methods=["GET"])
-def get_user(email):
-    user, error = UserDriver.get_user_by_email(email)
-    if error:
-        if "not found" in error.lower():
-            return jsonify({"error": error}), 404
-        elif error:
-            return jsonify({"error": error}), 400
-    return jsonify(user), 200
+# ── GET single user by email NOT ACTIVE IN PROD ───────────────────────────────────────────────────────────
+# @userRouteBlueprint.route("/<email>", methods=["GET"])
+# def get_user(email):
+#     user, error = UserDriver.get_user_by_email(email)
+#     if error:
+#         return jsonify({"error": error}), 404
+#     return jsonify(user), 200
 
 # ── GET single user by id ───────────────────────────────────────────────────────────
 @userRouteBlueprint.route("/id/<id>", methods=["GET"])

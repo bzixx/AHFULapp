@@ -29,9 +29,8 @@ export function ExploreTasks() {
     setLoading(true);
     setError(null);
     try {
-      let url = "http://localhost:5000/AHFULtasks";
-      if (!showAll && userId) {
-        url = `http://localhost:5000/AHFULtasks/user/${userId}`;
+      if (userId) {
+        url = `https://www.ahful.app/api/AHFULtasks/user/${userId}`;
       }
 
       const res = await fetch(url);
@@ -80,7 +79,7 @@ export function ExploreTasks() {
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/AHFULtasks/create/${userId}`, {
+      const res = await fetch(`https://www.ahful.app/api/AHFULtasks/create/${userId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

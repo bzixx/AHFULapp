@@ -1,13 +1,21 @@
 from flask import jsonify                             # Use Flask to import Python Code as JSON
 from flask_swagger_ui import get_swaggerui_blueprint  #Import swagger from Python Package.
 
-swaggerAHFULDocsURL = '/APIDocs'                              # URL for exposing Swagger UI
-configDocURL = '/APIDocs/swagger.json'   #URL for the Backend Configuration for the UI
-appNameconfig={'app_name': "AHFUL Users API",'tagsSorter': 'alpha','operationsSorter': 'method'}                 #Header App Name to display in UI
+swaggerAHFULDocsURL = '/api/APIDocs'                    # full path, leading slash     # URL for exposing Swagger UI
+configDocURL = '/api/APIDocs/swagger.json'               #URL for the Backend Configuration for the UI
+appNameconfig = {
+    'app_name': "AHFUL Project API",
+    'tagsSorter': 'alpha',
+    'operationsSorter': 'method'
+}                 #Header App Name to display in UI
 
-swaggerUIBlueprint = get_swaggerui_blueprint(swaggerAHFULDocsURL, configDocURL, appNameconfig)
+swaggerUIBlueprint = get_swaggerui_blueprint(
+    swaggerAHFULDocsURL,
+    configDocURL,
+    config=appNameconfig        # ← also needs to be a keyword arg: config=
+)
 
-# ── GET Rotue to Return the Local Swagger API Config ────────────────────────────────────────────────────────────
+# ── GET Route to Return the Local Swagger API Config ────────────────────────────────────────────────────────────
 @swaggerUIBlueprint.route('/swagger.json', methods=["GET"])
 def swagger_json():
     return jsonify(swaggerConfig)
@@ -20,7 +28,7 @@ swaggerConfig = {
     "version": "1.0.0"
   },
   "servers": [
-    { "url": "/" }
+    { "url": "www.ahful.app/api" }
   ],
   "paths": {
 
