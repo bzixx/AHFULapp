@@ -122,7 +122,7 @@ export function ExploreWorkouts() {
             continue;
           }
           try {
-            const response = await fetch(`http://localhost:5000/AHFULexercises/id/${id}`);
+            const response = await fetch(`http://www.ahful.app/AHFULexercises/id/${id}`);
 
             if (!response.ok) {
               results[id] = "Unknown Exercise";
