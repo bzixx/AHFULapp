@@ -22,7 +22,7 @@ Notes: I inferred the backend uses Python + a MongoDB driver from the repository
 We host Documentation for backend routes with Swagger!!  
 To access documentation you MUST be running BOTH the Frontend and Backend. 
 
-http://localhost:5000/APIDocs/ Self Hosted Link
+https://ahuful.app/api/APIDocs/ Self Hosted Link
 
 ## Testing
 

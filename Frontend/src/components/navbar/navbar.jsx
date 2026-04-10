@@ -92,11 +92,11 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
             className={({ isActive }) => (isActive ? "active" : "")}
             onClick={handleNavClick}
           >
-            Profile
+            Measurement Logger
           </NavLink> 
 
           <a
-            href="http://localhost:5000/APIDocs"
+            href="https://www.ahful.app/api/APIDocs"
             target="_blank"
             rel="noreferrer"
             onClick={handleNavClick}
