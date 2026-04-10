@@ -17,9 +17,16 @@ export function Settings() {
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  const update = (key, val) => {
-    dispatch(updateSetting({ key, value: val }));
-  };
+const update = (key, val) => {
+  dispatch(updateSetting({ key, value: val }));
+  
+  // Auto-save theme changes immediately to backend
+  if (key === "theme" && user && user._id) {
+    updateUserSettings(user._id, { 
+      displayMode: val === "Dark" ? "dark" : "light" 
+    }).catch(err => console.error("Failed to save theme:", err));
+  }
+};
 
   useEffect(() => {
     if (answers.theme === "Dark") {
