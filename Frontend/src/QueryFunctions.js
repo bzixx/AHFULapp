@@ -274,7 +274,7 @@ export async function fetchTemplate(userId) {
 export async function createTemplate(templateData) {
   try {
     const res = await fetch(
-      "http://localhost:5000/AHFULworkout/create/template",
+      "http://www.ahful.app/AHFULworkout/create/template",
       {
         method: "POST",
         headers: {
@@ -381,7 +381,7 @@ export async function forwardGeocode(address) {
 
 export async function fetchGym(gymId) {
   try {
-    const res = await fetch(`http://localhost:5000/AHFULgyms/${gymId}`);
+    const res = await fetch(`http://www.ahful.app/AHFULgyms/${gymId}`);
     if (!res.ok) {
       throw new Error(`Failed to fetch gym: ${res.status} ${res.statusText}`);
     }
@@ -537,7 +537,7 @@ export async function fetchWorkout(userId) {
 
 export async function fetchWorkoutById(workoutId) {
   try {
-    const res = await fetch(`http://localhost:5000/AHFULworkout/${workoutId}`);
+    const res = await fetch(`http://www.ahful.app/AHFULworkout/${workoutId}`);
 
     // Handle empty or not found responses for new users
     if (res.status === 404 || res.status === 204) {
