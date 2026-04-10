@@ -80,17 +80,11 @@ def create_app():
     AHFULAPI.register_blueprint(tokenBlueprint)
     AHFULAPI.register_blueprint(taskBlueprint)
     AHFULAPI.register_blueprint(chatRouteBlueprint)
+    AHFULAPI.register_blueprint(verificationRouteBlueprint)
 
     app.register_blueprint(AHFULAPI)
     app.register_blueprint(swaggerUIBlueprint)
-    app.register_blueprint(signInRouteBlueprint)
-    app.register_blueprint(exerciseRouteBlueprint)
-    app.register_blueprint(userSettingsBlueprint)
-    app.register_blueprint(tokenBlueprint)
-    app.register_blueprint(taskBlueprint)
-    app.register_blueprint(verificationRouteBlueprint)
-    app.register_blueprint(chatRouteBlueprint)
-
+    
     # Enable CORS - includes CloudFront production URL and custom domain
     allowed_origins = [
         'https://ahful.app',
