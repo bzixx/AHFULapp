@@ -699,3 +699,21 @@ export async function updatePersonalExercises(peId, peData) {
     return { error: err.message || "Failed to update personal exercise" };
   }
 }
+
+export async function updateTask(taskId, updates) {
+  try {
+    const res = await fetch(
+      `https://www.ahful.app/api/AHFULtasks/update/${taskId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      }
+    );
+    if (!res.ok) throw new Error("Failed to update task");
+    return { success: true, data: await res.json() };
+  } catch (err) {
+    console.error("updateTask error:", err);
+    return { error: err.message || "Failed to update task" };
+  }
+}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import "./ExploreTasks.css";
 import "../../SiteStyles.css";
+import { updateTask } from "../../QueryFunctions";
 
 export function ExploreTasks() {
   const [tasks, setTasks] = useState([]);
@@ -106,6 +107,18 @@ export function ExploreTasks() {
     }
   };
 
+  const toggleTaskCompletion = async (taskId, currentCompleted) => {
+    const newCompleted = !currentCompleted;
+    const result = await updateTask(taskId, { completed: newCompleted });
+    if (result.success) {
+      setTasks(tasks.map(t => 
+        t._id === taskId ? { ...t, completed: newCompleted } : t
+      ));
+    } else {
+      console.error("Failed to update task:", result.error);
+    }
+  };
+
   useEffect(() => {
     fetchTasks();
   }, [userId]);
@@ -189,8 +202,14 @@ export function ExploreTasks() {
                   return (
                     <div key={key} className="exercise-item">
                       <div className="exercise-main">
-                        <div className="exercise-name">
-                          {task.completed && <span style={{marginRight: '8px'}}>✓</span>}
+                        <button
+                          className="task-complete-btn"
+                          onClick={() => toggleTaskCompletion(task._id, task.completed)}
+                          title={task.completed ? "Mark as incomplete" : "Mark as complete"}
+                        >
+                          {task.completed ? "✅" : "❌"}
+                        </button>
+                        <div className="exercise-name" style={{ textDecoration: task.completed ? 'line-through' : 'none', opacity: task.completed ? 0.6 : 1 }}>
                           {task.name || "Untitled Task"}
                         </div>
                         <div className="exercise-meta">

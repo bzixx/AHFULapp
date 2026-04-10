@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import "./DashboardTodo.css";
 import { DashboardTaskTodoItem } from "./DashboardTaskTodoItem";
+import { updateTask } from "../../QueryFunctions";
 
 export function DashboardTaskTodoList() {
   const [tasks, setTasks] = useState([]);
@@ -44,6 +45,16 @@ export function DashboardTaskTodoList() {
     fetchTasks();
   }, [userId]);
 
+  const handleToggleComplete = async (taskId, currentCompleted) => {
+    const newCompleted = !currentCompleted;
+    const result = await updateTask(taskId, { completed: newCompleted });
+    if (result.success) {
+      setTasks(tasks.map(t => 
+        t._id === taskId ? { ...t, completed: newCompleted } : t
+      ));
+    }
+  };
+
   if (loading) {
     return (
       <div className="dashboard-todo-list">
@@ -61,7 +72,11 @@ export function DashboardTaskTodoList() {
       ) : (
         <div className="dashboard-todo-items">
           {tasks.map((task) => (
-            <DashboardTaskTodoItem key={task._id} task={task} />
+            <DashboardTaskTodoItem 
+              key={task._id} 
+              task={task}
+              onToggleComplete={handleToggleComplete}
+            />
           ))}
         </div>
       )}
