@@ -6,6 +6,7 @@ import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
 import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
 import { Dashboard } from "./Pages/Dashboard/Dashboard.jsx";
 import { Login } from "./Pages/Login/Login.jsx";
+import { VerifyEmail } from "./Pages/Verification/VerifyEmail.jsx";
 import { Map } from "./Pages/Map/Map.jsx";
 import { AIChat } from "./Pages/AIChat/AIChat.jsx";
 import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
@@ -20,7 +21,6 @@ import { TutorialOverlay } from "./components/Tutorial/TutorialOverlay.jsx";
 import "./SiteStyles.css";
 import "./Stylesheets/Themes/Lightmode.css";
 import "./Stylesheets/Themes/Darkmode.css";
-
 
 function AHFULApp() {
     // Example: detect page changes and refresh a value when the route changes.
@@ -72,6 +72,10 @@ function AHFULApp() {
           <Route path="/FoodLog" element={
             <AuthRouteCheck>
               <FoodLog/>
+            </AuthRouteCheck>}/>
+          <Route path="/EmailVerification" element={
+            <AuthRouteCheck>
+              <VerifyEmail/>
             </AuthRouteCheck>}/>
           <Route path="/AIChat" element={
             <AuthRouteCheck>
