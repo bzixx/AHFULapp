@@ -59,8 +59,8 @@ class VerificationDriver:
                     # If verification is stale (10 min)
                     if (datetime.now().timestamp() - verifies[0]["created_at"]) > 600:
                         # Delete stale verification
-                        response, err = VerificationObject.delete(verifies[0]["_id"])
-                        if err is None: 
+                        deleted = VerificationObject.delete(verifies[0]["_id"])
+                        if deleted is not None: 
                             # Send new verification email
                             response, err = VerificationDriver.send_not_verified_email(user_id, user.get("email"), VerificationDriver.generate_code())
                             if err is None:
@@ -68,12 +68,12 @@ class VerificationDriver:
                                 response, err = VerificationDriver.verify_user_email(user_id)
                                 # Returns stale email text with recursive response
                                 if err is None:
-                                    return "current email stale, retrying: " + response, None
+                                    return "current email stale, retrying", None
                                 return None, err
                             # if err when sending new email
                             return None, err
                         # if err on deleting state email
-                        return  "error deleting stale email, " + response, None
+                        return  "error deleting stale email, ", None
                     # fresh verification exists
                     return "email already sent", None
                 # Should not get here, big error
@@ -147,14 +147,45 @@ class VerificationDriver:
 
         return "Verification email sent", None
     
+    @staticmethod
     def confirm_email_token(token_id, token):
         verify = VerificationObject.find_by_id(token_id)
         if verify:
             if verify["token"] == token:
                 res = UserObject.enable_verification(verify["user_id"], "email")
-                return "Email sucessfully verified," + str(res), None
+                deleted = VerificationObject.delete(token_id)
+                if deleted:
+                    response = "Email sucessfully verified, verification token deleted, " + str(res)
+                    return response, None
+                else:
+                    response = "Email sucessfully verified, verification token failed to deleted, " + str(res)
+                    return response, None
             else:
                 return None, "Token not found or incorrect token text"
         else:
             return None, "Token not found or incorrect token text"
+        
+    @staticmethod
+    def deverify_user(user_id, type):
+        # Validate inputs
+        if not user_id:
+            return None, "user_id is required"
 
+        # Validate ObjectIds
+        oid, err = VerificationDriver._validate_obj_id(user_id, "user_id")
+        if err:
+            return None, err
+
+        user = UserObject.find_by_id(user_id)
+        if not user:
+            return None, "User not found"
+
+        try:
+            updated_user = UserObject.disable_verification(user["_id"], type)
+            if not updated_user:
+                return None, "Error disabling verification"
+            return updated_user, None
+        except ValueError as ve:
+            return None, str(ve)
+        except Exception as e:
+            return None, f"Failed to disable verification: {e}"

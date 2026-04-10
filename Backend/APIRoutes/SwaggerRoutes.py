@@ -578,6 +578,104 @@ swaggerConfig = {
   }
 },
 
+"/AHFULverify/deverify/user_id/": {
+  "post": {
+    "summary": "Disable user verification by user id",
+    "description": "Disables a user's email or phone verification status.",
+    "tags": ["Verify"],
+    "requestBody": {
+      "required": True,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "user_id": {
+                "type": "string",
+                "example": "69af32adf43f4d34477c849d"
+              },
+              "type": {
+                "type": "string",
+                "enum": ["email", "phone"],
+                "example": "email"
+              }
+            },
+            "required": ["user_id", "type"]
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Verification disabled; updated user returned",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "email verification disabled"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "_id": { "type": "string" },
+                    "email_verified": {
+                      "type": "boolean",
+                      "example": False
+                    },
+                    "phone_verified": {
+                      "type": "boolean",
+                      "example": True
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Invalid request or verification type",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "type must be 'email' or 'phone'"
+                }
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "User not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "User not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+},
+
 "/AHFULpersonalEx/": {
   "get": {
     "summary": "Get all personal exercises",

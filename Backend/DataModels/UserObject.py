@@ -134,6 +134,8 @@ class UserObject:
     @staticmethod
     def create(user_data):
         user_data["roles"] = ["User"]
+        user_data["email_verified"] = False
+        user_data["phone_verified"] = False
         result = userCollection.insert_one(user_data)
         return str(result.inserted_id)
     

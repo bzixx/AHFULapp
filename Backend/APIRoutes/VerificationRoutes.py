@@ -44,3 +44,31 @@ def verify_email_token(token_id, token):
     if err:
         return jsonify({"error": err}), 400
     return jsonify({"message": res}), 200
+
+
+# ── DEVERIFY email or phone by user_id ─────────────────────────────────────
+@verificationRouteBlueprint.route("/deverify/user_id/", methods=["POST"])
+def deverify_user():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+
+    user_id = data.get("user_id")
+    v_type = data.get("type")  # expected: "email" or "phone"
+
+    # Validate verification type
+    if not v_type or v_type not in ("email", "phone"):
+        return jsonify({"error": "type must be 'email' or 'phone'"}), 400
+
+    res, err = VerificationDriver.deverify_user(user_id, v_type)
+
+    if err:
+        if "not found" in err.lower():
+            return jsonify({"error": err}), 404
+        return jsonify({"error": err}), 400
+
+    return jsonify({
+        "message": f"{v_type} verification disabled",
+        "user": res
+    }), 200
+

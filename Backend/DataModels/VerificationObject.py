@@ -55,4 +55,4 @@ class VerificationObject:
     @staticmethod
     def delete(verify_id):
         result = verificationCollection.delete_one({"_id": ObjectId(verify_id)})
-        return result.deleted_count > 0
+        return id if result.deleted_count == 1 else None
