@@ -42,7 +42,7 @@ class TaskObject:
     @staticmethod
     def create(user_id, task_data):
         task_data["user_id"] = ObjectId(user_id)
-        task_data["created_at"] = datetime.now()
+        task_data["created_at"] = int(datetime.now().timestamp())
         
         if "note" not in task_data:
             task_data["note"] = ""
@@ -56,7 +56,7 @@ class TaskObject:
 
     @staticmethod
     def update(task_id, updates):
-        updates["updated_at"] = datetime.now()
+        updates["updated_at"] = int(datetime.now().timestamp())
         result = taskCollection.update_one(
             {"_id": ObjectId(task_id)},
             {"$set": updates}

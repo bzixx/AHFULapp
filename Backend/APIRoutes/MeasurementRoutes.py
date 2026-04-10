@@ -36,7 +36,7 @@ def create_measurement():
         return jsonify({"error": "No data provided"}), 400
 
     measurement_id, error = MeasurementDriver.create_measurement(
-        userId=data.get("userId"),
+        user_id=data.get("user_id"),
         data=data,
     )
 

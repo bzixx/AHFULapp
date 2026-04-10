@@ -17,21 +17,24 @@ class UserObject:
         return user
 
     # ── Read ──────────────────────────────────────────────────────────────────
+    @staticmethod
     def find_all():
         users = userCollection.find()
         return [UserObject._serialize(u) for u in users]
     
+    @staticmethod
     def find_by_id(id):
         user = userCollection.find_one({"_id": ObjectId(id)})
         return UserObject._serialize(user)
 
+    @staticmethod
     def find_by_email(email):
         user = userCollection.find_one({"email": email})
         return UserObject._serialize(user)
     
-    def find_email_by_id(id):
-        user = userCollection.find_one({"_id": ObjectId(id)})
-        return UserObject._serialize(user["email"])
+    # def find_email_by_id(id):
+    #     user = userCollection.find_one({"_id": ObjectId(id)})
+    #     return UserObject._serialize(user["email"])
 
     # ── Update ─────────────────────────────────────────────────────────────────
     @staticmethod
@@ -41,7 +44,7 @@ class UserObject:
             {
                 # add only if not present; if roles is missing, it becomes [role]
                 "$addToSet": {"roles": role},
-                "$set": {"updated_at": datetime.now()}
+                "$set": {"updated_at": int(datetime.now().timestamp())}
             }
         )
         if result.matched_count == 0:
@@ -56,7 +59,7 @@ class UserObject:
             {"_id": ObjectId(user_id)},
             {
                 "$pull": {"roles": role},
-                "$set": {"updated_at": datetime.now()}
+                "$set": {"updated_at": int(datetime.now().timestamp())}
             }
         )
         if result.matched_count == 0:
@@ -71,7 +74,7 @@ class UserObject:
             {
                 "$set": {
                     "deactivated": True,
-                    "updated_at": datetime.now()
+                    "updated_at": int(datetime.now().timestamp())
                 }
             }
         )
@@ -101,4 +104,5 @@ class UserObject:
     # Not tested    
     @staticmethod
     def delete(user_id):
-        userCollection.delete_one({"_id": ObjectId(user_id)})
+        result = userCollection.delete_one({"_id": ObjectId(user_id)})
+        return id if result.deleted_count == 1 else None

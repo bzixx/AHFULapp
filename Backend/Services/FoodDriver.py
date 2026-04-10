@@ -22,23 +22,23 @@ class FoodDriver:
 
     # ── Create ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def create_food(userId, name, calsPerServing, servings, type, time):
+    def create_food(user_id, name, calsPerServing, servings, type, time):
         # Validate required fields
-        if (not userId) or (not name) or (calsPerServing is None) or (not servings) or (not type) or (time is None):
+        if (not user_id) or (not name) or (calsPerServing is None) or (not servings) or (not type) or (time is None):
             return None, "You are missing a value. Please fix, then attempt to create food again"
 
         # Convert IDs safely
-        userId, err = FoodDriver._validate_obj_id(userId, "userid")
+        user_id, err = FoodDriver._validate_obj_id(user_id, "userid")
         if err:
             return None, err
 
         # Ensure the user exists
-        user = UserObject.find_by_id(userId)
+        user = UserObject.find_by_id(user_id)
         if not user:
             return None, "User not found"
 
         food_data = {
-            "userId": userId,
+            "user_id": user_id,
             "name": name,
             "calsPerServing": calsPerServing,
             "servings": servings,
@@ -147,18 +147,18 @@ class FoodDriver:
 
     # ── Streak Calculation ─────────────────────────────────────────────────────
     @staticmethod
-    def get_streak(userId):
+    def get_streak(user_id):
         try:
-            # Validate userId
-            if not userId:
+            # Validate user_id
+            if not user_id:
                 return None, "User ID is required"
 
-            oid, err = FoodDriver._validate_obj_id(userId, "userId")
+            oid, err = FoodDriver._validate_obj_id(user_id, "user_id")
             if err:
                 return None, err
 
             # Get all food logs for user
-            foods = FoodObject.find_by_user(userId)
+            foods = FoodObject.find_by_user(user_id)
             if not foods:
                 return {"streak": 0, "lastFoodDate": None}, None
 

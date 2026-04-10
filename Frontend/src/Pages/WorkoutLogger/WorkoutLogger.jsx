@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import "./WorkoutLogger.css";
 import "../../SiteStyles.css";
+import { CalendarButton } from "../../components/CalendarButton/CalendarButton.jsx";
 import {
   getDefaultNewExercise,
   formatTime as formatTimeFn,
@@ -10,6 +11,7 @@ import {
   fetchExercisesFromBackend,
   searchExercises,
   fetchWorkout,
+  fetchWorkoutById,
   fetchPersonalExercises,
   fetchExerciseById,
   createWorkout,
@@ -18,6 +20,7 @@ import {
   updatePersonalExercise,
   deletePersonalExercise,
   fetchTemplate,
+  createTemplate,
   loadBodyParts,
   createExercise,
 } from "../../QueryFunctions";
@@ -41,6 +44,7 @@ export function WorkoutLogger() {
   // ─── Redux Auth State ─────────────────────────────────────────────────────────
   const user = useSelector((state) => state.auth.user);
   const userAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const selectedDate = useSelector((state) => state.calendar.selectedDate);
 
   // ─── Personal Exercise State ──────────────────────────────────────────────────
   // Tracks exercises to be deleted when workout is submitted (removed from UI but need DB deletion)
@@ -253,11 +257,14 @@ export function WorkoutLogger() {
   // we need to fetch their display names
   useEffect(() => {
     // Collect IDs from workout table
-    const workoutIds = exercisesInProgressTable.map((ex) => ex.exerciseId);
+    //const workoutIds = exercisesInProgressTable.map((ex) => ex.exerciseId);
+    const workoutIds = exercisesInProgressTable.map((ex) => {
+      return ex.exercise_id;
+    });
 
     // Collect IDs from template preview
     const templateIds =
-      templatePreview?.exercises?.map((ex) => ex.exerciseId) || [];
+      templatePreview?.exercises?.map((ex) => ex.exercise_id) || [];
 
     // Combine and dedupe
     const allIds = [...new Set([...workoutIds, ...templateIds])];
@@ -308,39 +315,29 @@ export function WorkoutLogger() {
       // 1. Create the template
       const templatePayload = {
         title: workoutTitle,
-        userId: user._id,
+        user_id: user._id,
       };
 
-      const templateRes = await fetch(
-        "https://www.ahful.app/api/AHFULworkout/create/template",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(templatePayload),
-        },
-      );
+      const template = await createTemplate(templatePayload);
 
-      if (!templateRes.ok) {
+      if (!template.success) {
         throw new Error("Failed to create template");
       }
-
-      const template = await templateRes.json();
 
       // 2. Create personalExercises using template._id as workoutId
       for (const ex of exercisesInProgressTable) {
         const personalExPayload = {
-          exerciseId: ex.exerciseId,
+          exercise_id: ex.exercise_id,
           reps: ex.reps,
           sets: ex.sets,
           weight: ex.weight,
           duration: ex.duration,
           distance: ex.distance,
           complete: false,
-          userId: user._id,
-          workoutId: template.workout_id,
+          user_id: user._id,
+          workout_id: template.data.workout_id,
           template: true,
         };
-
         createPersonalExercise(personalExPayload);
       }
 
@@ -372,7 +369,7 @@ export function WorkoutLogger() {
       const removed = { ...prev };
 
       exercisesInProgressTable.forEach((ex) => {
-        const key = ex._id || ex.exerciseId;
+        const key = ex._id || ex.exercise_id;
         removed[key] = ex;
       });
 
@@ -384,7 +381,8 @@ export function WorkoutLogger() {
       templatePreview.exercises.map((ex) => ({
         ...ex,
         _id: null, // mark as new
-        workoutId: null, // ensure backend treats them as new
+        workout_id: workoutId,
+        user_id: user._id, // ensure backend treats them as new
       })),
     );
 
@@ -408,12 +406,12 @@ export function WorkoutLogger() {
               complete: ex.complete,
               distance: ex.distance,
               duration: ex.duration,
-              exerciseId: ex.exerciseId,
+              exercise_id: ex.exercise_id,
               reps: ex.reps,
               sets: ex.sets,
-              userId: ex.userId,
+              user_id: ex.user_id,
               weight: ex.weight,
-              workoutId: ex.workoutId,
+              workout_id: ex.workout_id,
             }
           : {
               complete: ex.complete,
@@ -432,16 +430,12 @@ export function WorkoutLogger() {
       // --- DELETE REQUESTS ---
       const deleteRequests = Object.values(personalExToRemove)
         .filter((ex) => ex._id) // only delete DB-backed exercises
-        .map((ex) =>
-          fetch(`https://www.ahful.app/api/AHFULpersonalEx/delete/${ex._id}`, {
-            method: "DELETE",
-          }),
-        );
+        .map((ex) => deletePersonalExercise(ex._id));
 
       // --- RUN EVERYTHING IN PARALLEL ---
       const responses = await Promise.all([...saveRequests, ...deleteRequests]);
 
-      const failed = responses.filter((r) => !r.ok);
+      const failed = responses.filter((r) => r == null || r.error);
 
       if (failed.length > 0) {
         console.error("Some operations failed:", failed);
@@ -500,9 +494,9 @@ export function WorkoutLogger() {
     // Create exercise objects with workout context
     const newExercises = pendingExercises.map((rawName) => ({
       _id: null, // null = new exercise, will be assigned ID after DB save
-      exerciseId: rawName,
-      workoutId: workoutId,
-      userId: user._id,
+      exercise_id: rawName,
+      workout_id: workoutId,
+      user_id: user._id,
       complete: false,
       reps: 0,
       sets: 0,
@@ -571,7 +565,7 @@ export function WorkoutLogger() {
         setWorkoutError(null);
 
         // Calculate today's date range (midnight to midnight)
-        const today = new Date();
+        const today = selectedDate ? new Date(selectedDate) : new Date();
         today.setHours(0, 0, 0, 0);
         const currentDateUnix = Math.floor(today.getTime() / 1000);
         const tomorrow = new Date(today);
@@ -595,18 +589,21 @@ export function WorkoutLogger() {
 
           const newWorkoutPayload = {
             endTime: currentDateUnix,
-            gymId: gymId,
+            gym_id: gymId,
             startTime: currentDateUnix,
             title: "Workout (" + today.toDateString() + ")",
-            userId: user._id,
+            user_id: user._id,
           };
 
           const newWorkout = await createWorkout(newWorkoutPayload);
 
-          setWorkout(newWorkout);
-          setWorkoutId(newWorkout._id);
-          setWorkoutTitle(newWorkout.title);
-          setTime(0); // Reset timer for new workout
+          // Immediately fetch the persisted version
+          const persisted = await fetchWorkoutById(newWorkout._id);
+
+          setWorkout(persisted);
+          setWorkoutId(persisted._id);
+          setWorkoutTitle(persisted.title);
+          setTime(0);
           return;
         }
 
@@ -695,6 +692,7 @@ export function WorkoutLogger() {
   // ─── Main Render ─────────────────────────────────────────────────────────────
   return (
     <div className="page-layout">
+      <CalendarButton />
       {/* Left Column: Template/History */}
       <div className="left-column">
         <div className="template-container">
@@ -780,7 +778,7 @@ export function WorkoutLogger() {
               value={workoutTitle}
               onChange={(e) => setWorkoutTitle(e.target.value)}
             />
-            {workout && <h3>{unixToDate(workout.startTime)}</h3>}
+            <h3>{workout?.startTime ? unixToDate(workout.startTime) : ""}</h3>
           </div>
 
           {/* Exercise Table */}
@@ -795,7 +793,7 @@ export function WorkoutLogger() {
             {exercisesInProgressTable.map((ex, i) => (
               <React.Fragment key={i}>
                 <div className="cell">
-                  {personalExNames[ex.exerciseId] || "Loading..."}
+                  {personalExNames[ex.exercise_id] || "Loading..."}
                 </div>
                 <div className="cell">
                   {ex.complete ? (
@@ -915,7 +913,7 @@ export function WorkoutLogger() {
                 )}
                 {!exerciseLoading &&
                   exercises
-                    .filter((ex) => ex && (ex.name || ex._id || ex.exerciseId)) // remove empty objects
+                    .filter((ex) => ex && (ex.name || ex._id || ex.exercise_id)) // remove empty objects
                     .map((item, i) => {
                       const name = item.name ?? "";
                       const id = item._id ?? item.exerciseId;
@@ -1187,25 +1185,17 @@ export function WorkoutLogger() {
               <div className="cell template-grid-header">Sets</div>
               <div className="cell template-grid-header">Weight</div>
 
-              {templatePreview.exercises.map(
-                (ex, i) => (
-                  console.log(personalExNames[ex.exerciseId]),
-                  (
-                    <React.Fragment key={ex._id || i}>
-                      <div
-                        className="cell"
-                        title={personalExNames[ex.exerciseId]}
-                      >
-                        {personalExNames[ex.exerciseId]}
-                      </div>
+              {templatePreview.exercises.map((ex, i) => (
+                <React.Fragment key={ex._id || i}>
+                  <div className="cell" title={personalExNames[ex.exercise_id]}>
+                    {personalExNames[ex.exercise_id]}
+                  </div>
 
-                      <div className="cell">{ex.reps}</div>
-                      <div className="cell">{ex.sets}</div>
-                      <div className="cell">{ex.weight}</div>
-                    </React.Fragment>
-                  )
-                ),
-              )}
+                  <div className="cell">{ex.reps}</div>
+                  <div className="cell">{ex.sets}</div>
+                  <div className="cell">{ex.weight}</div>
+                </React.Fragment>
+              ))}
             </div>
 
             <button

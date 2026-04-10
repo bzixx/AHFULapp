@@ -1,12 +1,71 @@
 .dark {
-  --color-bg: #505256;
-  --color-surface: #1e293b;
+  /* COLORS */
+  --color-bg: #1a1a1a;
+  --color-surface: #2d2d2d;
   --color-primary: #0f172a;
-  --color-border: #475569;
+  --color-border: #404040;
 
-  --text-primary: white;
-  --text-secondary: white;
-  --text-muted: white;
+  /* GRADIENTS */
+  --gradient-card: linear-gradient(90deg, #2d2d2d, #3a3a3a);
+  --gradient-button: linear-gradient(90deg, #3a3a3a, #4a4a4a);
 
-  --gradient-card: linear-gradient(90deg, #1e293b, #334155);
+  /* TEXT */
+  --text-primary: #e8e8e8;
+  --text-secondary: #b8b8b8;
+  --text-muted: #888;
+
+  /* TEXT SIZES */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+
+  /* BORDERS */
+  --border-thin: 1px solid var(--color-border);
+  --border-medium: 2px solid var(--color-border);
+  --border-thick: 3px solid #666;
+
+  /* RADIUS */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* SHADOWS */
+  --shadow-sm: 0 3px 6px rgba(0,0,0,0.5);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.6);
+
+  /* COMPONENT SPECIFIC */
+  --accent-blue: #3b82f6;
+  --accent-blue-dark: #1e88e5;
+  --accent-green: #10b981;
+  --accent-green-dark: #059669;
+  --accent-red: #ef4444;
+  --accent-red-dark: #dc2626;
+  --accent-red-bg: #7f1d1d;
+  --accent-yellow: #f59e0b;
+
+  /* CALENDAR SPECIFIC */
+  --calendar-bg: #2d2d2d;
+  --calendar-selected: #3b82f6;
+  --calendar-hover: #3a3a3a;
+
+  /* INPUT SPECIFIC */
+  --input-bg: #2d2d2d;
+  --input-border: #404040;
+  --input-text: #e8e8e8;
+  --input-placeholder: #888;
+
+  /* BUTTON SPECIFIC */
+  --button-bg: #2d2d2d;
+  --button-hover: #3a3a3a;
+  --button-active: #1e88e5;
+  --button-secondary-hover: #4a5461;
+
+  /* ACCENT BACKGROUNDS */
+  --error-bg: #7f1d1d;
+  --warning-bg: #5d4a2c;
+  --success-bg: #1f4d3c;
+  --highlight-bg: #1e3a8a;
+  --highlight-secondary-bg: #1e40af;
 }

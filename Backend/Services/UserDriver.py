@@ -2,6 +2,7 @@
 #   Intermediate between Routes and Objects.  Ensures validations and rules are applied before
 #   Calling Objects to interact with DB
 from DataModels.UserObject import UserObject
+from Services.EmailDriver import EmailDriver
 from datetime import datetime
 from bson import ObjectId, errors as bson_errors
 
@@ -43,7 +44,7 @@ class UserDriver:
     def get_user_by_id(id):
         if not id:
             return None, "You must provide a user id to grab"
-        oid, err = UserDriver._validate_obj_id(id, "userId")
+        oid, err = UserDriver._validate_obj_id(id, "user_id")
         if err:
             return None, err
         try:
@@ -258,18 +259,67 @@ class UserDriver:
 
     # ── Untested ─────────────────────────────────────────────────────────────────
     @staticmethod
+    def verify_email(user_id):
+        # Validate inputs
+        if not user_id:
+            return None, "user_id is required"
+
+        # Validate ObjectIds
+        oid, err = UserDriver._validate_obj_id(user_id, "user_id")
+        if err:
+            return None, err
+        
+        try:
+            user = UserObject.find_by_id(user_id)
+            if not user:
+                return None, "User not found"
+            else:
+                if user.get("email_verified"):
+                    return "User already verified", None
+                if not user.get("email"):
+                    return None, "User lacks email"
+                
+                response = EmailDriver.verify_email(user_id, user.get("email"))
+                return response, None
+        except Exception as e:
+            return None, str(e)
+        
+    @staticmethod
+    def verify_phone_number(user_id):
+        # Validate inputs
+        if not user_id:
+            return None, "user_id is required"
+
+        # Validate ObjectIds
+        oid, err = UserDriver._validate_obj_id(user_id, "user_id")
+        if err:
+            return None, err
+        
+        try:
+            user = UserObject.find_by_id(user_id)
+            if not user:
+                return None, "User not found"
+            else:
+                if user.get("phone_verified"):
+                    return "User already verified", None
+                
+                if not user.get("phone"):
+                    return None, "User lacks phone number"
+
+        except Exception as e:
+            return None, str(e)
+
+    @staticmethod
     def create_user(userJSONObject):
         UserObject.create(userJSONObject)
 
+    @staticmethod
     def update_user_info(dataToBeUpdated: dict):
 
         user_id = dataToBeUpdated.get("_id")
         try:
             # Work on a copy so the original dict keeps its _id
             update_copy = {k: v for k, v in dataToBeUpdated.items() if k != "_id"}
-
-            # Add updated timestamp
-            update_copy['updated_at'] = datetime.now()
 
             #Passing in user_id here tracks who is being updated
             UserObject.update(user_id, update_copy)
@@ -286,7 +336,7 @@ class UserDriver:
 
         if not updates:
             return None, "No valid fields to update"
-
+        
         try:
             UserObject.update(email, updates)
             return True, None

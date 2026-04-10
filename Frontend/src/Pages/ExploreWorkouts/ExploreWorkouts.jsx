@@ -2,19 +2,20 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import "./ExploreWorkouts.css";
 import "../../SiteStyles.css";
-import { Calendar } from "../../components/Calendar/Calendar";
+import { CalendarButton } from "../../components/CalendarButton/CalendarButton.jsx";
 import { HeatMap } from "../../components/HeatMap/HeatMap";
 import { WorkoutChart } from "../../components/WorkoutChart/WorkoutChart";
+import { fetchPersonalExercises, fetchGym, fetchExerciseById } from "../../QueryFunctions";
 
 /**
  * ExploreWorkouts - Workout exploration and history page
- * 
+ *
  * Features:
  * - View all workouts or just my workouts (toggle)
  * - Interactive workout history chart with week selection
  * - Heat map showing workout frequency
  * - Calendar integration
- * 
+ *
  * Layout:
  * - Left column: List of workouts/exercises
  * - Right column: WorkoutChart and HeatMap widgets
@@ -27,6 +28,12 @@ export function ExploreWorkouts() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showAll, setShowAll] = useState(true);
+  const [selectedWorkout, setSelectedWorkout] = useState(null);
+  const [personalExercises, setPersonalExercises] = useState([]);
+  const [personalExercisesLoading, setPersonalExercisesLoading] = useState(false);
+  const [exerciseNames, setExerciseNames] = useState({});
+  const [gymInfo, setGymInfo] = useState(null);
+  const [gymLoading, setGymLoading] = useState(false);
 
   const getUserId = () => {
     if (user?._id) return user._id;
@@ -75,6 +82,114 @@ export function ExploreWorkouts() {
     fetchExercises();
   }, [showAll, userId]);
 
+  // ─── Fetch Personal Exercises when Workout is Selected ────────────────────────
+  useEffect(() => {
+    if (selectedWorkout?._id) {
+      const loadPersonalExercises = async () => {
+        setPersonalExercisesLoading(true);
+        try {
+          const exercises = await fetchPersonalExercises(selectedWorkout._id);
+          setPersonalExercises(Array.isArray(exercises) ? exercises : []);
+        } catch (err) {
+          console.error("Failed to fetch personal exercises:", err);
+          setPersonalExercises([]);
+        } finally {
+          setPersonalExercisesLoading(false);
+        }
+      };
+      loadPersonalExercises();
+    }
+  }, [selectedWorkout]);
+
+  // ─── Fetch Exercise Names for Personal Exercises ───────────────────────────────
+  useEffect(() => {
+    const exerciseIds = personalExercises.map((ex) => ex.exerciseId);
+
+    if (exerciseIds.length === 0) return;
+
+    // Filter missing names
+    const missing = exerciseIds.filter((id) => !exerciseNames[id]);
+
+    if (missing.length === 0) return;
+
+    const loadNames = async () => {
+      try {
+        const results = {};
+
+        for (const id of missing) {
+          if (!id) {
+            results[id] = "Unknown Exercise";
+            continue;
+          }
+          try {
+            const response = await fetch(`http://www.ahful.app/AHFULexercises/id/${id}`);
+
+            if (!response.ok) {
+              results[id] = "Unknown Exercise";
+              continue;
+            }
+
+            const data = await response.json();
+            results[id] = data?.name || "Unknown Exercise";
+          } catch (err) {
+            console.error("Error fetching exercise name for", id, err);
+            results[id] = "Unknown Exercise";
+          }
+        }
+
+        setExerciseNames((prev) => ({ ...prev, ...results }));
+      } catch (err) {
+        console.error("Error fetching exercise names:", err);
+      }
+    };
+
+    loadNames();
+  }, [personalExercises]);
+
+  // ─── Fetch Gym Info when Workout is Selected ───────────────────────────────────
+  useEffect(() => {
+    if (selectedWorkout?.gymId) {
+      const loadGymInfo = async () => {
+        setGymLoading(true);
+        try {
+          const gym = await fetchGym(selectedWorkout.gymId);
+          setGymInfo(gym);
+        } catch (err) {
+          console.error("Failed to fetch gym info:", err);
+          setGymInfo(null);
+        } finally {
+          setGymLoading(false);
+        }
+      };
+      loadGymInfo();
+    } else {
+      setGymInfo(null);
+    }
+  }, [selectedWorkout]);
+
+  // ─── Helper Functions ─────────────────────────────────────────────────────────
+  const formatDate = (timestamp) => {
+    if (!timestamp) return "N/A";
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleDateString(undefined, {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const calculateDuration = (startTime, endTime) => {
+    if (!startTime || !endTime) return "N/A";
+    const duration = endTime - startTime;
+    const minutes = Math.floor(duration / 60);
+    const seconds = duration % 60;
+    if (minutes === 0) return `${seconds}s`;
+    return `${minutes}m ${seconds}s`;
+  };
+
   // ─── Render ──────────────────────────────────────────────────────────────────
   return (
     <div className="explore-root">
@@ -83,13 +198,13 @@ export function ExploreWorkouts() {
         <h1>Explore Workouts</h1>
         <div className="header-controls">
           <div className="toggle-container">
-            <button 
+            <button
               className={`toggle-btn ${showAll ? 'active' : ''}`}
               onClick={() => setShowAll(true)}
             >
               All Workouts
             </button>
-            <button 
+            <button
               className={`toggle-btn ${!showAll ? 'active' : ''}`}
               onClick={() => setShowAll(false)}
               disabled={!userId}
@@ -126,7 +241,18 @@ export function ExploreWorkouts() {
                   // Generate unique key for each workout item
                   const key = workout.id || workout._id || workout.title || `workout-${idx}`;
                   return (
-                    <div key={key} className="exercise-item">
+                    <div
+                      key={key}
+                      className="exercise-item"
+                      onClick={() => setSelectedWorkout(workout)}
+                      role="button"
+                      tabIndex="0"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          setSelectedWorkout(workout);
+                        }
+                      }}
+                    >
                       <div className="exercise-main">
                         {/* Workout Title */}
                         <div className="exercise-name">
@@ -166,8 +292,149 @@ export function ExploreWorkouts() {
         </div>
       </div>
 
-      {/* Calendar Component */}
-      <Calendar />
+      {/* CalendarButton Component */}
+      <CalendarButton />
+
+      {/* Workout Details Modal */}
+      {selectedWorkout && (
+        <div className="workout-modal-overlay" onClick={() => setSelectedWorkout(null)}>
+          <div className="workout-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="workout-modal-header">
+              <h2>{selectedWorkout.title || "Untitled Workout"}</h2>
+              <button
+                className="workout-modal-close"
+                onClick={() => setSelectedWorkout(null)}
+                aria-label="Close modal"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="workout-modal-body">
+              {/* Workout Title */}
+              <div className="workout-detail-section">
+                <label className="workout-detail-label">Workout Title</label>
+                <p className="workout-detail-value">{selectedWorkout.title || "N/A"}</p>
+              </div>
+
+              {/* Gym Information */}
+              {selectedWorkout.gymId && (
+                <div className="workout-detail-section">
+                  <label className="workout-detail-label">Gym</label>
+                  {gymLoading ? (
+                    <p className="workout-gym-loading">Loading gym info…</p>
+                  ) : gymInfo ? (
+                    <div className="workout-gym-info">
+                      {gymInfo.name && (
+                        <p className="workout-gym-name">{gymInfo.name}</p>
+                      )}
+                      {gymInfo.address && (
+                        <p className="workout-gym-location">{gymInfo.address}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="workout-gym-unavailable">Gym info not available</p>
+                  )}
+                </div>
+              )}
+
+              {/* Start Time */}
+              {selectedWorkout.startTime && (
+                <div className="workout-detail-section">
+                  <label className="workout-detail-label">Start Time</label>
+                  <p className="workout-detail-value">{formatDate(selectedWorkout.startTime)}</p>
+                </div>
+              )}
+
+              {/* End Time */}
+              {selectedWorkout.endTime && (
+                <div className="workout-detail-section">
+                  <label className="workout-detail-label">End Time</label>
+                  <p className="workout-detail-value">{formatDate(selectedWorkout.endTime)}</p>
+                </div>
+              )}
+
+              {/* Duration */}
+              {selectedWorkout.startTime && selectedWorkout.endTime && (
+                <div className="workout-detail-section">
+                  <label className="workout-detail-label">Duration</label>
+                  <p className="workout-detail-value">
+                    {calculateDuration(selectedWorkout.startTime, selectedWorkout.endTime)}
+                  </p>
+                </div>
+              )}
+
+              {/* Instructions */}
+              {selectedWorkout.instructions && (
+                <div className="workout-detail-section">
+                  <label className="workout-detail-label">Instructions</label>
+                  <p className="workout-detail-value">{selectedWorkout.instructions}</p>
+                </div>
+              )}
+
+              {/* Personal Exercises */}
+              <div className="workout-detail-section">
+                <label className="workout-detail-label">Exercises</label>
+                {personalExercisesLoading ? (
+                  <p className="workout-exercises-loading">Loading exercises…</p>
+                ) : personalExercises.length === 0 ? (
+                  <p className="workout-exercises-empty">No exercises recorded for this workout</p>
+                ) : (
+                  <div className="workout-exercises-list">
+                    {personalExercises.map((exercise, idx) => (
+                      <div key={exercise._id || idx} className="workout-exercise-item">
+                        <div className="exercise-item-header">
+                          <span className="exercise-item-number">
+                            {exerciseNames[exercise.exerciseId] || "Unknown Exercise"}
+                          </span>
+                        </div>
+                        {exercise.weight && (
+                          <div className="exercise-item-detail">
+                            <span className="exercise-detail-label">Weight:</span>{" "}
+                            <span>{exercise.weight} lbs</span>
+                          </div>
+                        )}
+                        {exercise.sets && (
+                          <div className="exercise-item-detail">
+                            <span className="exercise-detail-label">Sets:</span>{" "}
+                            <span>{exercise.sets}</span>
+                          </div>
+                        )}
+                        {exercise.reps && (
+                          <div className="exercise-item-detail">
+                            <span className="exercise-detail-label">Reps:</span>{" "}
+                            <span>{exercise.reps}</span>
+                          </div>
+                        )}
+                        {exercise.duration && exercise.duration > 0 && (
+                          <div className="exercise-item-detail">
+                            <span className="exercise-detail-label">Duration:</span>{" "}
+                            <span>{exercise.duration}s</span>
+                          </div>
+                        )}
+                        {(exercise.complete || exercise.completed) && (
+                          <div className="exercise-item-detail">
+                            <span className="exercise-item-completed">✓ Completed</span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="workout-modal-actions">
+              <button
+                className="workout-modal-btn workout-modal-btn-close"
+                onClick={() => setSelectedWorkout(null)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
