@@ -1245,7 +1245,7 @@ def test_find_user_by_email():
     assert err == inv_err_code   
 
 def test_add_remove_role_by_id_roundtrip():
-    user_id = "699f79574048f9ec8b5b0ed3"
+    user_id = "69c1ae61ea43bc1bee414ddf"
     adder_id = "699d0093795741a59fe13616"
     test_role = "Gym Owner"
 
@@ -1286,7 +1286,7 @@ def test_add_remove_role_by_id_roundtrip():
     assert test_role not in fetched_after.get("roles", [])
 
 def test_add_remove_role_by_email_roundtrip():
-    user_email = "jtboichipichipi@gmail.com"
+    user_email = "tskoglundd@gmail.com"
     adder_id = "699d0093795741a59fe13616"
     test_role = "Gym Owner"
 
@@ -1920,13 +1920,13 @@ def test_find_measurement_by_id():
     assert m is not None
     assert m.get("_id") == oid
     assert m.get("user_id") == "699f79394048f9ec8b5b0ed2"
-    assert m.get("date") == 1773360000
-    assert m.get("arms") == 70
-    assert m.get("hips") == 130
-    assert m.get("chest") == 108
-    assert m.get("weight") == 220
-    assert m.get("waist") == 108
-    assert m.get("thighs") == 30
+    assert m.get("date") == 1773273600
+    assert m.get("arms") == 40
+    assert m.get("hips") == 105
+    assert m.get("chest") == 90
+    assert m.get("weight") == 200
+    assert m.get("waist") == 90
+    assert m.get("thighs") == 25
 
     # Bad ID
     bad_oid = "69b4880023803f807becacf"
@@ -1953,7 +1953,7 @@ def test_find_measurements_by_user():
     # Find the known object
     known = next((x for x in m if x["_id"] == "69b4880023803f807becacf3"), None)
     assert known is not None
-    assert known.get("arms") == 70
+    assert known.get("arms") == 40
 
     # Bad user_id format
     bad_uid = "699f79394048f9ec8b5b0ed"
