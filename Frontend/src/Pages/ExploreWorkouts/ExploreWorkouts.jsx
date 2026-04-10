@@ -27,7 +27,6 @@ export function ExploreWorkouts() {
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [showAll, setShowAll] = useState(true);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [personalExercises, setPersonalExercises] = useState([]);
   const [personalExercisesLoading, setPersonalExercisesLoading] = useState(false);
@@ -49,10 +48,11 @@ export function ExploreWorkouts() {
     setLoading(true);
     setError(null);
     try {
-      if (userId) {
-        url = `https://www.ahful.app/api/AHFULworkout/${userId}`;
+      if (!userId) {
+        throw new Error("User ID not found. Please log in to view your workouts.");
       }
 
+      const url = `https://www.ahful.app/api/AHFULworkout/${userId}`;
       const res = await fetch(url);
 
       if (!res.ok) {
@@ -80,7 +80,7 @@ export function ExploreWorkouts() {
   // ─── Load Workouts on Mount ───────────────────────────────────────────────────
   useEffect(() => {
     fetchExercises();
-  }, [showAll, userId]);
+  }, [userId]);
 
   // ─── Fetch Personal Exercises when Workout is Selected ────────────────────────
   useEffect(() => {
@@ -197,21 +197,6 @@ export function ExploreWorkouts() {
       <header className="explore-header">
         <h1>Explore Workouts</h1>
         <div className="header-controls">
-          <div className="toggle-container">
-            <button
-              className={`toggle-btn ${showAll ? 'active' : ''}`}
-              onClick={() => setShowAll(true)}
-            >
-              All Workouts
-            </button>
-            <button
-              className={`toggle-btn ${!showAll ? 'active' : ''}`}
-              onClick={() => setShowAll(false)}
-              disabled={!userId}
-            >
-              My Workouts
-            </button>
-          </div>
           <button onClick={fetchExercises} disabled={loading} className="refresh-btn">
             {loading ? "Refreshing..." : "Refresh"}
           </button>
@@ -233,7 +218,7 @@ export function ExploreWorkouts() {
               ) : workouts.length === 0 ? (
                 /* Empty State - no workouts yet */
                 <div className="explore-empty">
-                  {showAll ? "No workouts found." : "No workouts found. Start a workout to see it here!"}
+                  {"No workouts found. Start a workout to see it here!"}
                 </div>
               ) : (
                 /* Workout List */

@@ -7,7 +7,6 @@ export function ExploreTasks() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [showAll, setShowAll] = useState(true);
   const user = useSelector((state) => state.auth.user);
 
   // Form state
@@ -29,10 +28,11 @@ export function ExploreTasks() {
     setLoading(true);
     setError(null);
     try {
-      if (userId) {
-        url = `https://www.ahful.app/api/AHFULtasks/user/${userId}`;
+      if (!userId) {
+        throw new Error("User ID not found. Please log in to view your tasks.");
       }
 
+      const url = `https://www.ahful.app/api/AHFULtasks/user/${userId}`;
       const res = await fetch(url);
 
       if (!res.ok) {
@@ -108,7 +108,7 @@ export function ExploreTasks() {
 
   useEffect(() => {
     fetchTasks();
-  }, [showAll, userId]);
+  }, [userId]);
 
   // Helper to format due date display
   const formatDueDate = (dueTime) => {
@@ -125,21 +125,6 @@ export function ExploreTasks() {
       <header className="explore-header">
         <h1>Explore Tasks</h1>
         <div className="header-controls">
-          <div className="toggle-container">
-            <button 
-              className={`toggle-btn ${showAll ? 'active' : ''}`}
-              onClick={() => setShowAll(true)}
-            >
-              All Tasks
-            </button>
-            <button 
-              className={`toggle-btn ${!showAll ? 'active' : ''}`}
-              onClick={() => setShowAll(false)}
-              disabled={!userId}
-            >
-              My Tasks
-            </button>
-          </div>
           <button onClick={fetchTasks} disabled={loading} className="refresh-btn">
             {loading ? "Refreshing..." : "Refresh"}
           </button>
@@ -196,7 +181,7 @@ export function ExploreTasks() {
                 <div className="explore-loading">Loading tasks…</div>
               ) : tasks.length === 0 ? (
                 <div className="explore-empty">
-                  {showAll ? "No tasks found." : "No tasks found. Create a task to see it here!"}
+                  {"No tasks found. Create a task to see it here!"}
                 </div>
               ) : (
                 tasks.map((task, idx) => {
