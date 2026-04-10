@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, redirect
 from Services.VerificationDriver import VerificationDriver
 
 verificationRouteBlueprint = Blueprint("verification", __name__, url_prefix="/AHFULverify")
@@ -37,14 +37,37 @@ def verify_phone_by_user_id():
 
     return jsonify({"message": res}), 200
 
-# ── VERIFY phone by id ─────────────────────────────────────────────────────
+# ── VERIFY email token─────────────────────────────────────────────────────
 @verificationRouteBlueprint.route("/verify/email/<token_id>/<token>",methods=["GET"])
 def verify_email_token(token_id, token):
     res, err = VerificationDriver.confirm_email_token(token_id, token)
-    if err:
-        return jsonify({"error": err}), 400
-    return jsonify({"message": res}), 200
 
+    front_end_base = "http://localhost:5173/EmailVerification"
+    
+    if err: 
+        return redirect(
+            f"{front_end_base}?status=error&message={err}"
+        )
+    
+    return redirect(
+        f"{front_end_base}?status=success"
+    )
+
+# ── VERIFY email token─────────────────────────────────────────────────────
+@verificationRouteBlueprint.route("/verify/phone/<token_id>/<token>",methods=["GET"])
+def verify_phone_token(token_id, token):
+    res, err = VerificationDriver.confirm_phone_token(token_id, token)
+
+    front_end_base = "http://localhost:5173/PhoneVerification"
+    
+    if err: 
+        return redirect(
+            f"{front_end_base}?status=error&message={err}"
+        )
+    
+    return redirect(
+        f"{front_end_base}?status=success"
+    )
 
 # ── DEVERIFY email or phone by user_id ─────────────────────────────────────
 @verificationRouteBlueprint.route("/deverify/user_id/", methods=["POST"])

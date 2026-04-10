@@ -74,9 +74,7 @@ function AHFULApp() {
               <FoodLog/>
             </AuthRouteCheck>}/>
           <Route path="/EmailVerification" element={
-            <AuthRouteCheck>
-              <VerifyEmail/>
-            </AuthRouteCheck>}/>
+              <VerifyEmail/>}/>
           <Route path="/AIChat" element={
             <AuthRouteCheck>
               <AIChat/>

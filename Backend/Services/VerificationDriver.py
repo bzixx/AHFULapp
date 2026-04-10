@@ -90,27 +90,64 @@ class VerificationDriver:
             return None, str(e)
         
     @staticmethod
-    def verify_user_phone_number(user_id):
-        # Validate inputs
+    def verify_user_phone(user_id):
+        # Validate user_id present
         if not user_id:
             return None, "user_id is required"
 
-        # Validate ObjectIds
+        # Validate user_id valid
         oid, err = VerificationDriver._validate_obj_id(user_id, "user_id")
         if err:
             return None, err
         
         try:
+            #Find user, ensure exists
             user = UserObject.find_by_id(user_id)
             if not user:
                 return None, "User not found"
             else:
+                # Check if already verified
                 if user.get("phone_verified"):
                     return "User already verified", None
-                
-                if not user.get("phone"):
+                # Check if user provided email
+                if not user.get("phone_number"):
                     return None, "User lacks phone number"
-
+                
+                # Get current verifications
+                verifies = VerificationObject.find_type_by_user(user_id, "phone")
+                print(verifies)
+                # If verification already exists
+                if (len(verifies) == 1):
+                    # If verification is stale (10 min)
+                    if (datetime.now().timestamp() - verifies[0]["created_at"]) > 600:
+                        # Delete stale verification
+                        deleted = VerificationObject.delete(verifies[0]["_id"])
+                        if deleted is not None: 
+                            # Send new verification email
+                            response, err = VerificationDriver.send_not_verified_text(user_id, user.get("phone_number"), VerificationDriver.generate_code())
+                            if err is None:
+                                # Call verification func recursively
+                                response, err = VerificationDriver.verify_user_phone(user_id)
+                                # Returns stale text with recursive response
+                                if err is None:
+                                    return "current text stale, retrying", None
+                                return None, err
+                            # if err when sending new text
+                            return None, err
+                        # if err on deleting state text
+                        return  "error deleting stale text, ", None
+                    # fresh verification exists
+                    return "text already sent", None
+                # Should not get here, big error
+                elif (len(verifies) > 1):
+                    return None, "multiple text verifications exist" 
+                
+                # No verification exists, send new one
+                response, err = VerificationDriver.send_not_verified_text(user_id, user.get("phone_number"), VerificationDriver.generate_code())
+                if err is None:
+                    return response, None
+                else:
+                    return None, err
         except Exception as e:
             return None, str(e)
         
@@ -159,6 +196,57 @@ class VerificationDriver:
                     return response, None
                 else:
                     response = "Email sucessfully verified, verification token failed to deleted, " + str(res)
+                    return response, None
+            else:
+                return None, "Token not found or incorrect token text"
+        else:
+            return None, "Token not found or incorrect token text"
+        
+    # Send text
+    @staticmethod
+    def send_not_verified_text(user_id, number, token):
+        try:
+            # Create verification obj with passed in token, user_id
+            response, err = VerificationObject.create("email", token, user_id)
+            if err is None:
+                print(response)
+            else:
+                return None, err
+        except Exception as e:
+            return None, str(e)
+        
+        # Link contains token id and token text
+        link = f"http://127.0.0.1:5000/AHFULverify/verify/phone/{response}/{token}"
+
+        # Send message with enable link
+        msg = Message(
+            subject="Your email is not verified",
+            recipients=[number],
+            body=(
+                "Hello,\n\n"
+                "Our records show that your phone number has not been verified yet.\n\n"
+                "You currently may have limited access to the application.\n\n"
+                "Please verify your phone number to unlock full access.\n\n"
+                "Your verification link is {link}"
+                "— AHFUL Team"
+            ).format(link=link)
+        )
+        current_app.mail.send(msg)
+
+        return "Verification text sent", None
+    
+    @staticmethod
+    def confirm_phone_token(token_id, token):
+        verify = VerificationObject.find_by_id(token_id)
+        if verify:
+            if verify["token"] == token:
+                res = UserObject.enable_verification(verify["user_id"], "phone")
+                deleted = VerificationObject.delete(token_id)
+                if deleted:
+                    response = "Phone sucessfully verified, verification token deleted, " + str(res)
+                    return response, None
+                else:
+                    response = "Phone sucessfully verified, verification token failed to deleted, " + str(res)
                     return response, None
             else:
                 return None, "Token not found or incorrect token text"
