@@ -1911,7 +1911,7 @@ def test_workout_partial_empty_unknown_updates():
 # Measurements
 
 def test_find_measurement_by_id():
-    oid = "69b4880023803f807becacf3"
+    oid = "69b4884923803f807becacf4"
     m, err = MeasurementDriver.get_measurement_by_id(oid)
 
     if err is not None:
@@ -1953,7 +1953,7 @@ def test_find_measurements_by_user():
     assert len(m) > 0
 
     # Find the known object
-    known = next((x for x in m if x["_id"] == "69b4880023803f807becacf3"), None)
+    known = next((x for x in m if x["_id"] == "69b4884923803f807becacf4"), None)
     assert known is not None
     assert known.get("arms") == 40
 
@@ -2000,7 +2000,7 @@ def test_create_delete_measurement():
     assert m is None
 
 def test_update_measurement_roundtrip():
-    oid = "69b4880023803f807becacf3"
+    oid = "69b4884923803f807becacf4"
 
     original, err = MeasurementDriver.get_measurement_by_id(oid)
     assert err is None
