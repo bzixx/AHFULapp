@@ -936,6 +936,15 @@ def test_update_personal_ex_roundtrip():
     orig_distance  = original.get("distance")
     orig_complete  = original.get("complete")
 
+    restore = {
+        "reps": orig_reps,
+        "sets": orig_sets,
+        "weight": orig_weight,
+        "duration": orig_duration,
+        "distance": orig_distance,
+        "complete": orig_complete
+    }
+
     new_values = {
         "reps": 999,
         "sets": 999,
@@ -945,9 +954,12 @@ def test_update_personal_ex_roundtrip():
         "complete": True
     }
 
-    updated, err = PersonalExDriver.update_personal_ex(id=personal_ex_id, updates=new_values)
+    updated, err_1 = PersonalExDriver.update_personal_ex(id=personal_ex_id, updates=new_values)
+    fetched_after_update, err_2 = PersonalExDriver.get_personal_ex_by_id(personal_ex_id)
+    restored, err_3 = PersonalExDriver.update_personal_ex(id=personal_ex_id, updates=restore)
+    fetched_after_restore, err_4 = PersonalExDriver.get_personal_ex_by_id(personal_ex_id)
 
-    if err is not None:
+    if err_1 is not None:
         print("Update failed:", err)
 
     assert err is None
@@ -961,10 +973,9 @@ def test_update_personal_ex_roundtrip():
     assert updated.get("distance") == new_values["distance"]
     assert updated.get("complete") == new_values["complete"]
 
-    fetched_after_update, err = PersonalExDriver.get_personal_ex_by_id(personal_ex_id)
-    if err is not None:
+    if err_2 is not None:
         print("Fetch after update failed:", err)
-    assert err is None
+    assert err_2 is None
     assert fetched_after_update is not None
     assert fetched_after_update.get("_id") == personal_ex_id
 
@@ -976,16 +987,7 @@ def test_update_personal_ex_roundtrip():
     assert fetched_after_update.get("distance") == new_values["distance"]
     assert fetched_after_update.get("complete") == new_values["complete"]
 
-    restore = {
-        "reps": orig_reps,
-        "sets": orig_sets,
-        "weight": orig_weight,
-        "duration": orig_duration,
-        "distance": orig_distance,
-        "complete": orig_complete
-    }
-    restored, err = PersonalExDriver.update_personal_ex(id=personal_ex_id, updates=restore)
-    if err is not None:
+    if err_3 is not None:
         print("Restore failed:", err)
     assert err is None
     assert restored is not None
@@ -999,10 +1001,10 @@ def test_update_personal_ex_roundtrip():
     assert restored.get("distance") == orig_distance
     assert restored.get("complete") == orig_complete
 
-    fetched_after_restore, err = PersonalExDriver.get_personal_ex_by_id(personal_ex_id)
-    if err is not None:
+    
+    if err_4 is not None:
         print("Fetch after restore failed:", err)
-    assert err is None
+    assert err_4 is None
     assert fetched_after_restore is not None
     assert fetched_after_restore.get("_id") == personal_ex_id
 
