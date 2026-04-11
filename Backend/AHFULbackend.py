@@ -1,4 +1,4 @@
-from flask import Flask, current_app, send_from_directory #Import Main Flask application class
+from flask import Blueprint, Flask, app, app, current_app, send_from_directory #Import Main Flask application class
 import os # Import Function from os to get .env variables
 from flask_cors import CORS #Import Main Flask application class
 from dotenv import load_dotenv # Load environment variables from .env file
@@ -20,6 +20,7 @@ from APIRoutes.ExerciseRoutes import exerciseRouteBlueprint
 from APIRoutes.UserSettingsRoutes import userSettingsBlueprint
 from APIRoutes.TokenRoutes import tokenBlueprint
 from APIRoutes.TaskRoutes import taskBlueprint
+from APIRoutes.VerificationRoutes import verificationRouteBlueprint
 from APIRoutes.ChatRoutes import chatRouteBlueprint
 
 #Firebase Admin SDK
@@ -63,25 +64,31 @@ def create_app():
 
     #Register App Routes and Blueprints
     #Swagger routes add prefix to match server url
-    app.register_blueprint(userRouteBlueprint)
-    app.register_blueprint(workoutRouteBlueprint)
-    app.register_blueprint(gymRouteBlueprint)
-    app.register_blueprint(foodRouteBlueprint)
-    app.register_blueprint(measurementRouteBlueprint)
-    app.register_blueprint(personalExRouteBlueprint)
-    app.register_blueprint(swaggerUIBlueprint)
-    app.register_blueprint(signInRouteBlueprint)
-    app.register_blueprint(exerciseRouteBlueprint)
-    app.register_blueprint(userSettingsBlueprint)
-    app.register_blueprint(tokenBlueprint)
-    app.register_blueprint(taskBlueprint)
-    app.register_blueprint(chatRouteBlueprint)
+    #This value can be set via the API_PREFIX environment variable. When registering a blueprint with a
+    # url_prefix here, Flask will prepend this prefix to the blueprint's own url_prefix (so '/api' + '/AHFULusers' => '/api/AHFULusers').
+    AHFULAPI = Blueprint('ProdAPI', __name__, url_prefix='/api')
 
+    AHFULAPI.register_blueprint(userRouteBlueprint)
+    AHFULAPI.register_blueprint(workoutRouteBlueprint)
+    AHFULAPI.register_blueprint(gymRouteBlueprint)
+    AHFULAPI.register_blueprint(foodRouteBlueprint)
+    AHFULAPI.register_blueprint(measurementRouteBlueprint)
+    AHFULAPI.register_blueprint(personalExRouteBlueprint)
+    AHFULAPI.register_blueprint(signInRouteBlueprint)
+    AHFULAPI.register_blueprint(exerciseRouteBlueprint)
+    AHFULAPI.register_blueprint(userSettingsBlueprint)
+    AHFULAPI.register_blueprint(tokenBlueprint)
+    AHFULAPI.register_blueprint(taskBlueprint)
+    AHFULAPI.register_blueprint(chatRouteBlueprint)
+    AHFULAPI.register_blueprint(verificationRouteBlueprint)
+
+    app.register_blueprint(AHFULAPI)
+    app.register_blueprint(swaggerUIBlueprint)
+    
     # Enable CORS - includes CloudFront production URL and custom domain
     allowed_origins = [
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-        'http://127.0.0.1:5000'
+        'https://ahful.app',
+        'https://www.ahful.app'
     ]
 
     CORS(app, origins=allowed_origins, supports_credentials=True)

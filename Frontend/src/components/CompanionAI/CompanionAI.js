@@ -1,6 +1,6 @@
 export function initCompanionAI({ textInput, sendButton, characterImage, voiceSelect, status }) {
-    const openMouthImg = '../../../images/char-mouth-open.png';
-    const closedMouthImg = '../../../images/char-mouth-closed.png';
+    const openMouthImg = 'https://www.ahful.app/images/char-mouth-open.png';
+    const closedMouthImg = 'https://www.ahful.app/images/char-mouth-closed.png';
 
     let voices = [];
     let lipSyncInterval;
@@ -94,7 +94,7 @@ export function initCompanionAI({ textInput, sendButton, characterImage, voiceSe
         if (status) status.textContent = "Thinking...";
 
         try {
-            const response = await fetch('http://127.0.0.1:5000/AHFULChat/', {
+            const response = await fetch('https://www.ahful.app/api/AHFULChat/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message })

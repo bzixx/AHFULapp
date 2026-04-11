@@ -13,6 +13,7 @@ export function Profile() {
   const [userData, setUserData] = useState({name: "", email: "", picture: ""});
   const [bio, setBio] = useState("");
   const [isEditingBio, setIsEditingBio] = useState(false);
+  const [verifyMessage] = useState("");
 
   const reduxUserData = useSelector((state) => state.auth.user);
 
@@ -46,6 +47,37 @@ export function Profile() {
       registerService(reduxUserData._id);
     } else {
       console.error("User ID not available");
+    }
+  };
+  
+  const handleVerifyEmail = async () => {
+    try {
+      const res = await fetch(
+        "http://127.0.0.1:5000/AHFULverify/verify/email/user_id/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: reduxUserData._id,
+          }),
+        }
+      );
+
+      //const data = await res.json();
+      const data = await res.json(); // parse JSON
+      console.log("Response JSON:", data);
+
+      if (!res.ok) {
+        alert(data.error || "Failed to send verification email");
+        return;
+      }
+
+      alert(data.message);
+    } catch (err) {
+      console.error("Verify email failed:", err);
+      alert("Network error sending verification email");
     }
   };
 
@@ -119,6 +151,18 @@ export function Profile() {
             Terms of Service
           </button>
         </div>
+
+        {/* Manually verify user email*/}
+        {reduxUserData?.email_verified === false && (
+          <div className="profile-email-verify-section">
+            <button
+              className="profile-email-verify-btn"
+              onClick={handleVerifyEmail}
+            >
+              Verify Email
+            </button>
+          </div>
+        )}
 
         {/* Logout */}
         <div className="profile-logout-section">

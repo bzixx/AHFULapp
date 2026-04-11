@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import "./ExploreTasks.css";
 import "../../SiteStyles.css";
+import { updateTask } from "../../QueryFunctions";
 
 export function ExploreTasks() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [showAll, setShowAll] = useState(true);
   const user = useSelector((state) => state.auth.user);
 
   // Form state
@@ -29,11 +29,11 @@ export function ExploreTasks() {
     setLoading(true);
     setError(null);
     try {
-      let url = "http://localhost:5000/AHFULtasks";
-      if (!showAll && userId) {
-        url = `http://localhost:5000/AHFULtasks/user/${userId}`;
+      if (!userId) {
+        throw new Error("User ID not found. Please log in to view your tasks.");
       }
 
+      const url = `https://www.ahful.app/api/AHFULtasks/user/${userId}`;
       const res = await fetch(url);
 
       if (!res.ok) {
@@ -80,7 +80,7 @@ export function ExploreTasks() {
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/AHFULtasks/create/${userId}`, {
+      const res = await fetch(`https://www.ahful.app/api/AHFULtasks/create/${userId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -107,9 +107,21 @@ export function ExploreTasks() {
     }
   };
 
+  const toggleTaskCompletion = async (taskId, currentCompleted) => {
+    const newCompleted = !currentCompleted;
+    const result = await updateTask(taskId, { completed: newCompleted });
+    if (result.success) {
+      setTasks(tasks.map(t => 
+        t._id === taskId ? { ...t, completed: newCompleted } : t
+      ));
+    } else {
+      console.error("Failed to update task:", result.error);
+    }
+  };
+
   useEffect(() => {
     fetchTasks();
-  }, [showAll, userId]);
+  }, [userId]);
 
   // Helper to format due date display
   const formatDueDate = (dueTime) => {
@@ -126,21 +138,6 @@ export function ExploreTasks() {
       <header className="explore-header">
         <h1>Explore Tasks</h1>
         <div className="header-controls">
-          <div className="toggle-container">
-            <button 
-              className={`toggle-btn ${showAll ? 'active' : ''}`}
-              onClick={() => setShowAll(true)}
-            >
-              All Tasks
-            </button>
-            <button 
-              className={`toggle-btn ${!showAll ? 'active' : ''}`}
-              onClick={() => setShowAll(false)}
-              disabled={!userId}
-            >
-              My Tasks
-            </button>
-          </div>
           <button onClick={fetchTasks} disabled={loading} className="refresh-btn">
             {loading ? "Refreshing..." : "Refresh"}
           </button>
@@ -197,7 +194,7 @@ export function ExploreTasks() {
                 <div className="explore-loading">Loading tasks…</div>
               ) : tasks.length === 0 ? (
                 <div className="explore-empty">
-                  {showAll ? "No tasks found." : "No tasks found. Create a task to see it here!"}
+                  {"No tasks found. Create a task to see it here!"}
                 </div>
               ) : (
                 tasks.map((task, idx) => {
@@ -205,8 +202,14 @@ export function ExploreTasks() {
                   return (
                     <div key={key} className="exercise-item">
                       <div className="exercise-main">
-                        <div className="exercise-name">
-                          {task.completed && <span style={{marginRight: '8px'}}>✓</span>}
+                        <button
+                          className="task-complete-btn"
+                          onClick={() => toggleTaskCompletion(task._id, task.completed)}
+                          title={task.completed ? "Mark as incomplete" : "Mark as complete"}
+                        >
+                          {task.completed ? "✅" : "❌"}
+                        </button>
+                        <div className="exercise-name" style={{ textDecoration: task.completed ? 'line-through' : 'none', opacity: task.completed ? 0.6 : 1 }}>
                           {task.name || "Untitled Task"}
                         </div>
                         <div className="exercise-meta">
