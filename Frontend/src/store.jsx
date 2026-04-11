@@ -1,16 +1,16 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
-import calendarReducer from "./Components/Calendar/CalendarSlicer";
-import authReducer from "./Pages/Login/AuthSlice";
-import settingsReducer from "./Pages/Settings/SettingsSlice";
-import pullExerciseSlice from "./components/Cache/ExerciseCache/PullExerciseSlice";
+import calendarReducer from "./components/Calendar/CalendarSlicer";
+import authReducer from "./pages/Login/AuthSlice";
+import settingsReducer from "./pages/Settings/SettingsSlice";
+import pullExerciseReducer from "./components/Cache/ExerciseCache/PullExerciseSlice";
 
 export const store = configureStore({
   reducer: {
     calendar: calendarReducer,
     auth: authReducer,
-    setting:settingsReducer,
-    pullExercise: pullExerciseSlice.reducer,
+    setting: settingsReducer,
+    pullExercise: pullExerciseReducer,
   },
 });
 

@@ -13,7 +13,7 @@ import { getUserSettings, updateUserSettings } from "../../QueryFunctions";
 export function Settings() {
   const dispatch = useDispatch();
   const answers = useSelector((state) => state.setting);
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector((state)  => state.auth.user);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
