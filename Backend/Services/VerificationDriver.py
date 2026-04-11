@@ -165,7 +165,7 @@ class VerificationDriver:
             return None, str(e)
         
         # Link contains token id and token text
-        link = f"http://127.0.0.1:5000/AHFULverify/verify/email/{response}/{token}"
+        link = f"http://localhost:5000/AHFULverify/verify/email/{response}/{token}"
 
         # Send message with enable link
         msg = Message(
@@ -216,7 +216,7 @@ class VerificationDriver:
             return None, str(e)
         
         # Link contains token id and token text
-        link = f"http://127.0.0.1:5000/AHFULverify/verify/phone/{response}/{token}"
+        link = f"http://localhost:5000/AHFULverify/verify/phone/{response}/{token}"
 
         # Send message with enable link
         msg = Message(
