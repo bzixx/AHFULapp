@@ -27,7 +27,7 @@ export function DashboardTaskTodoList() {
 
     const fetchTasks = async () => {
       try {
-        const res = await fetch(`https://www.ahful.app/api/AHFULtasks/user/${userId}`);
+        const res = await fetch(`http://localhost:5000/AHFULtasks/user/${userId}`);
         if (res.ok) {
           const data = await res.json();
           const sorted = (Array.isArray(data) ? data : [])

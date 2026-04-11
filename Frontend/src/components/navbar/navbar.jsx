@@ -96,7 +96,7 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
           </NavLink> 
 
           <a
-            href="https://www.ahful.app/api/APIDocs"
+            href="http://localhost:5000/APIDocs"
             target="_blank"
             rel="noreferrer"
             onClick={handleNavClick}

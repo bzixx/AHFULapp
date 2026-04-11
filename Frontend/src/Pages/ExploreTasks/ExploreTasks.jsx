@@ -33,7 +33,7 @@ export function ExploreTasks() {
         throw new Error("User ID not found. Please log in to view your tasks.");
       }
 
-      const url = `https://www.ahful.app/api/AHFULtasks/user/${userId}`;
+      const url = `http://localhost:5000/AHFULtasks/user/${userId}`;
       const res = await fetch(url);
 
       if (!res.ok) {
@@ -80,7 +80,7 @@ export function ExploreTasks() {
     }
 
     try {
-      const res = await fetch(`https://www.ahful.app/api/AHFULtasks/create/${userId}`, {
+      const res = await fetch(`http://localhost:5000/AHFULtasks/create/${userId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
