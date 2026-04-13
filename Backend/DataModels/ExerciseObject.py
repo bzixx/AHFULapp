@@ -13,6 +13,8 @@ class ExerciseObject:
         """Convert MongoDB document to JSON-safe dict."""
         if exercise:
             exercise["_id"] = str(exercise["_id"])
+            if exercise["owner_id"]:
+                exercise["owner_id"] = str(exercise["owner_id"])
         return exercise
     
     # ── Validation ─────────────────────────────────────────────────────────────
@@ -25,7 +27,7 @@ class ExerciseObject:
         if "name" not in data or not isinstance(data["name"], str) or not data["name"].strip():
             return False, "Name is required and must be a non-empty string"
         
-        array_fields = ["targetMuscles", "bodyParts", "equipments", "secondaryMuscles", "instructions"]
+        array_fields = ["owner_id", "targetMuscles", "bodyParts", "equipments", "secondaryMuscles", "instructions"]
         for field in array_fields:
             if field in data and not isinstance(data[field], list):
                 return False, f"{field} must be an array"
@@ -66,6 +68,7 @@ class ExerciseObject:
             return None
 
         allowed_fields = {
+            "owner_id",
             "name",
             "gifUrl",
             "targetMuscles",

@@ -27,6 +27,34 @@ class UserDriver:
             return ObjectId(str(id)), None
         except (bson_errors.InvalidId, TypeError, ValueError):
             return None, f"Invalid {name} format; must be a 24-hex string"
+        
+    @staticmethod
+    def verify_operation(user_id_op, user_id_on):
+        if (not user_id_op) or (not user_id_on):
+            return None, "Missing user_id_op or user_id_on"
+        
+        # Convert IDs safely
+        user_id_op, err = UserDriver._validate_obj_id(user_id_op, "user_id_op")
+        if err:
+            return None, err
+        # Convert IDs safely
+        user_id_on, err = UserDriver._validate_obj_id(user_id_on, "user_id_on")
+        if err:
+            return None, err
+        
+        user_op = UserObject.find_by_id(user_id_op)
+        if not user_op:
+            return None, "user_op not found"
+        user_on = UserObject.find_by_id(user_id_on)
+        if not user_on:
+            return None, "user_on not found"
+        
+        if user_op["_id"] == user_on["user_id"]:
+            return "Operation valid", None
+        elif ("Admin" in user_op["roles"]) or ("Developer" in user_op["roles"]):
+            return "Operation valid", None
+        else:
+            return None, "You must operate on your own object or have sufficient privileges"
 
     # ── Create ─────────────────────────────────────────────────────────────────
 

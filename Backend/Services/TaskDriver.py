@@ -1,4 +1,5 @@
 from DataModels.TaskObject import TaskObject
+from DataModels.UserObject import UserObject
 from bson import ObjectId, errors as bson_errors
 
 class TaskDriver:
@@ -8,6 +9,34 @@ class TaskDriver:
             return ObjectId(str(id)), None
         except (bson_errors.InvalidId, TypeError, ValueError):
             return None, f"Invalid {name} format; must be a 24-hex string"
+        
+    @staticmethod
+    def verify_operation(user_id, task_id):
+        if (not user_id) or (not task_id):
+            return None, "Missing user or task_id"
+        
+        # Convert IDs safely
+        user_id, err = TaskDriver._validate_obj_id(user_id, "user_id")
+        if err:
+            return None, err
+        # Convert IDs safely
+        task_id, err = TaskDriver._validate_obj_id(task_id, "task_id")
+        if err:
+            return None, err
+        
+        user = UserObject.find_by_id(user_id)
+        if not user:
+            return None, "User not found"
+        task = TaskObject.find_by_id(task_id)
+        if not task:
+            return None, "Food not found"
+        
+        if user["_id"] == task["user_id"]:
+            return "Operation valid", None
+        elif ("Admin" in user["roles"]) or ("Developer" in user["roles"]):
+            return "Operation valid", None
+        else:
+            return None, "You must operate on your own object or have sufficient privileges"
 
     @staticmethod
     def get_task_by_id(task_id):

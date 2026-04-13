@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from Services.GymDriver import GymDriver
-from Auth.verification import verify_user_login, verify_user_developer, verify_user_admin
+from Auth.verification import verify_user_login, verify_user_developer, verify_user_admin, verify_user_gym_owner
 
 gymRouteBlueprint = Blueprint("gym", __name__, url_prefix="/AHFULgyms")
 
@@ -45,7 +45,7 @@ def update_gym(gym_id):
 
 # ── CREATE gym ────────────────────────────────────────────────────────────────
 @gymRouteBlueprint.route("/create", methods=["POST"])
-@verify_user_login
+@verify_user_gym_owner
 def create_gym():
     data = request.get_json()
     if not data:

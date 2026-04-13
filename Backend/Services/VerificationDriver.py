@@ -60,7 +60,6 @@ class VerificationDriver:
     @staticmethod
     def confirm_user_developer(user_id, bits):
         user, err = VerificationDriver.confirm_user_login(user_id, bits)
-        print(user)
         if err:
             return None, err
         elif (("Admin" not in user["roles"]) and ("Developer" not in user["roles"])):
@@ -71,10 +70,19 @@ class VerificationDriver:
     @staticmethod
     def confirm_user_admin(user_id, bits):
         user, err = VerificationDriver.confirm_user_login(user_id, bits)
-        print(user)
         if err:
             return None, err
         elif ("Admin" not in user["roles"]):
+            return None, "User does not have permission"
+        else:
+            return user, None
+        
+    @staticmethod
+    def confirm_user_gym_owner(user_id, bits):
+        user, err = VerificationDriver.confirm_user_login(user_id, bits)
+        if err:
+            return None, err
+        elif ("Gym Owner" not in user["roles"]):
             return None, "User does not have permission"
         else:
             return user, None

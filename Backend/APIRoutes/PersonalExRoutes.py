@@ -39,9 +39,9 @@ def get_personal_exs_by_workout(workout_id):
             return jsonify({"error": error}), 400
     return jsonify(personalExs), 200
 
+# Ensure only grab own obj??
 # ── GET single personalEx ────────────────────────────────────────────────────────
 @personalExRouteBlueprint.route("/id/<id>", methods=["GET"])
-@verify_user_login
 def get_personal_ex(id):
     personalEx, error = PersonalExDriver.get_personal_ex_by_id(id)
     if error:

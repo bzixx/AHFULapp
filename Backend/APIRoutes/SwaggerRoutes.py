@@ -51,8 +51,9 @@ swaggerConfig = {
 
 "/AHFULusers/": {
  "get": {
-  "summary": "Get all users",
+  "summary": "Get all users (Admin)",
   "tags": ["Users"],
+  "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
   "responses": {
    "200": {
     "description": "All users returned",
@@ -91,8 +92,9 @@ swaggerConfig = {
 
 "/AHFULusers/{email}": {
  "get": {
-  "summary": "Get user by email",
+  "summary": "Get user by email (Admin)",
   "tags": ["Users"],
+  "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
   "parameters": [
    {
     "name": "email",
@@ -143,8 +145,9 @@ swaggerConfig = {
 
 "/AHFULusers/id/{id}": {
  "get": {
-  "summary": "Get user by id",
+  "summary": "Get user by id (User or Dev/Admin)",
   "tags": ["Users"],
+  "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
   "parameters": [
    {
     "name": "id",
@@ -195,8 +198,9 @@ swaggerConfig = {
 
 "/AHFULusers/add/role/id/": {
  "post": {
-  "summary": "Add role to user by id",
+  "summary": "Add role to user by id (Admin)",
   "tags": ["Users"],
+  "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
   "requestBody": {
    "required": True,
    "content": {
@@ -247,8 +251,9 @@ swaggerConfig = {
 
 "/AHFULusers/add/role/email/": {
  "post": {
-  "summary": "Add role to user by email",
+  "summary": "Add role to user by email (Admin)",
   "tags": ["Users"],
+  "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
   "requestBody": {
    "required": True,
    "content": {
@@ -299,8 +304,9 @@ swaggerConfig = {
 
 "/AHFULusers/remove/role/id/": {
  "post": {
-  "summary": "Remove role from user by id",
+  "summary": "Remove role from user by id (Admin)",
   "tags": ["Users"],
+  "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
   "requestBody": {
    "required": True,
    "content": {
@@ -351,8 +357,9 @@ swaggerConfig = {
 
 "/AHFULusers/remove/role/email/": {
  "post": {
-  "summary": "Remove role from user by email",
+  "summary": "Remove role from user by email (Admin)",
   "tags": ["Users"],
+  "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
   "requestBody": {
    "required": True,
    "content": {
@@ -403,8 +410,9 @@ swaggerConfig = {
 
 "/AHFULusers/deactivate/id/": {
  "post": {
-  "summary": "Deactivate user by id",
+  "summary": "Deactivate user by id (Admin)",
   "tags": ["Users"],
+  "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
   "requestBody": {
    "required": True,
    "content": {
@@ -455,9 +463,10 @@ swaggerConfig = {
 
 "/AHFULverify/verify/email/user_id/": {
   "post": {
-    "summary": "Verify user email by id",
-    "description": "Marks a user's email as verified if it has not already been verified.",
+    "summary": "Verify user email by id (User or Dev/Admin)",
+    "description": "Starts email verification process for email on user obj",
     "tags": ["Verify"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "requestBody": {
       "required": True,
       "content": {
@@ -530,9 +539,10 @@ swaggerConfig = {
 
 "/AHFULverify/verify/phone/user_id/": {
   "post": {
-    "summary": "Verify user phone number by id",
-    "description": "Marks a user's phone number as verified if it has not already been verified.",
+    "summary": "Verify user phone number by id (User or Dev/Admin)",
+    "description": "Starts email verification process for email on user obj",
     "tags": ["Verify"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "requestBody": {
       "required": True,
       "content": {
@@ -605,9 +615,10 @@ swaggerConfig = {
 
 "/AHFULverify/deverify/user_id/": {
   "post": {
-    "summary": "Disable user verification by user id",
+    "summary": "Disable user verification by user id (Admin)",
     "description": "Disables a user's email or phone verification status.",
     "tags": ["Verify"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "requestBody": {
       "required": True,
       "content": {
@@ -701,10 +712,83 @@ swaggerConfig = {
   }
 },
 
+"/AHFULverify/verify/email/{token_id}/{token}": {
+  "get": {
+    "summary": "Confirm email verification token (Public)",
+    "description": "Validates an email verification token, enables email verification, deletes the token, and redirects to the frontend result page.",
+    "tags": ["Verify"],
+    "parameters": [
+      {
+        "name": "token_id",
+        "in": "path",
+        "required": True,
+        "schema": { "type": "string" },
+        "description": "Verification token ObjectId"
+      },
+      {
+        "name": "token",
+        "in": "path",
+        "required": True,
+        "schema": { "type": "string" },
+        "description": "Verification token value"
+      }
+    ],
+    "responses": {
+      "302": {
+        "description": "Redirect to email verification frontend",
+        "headers": {
+          "Location": {
+            "schema": {
+              "type": "string",
+              "example": "http://localhost:5173/EmailVerification?status=success"
+            }
+          }
+        }
+      }
+    }
+  }
+},
+
+"/AHFULverify/verify/phone/{token_id}/{token}": {
+  "get": {
+    "summary": "Confirm phone verification token (Public)",
+    "description": "Validates a phone verification token, enables phone verification, deletes the token, and redirects to the frontend result page.",
+    "tags": ["Verify"],
+    "parameters": [
+      {
+        "name": "token_id",
+        "in": "path",
+        "required": True,
+        "schema": { "type": "string" }
+      },
+      {
+        "name": "token",
+        "in": "path",
+        "required": True,
+        "schema": { "type": "string" }
+      }
+    ],
+    "responses": {
+      "302": {
+        "description": "Redirect to phone verification frontend",
+        "headers": {
+          "Location": {
+            "schema": {
+              "type": "string",
+              "example": "http://localhost:5173/PhoneVerification?status=success"
+            }
+          }
+        }
+      }
+    }
+  }
+},
+
 "/AHFULpersonalEx/": {
   "get": {
-    "summary": "Get all personal exercises",
+    "summary": "Get all personal exercises (Dev/Admin)",
     "tags": ["PersonalEx"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "responses": {
       "200": {
         "description": "A list of all personal exercises",
@@ -748,8 +832,9 @@ swaggerConfig = {
 
 "/AHFULpersonalEx/{user_id}": {
   "get": {
-    "summary": "Get all personal exercises for a specific user",
+    "summary": "Get all personal exercises for a specific user (User or Dev/Admin)",
     "tags": ["PersonalEx"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "parameters": [
       {
         "name": "user_id",
@@ -880,8 +965,9 @@ swaggerConfig = {
 
 "/AHFULpersonalEx/create": {
   "post": {
-    "summary": "Create a personal exercise",
+    "summary": "Create a personal exercise (Logged in)",
     "tags": ["PersonalEx"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "requestBody": {
       "required": True,
       "content": {
@@ -1049,8 +1135,9 @@ swaggerConfig = {
 
 "/AHFULexercises/": {
     "get": {
-      "summary": "Get first page of exercises (internal + external)",
+      "summary": "Get first page of exercises, internal + external (Logged in)",
       "tags": ["Exercises"],
+      "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
       "responses": {
         "200": {
           "description": "List of exercises",
@@ -1107,8 +1194,9 @@ swaggerConfig = {
       }
     },
     "post": {
-      "summary": "Get next or previous page of exercises",
+      "summary": "Get next or previous page of exercises (Logged In)",
       "tags": ["Exercises"],
+      "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
       "parameters": [
         {
           "name": "search",
@@ -1203,8 +1291,9 @@ swaggerConfig = {
 
 "/AHFULexercises/search": {
   "get": {
-    "summary": "Search exercises by name",
+    "summary": "Search exercises by name (Logged in)",
     "tags": ["Exercises"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "parameters": [
       {
         "name": "search",
@@ -1243,8 +1332,9 @@ swaggerConfig = {
 
 "/AHFULexercises/create/": {
   "post": {
-    "summary": "Create a new internal exercise",
+    "summary": "Create a new internal exercise (Logged in)",
     "tags": ["Exercises"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "requestBody": {
       "required": True,
       "content": {
@@ -1291,6 +1381,7 @@ swaggerConfig = {
   "delete": {
     "summary": "Delete internal exercise by id (Owner or Dev/Admin)",
     "tags": ["Exercises"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "parameters": [
       {
         "name": "exercise_id",
@@ -1330,8 +1421,9 @@ swaggerConfig = {
 
 "/AHFULexercises/metadata": {
   "get": {
-    "summary": "Get metadata for first exercise page",
+    "summary": "Get metadata for first exercise page (Logged in)",
     "tags": ["Exercises"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "responses": {
       "200": {
         "description": "Exercise metadata",
@@ -1349,6 +1441,7 @@ swaggerConfig = {
   "post": {
     "summary": "Get metadata for next or previous page",
     "tags": ["Exercises"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "parameters": [
       {
         "name": "search",
@@ -1380,8 +1473,9 @@ swaggerConfig = {
 
 "/AHFULworkout/": {
     "get": {
-      "summary": "Get all workouts",
+      "summary": "Get all workouts (Admin)",
       "tags": ["Workout"],
+      "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
       "responses": {
         "200": {
           "description": "List of all workouts",
@@ -1411,7 +1505,8 @@ swaggerConfig = {
 
 "/AHFULworkout/{user_id}": {
   "get": {
-    "summary": "Get workouts by user id",
+    "summary": "Get workouts by user id (User or Dev/Admin)",
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "tags": ["Workout"],
     "parameters": [
       {
@@ -1450,8 +1545,9 @@ swaggerConfig = {
 
 "/AHFULworkout/templates/user/{user_id}": {
   "get": {
-    "summary": "Get workout templates for a user",
+    "summary": "Get workout templates for a user (User or Dev/Admin)",
     "tags": ["Workout"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "parameters": [
       {
         "name": "user_id",
@@ -1488,8 +1584,9 @@ swaggerConfig = {
 
 "/AHFULworkout/templates/{id}": {
   "get": {
-    "summary": "Get template by id",
+    "summary": "Get template by id (User or Dev/Admin)",
     "tags": ["Workout"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "parameters": [
       {
         "name": "id",
@@ -1526,8 +1623,9 @@ swaggerConfig = {
 
 "/AHFULworkout/id/{id}": {
   "get": {
-    "summary": "Get workout by id",
+    "summary": "Get workout by id (User or Dev/Admin)",
     "tags": ["Workout"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "parameters": [
       {
         "name": "id",
@@ -1562,8 +1660,9 @@ swaggerConfig = {
 
 "/AHFULworkout/create": {
   "post": {
-    "summary": "Create a workout",
+    "summary": "Create a workout (Logged in)",
     "tags": ["Workout"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "requestBody": {
       "required": True,
       "content": {
@@ -1592,8 +1691,9 @@ swaggerConfig = {
 
 "/AHFULworkout/create/template": {
   "post": {
-    "summary": "Create a workout template",
+    "summary": "Create a workout template (logged in)",
     "tags": ["Workout"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "requestBody": {
       "required": True,
       "content": {
@@ -1619,8 +1719,9 @@ swaggerConfig = {
 
 "/AHFULworkout/update/{workout_id}": {
   "put": {
-    "summary": "Update a workout",
+    "summary": "Update a workout (User or Dev/Admin)",
     "tags": ["Workout"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "parameters": [
       {
         "name": "workout_id",
@@ -1654,8 +1755,9 @@ swaggerConfig = {
 
 "/AHFULworkout/delete/{workout_id}": {
   "delete": {
-    "summary": "Delete a workout",
+    "summary": "Delete a workout (User or Dev/Admin)",
     "tags": ["Workout"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "parameters": [
       {
         "name": "workout_id",
@@ -1674,8 +1776,9 @@ swaggerConfig = {
 
 "/AHFULworkout/streak/{user_id}": {
   "get": {
-    "summary": "Get workout streak",
+    "summary": "Get workout streak (User or Dev/Admin)",
     "tags": ["Workout"],
+    "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "parameters": [
       {
         "name": "user_id",
@@ -1707,8 +1810,9 @@ swaggerConfig = {
 
     "/AHFULgyms/": {
       "get": {
-        "summary": "Get all gyms",
+        "summary": "Get all gyms (Logged in)",
         "tags": ["Gym"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "responses": {
           "200": {
             "description": "A list of gyms",
@@ -1750,8 +1854,9 @@ swaggerConfig = {
     
     "/AHFULgyms/{gym_id}": {
       "get": {
-        "summary": "Get gym by id",
+        "summary": "Get gym by id (Logged in)",
         "tags": ["Gym"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "gym_id",
@@ -1799,8 +1904,9 @@ swaggerConfig = {
     
     "/AHFULgyms/create": {
       "post": {
-        "summary": "Create a new gym",
+        "summary": "Create a new gym (Gym Owner)",
         "tags": ["Gym"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "requestBody": {
           "required": True,
           "content": {
@@ -2190,7 +2296,7 @@ swaggerConfig = {
 
     "/AHFULfood/create": {
       "post": {
-        "summary": "Create a new food entry",
+        "summary": "Create a new food entry (Logged in)",
         "tags": ["Food"],
         "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "requestBody": {
@@ -2546,7 +2652,7 @@ swaggerConfig = {
 
     "/AHFULmeasurements/create": {
       "post": {
-        "summary": "Create a new measurement",
+        "summary": "Create a new measurement (Logged in)",
         "tags": ["Measurements"],
         "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "requestBody": {
@@ -2772,7 +2878,7 @@ swaggerConfig = {
 
     "/AHFULauth/google-login": {
       "post": {
-        "summary": "Login with Google",
+        "summary": "Login with Google (Public)",
         "tags": ["Auth"],
         "requestBody": {
           "required": True,
@@ -2833,60 +2939,11 @@ swaggerConfig = {
       }
     },
 
-    "/AHFULauth/snapchat-login": {
-      "post": {
-        "summary": "Login with Snapchat",
-        "tags": ["Auth"],
-        "requestBody": {
-          "required": True,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["token"],
-                "properties": {
-                  "token": { "type": "string", "description": "Snapchat authentication token", "example": "snap_token_here" }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Login successful",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string", "example": "Login successful" },
-                    "user_info": { "type": "object", "description": "User information object" }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "No authentication data provided",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "No authentication data provided" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-
     "/AHFULauth/logout": {
       "post": {
-        "summary": "Logout user",
+        "summary": "Logout user (Logged in)",
         "tags": ["Auth"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "requestBody": {
           "required": True,
           "content": {
@@ -2932,76 +2989,67 @@ swaggerConfig = {
       }
     },
 
-    "/AHFULauth/whoami": {
-      "post": {
-        "summary": "Check authentication status",
-        "description": "Verify if a user is authenticated and their session is valid",
-        "tags": ["Auth"],
-        "requestBody": {
-          "required": True,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": ["email", "last_login_expire", "magic_bits"],
-                "properties": {
-                  "email": { "type": "string", "format": "email", "description": "User email", "example": "user@example.com" },
-                  "last_login_expire": { "type": "integer", "description": "Token expiration timestamp", "example": 1708550400 },
-                  "magic_bits": { "type": "string", "description": "Session magic bits for validation", "example": "abcdef1234567890abcdef12345678" }
-                }
-              }
-            }
-          }
-        },
+    "/AHFULtasks/": {
+      "get": {
+        "summary": "Get all tasks (Dev/Admin)",
+        "tags": ["Task"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "responses": {
           "200": {
-            "description": "User is authenticated and authorized",
+            "description": "All tasks retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string", "example": "Authorized and Found User." },
-                    "user_info": { "type": "object", "description": "User information object" }
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "69c6c4c05369bac3185cfdd0"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Newly Make Task"
+                      },
+                      "note": {
+                        "type": "string",
+                        "example": "This is something we should do while in class"
+                      },
+                      "dueTime": {
+                        "type": "integer",
+                        "example": 1774634100
+                      },
+                      "user_id": {
+                        "type": "string",
+                        "example": "69996a73313d1a459f4529da"
+                      },
+                      "created_at": {
+                        "type": "integer",
+                        "example": 1774616176
+                      },
+                      "updated_at": {
+                        "type": "integer",
+                        "example": 1774616176
+                      },
+                      "completed": {
+                        "type": "boolean",
+                        "example": True
+                      }
+                    }
                   }
                 }
               }
             }
           },
-          "200": {
-            "description": "Token expired or invalid request",
+          "500": {
+            "description": "Server error while retrieving tasks",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string", "example": "Token Expired, User will need to Auth Again" }
-                  }
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "User not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "Email NOT found, User will need to Auth" }
-                  }
-                }
-              }
-            }
-          },
-          "200": {
-            "description": "Magic bits mismatch",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": { "type": "string", "example": "Your Bits are overcooked, User will need to Auth Again" }
+                    "error": { "type": "string" }
                   }
                 }
               }
@@ -3054,8 +3102,9 @@ swaggerConfig = {
 
     "/AHFULtasks/user/{user_id}": {
       "get": {
-        "summary": "Get tasks by user id",
+        "summary": "Get tasks by user id (User or Dev/Admin)",
         "tags": ["Task"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "user_id",
@@ -3096,8 +3145,9 @@ swaggerConfig = {
 
     "/AHFULtasks/create/{user_id}": {
       "post": {
-        "summary": "Create a new task",
+        "summary": "Create a new task (User or Dev/Admin)",
         "tags": ["Task"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "user_id",
@@ -3245,8 +3295,9 @@ swaggerConfig = {
 
     "/AHFULtokens/user/{user_id}": {
       "get": {
-        "summary": "Get token by user id",
+        "summary": "Get token by user id (User or Dev/Admin)",
         "tags": ["Token"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "user_id",
@@ -3286,8 +3337,9 @@ swaggerConfig = {
 
     "/AHFULtokens/value/{token}": {
       "get": {
-        "summary": "Get token by value",
+        "summary": "Get token by value (Admin)",
         "tags": ["Token"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "token",
@@ -3327,8 +3379,9 @@ swaggerConfig = {
 
     "/AHFULtokens/create/{user_id}": {
       "post": {
-        "summary": "Create a token for user",
+        "summary": "Create a token for user (User or Dev/Admin)",
         "tags": ["Token"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "user_id",
@@ -3382,8 +3435,9 @@ swaggerConfig = {
 
     "/AHFULtokens/delete/user/{user_id}": {
       "delete": {
-        "summary": "Delete token by user id",
+        "summary": "Delete token by user id (User or Dev/Admin)",
         "tags": ["Token"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "user_id",
@@ -3423,8 +3477,9 @@ swaggerConfig = {
 
     "/AHFULtokens/delete/value/{token}": {
       "delete": {
-        "summary": "Delete token by value",
+        "summary": "Delete token by value (Admin)",
         "tags": ["Token"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "token",
@@ -3464,8 +3519,9 @@ swaggerConfig = {
 
     "/AHFULuserSettings/{user_id}": {
       "get": {
-        "summary": "Get user settings",
+        "summary": "Get user settings (User or Dev/Admin)",
         "tags": ["UserSettings"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "user_id",
@@ -3505,8 +3561,9 @@ swaggerConfig = {
 
     "/AHFULuserSettings/create/{user_id}": {
       "post": {
-        "summary": "Create user settings",
+        "summary": "Create user settings (User or Dev/Admin)",
         "tags": ["UserSettings"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "user_id",
@@ -3559,8 +3616,9 @@ swaggerConfig = {
 
     "/AHFULuserSettings/createDefault/{user_id}": {
       "post": {
-        "summary": "Create default user settings",
+        "summary": "Create default user settings (User or Dev/Admin)",
         "tags": ["UserSettings"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "user_id",
@@ -3600,8 +3658,9 @@ swaggerConfig = {
 
     "/AHFULuserSettings/update/{user_id}": {
       "put": {
-        "summary": "Update user settings",
+        "summary": "Update user settings (User or Dev/Admin)",
         "tags": ["UserSettings"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "user_id",
@@ -3654,8 +3713,9 @@ swaggerConfig = {
 
     "/AHFULuserSettings/delete/{user_id}": {
       "delete": {
-        "summary": "Delete user settings",
+        "summary": "Delete user settings (User or Dev/Admin)",
         "tags": ["UserSettings"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "user_id",

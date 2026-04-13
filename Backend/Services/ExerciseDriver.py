@@ -231,8 +231,6 @@ class ExerciseDriver:
             return externalExercises, None
         except Exception as e:
             return None, str(e)
-
-
         
     #Search exercises by name using external API and internal DB, then combine results
     @staticmethod
@@ -328,7 +326,7 @@ class ExerciseDriver:
                 return None, "Exercise not found"
 
     @staticmethod
-    def create_exercise(formData):
+    def create_exercise(formData, owner_id):
         try:
             instructions_raw = formData.get("instructions", "")
             if isinstance(instructions_raw, str):
@@ -340,6 +338,7 @@ class ExerciseDriver:
             equipments = [equipment_value] if equipment_value else []
 
             exercise_data = {
+                "owner_id": owner_id,
                 "name": formData.get("name"),
                 "targetMuscles": formData.get("targetMuscles", []),
                 "bodyParts": formData.get("bodyParts", []),
@@ -363,7 +362,7 @@ class ExerciseDriver:
                 return False, "Exercise not found"
 
             # Update fields
-            for key in ["name", "body_part", "difficulty", "equipment", "instructions", "type"]:
+            for key in ["owner_id", "name", "body_part", "difficulty", "equipment", "instructions", "type"]:
                 if key in update_data:
                     existing_exercise[key] = update_data[key]
 
@@ -387,7 +386,6 @@ class ExerciseDriver:
             return True, None
         except Exception as e:
             return False, str(e)
-        
 
     @staticmethod
     def get_bodyparts():
