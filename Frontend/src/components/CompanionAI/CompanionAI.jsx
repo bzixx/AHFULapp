@@ -42,7 +42,7 @@ export function CompanionAI(){
                 <h1>AI Companion</h1>
             </header>
             <div className="ai-character-viewer">
-                <img ref={imgRef} id="ai-character-image" src="../../../images/char-mouth-closed.png" alt="WakuWaku" />
+                <img ref={imgRef} id="ai-character-image" src="https://www.ahful.app/images/char-mouth-closed.png" alt="WakuWaku" />
             </div>
             <p ref={statusRef} id="ai-status">Ask me something!</p>
             <footer className="ai-chat-input-area">
@@ -53,7 +53,7 @@ export function CompanionAI(){
                     placeholder="Ask me anything..."
                 />
                 <button ref={sendRef} id="ai-send-button">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    <svg xmlns="https://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
             </footer>
         </div>

@@ -4,6 +4,8 @@ from google.genai import types
 import character
 import asyncio
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 chatRouteBlueprint = Blueprint("chat", __name__,  url_prefix="/AHFULChat")
 
@@ -12,7 +14,7 @@ session_lock = asyncio.Lock()
 
 runner = InMemoryRunner(
     agent=character.root_agent,
-    app_name="Demo App",
+    app_name="AHFUL App",
 )
 
 @chatRouteBlueprint.route("/", methods=["POST"])

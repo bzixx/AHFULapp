@@ -92,7 +92,7 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
             className={({ isActive }) => (isActive ? "active" : "")}
             onClick={handleNavClick}
           >
-            Profile
+            Measurement Logger
           </NavLink> 
 
           <a
