@@ -28,8 +28,25 @@ swaggerConfig = {
     "version": "1.0.0"
   },
   "servers": [
-    { "url": "www.ahful.app/api" }
+      # Changed for local development
+    { "url": "/api" }
   ],
+  
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "Token"
+      },
+      "userIdHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-User-Id"
+      }
+    }
+  },
+
   "paths": {
 
 "/AHFULusers/": {
@@ -1272,7 +1289,7 @@ swaggerConfig = {
 
 "/AHFULexercises/delete/{exercise_id}": {
   "delete": {
-    "summary": "Delete internal exercise by id",
+    "summary": "Delete internal exercise by id (Owner or Dev/Admin)",
     "tags": ["Exercises"],
     "parameters": [
       {
@@ -2020,8 +2037,9 @@ swaggerConfig = {
 
     "/AHFULfood/": {
       "get": {
-        "summary": "Get all foods",
-        "tags": ["Food"],
+        "summary": "Get all foods (Dev/Admin)",
+        "tags": ["Food"],   
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "responses": {
           "200": {
             "description": "A list of foods",
@@ -2065,8 +2083,9 @@ swaggerConfig = {
 
     "/AHFULfood/{user_id}": {
       "get": {
-        "summary": "Get foods by user_id",
+        "summary": "Get foods by user_id (User or Dev/Admin)",
         "tags": ["Food"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "user_id",
@@ -2119,8 +2138,9 @@ swaggerConfig = {
 
     "/AHFULfood/id/{id}": {
       "get": {
-        "summary": "Get food by id",
+        "summary": "Get food by id (Dev/Admin)",
         "tags": ["Food"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "id",
@@ -2172,6 +2192,7 @@ swaggerConfig = {
       "post": {
         "summary": "Create a new food entry",
         "tags": ["Food"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "requestBody": {
           "required": True,
           "content": {
@@ -2226,8 +2247,9 @@ swaggerConfig = {
 
     "/AHFULfood/delete/{food_id}": {
       "delete": {
-        "summary": "Delete food by id",
+        "summary": "Delete food by id (Owner or Dev/Admin)",
         "tags": ["Food"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "food_id",
@@ -2301,9 +2323,10 @@ swaggerConfig = {
 
     "/AHFULfood/update/{food_id}": {
       "put": {
-        "summary": "Update a food entry",
+        "summary": "Update a food entry (Owner or Dev/Admin)",
         "description": "Updates allowed fields of a food entry by id. The server treats PUT as a partial update of allowed fields.",
         "tags": ["Food"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "food_id",
@@ -2400,8 +2423,9 @@ swaggerConfig = {
     
     "/AHFULmeasurements/": {
       "get": {
-        "summary": "Get all measurements",
+        "summary": "Get all measurements (Dev/Admin)",
         "tags": ["Measurements"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "responses": {
           "200": {
             "description": "A list of measurements",
@@ -2433,8 +2457,9 @@ swaggerConfig = {
 
     "/AHFULmeasurements/{user_id}": {
       "get": {
-        "summary": "Get measurements by user id",
+        "summary": "Get measurements by user id (User or Dev/Admin)",
         "tags": ["Measurements"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "user_id",
@@ -2475,8 +2500,9 @@ swaggerConfig = {
 
     "/AHFULmeasurements/id/{measurement_id}": {
       "get": {
-        "summary": "Get a single measurement by id",
+        "summary": "Get a single measurement by id (Dev/Admin)",
         "tags": ["Measurements"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "measurement_id",
@@ -2522,6 +2548,7 @@ swaggerConfig = {
       "post": {
         "summary": "Create a new measurement",
         "tags": ["Measurements"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "requestBody": {
           "required": True,
           "content": {
@@ -2571,27 +2598,65 @@ swaggerConfig = {
 
     "/AHFULmeasurements/update/{measurement_id}": {
       "put": {
-        "summary": "Update a measurement",
-        "description": "Updates allowed fields of a measurement by id. The server treats PUT as a partial update.",
+        "summary": "Update a measurement (Owner or Dev/Admin)",
+        "description": "Partially updates a measurement. Only provided fields will be updated.",
         "tags": ["Measurements"],
+        "security": [
+          { "userIdHeader": [] },
+          { "bearerAuth": [] }
+        ],
         "parameters": [
           {
             "name": "measurement_id",
             "in": "path",
             "required": True,
-            "description": "The id of the measurement (Mongo ObjectId as string)",
-            "schema": { "type": "string", "example": "698d039a6e5117c22dd7771d" }
+            "description": "Measurement ID (Mongo ObjectId)",
+            "schema": {
+              "type": "string",
+              "example": "69c449ceec7e3016c980840a"
+            }
           }
         ],
         "requestBody": {
           "required": True,
+          "description": "At least one field must be provided",
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "data": { "type": "object", "description": "Measurement data fields to update" }
-                }
+                  "date": {
+                    "type": "integer",
+                    "description": "Unix timestamp (seconds)",
+                    "example": 1774396800
+                  },
+                  "arms": {
+                    "type": "number",
+                    "example": 31
+                  },
+                  "thighs": {
+                    "type": "number",
+                    "example": 61
+                  },
+                  "chest": {
+                    "type": "number",
+                    "example": 82
+                  },
+                  "waist": {
+                    "type": "number",
+                    "example": 138
+                  },
+                  "hips": {
+                    "type": "number",
+                    "example": 121
+                  },
+                  "weight": {
+                    "type": "number",
+                    "example": 248
+                  }
+                },
+                "additionalProperties": False,
+                "minProperties": 1
               }
             }
           }
@@ -2608,13 +2673,32 @@ swaggerConfig = {
             }
           },
           "400": {
-            "description": "Invalid input or no valid fields to update",
+            "description": "Invalid input or no valid fields provided",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string", "example": "You must provide a JSON body with at least one field to update" }
+                    "error": {
+                      "type": "string",
+                      "example": "No valid fields to update"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (not the owner or insufficient permissions)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
                   }
                 }
               }
@@ -2627,7 +2711,9 @@ swaggerConfig = {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string" }
+                    "error": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -2639,8 +2725,9 @@ swaggerConfig = {
 
     "/AHFULmeasurements/delete/{measurement_id}": {
       "delete": {
-        "summary": "Delete a measurement by id",
+        "summary": "Delete a measurement by id (Owner or Dev/Admin)",
         "tags": ["Measurements"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
             "name": "measurement_id",

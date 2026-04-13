@@ -23,10 +23,62 @@ class VerificationDriver:
         except (bson_errors.InvalidId, TypeError, ValueError):
             return None, f"Invalid {name} format; must be a 24-hex string"
         
+    @staticmethod
     def generate_code(length=8):
         characters = string.ascii_uppercase + string.digits
         return ''.join(secrets.choice(characters) for _ in range(length))
     
+    @staticmethod
+    def confirm_user_login(user_id, bits):
+        # Validate vars present
+        if not user_id:
+            return None, "user_id is required"
+        if not bits:
+            return None, "bits is required"
+
+        # Validate user_id valid
+        oid, err = VerificationDriver._validate_obj_id(user_id, "user_id")
+        if err:
+            return None, err
+        
+        try:
+            #Find user, ensure exists
+            user = UserObject.find_by_id(user_id)
+            if not user:
+                return None, "User not found"
+            elif user["magic_bits"] != bits:
+                return None, "These bits don't match :("
+            # Commented out for ease of development
+            # elif datetime.now().timestamp() - user["last_login_expire"] > 0:
+            #     return None, "These bits are too old :,("
+            else:
+                return user, None
+                
+        except Exception as e:
+            return None, str(e)
+        
+    @staticmethod
+    def confirm_user_developer(user_id, bits):
+        user, err = VerificationDriver.confirm_user_login(user_id, bits)
+        print(user)
+        if err:
+            return None, err
+        elif (("Admin" not in user["roles"]) and ("Developer" not in user["roles"])):
+            return None, "User does not have permission"
+        else:
+            return user, None
+        
+    @staticmethod
+    def confirm_user_admin(user_id, bits):
+        user, err = VerificationDriver.confirm_user_login(user_id, bits)
+        print(user)
+        if err:
+            return None, err
+        elif ("Admin" not in user["roles"]):
+            return None, "User does not have permission"
+        else:
+            return user, None
+        
     @staticmethod
     def verify_user_email(user_id):
         # Validate user_id present

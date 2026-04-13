@@ -58,3 +58,40 @@ class ExerciseObject:
     def delete(id):
         result = ExerciseCollection.delete_one({"_id": ObjectId(id)})
         return id if result.deleted_count == 1 else None
+    
+    # ── Update ─────────────────────────────────────────────────────────────────
+    @staticmethod
+    def update(id, updates):
+        if not updates or not isinstance(updates, dict):
+            return None
+
+        allowed_fields = {
+            "name",
+            "gifUrl",
+            "targetMuscles",
+            "bodyParts",
+            "equipments",
+            "secondaryMuscles",
+            "instructions"
+        }
+
+        sanitized_updates = {
+            k: v
+            for k, v in updates.items()
+            if k in allowed_fields and v is not None
+        }
+
+        if not sanitized_updates:
+            return None
+
+        result = ExerciseCollection.update_one(
+            {"_id": ObjectId(id)},
+            {"$set": sanitized_updates}
+        )
+
+        if result.matched_count == 0:
+            return None
+
+        # Return the updated document
+        updated = ExerciseCollection.find_one({"_id": ObjectId(id)})
+        return ExerciseObject._serialize(updated)
