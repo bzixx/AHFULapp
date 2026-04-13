@@ -127,3 +127,13 @@
   background: var(--color-primary);
   color: var(--text-secondary);
 }
+
+.workout-dot {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: red;
+}
