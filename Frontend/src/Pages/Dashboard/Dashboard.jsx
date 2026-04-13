@@ -118,8 +118,8 @@ function InternalDashboard() {
       const fetchStreaks = async () => {
         try {
           const [workoutRes, foodRes] = await Promise.all([
-            fetch(`http://localhost:5000/AHFULworkout/streak/${user._id}`),
-            fetch(`http://localhost:5000/AHFULfood/streak/${user._id}`)
+            fetch(`http://localhost:5000/api/AHFULworkout/streak/${user._id}`),
+            fetch(`http://localhost:5000/api/AHFULfood/streak/${user._id}`)
           ]);
 
           const workoutData = await workoutRes.json();
