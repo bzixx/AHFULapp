@@ -52,7 +52,7 @@ export function ExploreWorkouts() {
         throw new Error("User ID not found. Please log in to view your workouts.");
       }
 
-      const url = `http://localhost:5000/AHFULworkout/${userId}`;
+      const url = `http://localhost:5000/api/AHFULworkout/${userId}`;
       const res = await fetch(url);
 
       if (!res.ok) {
@@ -122,7 +122,7 @@ export function ExploreWorkouts() {
             continue;
           }
           try {
-            const response = await fetch(`http://localhost:5000/AHFULexercises/id/${id}`);
+            const response = await fetch(`http://localhost:5000/api/AHFULexercises/id/${id}`);
 
             if (!response.ok) {
               results[id] = "Unknown Exercise";
