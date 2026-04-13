@@ -582,6 +582,8 @@ export async function updateWorkout(workoutId, data) {
 
 // ── Personal Exercise Functions ─────────────────────────────────────────────────
 
+// export async function fetchPersonalExerciseById(userId) {
+
 export async function fetchPersonalExercises(workoutId) {
   try {
     const res = await fetch(

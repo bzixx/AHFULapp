@@ -1,9 +1,15 @@
 import Body from "react-muscle-highlighter";
 import "./HeatMap.css";
+import { useEffect } from "react";
+
 
 const HEAT_COLORS = ["#ef4444", "#ef4444", "#ef4444"];
 
 export function HeatMap({ data = {}, onMuscleClick }) {
+  const selectedDate = useSelector((state) => state.calendar);
+  const muscles = useSelector((state) => state.pullExercise.exercises);
+  const workouts = useSelector((state) => state.pullWorkout.workouts);
+
   const bodyData = Object.entries(data)
     .map(([slug, intensity]) => ({
       slug,
@@ -16,6 +22,12 @@ export function HeatMap({ data = {}, onMuscleClick }) {
       onMuscleClick(part.slug || "", side);
     }
   };
+
+  targetedMuscles
+
+  useEffect(()=>{
+
+  }), [selectedDate];
 
   return (
     <div className="heatmap-container">
