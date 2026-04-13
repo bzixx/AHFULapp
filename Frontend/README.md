@@ -17,7 +17,7 @@ Custom Auth Context component for persistent authentication
         ```
 
 2. **Access the Application**:
-    - Open your browser and navigate to `http://localhost:5173`.
+    - Open your browser and navigate to `https://ahful.app`.
 
 ### CSS Information
   -Start with theme pages under Stylesheets/Themes/

@@ -2,8 +2,8 @@
   /* COLORS */
   --color-bg: #FFF7F2;
   --color-surface: #f5f5f5;
-  --color-primary: #1e1e2e;
-  --color-border: #333;
+  --color-primary: #f5f5f5;
+  --color-border: #ddd;
 
   /* GRADIENTS */
   --gradient-card: linear-gradient(90deg, #c3cfe2, #f5f7fa, #c3cfe2);
@@ -11,10 +11,10 @@
 
   /* TEXT */
   --text-primary: #041833;
-  --text-secondary: white;
-  --text-muted: #555;
-  
-    /* TEXT SIZES */
+  --text-secondary: #555;
+  --text-muted: #888;
+
+  /* TEXT SIZES */
   --text-xs: 12px;
   --text-sm: 14px;
   --text-md: 16px;
@@ -34,4 +34,38 @@
   /* SHADOWS */
   --shadow-sm: 0 3px 6px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+
+  /* COMPONENT SPECIFIC */
+  --accent-blue: #007bff;
+  --accent-blue-dark: #0056b3;
+  --accent-green: #28a745;
+  --accent-green-dark: #218838;
+  --accent-red: #dc3545;
+  --accent-red-dark: #c0392b;
+  --accent-red-bg: #fadbd8;
+  --accent-yellow: #ffc107;
+
+  /* CALENDAR SPECIFIC */
+  --calendar-bg: #f5f5f5;
+  --calendar-selected: #007bff;
+  --calendar-hover: #e8e8e8;
+
+  /* INPUT SPECIFIC */
+  --input-bg: #ffffff;
+  --input-border: #ddd;
+  --input-text: #041833;
+  --input-placeholder: #999;
+
+  /* BUTTON SPECIFIC */
+  --button-bg: #f5f5f5;
+  --button-hover: #e8e8e8;
+  --button-active: #007bff;
+  --button-secondary-hover: #545b62;
+
+  /* ACCENT BACKGROUNDS */
+  --error-bg: #fadbd8;
+  --warning-bg: #fff3cd;
+  --success-bg: #d4edda;
+  --highlight-bg: #f0f7ff;
+  --highlight-secondary-bg: #e3f2fd;
 }

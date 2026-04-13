@@ -3,7 +3,19 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const settingSlice = createSlice({
     name: "setting",
-    initialState: {},
+    initialState: {
+        theme: "Light", // default to light theme
+        units: "Imperial",
+        goals: "Maintain",
+        shame: "Off",
+        equipment: [],
+        gender: "",
+        pronouns: "",
+        dateOfBirth: "",
+        locations: [],
+        tutorialComplete: false,
+        timezone: "EST",
+    },
     reducers: {
     updateSetting: (state, action) => {
         const { key, value } = action.payload;

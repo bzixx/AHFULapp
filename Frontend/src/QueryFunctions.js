@@ -228,19 +228,16 @@ export async function handle_google_login(response) {
 
 export async function whoami(userDataToVerify) {
   try {
-    const backendVerificationResponse = await fetch(
-      "http://localhost:5000/AHFULauth/whoami",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: userDataToVerify.email,
-          last_login_expire: userDataToVerify.last_login_expire,
-          magic_bits: userDataToVerify.magic_bits,
-        }),
-        credentials: "include",
-      },
-    );
+    const backendVerificationResponse = await fetch('http://localhost:5000/AHFULauth/whoami', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: userDataToVerify.email,
+        last_login_expire: userDataToVerify.last_login_expire,
+        magic_bits: userDataToVerify.magic_bits
+      }),
+      credentials: 'include'
+    });
 
     if (backendVerificationResponse.ok) {
       const data = await backendVerificationResponse.json();
@@ -259,7 +256,7 @@ export async function whoami(userDataToVerify) {
 export async function fetchTemplate(userId) {
   console.log(userId);
   const res = await fetch(
-    `http://localhost:5000/AHFULworkout/templates/user/${userId}`,
+    `http://localhost:5000/AHFULworkout/templates/${userId}`,
   );
   if (!res.ok) {
     let bodyText = "";
@@ -303,9 +300,7 @@ export async function createTemplate(templateData) {
 
 // ──  User Settings functions ─────────────────────────────────────────────────────────
 export async function getUserSettings(userId) {
-  const foundUserSettingsResponse = await fetch(
-    `http://localhost:5000/AHFULuserSettings/${userId}`,
-  );
+  const foundUserSettingsResponse = await fetch(`http://localhost:5000/AHFULuserSettings/${userId}`);
   if (foundUserSettingsResponse.status === 404) {
     // Create default settings if not found
     const createDefaultSettingsResponse = await fetch(
@@ -536,10 +531,8 @@ export async function fetchWorkout(userId) {
 
     const data = await res.json();
     // Ensure we always return an array
-    if (Array.isArray(data)) return data;
-    if (data && Array.isArray(data.workouts)) return data.workouts;
-    if (data && Array.isArray(data.data)) return data.data;
-    return [];
+    return data
+
   } catch (err) {
     console.error("fetchWorkout error:", err);
     // Return empty array for network errors on new user accounts
@@ -709,5 +702,23 @@ export async function updatePersonalExercises(peId, peData) {
   } catch (err) {
     console.error("updatePersonalExercise error:", err);
     return { error: err.message || "Failed to update personal exercise" };
+  }
+}
+
+export async function updateTask(taskId, updates) {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/AHFULtasks/update/${taskId}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      }
+    );
+    if (!res.ok) throw new Error("Failed to update task");
+    return { success: true, data: await res.json() };
+  } catch (err) {
+    console.error("updateTask error:", err);
+    return { error: err.message || "Failed to update task" };
   }
 }

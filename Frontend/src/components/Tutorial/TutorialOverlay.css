@@ -14,12 +14,12 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--color-surface);
 }
 
 .tutorial-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4CAF50, #8BC34A);
+  background: var(--accent-green);
   transition: width 0.3s ease;
 }
 
@@ -28,14 +28,15 @@
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: white;
+  background: var(--input-bg);
   border-radius: 12px;
   padding: 20px 28px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-md);
   max-width: 400px;
   width: calc(100% - 48px);
   pointer-events: auto;
   animation: tutorial-slide-up 0.3s ease;
+  color: var(--text-primary);
 }
 
 @keyframes tutorial-slide-up {
@@ -95,7 +96,7 @@
 .tutorial-next-btn {
   background: #4CAF50;
   border: none;
-  color: white;
+  color: var(--input-bg);
   padding: 8px 20px;
   border-radius: 6px;
   cursor: pointer;

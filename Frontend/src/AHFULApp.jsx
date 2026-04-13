@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { WorkoutLogger } from "./Pages/WorkoutLogger/WorkoutLogger.jsx";
 import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
 import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
 import { Dashboard } from "./Pages/Dashboard/Dashboard.jsx";
 import { Login } from "./Pages/Login/Login.jsx";
+import { VerifyEmail } from "./Pages/Verification/VerifyEmail.jsx";
 import { Map } from "./Pages/Map/Map.jsx";
+import { AIChat } from "./Pages/AIChat/AIChat.jsx";
 import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
 import { Profile } from "./Pages/Profile/Profile.jsx";
 import { TOS } from "./Pages/TOS/TOS.jsx";
@@ -17,22 +20,33 @@ import { Test } from "./Pages/Test/Test.jsx";
 import { useTutorial } from "./hooks/useTutorial.js";
 import { TutorialOverlay } from "./components/Tutorial/TutorialOverlay.jsx";
 import "./SiteStyles.css";
+import "./Stylesheets/Themes/Lightmode.css";
+import "./Stylesheets/Themes/Darkmode.css";
 
-
-function AHFULApp() { 
+function AHFULApp() {
     // Example: detect page changes and refresh a value when the route changes.
   // This component is rendered inside a <Router> (see `main.jsx`), so useLocation works here.
   const location = useLocation();
   const [pageChangeCount, setPageChangeCount] = useState(0);
-  const { 
-    isActive: tutorialActive, 
-    currentStep, 
-    totalSteps, 
+  const theme = useSelector((state) => state.setting.theme);
+  const {
+    isActive: tutorialActive,
+    currentStep,
+    totalSteps,
     currentStepData,
-    skipTutorial, 
+    skipTutorial,
     nextStep,
-    completeTutorial 
+    completeTutorial
   } = useTutorial();
+
+  // Apply theme globally - runs on all pages
+  useEffect(() => {
+    if (theme === "Dark") {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }, [theme]);
 
   useEffect(() => {
         // increment a counter every time the pathname changes — used for debugging route changes
@@ -59,6 +73,12 @@ function AHFULApp() {
           <Route path="/FoodLog" element={
             <AuthRouteCheck>
               <FoodLog/>
+            </AuthRouteCheck>}/>
+          <Route path="/EmailVerification" element={
+              <VerifyEmail/>}/>
+          <Route path="/AIChat" element={
+            <AuthRouteCheck>
+              <AIChat/>
             </AuthRouteCheck>}/>
           <Route path="/Map" element={
             <AuthRouteCheck>

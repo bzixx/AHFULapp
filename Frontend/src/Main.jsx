@@ -2,6 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import AHFULApp from './AHFULApp.jsx'
 import './SiteStyles.css'
+import './Stylesheets/Themes/Lightmode.css'
+import './Stylesheets/Themes/Darkmode.css'
 import { StoreProvider, persistor } from './Store.jsx'
 import { PersistGate } from 'redux-persist/integration/react'
 import { BrowserRouter as Router } from "react-router-dom";
@@ -49,16 +51,16 @@ function AHFULApp_localStorageChecked() {
           if (fetchResponse) {
             dispatch(authLogin(fetchResponse.user_info));
             console.log("Session Validated.  User Info:", fetchResponse.user_info);
-            
+
             const userId = fetchResponse.user_info._id;
             console.log("Attempting to load settings for user ID:", userId);
             if (userId) {
               try {
-                //Fetch user settings and load them into Redux If user ID does not have settings QueryFunction Handels. 
+                //Fetch user settings and load them into Redux If user ID does not have settings QueryFunction Handels.
                 const settingsData = await getUserSettings(userId);
                 console.log("Settings Data Fetched:", settingsData);
                 dispatch(setSettings({
-                  theme: settingsData.displayMode ,
+                  theme: settingsData.displayMode === "dark" ? "Dark" : "Light",
                   units: settingsData.units ,
                   goals: settingsData.goals ,
                   shame: settingsData.shameLevel ,
@@ -69,12 +71,12 @@ function AHFULApp_localStorageChecked() {
                   locations: settingsData.locations,
                   tutorialComplete: settingsData.tutorialComplete,
                 }));
-                
+
               } catch (settingsErr) {
                 console.error("Failed to load settings:", settingsErr);
               }
             }
-      
+
           } else {
             localStorage.removeItem('user_data');
             dispatch(authLogout());
@@ -98,7 +100,7 @@ function AHFULApp_localStorageChecked() {
       document.body.classList.remove("dark");
     }
   }, [userSettings.theme]);
-  
+
   return loading ? <Loading /> : <AHFULApp />;
 }
 

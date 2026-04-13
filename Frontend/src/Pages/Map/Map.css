@@ -30,13 +30,14 @@
 }
 
 .gym-form {
-  background: #fff;
+  background: var(--input-bg);
   padding: 12px;
   border-radius: 8px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: 8px;
+  color: var(--text-primary);
 }
 
 .gym-form label {
@@ -49,15 +50,17 @@
 .gym-type legend { font-size: 13px; margin-bottom: 4px; }
 .gym-type label { display:flex; gap:6px; align-items:center; font-size:14px; }
 
-.type-pill { display:inline-block; margin-left:8px; padding:2px 8px; background:#eef5ff; color:#0366d6; border-radius:12px; font-size:12px; vertical-align:middle; }
+.type-pill { display:inline-block; margin-left:8px; padding:2px 8px; background:rgba(59, 130, 246, 0.15); color:var(--accent-blue); border-radius:12px; font-size:12px; vertical-align:middle; }
 
 .gym-form input,
 .gym-form textarea {
   margin-top: 6px;
   padding: 8px 10px;
-  border: 1px solid #dcdcdc;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   font-size: 14px;
+  background: var(--input-bg);
+  color: var(--input-text);
 }
 
 .gym-form textarea { min-height: 64px; resize: vertical; }
@@ -66,22 +69,22 @@
 .coords-row label { flex: 1; }
 
 .form-actions { display: flex; justify-content: flex-end; }
-.form-actions .primary { background:#007acc; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
+.form-actions .primary { background:var(--accent-blue); color:var(--input-bg); border:none; padding:8px 12px; border-radius:6px; cursor:pointer; }
 
-.hint { font-size: 12px; color: #666; }
+.hint { font-size: 12px; color: var(--text-secondary); }
 
-.saved-list { background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 6px 18px rgba(0,0,0,0.04); }
+.saved-list { background: var(--input-bg); padding: 10px; border-radius: 8px; box-shadow: var(--shadow-sm); color: var(--text-primary); }
 .saved-list ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
 .saved-item { display:flex; justify-content:space-between; gap:8px; align-items:center; }
-.saved-actions button { background:transparent; border:1px solid #e0e0e0; padding:6px 8px; border-radius:6px; cursor:pointer; }
-.muted { color:#6b6b6b; }
+.saved-actions button { background:transparent; border:1px solid var(--color-border); padding:6px 8px; border-radius:6px; cursor:pointer; color: var(--text-primary); }
+.muted { color:var(--text-secondary); }
 .small { font-size:12px; }
 
 /* Make leaflet controls readable against app background */
 .leaflet-container {
-  background: #eaeaea;
+  background: var(--color-surface);
   border-radius: 8px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-md);
 }
 
 @media (max-width: 720px) {
@@ -106,15 +109,15 @@
 .address-search input {
   flex: 1;
   padding: 10px 12px;
-  border: 1px solid #dcdcdc;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   font-size: 14px;
 }
 
 .address-search button {
   padding: 10px 20px;
-  background: #007acc;
-  color: white;
+  background: var(--accent-blue);
+  color: var(--input-bg);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -122,12 +125,12 @@
 }
 
 .address-search button:disabled {
-  background: #ccc;
+  background: var(--button-hover);
   cursor: not-allowed;
 }
 
 .geo-error {
-  color: #d9534f;
+  color: var(--accent-red);
   font-size: 13px;
   margin: 0 0 8px 0;
   text-align: center;
@@ -139,7 +142,7 @@
 /* Search hint text */
 .search-hint {
   font-size: 13px;
-  color: #666;
+  color: var(--text-secondary);
   margin: 0 0 8px 0;
   text-align: center;
   max-width: 1000px;

@@ -4,13 +4,13 @@ from Services.TaskDriver import TaskDriver
 #AHFUL Task Routes
 taskBlueprint = Blueprint("task", __name__, url_prefix="/AHFULtasks")
 
-# Get all tasks
-@taskBlueprint.route("/", methods=["GET"])
-def get_all_tasks():
-    tasks, error = TaskDriver.get_all_tasks()
-    if error:
-        return jsonify({"error": error}), 500
-    return jsonify(tasks), 200
+# Get all tasks -- NOT ACTIVE IN PROD
+# @taskBlueprint.route("/", methods=["GET"])
+# def get_all_tasks():
+#     tasks, error = TaskDriver.get_all_tasks()
+#     if error:
+#         return jsonify({"error": error}), 500
+#     return jsonify(tasks), 200
 
 # Get task by ID
 @taskBlueprint.route("/<task_id>", methods=["GET"])

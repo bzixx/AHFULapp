@@ -4,13 +4,13 @@ from Services.MeasurementDriver import MeasurementDriver
 
 measurementRouteBlueprint = Blueprint("measurements", __name__, url_prefix="/AHFULmeasurements")
 
-
-@measurementRouteBlueprint.route("/", methods=["GET"])
-def get_all_measurements():
-    measurements, error = MeasurementDriver.get_all_measurements()
-    if error:
-        return jsonify({"error": error}), 500
-    return jsonify(measurements), 200
+#Not Active in Prod. 
+# @measurementRouteBlueprint.route("/", methods=["GET"])
+# def get_all_measurements():
+#     measurements, error = MeasurementDriver.get_all_measurements()
+#     if error:
+#         return jsonify({"error": error}), 500
+#     return jsonify(measurements), 200
 
 
 @measurementRouteBlueprint.route("/<user_id>", methods=["GET"])

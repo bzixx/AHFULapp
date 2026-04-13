@@ -3,10 +3,12 @@ import { Outlet } from "react-router-dom";
 import { MenuButton } from "./components/MenuButton/MenuButton";
 import { Header } from "./components/Header/Header.jsx";
 import { Footer } from "./components/Footer/Footer.jsx";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 
 export function Layout() {
     const [isNavOpen, setIsNavOpen] = useState(false);
+    const theme = useSelector((state) => state.setting.theme);
 
     const toggleNav = () => {
         setIsNavOpen(!isNavOpen);
@@ -15,6 +17,15 @@ export function Layout() {
     const closeNav = () => {
         setIsNavOpen(false);
     };
+
+    // Apply theme globally whenever it changes
+    useEffect(() => {
+        if (theme === "Dark") {
+            document.body.classList.add("dark");
+        } else {
+            document.body.classList.remove("dark");
+        }
+    }, [theme]);
 
     return (
         <>

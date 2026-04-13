@@ -10,9 +10,9 @@
   font-family: sans-serif;
   z-index: 10000 !important;
 
-  background: var(--color-surface) !important;
-  border: 2px solid var(--color-border) !important;
-  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 4px solid var(--color-border);
+  border-radius: 16px;
   box-shadow: var(--shadow-md);
   overflow: hidden;
 }
@@ -21,9 +21,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
-  padding: 8px 12px;
-  border-bottom: var(--border-medium);
+  margin-bottom: 12px;
+  padding: 4px 8px;
+  border-bottom: 2px solid var(--color-border);
   background: transparent;
   border-radius: var(--radius-md);
 }
@@ -33,22 +33,22 @@
   font-weight: 600;
   color: var(--text-primary);
   user-select: none;
+  color: var(--text-primary);
 }
 
 .calendar-button {
-  padding: 10px 16px;
-  border-radius: var(--radius-md);
-  border: var(--border-thin);
-  background: var(--gradient-button);
+  padding: 8px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  background: var(--button-bg);
   color: var(--text-primary);
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   transition: background 0.2s ease;
 }
 
 .calendar-button:hover {
-  background: var(--color-primary);
-  color: var(--text-secondary);
+  background: var(--button-hover);
 }
 
 .calendar-weekdays {
@@ -57,8 +57,8 @@
   gap: 6px;
   font-size: 16px;
   font-weight: bold;
-  color: var(--text-muted);
-  margin-bottom: 6px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
 }
 
 .calendar-weekday {
@@ -86,26 +86,26 @@
   user-select: none;
   transition: background 0.15s ease;
   cursor: pointer;
-  background-color: var(--color-surface);
-  border: var(--border-thin);
+  background-color: var(--calendar-bg);
+  border: 2px solid var(--color-border);
   color: var(--text-primary);
-  font-size: 16px;
 }
 
 .calendar-cell.other {
-  background-color: var(--color-bg);
-  opacity: 0.7;
+  background-color: var(--color-border);
+  opacity: 0.6;
 }
 
 .calendar-cell.today {
-  box-shadow: 0 0 0 2px var(--color-primary);
+  box-shadow: 0 0 0 2.5px var(--accent-blue);
+  border-color: var(--accent-blue);
 }
 
 .calendar-cell.selected {
-  background: var(--color-primary);
-  color: var(--text-secondary);
+  background: var(--accent-blue);
   font-weight: bold;
-  border: var(--border-medium);
+  border: 3px solid var(--accent-blue);
+  color: var(--input-bg);
 }
 
 .calendar-today-badge {
@@ -115,8 +115,8 @@
   font-size: 11px;
   padding: 3px 6px;
   border-radius: 6px;
-  background: var(--color-primary);
-  color: var(--text-secondary);
+  background: var(--accent-blue);
+  color: var(--input-bg);
 }
 
 .calendar-day-today {
@@ -124,8 +124,7 @@
 }
 
 .calendar-cell:not(.today):hover {
-  background: var(--color-primary);
-  color: var(--text-secondary);
+  background: var(--calendar-hover);
 }
 
 .workout-dot {

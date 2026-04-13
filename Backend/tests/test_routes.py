@@ -936,6 +936,15 @@ def test_update_personal_ex_roundtrip():
     orig_distance  = original.get("distance")
     orig_complete  = original.get("complete")
 
+    restore = {
+        "reps": orig_reps,
+        "sets": orig_sets,
+        "weight": orig_weight,
+        "duration": orig_duration,
+        "distance": orig_distance,
+        "complete": orig_complete
+    }
+
     new_values = {
         "reps": 999,
         "sets": 999,
@@ -945,9 +954,12 @@ def test_update_personal_ex_roundtrip():
         "complete": True
     }
 
-    updated, err = PersonalExDriver.update_personal_ex(id=personal_ex_id, updates=new_values)
+    updated, err_1 = PersonalExDriver.update_personal_ex(id=personal_ex_id, updates=new_values)
+    fetched_after_update, err_2 = PersonalExDriver.get_personal_ex_by_id(personal_ex_id)
+    restored, err_3 = PersonalExDriver.update_personal_ex(id=personal_ex_id, updates=restore)
+    fetched_after_restore, err_4 = PersonalExDriver.get_personal_ex_by_id(personal_ex_id)
 
-    if err is not None:
+    if err_1 is not None:
         print("Update failed:", err)
 
     assert err is None
@@ -961,10 +973,9 @@ def test_update_personal_ex_roundtrip():
     assert updated.get("distance") == new_values["distance"]
     assert updated.get("complete") == new_values["complete"]
 
-    fetched_after_update, err = PersonalExDriver.get_personal_ex_by_id(personal_ex_id)
-    if err is not None:
+    if err_2 is not None:
         print("Fetch after update failed:", err)
-    assert err is None
+    assert err_2 is None
     assert fetched_after_update is not None
     assert fetched_after_update.get("_id") == personal_ex_id
 
@@ -976,16 +987,7 @@ def test_update_personal_ex_roundtrip():
     assert fetched_after_update.get("distance") == new_values["distance"]
     assert fetched_after_update.get("complete") == new_values["complete"]
 
-    restore = {
-        "reps": orig_reps,
-        "sets": orig_sets,
-        "weight": orig_weight,
-        "duration": orig_duration,
-        "distance": orig_distance,
-        "complete": orig_complete
-    }
-    restored, err = PersonalExDriver.update_personal_ex(id=personal_ex_id, updates=restore)
-    if err is not None:
+    if err_3 is not None:
         print("Restore failed:", err)
     assert err is None
     assert restored is not None
@@ -999,10 +1001,10 @@ def test_update_personal_ex_roundtrip():
     assert restored.get("distance") == orig_distance
     assert restored.get("complete") == orig_complete
 
-    fetched_after_restore, err = PersonalExDriver.get_personal_ex_by_id(personal_ex_id)
-    if err is not None:
+    
+    if err_4 is not None:
         print("Fetch after restore failed:", err)
-    assert err is None
+    assert err_4 is None
     assert fetched_after_restore is not None
     assert fetched_after_restore.get("_id") == personal_ex_id
 
@@ -1245,7 +1247,7 @@ def test_find_user_by_email():
     assert err == inv_err_code   
 
 def test_add_remove_role_by_id_roundtrip():
-    user_id = "699f79574048f9ec8b5b0ed3"
+    user_id = "69c1ae61ea43bc1bee414ddf"
     adder_id = "699d0093795741a59fe13616"
     test_role = "Gym Owner"
 
@@ -1286,7 +1288,7 @@ def test_add_remove_role_by_id_roundtrip():
     assert test_role not in fetched_after.get("roles", [])
 
 def test_add_remove_role_by_email_roundtrip():
-    user_email = "jtboichipichipi@gmail.com"
+    user_email = "tskoglundd@gmail.com"
     adder_id = "699d0093795741a59fe13616"
     test_role = "Gym Owner"
 
@@ -1909,7 +1911,7 @@ def test_workout_partial_empty_unknown_updates():
 # Measurements
 
 def test_find_measurement_by_id():
-    oid = "69b4880023803f807becacf3"
+    oid = "69b4884923803f807becacf4"
     m, err = MeasurementDriver.get_measurement_by_id(oid)
 
     if err is not None:
@@ -1920,13 +1922,13 @@ def test_find_measurement_by_id():
     assert m is not None
     assert m.get("_id") == oid
     assert m.get("user_id") == "699f79394048f9ec8b5b0ed2"
-    assert m.get("date") == 1773360000
-    assert m.get("arms") == 70
-    assert m.get("hips") == 130
-    assert m.get("chest") == 108
-    assert m.get("weight") == 220
-    assert m.get("waist") == 108
-    assert m.get("thighs") == 30
+    assert m.get("date") == 1773273600
+    assert m.get("arms") == 40
+    assert m.get("hips") == 105
+    assert m.get("chest") == 90
+    assert m.get("weight") == 200
+    assert m.get("waist") == 90
+    assert m.get("thighs") == 25
 
     # Bad ID
     bad_oid = "69b4880023803f807becacf"
@@ -1951,9 +1953,9 @@ def test_find_measurements_by_user():
     assert len(m) > 0
 
     # Find the known object
-    known = next((x for x in m if x["_id"] == "69b4880023803f807becacf3"), None)
+    known = next((x for x in m if x["_id"] == "69b4884923803f807becacf4"), None)
     assert known is not None
-    assert known.get("arms") == 70
+    assert known.get("arms") == 40
 
     # Bad user_id format
     bad_uid = "699f79394048f9ec8b5b0ed"
@@ -1998,7 +2000,7 @@ def test_create_delete_measurement():
     assert m is None
 
 def test_update_measurement_roundtrip():
-    oid = "69b4880023803f807becacf3"
+    oid = "69b4884923803f807becacf4"
 
     original, err = MeasurementDriver.get_measurement_by_id(oid)
     assert err is None

@@ -50,13 +50,19 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
           </NavLink>
 
           <NavLink
+            to="/AIChat"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
+            AI Chat
+          </NavLink>
+
+          <NavLink
             to="/ExploreWorkout"
             className={({ isActive }) => (isActive ? "active" : "")}
             onClick={handleNavClick}
           >
             Explore Workouts
           </NavLink>
-
           <NavLink
             to="/FoodLog"
             className={({ isActive }) => (isActive ? "active" : "")}
@@ -70,7 +76,7 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
             className={({ isActive }) => (isActive ? "active" : "")}
             onClick={handleNavClick}
           >
-            Tasks
+            Explore Tasks
           </NavLink>
 
           <NavLink
@@ -78,7 +84,7 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
             className={({ isActive }) => (isActive ? "active" : "")}
             onClick={handleNavClick}
           >
-            Map
+            Gym's & Map
           </NavLink>
 
           <NavLink
@@ -87,7 +93,8 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
             onClick={handleNavClick}
           >
             Measurement Logger
-          </NavLink>
+          </NavLink> 
+
           <a
             href="http://localhost:5000/APIDocs"
             target="_blank"
