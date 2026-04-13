@@ -2,7 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import AHFULApp from './AHFULApp.jsx'
 import './SiteStyles.css'
-import { StoreProvider } from './Store.jsx'
+import { StoreProvider, persistor } from './Store.jsx'
+import { PersistGate } from 'redux-persist/integration/react'
 import { BrowserRouter as Router } from "react-router-dom";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Loading } from './components/Loading/Loading.jsx';
@@ -104,11 +105,13 @@ function AHFULApp_localStorageChecked() {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <StoreProvider>
-      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-        <Router>
-          <AHFULApp_localStorageChecked />
-        </Router>
-      </GoogleOAuthProvider>
+      <PersistGate loading={<Loading />} persistor={persistor}>
+        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+          <Router>
+            <AHFULApp_localStorageChecked />
+          </Router>
+        </GoogleOAuthProvider>
+      </PersistGate>
     </StoreProvider>
   </React.StrictMode>,
 )

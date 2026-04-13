@@ -20,6 +20,7 @@ export function Login() {
     if (isAuthenticated && user) {
       setStatusText(`Logged in as ${user.email}`);
       navigate("/Login", { replace: true });
+      onLoginCache();
     }
   }, [isAuthenticated, user]);
 
@@ -28,7 +29,6 @@ export function Login() {
       setStatusText(`Loggging in with Google...`);
       let fetchResponse = await handle_google_login(response);
       dispatch(authLogin(fetchResponse));
-      onLoginCache();
     }catch(error){
       console.error("Google login error:", error);
       setStatusText(error.message || "Login failed. Please try again.");

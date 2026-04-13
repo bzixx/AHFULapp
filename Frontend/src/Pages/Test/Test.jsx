@@ -1,27 +1,22 @@
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
-import { pullExercises } from "../../components/Cache/ExerciseCache/PullExercise";
 
 export function Test() {
-  const exercises = useSelector((state) => state.pullExercise.exercises);
+  const pullTemplateState = useSelector((state) => state.pullTemplate);
 
-  useEffect(() => {
-    pullExercises();
-  }, []);
 
   return (
     <>
       <h1>Test Page</h1>
-      <h2>Exercises in Cache:</h2>
+      <h2>Templates in Cache:</h2>
 
-      {exercises && exercises.length > 0 ? (
-        exercises.map((ex, index) => (
+      {pullTemplateState.templates && pullTemplateState.templates.length > 0 ? (
+        pullTemplateState.templates.map((template, index) => (
           <div key={index}>
-            {ex.name || ex.id || JSON.stringify(ex)}
+            {template.title || template._id || JSON.stringify(template)}
           </div>
         ))
       ) : (
-        <p>No exercises found</p>
+        <p>No templates found</p>
       )}
     </>
   );
