@@ -20,6 +20,10 @@ requests ==2.32.5 #- HTTP library for making API requests (used by google-auth a
 # Database Libraries:
 pymongo==4.16.0 #- MongoDB driver for Python
 
+google-adk==1.28.1 #Google Agent Development Kit API Client Library
+
+
+
 
 
 

@@ -4,7 +4,7 @@ import {
 } from "recharts";
 import "./WorkoutChart.css";
 
-const API_BASE = "http://localhost:5000/AHFULworkout";
+const API_BASE = "http://localhost:5000/api/AHFULworkout";
 const WEEK_OPTIONS = [4, 6, 8, 12];
 
 function getWeekInfo(date) {
