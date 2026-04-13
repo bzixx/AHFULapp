@@ -53,7 +53,7 @@ export function Profile() {
   const handleVerifyEmail = async () => {
     try {
       const res = await fetch(
-        "http://localhost:5000/AHFULverify/verify/email/user_id/",
+        "http://localhost:5000/api/AHFULverify/verify/email/user_id/",
         {
           method: "POST",
           headers: {
