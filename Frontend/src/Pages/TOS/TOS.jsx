@@ -5,7 +5,7 @@ import "../../SiteStyles.css";
 export function TOS() {
     return (
         <div className="tos-page page-layout">
-            <div className="page-container">
+            <div className="solo-page-container">
                 <h1>Terms of Service</h1>
 
                 <p className="tos-intro">

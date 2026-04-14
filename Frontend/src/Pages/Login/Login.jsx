@@ -44,7 +44,7 @@ export function Login() {
   // ----- LOGIN Page HTML ---------------------------------------------------------------------------
   return (
     <div className="login-page">
-      <div className="page-container">
+      <div className="solo-page-container">
         <div className="login-title">
           <div className="logo-row">
             <img src="../../../images/Flex.ico" style={{ width: "48px", height: "48px", objectFit: "contain" }} />

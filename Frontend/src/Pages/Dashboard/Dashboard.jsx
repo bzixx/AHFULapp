@@ -27,7 +27,7 @@ function ExternalDashboard() {
   return (
     <div className="dashboard-landing">
       <section className="section">
-        <div className="page-container">
+        <div className="solo-page-container">
           <div className="hero-eyebrow">Now in early access</div>
           <h1>Your Personal Fitness, Built for Habit, Now in One AHFUL App.</h1>
           <p>
@@ -62,7 +62,7 @@ function ExternalDashboard() {
       </section>
 
       <section id="features" className="section">
-        <div className="page-container">
+        <div className="solo-page-container">
           <div className="label">What AHFUL does</div>
           <div className="section-title">
             Everything your fitness life needs
@@ -135,7 +135,7 @@ function ExternalDashboard() {
       </section>
 
       <section className="section">
-        <div className="page-container">
+        <div className="solo-page-container">
           <div className="label">Who it's for</div>
           <div className="section-title">One app, every role</div>
           <div className="section_grid">
@@ -165,7 +165,7 @@ function ExternalDashboard() {
       </section>
 
       <section className="section">
-        <div className="page-container">
+        <div className="solo-page-container">
           <div className="label">By the numbers</div>
           <div className="section-title">Built to move with you</div>
           <div className="section_grid">
@@ -186,7 +186,7 @@ function ExternalDashboard() {
       </section>
 
       <section className="section">
-        <div className="page-container">
+        <div className="solo-page-container">
           <div className="cta-h2">Ready to build something that sticks?</div>
           <br />
             <Link to="/Login" className="primary-cta">
