@@ -1,28 +1,25 @@
 ## Project Overview -- AHFUL App
 
-A Helpful Fitness Utilization Logger (AHFUL) app is a Web App for tracking workouts, food, gyms, and measurements. The repository contains a Python-based backend (API routes, services, and data models) and a React-based frontend (Vite) under the `Frontend/` folder.
+A Helpful Fitness Utilization Logger (AHFUL) app is a Web App for tracking workouts, food, gyms, and measurements. The repository contains a Python-based backend (API routes and services) under the `Backend/` and a React-based frontend (Static Files and Images) under the `Frontend/` folder.
 
 ## Architecture
 
-- Frontend: React + Vite (See detailed Frontend setup in ./Frontend/README.md)
-- Backend: Python web API (see See detailed Beckend setup in ./Backend/README.md)
-- Database: Hosted MongoDB 
-- Notification SW: Hosted Firebase 
-
-Notes: I inferred the backend uses Python + a MongoDB driver from the repository structure. Check `Backend/README.md` for authoritative details and any environment variables required (for example, a Mongo connection string).
+- Frontend: Node, React, & Vite (See detailed Frontend setup in ./Frontend/README.md)
+- Backend: Python Flask API Blueprints (see See detailed Beckend setup in ./Backend/README.md)
+- Database: Externally Hosted MongoDB via PyMongo Python Library
+- Notification Service Workers: Hosted GCP Project with Firebase Integration
+- AI Chatbot: Hosted GCP Projet with Vertex AI Integration (Recieved Credits for Student GenAI App Builder Integration)
 
 ## Prerequisites:
 
-- Python 3.10+ (for the backend)
+- Python 3.13+ (for the backend)
 - Node.js (for the frontend)
-- Internet Connection to load remote components
+- Internet Connection for external connections
 
 ## API Route Documentation (Swagger)
 
-We host Documentation for backend routes with Swagger!!  
-To access documentation you MUST be running BOTH the Frontend and Backend. 
-
-https://ahuful.app/api/APIDocs/ Self Hosted Link
+- We host Documentation for backend routes with Swagger!!  
+See more at: https://www.ahful.app/api/APIDocs/
 
 ## Testing
 
@@ -97,7 +94,6 @@ class ClassNamesUseCapitalCase:  (FileNames also use CapitalCase)
 - Personal Trainer- Has the ability to create workouts, workout templates, schedule workouts, and edit workout calendars.\
 
 ## External APIs
-- ExerciseDB -- https://www.exercisedb.dev/docs
 - Google OAuth 2.0 -- https://developers.google.com/identity/protocols/oauth2/web-server#python
 - FoodData Central (USDA) -- https://fdc.nal.usda.gov/api-guide
 - Firebase Cloud Messaging -- https://firebase.google.com/docs/cloud-messaging/
