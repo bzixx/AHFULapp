@@ -114,7 +114,6 @@ tbody tr:hover {
 [class*="card"],
 [class*="container"],
 [class*="section"] {
-  background-color: var(--color-surface);
   color: var(--text-primary);
 }
 
@@ -138,3 +137,12 @@ tbody tr:hover {
 	color: var(--text-primary);
 }
 
+.AHFUL_footer {
+  margin-top: auto;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-primary);
+  color: var(--text-secondary);
+}
