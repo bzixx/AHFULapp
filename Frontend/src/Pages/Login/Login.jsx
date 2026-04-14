@@ -25,7 +25,7 @@ export function Login() {
 
   const handle_google_success = async (response) => {
     try {
-      setStatusText(`Loggging in with Google...`);
+      setStatusText(`Logging in with Google...`);
       let fetchResponse = await handle_google_login(response);
       dispatch(authLogin(fetchResponse));
     } catch (error) {
