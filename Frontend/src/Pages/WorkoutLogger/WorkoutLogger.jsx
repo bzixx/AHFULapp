@@ -899,7 +899,7 @@ export function WorkoutLogger() {
                           type="number"
                           value={ex.reps}
                           onChange={(e) =>
-                            updateField(i, "reps", e.target.value)
+                            updateField(i, "reps", Number(e.target.value))
                           }
                         />
                       )}
@@ -913,7 +913,7 @@ export function WorkoutLogger() {
                           type="number"
                           value={ex.sets}
                           onChange={(e) =>
-                            updateField(i, "sets", e.target.value)
+                            updateField(i, "sets", Number(e.target.value))
                           }
                         />
                       )}

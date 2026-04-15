@@ -200,7 +200,7 @@ body {
 
 .cell input {
   width: 90%;
-  min-width: 50px;
+  min-width: 60px;
   /* or 50px if you want more room */
   padding: 4px;
   font-size: small;
