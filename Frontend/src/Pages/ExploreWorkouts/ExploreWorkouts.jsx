@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import "./ExploreWorkouts.css";
-import "../../SiteStyles.css";
+import "../../siteStyles.css";
 import { CalendarButton } from "../../components/CalendarButton/CalendarButton.jsx";
 import { HeatMap } from "../../components/HeatMap/HeatMap";
 import { WorkoutChart } from "../../components/WorkoutChart/WorkoutChart";

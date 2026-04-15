@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import AHFULApp from './AHFULApp.jsx'
-import './SiteStyles.css'
+import './siteStyles.css'
 import './Stylesheets/Themes/Lightmode.css'
 import './Stylesheets/Themes/Darkmode.css'
-import { StoreProvider, persistor } from './Store.jsx'
+import { StoreProvider, persistor } from './store.jsx'
 import { PersistGate } from 'redux-persist/integration/react'
 import { BrowserRouter as Router } from "react-router-dom";
 import { GoogleOAuthProvider } from '@react-oauth/google';
