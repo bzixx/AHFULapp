@@ -24,48 +24,56 @@ export function Login() {
   }, [isAuthenticated, user]);
 
   const handle_google_success = async (response) => {
-    try{
-      setStatusText(`Loggging in with Google...`);
+    try {
+      setStatusText(`Logging in with Google...`);
       let fetchResponse = await handle_google_login(response);
       dispatch(authLogin(fetchResponse));
-    }catch(error){
+    } catch (error) {
       console.error("Google login error:", error);
       setStatusText(error.message || "Login failed. Please try again.");
     }
 
     //Another Edit
-
-  }
+  };
 
   const handle_google_failure = (error) => {
     console.error("Google Login failed:", error);
     setStatusText("Google login failed. Please try again.");
   };
 
-// ----- LOGIN Page HTML ---------------------------------------------------------------------------
+  // ----- LOGIN Page HTML ---------------------------------------------------------------------------
   return (
     <div className="login-page">
-      <div className="login-card">
+      <div className="solo-page-container">
         <div className="login-title">
-          <h1>'AHFUL'</h1>
-          <p>(A Helpful Fitness Utilization Logger)</p>
+          <div className="logo-row">
+            <img src="../../../images/Flex.ico" style={{ width: "48px", height: "48px", objectFit: "contain" }} />
+            <div>
+              <h1>AHFUL App</h1>
+              A Helpful Fitness Utilization Logger App
+            </div>
+          </div>
         </div>
         <div>
-          <h3>
-            'AHFUL' app is your one-stop shop for everything you need in A Helpful Fitness Utilization Logger.
-          </h3>
+          <div className="heading">Welcome back</div>
+          <div className="subhead">
+            Track workouts, hit your goals, and stay consistent — everything in
+            one place.
+          </div>
+          <div className="subhead">
+            In order to Register or Login, you must have a Google account. AHFUL utilizes Google for secure near-passwordless authentication.
+          </div>
 
           <ul>
             <li>Record workouts</li>
-            <li>Save templates</li>
-            <li>Schedule future workouts on a calendar</li>
-            <li>Track food nutrition, etc.</li>
+            <li>Workout History</li>
+            <li>Workout Templates</li>
+            <li>Calendar & Workout Scheduling</li>
+            <li>Nutrition Tracking</li>
+            <li>Find Tracking</li>
+            <li>AI Coaching</li>
           </ul>
 
-          <h3>
-            To use 'AHFUL' app, you'll need to sign in with your Google
-            account below.
-          </h3>
         </div>
         <div className="login-button">
           <GoogleLogin
@@ -78,6 +86,10 @@ export function Login() {
             onError={handle_google_failure}
           />
         </div>
+        <div className="footer-note">
+          By signing in, you explicitly agree to our Terms of Service.
+        </div>
+
         <div id="LoggedInStatus">{statusText}</div>
       </div>
     </div>

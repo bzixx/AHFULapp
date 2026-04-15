@@ -1,10 +1,15 @@
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
   min-height: 100vh;
   background-color: var(--color-bg);
   color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 main {
@@ -20,8 +25,38 @@ main {
   display: flex;
   flex-direction: column;
   flex: 1;
-  min-height: 100vh;
   background-color: var(--color-bg);
+}
+
+.solo-page-container {
+  max-width: 800px;
+  background: var(--input-bg);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  color: var(--text-primary);
+}
+
+.dual-page-container {
+	display: flex;
+	gap: 24px;
+	align-items: flex-start;
+}
+
+.dual-page-sub-left {
+}
+
+.dual-page-sub-right {
+}
+
+.AHFUL_footer {
+  margin-top: auto;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-primary);
+  color: var(--text-secondary);
 }
 
 /* Global input/button styling for dark mode */
@@ -59,7 +94,9 @@ button,
   padding: 8px 12px;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 button:hover,
@@ -80,12 +117,20 @@ a:hover {
 }
 
 /* Headings */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: var(--text-primary);
 }
 
 /* Text elements */
-p, span, div, li {
+p,
+span,
+div,
+li {
   color: var(--text-primary);
 }
 
@@ -114,12 +159,31 @@ tbody tr:hover {
 [class*="card"],
 [class*="container"],
 [class*="section"] {
-  background-color: var(--color-surface);
   color: var(--text-primary);
 }
 
-/* Mobile responsive layout */
+/* Large Mobile responsive layout */
+@media (max-width: 1024px) {
+
+}
+
+/* Medium Mobile responsive layout */
 @media (max-width: 768px) {
+  main {
+    flex-direction: column;
+  }
+
+  .page-content {
+    width: 100%;
+  }
+
+  .dual-page-container {
+    flex-direction: column;
+  }
+}
+
+/* Small Mobile responsive layout */
+@media (max-width: 480px) {
   main {
     flex-direction: column;
   }
