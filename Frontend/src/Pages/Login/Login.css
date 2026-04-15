@@ -1,93 +1,87 @@
-/* CSS made in tandem with AI */
-* {
-    box-sizing: border-box;
-}
-
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-}
-
 .login-page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100%;
-    width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  width: 100%;
 }
-
-.login-card {
-    background: var(--gradient-card);
-    border: 3px solid var(--color-border);
-    padding: 8px;
-    border-radius: 8px;
-    box-shadow: var(--shadow-md);
-    margin: 0;
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1.75rem;
+}
+.heading {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+.subhead {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+  margin-bottom: 1.5rem;
+}
+.footer-note {
+  text-align: center;
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  margin-top: 1.25rem;
+  line-height: 1.5;
 }
 
 .login-title {
-    text-align: center;
-    margin-bottom: 50px;
-}
-
-.login-title h1 {
-    font-size: 48px;
-    margin-bottom: 0;
-    line-height: 1.1;
-}
-
-.login-title p {
-    margin: 0;
-    line-height: 1.2;
+  text-align: center;
+  margin-bottom: 50px;
 }
 
 .login-button {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .login-page {
-        padding: 20px;
-    }
+  .login-page {
+    padding: 20px;
+  }
 
-    .login-card {
-        width: 100%;
-        max-width: 400px;
-        padding: 24px;
-    }
+  .login-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 24px;
+  }
 
-    .login-title {
-        margin-bottom: 30px;
-    }
+  .login-title {
+    margin-bottom: 30px;
+  }
 
-    .login-title h1 {
-        font-size: 36px;
-    }
+  .login-title h1 {
+    font-size: 36px;
+  }
 }
 
 @media (max-width: 480px) {
-    .login-page {
-        padding: 16px;
-    }
+  .login-page {
+    padding: 16px;
+  }
 
-    .login-card {
-        width: 100%;
-        max-width: 100%;
-        padding: 16px;
-    }
+  .login-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 16px;
+  }
 
-    .login-title {
-        margin-bottom: 24px;
-    }
+  .login-title {
+    margin-bottom: 24px;
+  }
 
-    .login-title h1 {
-        font-size: 28px;
-    }
+  .login-title h1 {
+    font-size: 28px;
+  }
 
-    .login-title p {
-        font-size: 14px;
-    }
+  .login-title p {
+    font-size: 14px;
+  }
 }

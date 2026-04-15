@@ -6,13 +6,7 @@
 }
 
 /* Page Layout - 3-column grid matching Workout page */
-.food-log-container {
-    display: grid;
-    grid-template-columns: 1fr minmax(200px, 700px) 1fr;
-    width: 100%;
-    min-height: 100vh;
-    padding-top: 40px;
-}
+
 
 .food-log-container h1 {
     grid-column: 1 / -1;

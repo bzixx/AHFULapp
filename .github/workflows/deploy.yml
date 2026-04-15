@@ -1,0 +1,199 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main          # Step 1 – triggers the PR creation job
+  pull_request:
+    branches:
+      - Production    # Step 2 – triggers deploy only when PR is merged into Production
+    types:
+      - closed
+
+# ─────────────────────────────────────────────────────────────────────────────
+# JOB 1 — Runs on push to main
+#   • Replaces all localhost URLs with the live domain
+#   • Opens (or updates) a PR from main → Production for human review
+# ─────────────────────────────────────────────────────────────────────────────
+jobs:
+  prepare-release:
+    name: Replace URLs & Open PR
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write        # push the swap branch
+      pull-requests: write   # create the PR
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git identity
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # Create (or reset) a staging branch that sits between main and Production
+      - name: Create release staging branch
+        run: |
+          git fetch origin
+          git checkout main
+          git checkout -B release/staging origin/main
+          git push origin release/staging --force
+
+      # Replace every occurrence of the localhost URL across all files.
+      # Binary files are skipped automatically by grep -rl.
+      - name: Replace localhost URLs with Production URL
+        run: |
+          echo ">>> Replacing http://localhost:5000 → https://www.ahful.app"
+          grep -rl \
+            --exclude-dir='.git' \
+            --exclude-dir='.github' \
+            --exclude-dir='.devcontainer' \
+            --exclude-dir='node_modules' \
+            'http://localhost:5000' . | while read file; do
+            sed -i 's|http://localhost:5000|https://www.ahful.app|g' "$file"
+            sed -i 's|http://localhost:5173|https://ahful.app|g' "$file"
+            echo "  patched: $file"
+          done
+
+      - name: Commit URL replacements
+        run: |
+          git add -A
+          # Only commit if something actually changed
+          git diff --cached --quiet || git commit -m "chore(release): swap localhost → Production URLs [skip ci]"
+          git push origin release/staging --force
+
+      # Opens a PR if one doesn't exist yet; updates it silently if it does.
+      # Use the GitHub REST API directly to create or update a PR from
+      # `release/staging` -> `Production`. 
+      # This step will only create/update the PR metadata and will NOT
+      # modify any branches on the remote, preserving the pushed
+      # `release/staging` contents.
+      - name: Open / update PR to Production (via REST API)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          BRANCH: release/staging
+          BASE: Production
+        run: |
+          set -euo pipefail
+
+          title="Deploy: main → Production"
+          body=$(printf "%s\n" "## Release PR — automated by GitHub Actions" "" "This PR was created automatically after a push to \`main\`." "" "**Changes included:**" "- All \`http://localhost:5000\` references replaced with \`https://www.ahful.app\`" "- All commits from \`main\` since last release" "" "**To deploy:** review the diff below and merge when ready." "The deploy pipeline will run automatically on merge.")
+
+          # Query for existing PR from release/staging -> Production
+          prs_json=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/$REPO/pulls?head=$OWNER:$BRANCH&base=$BASE")
+
+          # Pick the first matching PR number if present
+          pr_number=$(echo "$prs_json" | jq -r '.[0].number // empty')
+
+          if [ -n "$pr_number" ]; then
+            echo "PR exists #$pr_number — updating title/body"
+            payload=$(jq -n --arg t "$title" --arg b "$body" '{title:$t, body:$b}')
+            response=$(curl -s -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$payload" \
+              "https://api.github.com/repos/$REPO/pulls/$pr_number")
+            echo "GitHub API response: $response"
+            echo "Updated PR #$pr_number"
+          else
+            echo "Creating PR from $BRANCH to $BASE"
+            payload=$(jq -n --arg t "$title" --arg b "$body" --arg h "$BRANCH" --arg base "$BASE" '{title:$t, body:$b, head:$h, base:$base, maintainer_can_modify:true}')
+            response=$(curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$payload" \
+              "https://api.github.com/repos/$REPO/pulls")
+            echo "GitHub API response: $response"
+            echo "PR created"
+          fi
+
+# ─────────────────────────────────────────────────────────────────────────────
+# JOB 2 — Runs when the PR into Production is merged
+#   • Builds the Vite frontend
+#   • SCPs dist/ to the remote Droplet's frontend directory
+#   • SSHs in, pulls the Production branch, restarts the backend service
+# ─────────────────────────────────────────────────────────────────────────────
+  deploy:
+    name: Build & Deploy to Droplet
+    if: |
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'Production'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Production
+        uses: actions/checkout@v4
+        with:
+          ref: Production
+
+      # ── Frontend: install & build ────────────────────────────────────────
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Vite app
+        run: npm run build
+        env:
+          NODE_ENV: Production
+          # Add any VITE_ secrets your app needs, e.g.:
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_SENDER_ID: ${{ secrets.VITE_FIREBASE_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+
+      # ── Frontend: SCP dist/ to Droplet ───────────────────────────────────
+      - name: Copy build to Droplet via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host:     ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key:      ${{ secrets.DEPLOY_SSH_KEY }}
+          port:     ${{ secrets.DEPLOY_PORT }}
+          source:   "dist/"
+          target:   ${{ secrets.DEPLOY_FRONTEND_PATH }}   # e.g. /var/www/ahful/frontend
+          strip_components: 1   # copies dist/* directly into target, not dist/ subfolder
+
+      # ── Backend: SSH → pull Production → restart service ─────────────────
+      - name: Deploy backend on Droplet
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host:     ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key:      ${{ secrets.DEPLOY_SSH_KEY }}
+          port:     ${{ secrets.DEPLOY_PORT }}
+          script: |
+            set -e
+
+            echo ">>> Pulling latest Production branch..."
+            cd ${{ secrets.DEPLOY_BACKEND_PATH }}   # e.g. /var/www/ahful/backend
+            git fetch origin
+            git checkout Production
+            git pull origin Production
+
+            echo ">>> Installing backend dependencies (if needed)..."
+            # Uncomment what matches your stack:
+            # npm ci --omit=dev
+            # pip install -r requirements.txt
+
+            echo ">>> Restarting backend service..."
+            sudo systemctl restart ${{ secrets.DEPLOY_SERVICE_NAME }}
+
+            echo ">>> Verifying service is alive..."
+            sudo systemctl is-active --quiet ${{ secrets.DEPLOY_SERVICE_NAME }} \
+              && echo "✓ Service is running" \
+              || (echo "✗ Service failed to start" && exit 1)
