@@ -1,15 +1,15 @@
-import {store } from "../../../store";
+import { store } from "../../../store";
 import { setPersonalExercises, setError } from "./PersonalExerciseSlice";
-import { fetchPersonalExercises } from "../../../QueryFunctions";
+import { fetchPersonalExerciseById } from "../../../QueryFunctions";
 
 export async function pullPersonalExercises() {
   const user = store.getState().auth.user;
   if (!user?._id) {
     store.dispatch(setError("No user logged in"));
-    return;
+    return [];
   }
   try {
-    const list = await fetchPersonalExercises(user._id);
+    const list = await fetchPersonalExerciseById(user._id);
     const metadata = list.map(e => ({
       _id: e._id,
       reps: e.reps,

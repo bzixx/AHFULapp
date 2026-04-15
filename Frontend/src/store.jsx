@@ -8,6 +8,7 @@ import settingsReducer from "./pages/Settings/SettingsSlice";
 import pullExerciseReducer from "./components/Cache/ExerciseCache/PullExerciseSlice";
 import pullTemplateReducer from "./components/Cache/TemplateCache/PullTemplateSlice";
 import pullWorkoutReducer from "./components/Cache/WorkoutCache/PullWorkoutSlice";
+import pullPersonalExerciseReducer from "./components/Cache/PersonalExerciseCache/PersonalExerciseSlice";
 
 const persistExerciseConfig = {
   key: "pullExercise",
@@ -36,7 +37,7 @@ const persistedPullExerciseReducer = persistReducer(persistExerciseConfig, pullE
 const persistedPullTemplateReducer = persistReducer(persistTemplateConfig, pullTemplateReducer);
 const persistedPullWorkoutReducer = persistReducer(persistWorkoutConfig, pullWorkoutReducer);
 const persistedCalendarReducer = persistReducer(persistCalendarConfig, calendarReducer);
-const persistedPersonalExerciseReducer = persistReducer(persistCalendarConfig, pullExerciseReducer);
+const persistedPersonalExerciseReducer = persistReducer(persistPersonalExerciseConfig, pullPersonalExerciseReducer);
 
 export const store = configureStore({
   reducer: {

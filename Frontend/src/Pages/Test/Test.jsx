@@ -1,22 +1,22 @@
 import { useSelector } from "react-redux";
 
 export function Test() {
-  const pullTemplateState = useSelector((state) => state.pullTemplate);
+  const pullPersonalExerciseState = useSelector((state) => state.pullPersonalExercise);
 
 
   return (
     <>
       <h1>Test Page</h1>
-      <h2>Templates in Cache:</h2>
+      <h2>Personal Exercises in Cache:</h2>
 
-      {pullTemplateState.templates && pullTemplateState.templates.length > 0 ? (
-        pullTemplateState.templates.map((template, index) => (
+      {pullPersonalExerciseState.exercises && pullPersonalExerciseState.exercises.length > 0 ? (
+        pullPersonalExerciseState.exercises.map((exercise, index) => (
           <div key={index}>
-            {template.title || template._id || JSON.stringify(template)}
+            {exercise.title || exercise._id || JSON.stringify(exercise)}
           </div>
         ))
       ) : (
-        <p>No templates found</p>
+        <p>No personal exercises found</p>
       )}
     </>
   );
