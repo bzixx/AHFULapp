@@ -9,6 +9,9 @@ jobs:
   build-and-deploy:
     name: Build & Deploy to Droplet
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Frontend
 
     steps:
       - name: Checkout Production
