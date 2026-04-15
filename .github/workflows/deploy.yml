@@ -48,8 +48,13 @@ jobs:
       - name: Replace localhost URLs with production URL
         run: |
           echo ">>> Replacing http://localhost:5000 → https://www.ahful.app"
-          grep -rl --exclude-dir='.git' 'http://localhost:5000' . | while read file; do
-            sed -i 's|http://localhost:5000|https://www.ahful.app|g' "$file"
+          grep -rl \
+            --exclude-dir='.git' \
+            --exclude-dir='.github' \
+            --exclude-dir='.devcontainer' \
+            --exclude-dir='node_modules' \
+            'http://localhost:5000' . | while read file; do
+              sed -i 's|http://localhost:5000|https://www.ahful.app|g' "$file"
             sed -i 's|http://localhost:5173|https://ahful.app|g' "$file"
             echo "  patched: $file"
           done
