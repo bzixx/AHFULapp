@@ -18,7 +18,7 @@ import { Settings } from "./Pages/Settings/Settings.jsx";
 import { ExploreTasks } from "./Pages/ExploreTasks/ExploreTasks.jsx";
 import { useTutorial } from "./hooks/useTutorial.js";
 import { TutorialOverlay } from "./components/Tutorial/TutorialOverlay.jsx";
-import "./SiteStyles.css";
+import "./siteStyles.css";
 import "./Stylesheets/Themes/Lightmode.css";
 import "./Stylesheets/Themes/Darkmode.css";
 
