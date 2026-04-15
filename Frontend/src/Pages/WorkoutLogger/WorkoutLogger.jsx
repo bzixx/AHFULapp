@@ -546,91 +546,88 @@ export function WorkoutLogger() {
   };
 
   useEffect(() => {
-  console.log("Workout updated");
-}, [workout]);
+    console.log("Workout updated");
+  }, [workout]);
 
   // ─── Select Workout Popup logic ──────────────────────────────────────────────────────────────
   function openWorkoutPicker() {
-  setSelectedWorkoutIdForPicker(null); // reset selection
-  setNewWorkoutName("");               // reset input
-  setShowWorkoutPicker(true);
-}
+    setSelectedWorkoutIdForPicker(null); // reset selection
+    setNewWorkoutName(""); // reset input
+    setShowWorkoutPicker(true);
+  }
 
-function closeWorkoutPicker() {
-  setShowWorkoutPicker(false);
-}
+  function closeWorkoutPicker() {
+    setShowWorkoutPicker(false);
+  }
 
-async function handleLoadWorkout() {
-  if (!selectedWorkoutIdForPicker) return;
+  async function handleLoadWorkout() {
+    if (!selectedWorkoutIdForPicker) return;
 
-  try {
-    const selected = dailyWorkouts.find(
-      (w) => w._id === selectedWorkoutIdForPicker
-    );
+    try {
+      const selected = dailyWorkouts.find(
+        (w) => w._id === selectedWorkoutIdForPicker,
+      );
 
+      if (!selected) return;
 
-    if (!selected) return;
+      // Fetch full workout from DB (ensures fresh data)
+      const fullWorkout = await fetchWorkoutById(selected._id);
 
-    // Fetch full workout from DB (ensures fresh data)
-    const fullWorkout = await fetchWorkoutById(selected._id);
+      setWorkout(fullWorkout);
+      setWorkoutId(fullWorkout._id);
+      setWorkoutTitle(fullWorkout.title);
 
-    setWorkout(fullWorkout);
-    setWorkoutId(fullWorkout._id);
-    setWorkoutTitle(fullWorkout.title);
+      // Reset timer based on workout times
+      if (fullWorkout.startTime && fullWorkout.endTime) {
+        setTime(fullWorkout.endTime - fullWorkout.startTime);
+      } else {
+        setTime(0);
+      }
 
-    // Reset timer based on workout times
-    if (fullWorkout.startTime && fullWorkout.endTime) {
-      setTime(fullWorkout.endTime - fullWorkout.startTime);
-    } else {
-      setTime(0);
+      closeWorkoutPicker();
+    } catch (err) {
+      console.error("Error loading workout:", err);
     }
-
-    closeWorkoutPicker();
-  } catch (err) {
-    console.error("Error loading workout:", err);
   }
-}
 
-async function handleCreateWorkout() {
-  if (!newWorkoutName.trim()) return;
+  async function handleCreateWorkout() {
+    if (!newWorkoutName.trim()) return;
 
-  try {
-    const today = selectedDate ? new Date(selectedDate) : new Date();
-    today.setHours(0, 0, 0, 0);
-    const startUnix = Math.floor(today.getTime() / 1000);
+    try {
+      const today = selectedDate ? new Date(selectedDate) : new Date();
+      today.setHours(0, 0, 0, 0);
+      const startUnix = Math.floor(today.getTime() / 1000);
 
-    const gymId = "69af3c3e94310c6e29840229"; // your current default
+      const gymId = "69af3c3e94310c6e29840229"; // your current default
 
-    const payload = {
-      endTime: startUnix,
-      gym_id: gymId,
-      startTime: startUnix,
-      title: newWorkoutName.trim(),
-      user_id: user._id,
-    };
+      const payload = {
+        endTime: startUnix,
+        gym_id: gymId,
+        startTime: startUnix,
+        title: newWorkoutName.trim(),
+        user_id: user._id,
+      };
 
-    // Create workout
-    const created = await createWorkout(payload);
+      // Create workout
+      const created = await createWorkout(payload);
 
-    // Fetch persisted version
-    const persisted = await fetchWorkoutById(created.workout_id);
+      // Fetch persisted version
+      const persisted = await fetchWorkoutById(created.workout_id);
 
-    // Add to daily list
-    setDailyWorkouts((prev) =>
-      prev ? [...prev, persisted] : [persisted]
-    );
+      // Add to daily list
+      setDailyWorkouts((prev) => (prev ? [...prev, persisted] : [persisted]));
 
-    // Load it immediately
-    setWorkout(persisted);
-    setWorkoutId(persisted._id);
-    setWorkoutTitle(persisted.title);
-    setTime(0);
+      // Load it immediately
+      setWorkout(persisted);
+      setWorkoutId(persisted._id);
+      setWorkoutTitle(persisted.title);
+      setTime(0);
 
-    closeWorkoutPicker();
-  } catch (err) {
-    console.error("Error creating workout:", err);
+      closeWorkoutPicker();
+    } catch (err) {
+      console.error("Error creating workout:", err);
+    }
   }
-}
 
   // ─── Timer Logic ──────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -838,29 +835,45 @@ async function handleCreateWorkout() {
 
       {/* Center Column: Workout Card */}
       <div className="center-column">
-        {/* Always visible */}
-        <button
-  className="select-workout-button"
-  onClick={openWorkoutPicker}
->
-  Select Workout
-</button>
-
-
-        {/* Only show workout card if a workout is loaded */}
-        {workout && (
+        {workout ? (
           <>
             <div className="workout-card">
-              {/* Workout Title & Date */}
-              <div className="workout-title">
-                <input
-                  type="text"
-                  value={workoutTitle}
-                  onChange={(e) => setWorkoutTitle(e.target.value)}
-                />
-                <h3>
-                  {workout?.startTime ? unixToDate(workout.startTime) : ""}
-                </h3>
+              {/* Header row: Title on left, button on right */}
+              <div className="workout-header">
+                <div className="workout-title">
+                  <textarea
+                    className="workout-title-input"
+                    value={workoutTitle}
+                    onChange={(e) => {
+                      setWorkoutTitle(e.target.value);
+
+                      const el = e.target;
+
+                      // Reset to starting height
+                      el.style.height = "2.4em";
+
+                      // Expand up to max-height
+                      const scrollHeight = el.scrollHeight;
+                      const maxHeight = parseFloat(
+                        getComputedStyle(el).maxHeight,
+                      );
+
+                      el.style.height =
+                        Math.min(scrollHeight, maxHeight) + "px";
+                    }}
+                  />
+
+                  <h3>
+                    {workout?.startTime ? unixToDate(workout.startTime) : ""}
+                  </h3>
+                </div>
+
+                <button
+                  className="select-workout-button"
+                  onClick={openWorkoutPicker}
+                >
+                  Select Workout
+                </button>
               </div>
 
               {/* Exercise Table */}
@@ -974,6 +987,10 @@ async function handleCreateWorkout() {
               </button>
             </div>
           </>
+        ) : (
+          <button className="select-workout-button" onClick={openWorkoutPicker}>
+            Select Workout
+          </button>
         )}
       </div>
 
@@ -1335,7 +1352,11 @@ async function handleCreateWorkout() {
                       "workout-list-item " +
                       (selectedWorkoutIdForPicker === w._id ? "selected" : "")
                     }
-                    onClick={() => setSelectedWorkoutIdForPicker(w._id)}
+                    onClick={() =>
+                      setSelectedWorkoutIdForPicker(
+                        selectedWorkoutIdForPicker === w._id ? null : w._id,
+                      )
+                    }
                   >
                     <div className="workout-list-title">{w.title}</div>
                     <div className="workout-list-date">
