@@ -48,8 +48,9 @@
   line-height: 1.6;
   flex-grow: 1;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  overflow-y: auto;
 }
 
 .ai-chat-input-area {
