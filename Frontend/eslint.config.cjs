@@ -7,6 +7,14 @@ module.exports = [
     plugins: {
       import: importPlugin
     },
+    // ADD THIS SETTINGS BLOCK:
+    settings: {
+      "import/resolver": {
+        node: {
+          extensions: [".js", ".jsx", ".ts", ".tsx"]
+        }
+      }
+    },
     rules: {
       "import/no-unresolved": ["error", { "caseSensitive": true }]
     }
