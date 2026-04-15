@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import AHFULApp from './AHFULApp.jsx'
-import './SiteStyles.css'
+import './siteStyles.css'
 import './Stylesheets/Themes/Lightmode.css'
 import './Stylesheets/Themes/Darkmode.css'
 import { StoreProvider } from './Store.jsx'

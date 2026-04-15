@@ -1,5 +1,5 @@
 import "./Profile.css";
-import "../../SiteStyles.css";
+import "../../siteStyles.css";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
