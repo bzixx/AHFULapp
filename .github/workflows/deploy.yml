@@ -69,28 +69,48 @@ jobs:
           git push origin release/staging --force
 
       # Opens a PR if one doesn't exist yet; updates it silently if it does.
-      - name: Open / update PR to Production
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: release/staging
-          base:   Production
-          title:  "Deploy: main → Production"
-          body: |
-            ## Release PR — automated by GitHub Actions
+      # Use the GitHub REST API directly to create or update a PR from
+      # `release/staging` -> `Production`. 
+      # This step will only create/update the PR metadata and will NOT
+      # modify any branches on the remote, preserving the pushed
+      # `release/staging` contents.
+      - name: Open / update PR to Production (via REST API)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          BRANCH: release/staging
+          BASE: Production
+        run: |
+          set -euo pipefail
 
-            This PR was created automatically after a push to `main`.
+          title="Deploy: main → Production"
+          body=$(printf "%s\n" "## Release PR — automated by GitHub Actions" "" "This PR was created automatically after a push to \`main\`." "" "**Changes included:**" "- All \`http://localhost:5000\` references replaced with \`https://www.ahful.app\`" "- All commits from \`main\` since last release" "" "**To deploy:** review the diff below and merge when ready." "The deploy pipeline will run automatically on merge.")
 
-            **Changes included:**
-            - All `http://localhost:5000` references replaced with `https://www.ahful.app`
-            - All commits from `main` since last release
+          # Query for existing PR from release/staging -> Production
+          prs_json=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/$REPO/pulls?head=$OWNER:$BRANCH&base=$BASE")
 
-            **To deploy:** review the diff below and merge when ready.
-            The deploy pipeline will run automatically on merge.
-          labels: |
-            release
-            automated
-          draft: false
+          # Pick the first matching PR number if present
+          pr_number=$(echo "$prs_json" | jq -r '.[0].number // empty')
+
+          if [ -n "$pr_number" ]; then
+            echo "PR exists #$pr_number — updating title/body"
+            payload=$(jq -n --arg t "$title" --arg b "$body" '{title:$t, body:$b}')
+            curl -s -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$payload" \
+              "https://api.github.com/repos/$REPO/pulls/$pr_number" >/dev/null
+            echo "Updated PR #$pr_number"
+          else
+            echo "Creating PR from $BRANCH to $BASE"
+            payload=$(jq -n --arg t "$title" --arg b "$body" --arg h "$BRANCH" --arg base "$BASE" '{title:$t, body:$b, head:$h, base:$base, maintainer_can_modify:true}')
+            curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$payload" \
+              "https://api.github.com/repos/$REPO/pulls" >/dev/null
+            echo "PR created"
+          fi
 
 # ─────────────────────────────────────────────────────────────────────────────
 # JOB 2 — Runs when the PR into Production is merged
