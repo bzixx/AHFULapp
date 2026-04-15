@@ -12,7 +12,7 @@ import { AIChat } from "./Pages/AIChat/AIChat.jsx";
 import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
 import { Profile } from "./Pages/Profile/Profile.jsx";
 import { TOS } from "./Pages/TOS/TOS.jsx";
-import { Layout } from "./layout.jsx"
+import { Layout } from "./Layout.jsx"
 import { AuthRouteCheck } from "./AuthRouteCheck.jsx";
 import { Settings } from "./Pages/Settings/Settings.jsx";
 import { ExploreTasks } from "./Pages/ExploreTasks/ExploreTasks.jsx";
