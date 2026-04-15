@@ -585,7 +585,7 @@ export async function updateWorkout(workoutId, data) {
 export async function fetchPersonalExerciseById(userId) {
   try {
     const res = await fetch(
-      `http://localhost:5000/api/AHFULpersonalEx/user/${userId}`,
+      `http://localhost:5000/api/AHFULpersonalEx/${userId}`,
     );
     if (res.status === 404 || res.status === 204) {
       return [];

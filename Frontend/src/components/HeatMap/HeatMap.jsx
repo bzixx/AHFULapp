@@ -6,9 +6,6 @@ import { useEffect } from "react";
 const HEAT_COLORS = ["#ef4444", "#ef4444", "#ef4444"];
 
 export function HeatMap({ data = {}, onMuscleClick }) {
-  const selectedDate = useSelector((state) => state.calendar);
-  const muscles = useSelector((state) => state.pullExercise.exercises);
-  const workouts = useSelector((state) => state.pullWorkout.workouts);
 
   const bodyData = Object.entries(data)
     .map(([slug, intensity]) => ({
@@ -23,11 +20,6 @@ export function HeatMap({ data = {}, onMuscleClick }) {
     }
   };
 
-  targetedMuscles
-
-  useEffect(()=>{
-
-  }), [selectedDate];
 
   return (
     <div className="heatmap-container">
