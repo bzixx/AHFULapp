@@ -64,6 +64,8 @@ export function WorkoutLogger() {
   const [error, setError] = useState(null);
 
   // ─── Workout State ───────────────────────────────────────────────────────────
+  // Daily workouts for the date
+  const [dailyWorkouts, setDailyWorkouts] = useState([]);
   // Current workout object from database
   const [workout, setWorkout] = useState(null);
   // Current workout ID (used for API calls)
@@ -74,6 +76,15 @@ export function WorkoutLogger() {
   const [workoutLoading, setWorkoutLoading] = useState(true);
   // Workout error state
   const [workoutError, setWorkoutError] = useState(null);
+
+  // ─── Workout Picker UI State ─────────────────────────────────────────────────
+  // Select Workout Popup visibility
+  const [showWorkoutPicker, setShowWorkoutPicker] = useState(false);
+  // Which workout is selected inside the popup
+  const [selectedWorkoutIdForPicker, setSelectedWorkoutIdForPicker] =
+    useState(null);
+  // New workout name (for creation)
+  const [newWorkoutName, setNewWorkoutName] = useState("");
 
   // ─── Timer State ─────────────────────────────────────────────────────────────
   const [isRunning, setIsRunning] = useState(false);
@@ -534,6 +545,90 @@ export function WorkoutLogger() {
     }
   };
 
+  useEffect(() => {
+    console.log("Workout updated");
+  }, [workout]);
+
+  // ─── Select Workout Popup logic ──────────────────────────────────────────────────────────────
+  function openWorkoutPicker() {
+    setSelectedWorkoutIdForPicker(null); // reset selection
+    setNewWorkoutName(""); // reset input
+    setShowWorkoutPicker(true);
+  }
+
+  function closeWorkoutPicker() {
+    setShowWorkoutPicker(false);
+  }
+
+  async function handleLoadWorkout() {
+    if (!selectedWorkoutIdForPicker) return;
+
+    try {
+      const selected = dailyWorkouts.find(
+        (w) => w._id === selectedWorkoutIdForPicker,
+      );
+
+      if (!selected) return;
+
+      // Fetch full workout from DB (ensures fresh data)
+      const fullWorkout = await fetchWorkoutById(selected._id);
+
+      setWorkout(fullWorkout);
+      setWorkoutId(fullWorkout._id);
+      setWorkoutTitle(fullWorkout.title);
+
+      // Reset timer based on workout times
+      if (fullWorkout.startTime && fullWorkout.endTime) {
+        setTime(fullWorkout.endTime - fullWorkout.startTime);
+      } else {
+        setTime(0);
+      }
+
+      closeWorkoutPicker();
+    } catch (err) {
+      console.error("Error loading workout:", err);
+    }
+  }
+
+  async function handleCreateWorkout() {
+    if (!newWorkoutName.trim()) return;
+
+    try {
+      const today = selectedDate ? new Date(selectedDate) : new Date();
+      today.setHours(0, 0, 0, 0);
+      const startUnix = Math.floor(today.getTime() / 1000);
+
+      const gymId = "69af3c3e94310c6e29840229"; // your current default
+
+      const payload = {
+        endTime: startUnix,
+        gym_id: gymId,
+        startTime: startUnix,
+        title: newWorkoutName.trim(),
+        user_id: user._id,
+      };
+
+      // Create workout
+      const created = await createWorkout(payload);
+
+      // Fetch persisted version
+      const persisted = await fetchWorkoutById(created.workout_id);
+
+      // Add to daily list
+      setDailyWorkouts((prev) => (prev ? [...prev, persisted] : [persisted]));
+
+      // Load it immediately
+      setWorkout(persisted);
+      setWorkoutId(persisted._id);
+      setWorkoutTitle(persisted.title);
+      setTime(0);
+
+      closeWorkoutPicker();
+    } catch (err) {
+      console.error("Error creating workout:", err);
+    }
+  }
+
   // ─── Timer Logic ──────────────────────────────────────────────────────────────
   useEffect(() => {
     let interval = null;
@@ -568,6 +663,7 @@ export function WorkoutLogger() {
         const today = selectedDate ? new Date(selectedDate) : new Date();
         today.setHours(0, 0, 0, 0);
         const currentDateUnix = Math.floor(today.getTime() / 1000);
+
         const tomorrow = new Date(today);
         tomorrow.setDate(today.getDate() + 1);
         const tomorrowUnix = Math.floor(tomorrow.getTime() / 1000);
@@ -580,39 +676,8 @@ export function WorkoutLogger() {
           (w) => w.startTime >= currentDateUnix && w.startTime < tomorrowUnix,
         );
 
-        // If no workout exists for today, create one
-        if (todaysWorkouts.length === 0) {
-          console.log("No workout found for today — creating new workout...");
-
-          // Hardcoded gym ID (should be user preference in future)
-          const gymId = "69af3c3e94310c6e29840229";
-
-          const newWorkoutPayload = {
-            endTime: currentDateUnix,
-            gym_id: gymId,
-            startTime: currentDateUnix,
-            title: "Workout (" + today.toDateString() + ")",
-            user_id: user._id,
-          };
-
-          const newWorkout = await createWorkout(newWorkoutPayload);
-
-          // Immediately fetch the persisted version
-          const persisted = await fetchWorkoutById(newWorkout._id);
-
-          setWorkout(persisted);
-          setWorkoutId(persisted._id);
-          setWorkoutTitle(persisted.title);
-          setTime(0);
-          return;
-        }
-
-        // Load existing workout for today
-        const existingWorkout = todaysWorkouts[0];
-        setWorkout(existingWorkout);
-        setWorkoutId(existingWorkout._id);
-        setWorkoutTitle(existingWorkout.title);
-        setTime(existingWorkout.endTime - existingWorkout.startTime);
+        // Store them for the UI
+        setDailyWorkouts(todaysWorkouts);
       } catch (err) {
         console.error("Error fetching workout:", err);
         setWorkoutError(err.message || "Failed to load workout");
@@ -770,110 +835,163 @@ export function WorkoutLogger() {
 
       {/* Center Column: Workout Card */}
       <div className="center-column">
-        <div className="workout-card">
-          {/* Workout Title & Date */}
-          <div className="workout-title">
-            <input
-              type="text"
-              value={workoutTitle}
-              onChange={(e) => setWorkoutTitle(e.target.value)}
-            />
-            <h3>{workout?.startTime ? unixToDate(workout.startTime) : ""}</h3>
-          </div>
+        {workout ? (
+          <>
+            <div className="workout-card">
+              {/* Header row: Title on left, button on right */}
+              <div className="workout-header">
+                <div className="workout-title">
+                  <textarea
+                    className="workout-title-input"
+                    value={workoutTitle}
+                    onChange={(e) => {
+                      setWorkoutTitle(e.target.value);
 
-          {/* Exercise Table */}
-          <div className="workout-grid">
-            <div className="cell workout-grid-header">Exercise</div>
-            <div className="cell workout-grid-header">Reps</div>
-            <div className="cell workout-grid-header">Sets</div>
-            <div className="cell workout-grid-header">Weight</div>
-            <div className="cell workout-grid-header">Completed</div>
-            <div className="cell workout-grid-header"></div>
+                      const el = e.target;
 
-            {exercisesInProgressTable.map((ex, i) => (
-              <React.Fragment key={i}>
-                <div className="cell">
-                  {personalExNames[ex.exercise_id] || "Loading..."}
-                </div>
-                <div className="cell">
-                  {ex.complete ? (
-                    ex.reps
-                  ) : (
-                    <input
-                      type="number"
-                      value={ex.reps}
-                      onChange={(e) => updateField(i, "reps", e.target.value)}
-                    />
-                  )}
-                </div>
-                <div className="cell">
-                  {ex.complete ? (
-                    ex.sets
-                  ) : (
-                    <input
-                      type="number"
-                      value={ex.sets}
-                      onChange={(e) => updateField(i, "sets", e.target.value)}
-                    />
-                  )}
-                </div>
-                <div className="cell">
-                  {ex.complete ? (
-                    ex.weight
-                  ) : (
-                    <input
-                      type="text"
-                      value={ex.weight}
-                      onChange={(e) => updateField(i, "weight", e.target.value)}
-                    />
-                  )}
-                </div>
-                <div className="cell">
-                  <input
-                    type="checkbox"
-                    checked={ex.complete}
-                    onChange={() => toggleCompleted(i)}
+                      // Reset to starting height
+                      el.style.height = "2.4em";
+
+                      // Expand up to max-height
+                      const scrollHeight = el.scrollHeight;
+                      const maxHeight = parseFloat(
+                        getComputedStyle(el).maxHeight,
+                      );
+
+                      el.style.height =
+                        Math.min(scrollHeight, maxHeight) + "px";
+                    }}
                   />
+
+                  <h3>
+                    {workout?.startTime ? unixToDate(workout.startTime) : ""}
+                  </h3>
                 </div>
-                <div className="cell">
+
+                <button
+                  className="select-workout-button"
+                  onClick={openWorkoutPicker}
+                >
+                  Select Workout
+                </button>
+              </div>
+
+              {/* Exercise Table */}
+              <div className="workout-grid">
+                <div className="cell workout-grid-header">Exercise</div>
+                <div className="cell workout-grid-header">Reps</div>
+                <div className="cell workout-grid-header">Sets</div>
+                <div className="cell workout-grid-header">Weight</div>
+                <div className="cell workout-grid-header">Completed</div>
+                <div className="cell workout-grid-header"></div>
+
+                {exercisesInProgressTable.map((ex, i) => (
+                  <React.Fragment key={i}>
+                    <div className="cell">
+                      {personalExNames[ex.exercise_id] || "Loading..."}
+                    </div>
+
+                    <div className="cell">
+                      {ex.complete ? (
+                        ex.reps
+                      ) : (
+                        <input
+                          type="number"
+                          value={ex.reps}
+                          onChange={(e) =>
+                            updateField(i, "reps", e.target.value)
+                          }
+                        />
+                      )}
+                    </div>
+
+                    <div className="cell">
+                      {ex.complete ? (
+                        ex.sets
+                      ) : (
+                        <input
+                          type="number"
+                          value={ex.sets}
+                          onChange={(e) =>
+                            updateField(i, "sets", e.target.value)
+                          }
+                        />
+                      )}
+                    </div>
+
+                    <div className="cell">
+                      {ex.complete ? (
+                        ex.weight
+                      ) : (
+                        <input
+                          type="text"
+                          value={ex.weight}
+                          onChange={(e) =>
+                            updateField(i, "weight", e.target.value)
+                          }
+                        />
+                      )}
+                    </div>
+
+                    <div className="cell">
+                      <input
+                        type="checkbox"
+                        checked={ex.complete}
+                        onChange={() => toggleCompleted(i)}
+                      />
+                    </div>
+
+                    <div className="cell">
+                      <button
+                        className="delete-button"
+                        onClick={() => removePersonalEx(i)}
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </React.Fragment>
+                ))}
+              </div>
+
+              {/* Submit Buttons */}
+              <div className="workout-actions">
+                <div className="workout-actions-left-side">
                   <button
-                    className="delete-button"
-                    onClick={() => removePersonalEx(i)}
+                    className="workout-submit-button"
+                    onClick={saveTemplate}
                   >
-                    🗑️
+                    Save as Template
                   </button>
                 </div>
-              </React.Fragment>
-            ))}
-          </div>
+                <div className="workout-actions-right-side">
+                  <button
+                    className="workout-submit-button"
+                    onClick={handleSubmit}
+                  >
+                    Submit
+                  </button>
+                </div>
+              </div>
+            </div>
 
-          {/* Submit Button */}
-          <div className="workout-actions">
-            <div className="workout-actions-left-side">
-              <button className="workout-submit-button" onClick={saveTemplate}>
-                Save as Template
+            {/* Timer Footer */}
+            <div className="workout-footer">
+              <div className="workout-timer-box workout-timer">
+                {formatTimeFn(time)}
+              </div>
+              <button
+                className="workout-timer-box workout-timer-button"
+                onClick={toggleTimer}
+              >
+                {isRunning ? "Stop Timer" : "Start Timer"}
               </button>
             </div>
-            <div className="workout-actions-right-side">
-              <button className="workout-submit-button" onClick={handleSubmit}>
-                Submit
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Timer Footer */}
-        <div className="workout-footer">
-          <div className="workout-timer-box workout-timer">
-            {formatTimeFn(time)}
-          </div>
-          <button
-            className="workout-timer-box workout-timer-button"
-            onClick={toggleTimer}
-          >
-            {isRunning ? "Stop Timer" : "Start Timer"}
+          </>
+        ) : (
+          <button className="select-workout-button" onClick={openWorkoutPicker}>
+            Select Workout
           </button>
-        </div>
+        )}
       </div>
 
       {/* Right Column: Exercise Search & Selection */}
@@ -1211,6 +1329,76 @@ export function WorkoutLogger() {
             >
               Cancel
             </button>
+          </div>
+        </div>
+      )}
+
+      {showWorkoutPicker && (
+        <div className="popup-overlay">
+          <div className="popup workout-picker-popup">
+            <h2>Select Workout</h2>
+
+            {/* List of workouts for the selected date */}
+            <div className="workout-list">
+              {(!dailyWorkouts || dailyWorkouts.length === 0) && (
+                <div className="no-workouts">No workouts for this day.</div>
+              )}
+
+              {dailyWorkouts &&
+                dailyWorkouts.map((w) => (
+                  <div
+                    key={w._id}
+                    className={
+                      "workout-list-item " +
+                      (selectedWorkoutIdForPicker === w._id ? "selected" : "")
+                    }
+                    onClick={() =>
+                      setSelectedWorkoutIdForPicker(
+                        selectedWorkoutIdForPicker === w._id ? null : w._id,
+                      )
+                    }
+                  >
+                    <div className="workout-list-title">{w.title}</div>
+                    <div className="workout-list-date">
+                      {unixToDate(w.startTime)}
+                    </div>
+                  </div>
+                ))}
+            </div>
+
+            {/* Create Workout Section */}
+            <div className="create-workout-section">
+              <input
+                type="text"
+                placeholder="New workout name"
+                value={newWorkoutName}
+                onChange={(e) => setNewWorkoutName(e.target.value)}
+              />
+              <button
+                className="create-workout-button"
+                onClick={handleCreateWorkout}
+              >
+                Create Workout
+              </button>
+            </div>
+
+            {/* Footer Buttons */}
+            <div className="popup-footer">
+              <button
+                className="load-workout-button"
+                disabled={!selectedWorkoutIdForPicker}
+                onClick={handleLoadWorkout}
+              >
+                Load Workout
+              </button>
+
+              <button
+                className="cancel-button"
+                onClick={() => setShowWorkoutPicker(false)}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
