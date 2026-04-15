@@ -1,6 +1,5 @@
 import { Navbar } from "./components/navbar/navbar";
 import { Outlet } from "react-router-dom";
-import { MenuButton } from "./components/MenuButton/MenuButton";
 import { Header } from "./components/Header/Header.jsx";
 import { Footer } from "./components/Footer/Footer.jsx";
 import { useState, useEffect } from "react";
