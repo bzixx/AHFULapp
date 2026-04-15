@@ -4,7 +4,7 @@ import AHFULApp from './AHFULApp.jsx'
 import './siteStyles.css'
 import './Stylesheets/Themes/Lightmode.css'
 import './Stylesheets/Themes/Darkmode.css'
-import { StoreProvider } from './Store.jsx'
+import { StoreProvider } from './store.jsx'
 import { BrowserRouter as Router } from "react-router-dom";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Loading } from './components/Loading/Loading.jsx';
