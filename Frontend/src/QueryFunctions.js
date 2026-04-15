@@ -255,7 +255,7 @@ export async function whoami(userDataToVerify) {
 // ──  Template functions ─────────────────────────────────────────────────────────
 export async function fetchTemplate(userId) {
   const res = await fetch(
-    `http://localhost:5000/api/AHFULworkout/templates/${userId}`,
+    `http://localhost:5000/api/AHFULworkout/templates/user/${userId}`,
   );
   if (!res.ok) {
     let bodyText = "";

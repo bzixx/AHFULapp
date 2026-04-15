@@ -709,7 +709,9 @@ export function WorkoutLogger() {
   useEffect(() => {
     async function getTemplates() {
       try {
+        console.log(user._id);
         const allTemplates = await fetchTemplate(user._id);
+
 
         // Normalize if needed (backend might return null or object)
         if (Array.isArray(allTemplates)) {
