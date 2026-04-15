@@ -6,14 +6,14 @@ on:
       - main          # Step 1 – triggers the PR creation job
   pull_request:
     branches:
-      - Production    # Step 2 – triggers deploy only when PR is merged into Production
+      - production    # Step 2 – triggers deploy only when PR is merged into production
     types:
       - closed
 
 # ─────────────────────────────────────────────────────────────────────────────
 # JOB 1 — Runs on push to main
 #   • Replaces all localhost URLs with the live domain
-#   • Opens (or updates) a PR from main → Production for human review
+#   • Opens (or updates) a PR from main → production for human review
 # ─────────────────────────────────────────────────────────────────────────────
 jobs:
   prepare-release:
@@ -37,15 +37,17 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # Create (or reset) a staging branch that sits between main and Production
+      # Create (or reset) a staging branch that sits between main and production
       - name: Create release staging branch
         run: |
-          git checkout -B release/staging
+          git fetch origin
+          git checkout main
+          git checkout -B release/staging origin/main
           git push origin release/staging --force
 
       # Replace every occurrence of the localhost URL across all files.
       # Binary files are skipped automatically by grep -rl.
-      - name: Replace localhost URLs with Production URL
+      - name: Replace localhost URLs with production URL
         run: |
           echo ">>> Replacing http://localhost:5000 → https://www.ahful.app"
           grep -rl \
@@ -63,17 +65,17 @@ jobs:
         run: |
           git add -A
           # Only commit if something actually changed
-          git diff --cached --quiet || git commit -m "chore(release): swap localhost → Production URLs [skip ci]"
+          git diff --cached --quiet || git commit -m "chore(release): swap localhost → production URLs [skip ci]"
           git push origin release/staging --force
 
       # Opens a PR if one doesn't exist yet; updates it silently if it does.
-      - name: Open / update PR to Production
+      - name: Open / update PR to production
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: release/staging
-          base:   Production
-          title:  "Deploy: main → Production"
+          base:   production
+          title:  "Deploy: main → production"
           body: |
             ## Release PR — automated by GitHub Actions
 
@@ -91,24 +93,24 @@ jobs:
           draft: false
 
 # ─────────────────────────────────────────────────────────────────────────────
-# JOB 2 — Runs when the PR into Production is merged
+# JOB 2 — Runs when the PR into production is merged
 #   • Builds the Vite frontend
 #   • SCPs dist/ to the remote Droplet's frontend directory
-#   • SSHs in, pulls the Production branch, restarts the backend service
+#   • SSHs in, pulls the production branch, restarts the backend service
 # ─────────────────────────────────────────────────────────────────────────────
   deploy:
     name: Build & Deploy to Droplet
     if: |
       github.event_name == 'pull_request' &&
       github.event.pull_request.merged == true &&
-      github.event.pull_request.base.ref == 'Production'
+      github.event.pull_request.base.ref == 'production'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Production
+      - name: Checkout production
         uses: actions/checkout@v4
         with:
-          ref: Production
+          ref: production
 
       # ── Frontend: install & build ────────────────────────────────────────
       - name: Set up Node.js
@@ -123,7 +125,7 @@ jobs:
       - name: Build Vite app
         run: npm run build
         env:
-          NODE_ENV: Production
+          NODE_ENV: production
           # Add any VITE_ secrets your app needs, e.g.:
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
@@ -144,7 +146,7 @@ jobs:
           target:   ${{ secrets.DEPLOY_FRONTEND_PATH }}   # e.g. /var/www/ahful/frontend
           strip_components: 1   # copies dist/* directly into target, not dist/ subfolder
 
-      # ── Backend: SSH → pull Production → restart service ─────────────────
+      # ── Backend: SSH → pull production → restart service ─────────────────
       - name: Deploy backend on Droplet
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -155,11 +157,11 @@ jobs:
           script: |
             set -e
 
-            echo ">>> Pulling latest Production branch..."
+            echo ">>> Pulling latest production branch..."
             cd ${{ secrets.DEPLOY_BACKEND_PATH }}   # e.g. /var/www/ahful/backend
             git fetch origin
-            git checkout Production
-            git pull origin Production
+            git checkout production
+            git pull origin production
 
             echo ">>> Installing backend dependencies (if needed)..."
             # Uncomment what matches your stack:
