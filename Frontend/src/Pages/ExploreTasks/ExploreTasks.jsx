@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import "./ExploreTasks.css";
-import "../../SiteStyles.css";
+import "../../siteStyles.css";
 import { updateTask } from "../../QueryFunctions";
 
 export function ExploreTasks() {

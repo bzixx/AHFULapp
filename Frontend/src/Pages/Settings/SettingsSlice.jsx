@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 
-export const settingSlice = createSlice({
+export const SettingSlice = createSlice({
     name: "setting",
     initialState: {
         theme: "Light", // default to light theme
@@ -27,5 +27,5 @@ export const settingSlice = createSlice({
     }
 });
 
-export const { updateSetting, setSettings } = settingSlice.actions;
-export default settingSlice.reducer;
+export const { updateSetting, setSettings } = SettingSlice.actions;
+export default SettingSlice.reducer;

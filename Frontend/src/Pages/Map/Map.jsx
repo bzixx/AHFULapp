@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Map.css";
-import "../../SiteStyles.css";
+import "../../siteStyles.css";
 
 // Leaflet styles are required for tiles/controls to render correctly
 import "leaflet/dist/leaflet.css";
