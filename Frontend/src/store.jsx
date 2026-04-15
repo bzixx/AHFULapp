@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
-import calendarReducer from "./Components/Calendar/CalendarSlicer";
+import calendarReducer from "./components/Calendar/CalendarSlicer.jsx";
 import authReducer from "./Pages/Login/AuthSlice";
 import settingsReducer from "./Pages/Settings/SettingsSlice";
 
