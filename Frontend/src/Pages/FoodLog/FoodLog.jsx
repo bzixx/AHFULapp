@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import "./FoodLog.css";
 import "../../SiteStyles.css";
 
-const API_BASE = "http://localhost:5000/api/AHFULfood";
+const API_BASE = "https://www.ahful.app/api/AHFULfood";
 
 export function FoodLog() {
     const user = useSelector((state) => state.auth.user);
