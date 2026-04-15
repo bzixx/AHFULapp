@@ -15,6 +15,7 @@ export async function pullTemplates() {
       _id: t._id,
       title: t.title,
     }));
+    console.log("Pulled templates:", metadata);
     store.dispatch(setTemplates(metadata));
   } 
   catch (err) {

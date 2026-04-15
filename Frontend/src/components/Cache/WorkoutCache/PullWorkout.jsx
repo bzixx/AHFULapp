@@ -17,6 +17,7 @@ export async function pullWorkouts() {
       endTime: w.endTime,
       title: w.title,
     }));
+    console.log("Pulled workouts:", metadata);
     store.dispatch(setWorkouts(metadata));
   } 
   catch (err) {
