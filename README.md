@@ -1,32 +1,29 @@
 ## Project Overview -- AHFUL App
 
-A Helpful Fitness Utilization Logger (AHFUL) app is a Web App for tracking workouts, food, gyms, and measurements. The repository contains a Python-based backend (API routes, services, and data models) and a React-based frontend (Vite) under the `Frontend/` folder.
+A Helpful Fitness Utilization Logger (AHFUL) app is a Web App for tracking workouts, food, gyms, and measurements. The repository contains a Python-based backend (API routes and services) under the `Backend/` and a React-based frontend (Static Files and Images) under the `Frontend/` folder.
 
 ## Architecture
 
-- Frontend: React + Vite (See detailed Frontend setup in ./Frontend/README.md)
-- Backend: Python web API (see See detailed Beckend setup in ./Backend/README.md)
-- Database: Hosted MongoDB 
-- Notification SW: Hosted Firebase 
-
-Notes: I inferred the backend uses Python + a MongoDB driver from the repository structure. Check `Backend/README.md` for authoritative details and any environment variables required (for example, a Mongo connection string).
+- Frontend: Node, React, & Vite (See detailed Frontend setup in ./Frontend/README.md)
+- Backend: Python Flask API Blueprints (see See detailed Beckend setup in ./Backend/README.md)
+- Database: Externally Hosted MongoDB via PyMongo Python Library
+- Notification Service Workers: Hosted GCP Project with Firebase Integration
+- AI Chatbot: Hosted GCP Projet with Vertex AI Integration (Recieved Credits for Student GenAI App Builder Integration)
 
 ## Prerequisites:
 
-- Python 3.10+ (for the backend)
+- Python 3.13+ (for the backend)
 - Node.js (for the frontend)
-- Internet Connection to load remote components
+- Internet Connection for external connections
 
 ## API Route Documentation (Swagger)
 
-We host Documentation for backend routes with Swagger!!  
-To access documentation you MUST be running BOTH the Frontend and Backend. 
-
-https://ahuful.app/api/APIDocs/ Self Hosted Link
+- We host Documentation for backend routes with Swagger!!  
+See more at: https://www.ahful.app/api/APIDocs/
 
 ## Testing
 
-There is a small test suite under `Backend/tests/` (for example `test_routes.py`). To run tests, use your preferred test runner (pytest is commonly used):
+There is a small test suite under `Backend/tests/`. To run tests, use your preferred test runner:
 
 	pytest Backend/tests
 
@@ -34,17 +31,31 @@ Adjust the command to suit your environment and any test requirements (for examp
 
 ## Contributing Standards
 
-This is a Team project, Contributions are welcome.
-
-1. Create an branch from main  (follow the repository branch naming conventions) -- > YourName/UserStoryName
-2. Create detailed commit messages and Commit after Testing
-3. Open a pull request with a clear description of what changed and why.
-
 variableNames = "Use Camel Case"
 
 def naming_functions_uses_lowercase_underscores:
 
 class ClassNamesUseCapitalCase:  (FileNames also use CapitalCase)
+
+This is a Team project, Contributions are welcome!
+
+1. Create an branch from main  (follow the repository branch naming conventions) -- > YourName/UserStoryName
+2. Create detailed commit messages and Commit after Testing
+3. Pull Main and resolve merge conflicts locally
+4. Open a pull request with a clear description of what changed and why.
+5. PRs to Main require review from another contributor before they can be merged.
+---------------
+AUTOMATED
+---------------
+6. Closed PRs to main will generate PRs to Production in prod-staging. 
+7. PRs to Prod Require any contributor to sign off on the Bot's Updates
+8. Approved PRs to Prod Staging will be Automatically bundeled and pushed to Production. 
+9. Wait a minute. 
+10. Visit https://www.ahful.app
+
+
+
+
 
 ## Troubleshooting
 
@@ -97,7 +108,6 @@ class ClassNamesUseCapitalCase:  (FileNames also use CapitalCase)
 - Personal Trainer- Has the ability to create workouts, workout templates, schedule workouts, and edit workout calendars.\
 
 ## External APIs
-- ExerciseDB -- https://www.exercisedb.dev/docs
 - Google OAuth 2.0 -- https://developers.google.com/identity/protocols/oauth2/web-server#python
 - FoodData Central (USDA) -- https://fdc.nal.usda.gov/api-guide
 - Firebase Cloud Messaging -- https://firebase.google.com/docs/cloud-messaging/

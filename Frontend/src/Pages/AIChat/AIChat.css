@@ -1,0 +1,21 @@
+.ai-chat-page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 1rem;
+    background-color: var(--background-color);
+}
+
+@media (max-width: 768px) {
+    .ai-chat-page {
+        padding: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .ai-chat-page {
+        padding: 0;
+        align-items: stretch;
+    }
+}

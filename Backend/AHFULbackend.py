@@ -20,6 +20,7 @@ from APIRoutes.ExerciseRoutes import exerciseRouteBlueprint
 from APIRoutes.UserSettingsRoutes import userSettingsBlueprint
 from APIRoutes.TokenRoutes import tokenBlueprint
 from APIRoutes.TaskRoutes import taskBlueprint
+from APIRoutes.VerificationRoutes import verificationRouteBlueprint
 from APIRoutes.ChatRoutes import chatRouteBlueprint
 
 #Firebase Admin SDK
@@ -79,12 +80,11 @@ def create_app():
     AHFULAPI.register_blueprint(tokenBlueprint)
     AHFULAPI.register_blueprint(taskBlueprint)
     AHFULAPI.register_blueprint(chatRouteBlueprint)
+    AHFULAPI.register_blueprint(verificationRouteBlueprint)
 
     app.register_blueprint(AHFULAPI)
     app.register_blueprint(swaggerUIBlueprint)
-
-
-
+    
     # Enable CORS - includes CloudFront production URL and custom domain
     allowed_origins = [
         'https://ahful.app',

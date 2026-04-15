@@ -103,7 +103,7 @@ export function ExploreWorkouts() {
 
   // ─── Fetch Exercise Names for Personal Exercises ───────────────────────────────
   useEffect(() => {
-    const exerciseIds = personalExercises.map((ex) => ex.exerciseId);
+    const exerciseIds = personalExercises.map((ex) => ex.exercise_id);
 
     if (exerciseIds.length === 0) return;
 
@@ -122,7 +122,7 @@ export function ExploreWorkouts() {
             continue;
           }
           try {
-            const response = await fetch(`https://www.ahful.app/AHFULexercises/id/${id}`);
+            const response = await fetch(`https://www.ahful.app/api/AHFULexercises/id/${id}`);
 
             if (!response.ok) {
               results[id] = "Unknown Exercise";
@@ -370,7 +370,7 @@ export function ExploreWorkouts() {
                       <div key={exercise._id || idx} className="workout-exercise-item">
                         <div className="exercise-item-header">
                           <span className="exercise-item-number">
-                            {exerciseNames[exercise.exerciseId] || "Unknown Exercise"}
+                            {exerciseNames[exercise.exercise_id] || "Unknown Exercise"}
                           </span>
                         </div>
                         {exercise.weight && (
@@ -379,22 +379,28 @@ export function ExploreWorkouts() {
                             <span>{exercise.weight} lbs</span>
                           </div>
                         )}
-                        {exercise.sets && (
+                        {exercise.sets != null && exercise.sets !== undefined && exercise.sets !== "" && exercise.sets !== 0 && (
                           <div className="exercise-item-detail">
                             <span className="exercise-detail-label">Sets:</span>{" "}
                             <span>{exercise.sets}</span>
                           </div>
                         )}
-                        {exercise.reps && (
+                        {exercise.reps != null && exercise.reps !== undefined && exercise.reps !== "" && exercise.reps !== 0 && (
                           <div className="exercise-item-detail">
                             <span className="exercise-detail-label">Reps:</span>{" "}
                             <span>{exercise.reps}</span>
                           </div>
                         )}
-                        {exercise.duration && exercise.duration > 0 && (
+                        {exercise.duration != null && exercise.duration !== undefined && Number(exercise.duration) > 0 && (
                           <div className="exercise-item-detail">
                             <span className="exercise-detail-label">Duration:</span>{" "}
                             <span>{exercise.duration}s</span>
+                          </div>
+                        )}
+                        {exercise.distance != null && exercise.distance !== undefined && Number(exercise.distance) > 0 && (
+                          <div className="exercise-item-detail">
+                            <span className="exercise-detail-label">Distance:</span>{" "}
+                            <span>{exercise.distance}m</span>
                           </div>
                         )}
                         {(exercise.complete || exercise.completed) && (
