@@ -1,14 +1,9 @@
-name: Deploy to Production
+name: Deploy to Staging
 
 on:
   push:
     branches:
       - main          # Step 1 – triggers the PR creation job
-  pull_request:
-    branches:
-      - Production    # Step 2 – triggers deploy only when PR is merged into Production
-    types:
-      - closed
 
 # ─────────────────────────────────────────────────────────────────────────────
 # JOB 1 — Runs on push to main
@@ -114,86 +109,7 @@ jobs:
             echo "PR created"
           fi
 
-# ─────────────────────────────────────────────────────────────────────────────
-# JOB 2 — Runs when the PR into Production is merged
-#   • Builds the Vite frontend
-#   • SCPs dist/ to the remote Droplet's frontend directory
-#   • SSHs in, pulls the Production branch, restarts the backend service
-# ─────────────────────────────────────────────────────────────────────────────
-  deploy:
-    name: Build & Deploy to Droplet
-    if: |
-      github.event_name == 'pull_request' &&
-      github.event.pull_request.merged == true &&
-      github.event.pull_request.base.ref == 'Production'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Production
-        uses: actions/checkout@v4
-        with:
-          ref: Production
-
-      # ── Frontend: install & build ────────────────────────────────────────
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Vite app
-        run: npm run build
-        env:
-          NODE_ENV: Production
-          # Add any VITE_ secrets your app needs, e.g.:
-          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
-          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_SENDER_ID: ${{ secrets.VITE_FIREBASE_SENDER_ID }}
-          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
-
-      # ── Frontend: SCP dist/ to Droplet ───────────────────────────────────
-      - name: Copy build to Droplet via SCP
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host:     ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key:      ${{ secrets.DEPLOY_SSH_KEY }}
-          port:     ${{ secrets.DEPLOY_PORT }}
-          source:   "dist/"
-          target:   ${{ secrets.DEPLOY_FRONTEND_PATH }}   # e.g. /var/www/ahful/frontend
-          strip_components: 1   # copies dist/* directly into target, not dist/ subfolder
-
-      # ── Backend: SSH → pull Production → restart service ─────────────────
-      - name: Deploy backend on Droplet
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host:     ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key:      ${{ secrets.DEPLOY_SSH_KEY }}
-          port:     ${{ secrets.DEPLOY_PORT }}
-          script: |
-            set -e
-
-            echo ">>> Pulling latest Production branch..."
-            cd ${{ secrets.DEPLOY_BACKEND_PATH }}   # e.g. /var/www/ahful/backend
-            git fetch origin
-            git checkout Production
-            git pull origin Production
-
-            echo ">>> Installing backend dependencies (if needed)..."
-            # Uncomment what matches your stack:
-            # npm ci --omit=dev
-            # pip install -r requirements.txt
-
-            echo ">>> Restarting backend service..."
-            sudo systemctl restart ${{ secrets.DEPLOY_SERVICE_NAME }}
-
-            echo ">>> Verifying service is alive..."
-            sudo systemctl is-active --quiet ${{ secrets.DEPLOY_SERVICE_NAME }} \
-              && echo "✓ Service is running" \
-              || (echo "✗ Service failed to start" && exit 1)
+# JOB 2 has been moved to a dedicated workflow file `deploy-production.yml`.
+# Triggering the deploy on a direct `push` to the `Production` branch is
+# more reliable and simpler: merging the PR into Production performs a
+# push to that branch and will run the production-deploy workflow.
