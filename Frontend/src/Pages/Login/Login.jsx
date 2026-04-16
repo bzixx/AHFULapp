@@ -5,6 +5,7 @@ import { handle_google_login } from "../../QueryFunctions.js";
 import { authLogin } from "../../Pages/Login/AuthSlice.jsx";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { onLoginCache } from "../../components/Cache/OnLoginCache/OnLoginCache.jsx";
 
 export function Login() {
   // ----- LOGIN STATE MANAGEMENT ---------------------------------------------------------------------------
@@ -20,6 +21,7 @@ export function Login() {
     if (isAuthenticated && user) {
       setStatusText(`Logged in as ${user.email}`);
       navigate("/Login", { replace: true });
+      onLoginCache();
     }
   }, [isAuthenticated, user]);
 

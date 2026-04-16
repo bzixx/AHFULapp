@@ -7,6 +7,18 @@ import { AnimatePresence, motion } from "framer-motion";
 import "./Calendar.css";
 import { setSelectedDate, clearSelectedDate } from "./CalendarSlicer"; 
 
+const workoutDatesSet = (workouts) => {
+  const set = new Set();
+  workouts.forEach((w) => {
+    if (w.startTime) {
+      const date = new Date(w.startTime * 1000);
+      const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      set.add(dateStr);
+    }
+  });
+  return set;
+};
+
 export function Calendar({ locale }) {
   locale = locale || navigator.language;
 
@@ -25,6 +37,9 @@ export function Calendar({ locale }) {
   
   // Read selected date from Redux (single source of truth)
   const selectedDate = useSelector((state) => state.calendar.selectedDate);
+  const workouts = useSelector((state) => state.pullWorkout.workouts);
+  
+  const hasWorkoutDates = useMemo(() => workoutDatesSet(workouts), [workouts]);
   
   const selectedDateStr = selectedDate ? new Date(selectedDate).toISOString().slice(0, 10) : null;
 
@@ -91,6 +106,7 @@ export function Calendar({ locale }) {
             const todayCell = isToday(date);
             const dateStr = date.toISOString().slice(0, 10);
             const isSelected = selectedDateStr === dateStr;
+            const hasWorkout = hasWorkoutDates.has(dateStr);
 
             let cellClass = "calendar-cell";
             if (currentMonth) {
@@ -108,6 +124,7 @@ export function Calendar({ locale }) {
                 title={date.toLocaleDateString()}
                 onClick={() => handleDateClick(date)}
               >
+                {hasWorkout && <span className="workout-dot" />}
                 <span className={todayCell ? "calendar-day-today" : ""}>
                   {date.getDate()}
                 </span>
