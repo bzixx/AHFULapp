@@ -50,7 +50,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key:      ${{ secrets.DEPLOY_SSH_KEY }}
           port:     ${{ secrets.DEPLOY_PORT }}
-          source:   "dist/"
+          source:   "Frontend/dist/"
           target:   ${{ secrets.DEPLOY_FRONTEND_PATH }}   # e.g. /var/www/ahful/frontend
           strip_components: 1   # copies dist/* directly into target, not dist/ subfolder
 

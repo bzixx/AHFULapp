@@ -1,8 +1,10 @@
+name: Python Backend 
+
 on:
   push:
     branches:
       - "**"
-  pull_request:
+      - "!Production"
 
 jobs:
   test:

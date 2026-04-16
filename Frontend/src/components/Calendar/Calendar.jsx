@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 /*Need to look over framer motion again between sprints, hardly understand it and 
 there might be a clearner way to do the calendar animations without it.*/
 import { AnimatePresence, motion } from "framer-motion";
-import "./calendar.css";
+import "./Calendar.css";
 import { setSelectedDate, clearSelectedDate } from "./CalendarSlicer"; 
 
 const workoutDatesSet = (workouts) => {
