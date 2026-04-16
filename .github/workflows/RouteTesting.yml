@@ -1,5 +1,3 @@
-name: Route Integration (App + Mongo via App Only)
-
 on:
   push:
     branches:
@@ -8,6 +6,7 @@ on:
 
 jobs:
   test:
+    name: Backend Route Tests (Flask + Mongo)
     runs-on: ubuntu-latest
 
     env:
@@ -47,7 +46,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
+          # Cache pip packages between workflow runs to avoid reinstalling unchanged requirements
+          cache: 'pip'
+          # Invalidate cache when requirements.txt changes
+          cache-dependency-path: Backend/requirements.txt
 
       - name: Install dependencies
         run: |
