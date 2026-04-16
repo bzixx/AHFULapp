@@ -575,6 +575,29 @@ export async function updateWorkout(workoutId, data) {
 
 // ── Personal Exercise Functions ─────────────────────────────────────────────────
 
+export async function fetchPersonalExerciseById(userId) {
+  try {
+    const res = await fetch(
+      `https://www.ahful.app/api/AHFULpersonalEx/${userId}`,
+    );
+    if (res.status === 404 || res.status === 204) {
+      return [];
+    }
+    if (!res.ok) {
+      const bodyText = await res.text().catch(() => "");
+      throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
+    }
+    const data = await res.json();
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.exercises)) return data.exercises;
+    if (data && Array.isArray(data.data)) return data.data;
+    return [];
+  } catch (err) {
+    console.error("fetchPersonalExerciseById error:", err);
+    return [];
+  }
+}
+
 export async function fetchPersonalExercises(workoutId) {
   try {
     const res = await fetch(

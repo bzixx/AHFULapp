@@ -28,6 +28,7 @@
     "react-router-dom": "^7.13.0",
     "recharts": "^3.7.0",
     "redux": "^5.0.1",
+    "redux-persist": "^6.0.0",
     "vite": "^7.3.2"
   },
   "devDependencies": {

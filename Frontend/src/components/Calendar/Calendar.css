@@ -126,3 +126,13 @@
 .calendar-cell:not(.today):hover {
   background: var(--calendar-hover);
 }
+
+.workout-dot {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: red;
+}
