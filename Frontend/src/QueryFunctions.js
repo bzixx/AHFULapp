@@ -255,6 +255,7 @@ export async function createTemplate(templateData) {
       "http://localhost:5000/api/AHFULworkout/create/template",
       {
         method: "POST",
+        credentials: 'include',
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -297,6 +298,7 @@ export async function updateUserSettings(userId, settings) {
     `http://localhost:5000/api/AHFULuserSettings/update/${userId}`,
     {
       method: "PUT",
+      credentials: 'include',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(settings),
     },
@@ -311,7 +313,7 @@ export async function reverseGeocode(lat, lng) {
   try {
     const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
     const res = await fetch(url, {
-      headers: { "User-Agent": "AHFULApp/1.0" },
+      headers: { "User-Agent": "AHFULApp/1.0" },credentials: 'include',
     });
     if (!res.ok) {
       throw new Error(`Geocoding API returned ${res.status}`);
@@ -328,7 +330,7 @@ export async function forwardGeocode(address) {
   try {
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
     const res = await fetch(url, {
-      headers: { "User-Agent": "AHFULApp/1.0" },
+      headers: { "User-Agent": "AHFULApp/1.0" },credentials: 'include',
     });
     if (!res.ok) {
       throw new Error(`Geocoding API returned ${res.status}`);
@@ -350,7 +352,7 @@ export async function forwardGeocode(address) {
 
 export async function fetchGym(gymId) {
   try {
-    const res = await fetch(`http://localhost:5000/api/AHFULgyms/${gymId}`);
+    const res = await fetch(`http://localhost:5000/api/AHFULgyms/${gymId}`, {credentials: 'include'});
     if (!res.ok) {
       throw new Error(`Failed to fetch gym: ${res.status} ${res.statusText}`);
     }
@@ -365,7 +367,7 @@ export async function fetchGym(gymId) {
 
 export async function fetchExerciseById(exerciseId) {
   const res = await fetch(
-    `http://localhost:5000/api/AHFULexercises/id/${exerciseId}`,
+    `http://localhost:5000/api/AHFULexercises/id/${exerciseId}`, {credentials: 'include'}
   );
   if (!res.ok) {
     throw new Error(
@@ -391,6 +393,7 @@ export async function createExercise(exerciseData) {
     const res = await fetch("http://localhost:5000/api/AHFULexercises/create/", {
       method: "POST",
       mode: "cors",
+      credentials: 'include',
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -413,7 +416,7 @@ export async function createExercise(exerciseData) {
 }
 
 export async function fetchExercisesFromBackend() {
-  const res = await fetch("http://localhost:5000/api/AHFULexercises");
+  const res = await fetch("http://localhost:5000/api/AHFULexercises", {credentials: 'include'});
   if (!res.ok) {
     let bodyText = "";
     try {
@@ -438,7 +441,7 @@ export async function fetchExercisesFromBackend() {
 
 export async function searchExercises(searchQuery) {
   const res = await fetch(
-    `http://localhost:5000/api/AHFULexercises/search?search=${encodeURIComponent(searchQuery)}`,
+    `http://localhost:5000/api/AHFULexercises/search?search=${encodeURIComponent(searchQuery)}`, {credentials: 'include'}
   );
   if (!res.ok) {
     let bodyText = "";
@@ -467,6 +470,7 @@ export async function searchExercises(searchQuery) {
 export async function createWorkout(workoutData) {
   const res = await fetch("http://localhost:5000/api/AHFULworkout/create", {
     method: "POST",
+    credentials: 'include',
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(workoutData),
   });
@@ -479,7 +483,7 @@ export async function createWorkout(workoutData) {
 
 export async function fetchWorkout(userId) {
   try {
-    const res = await fetch(`http://localhost:5000/api/AHFULworkout/${userId}`);
+    const res = await fetch(`http://localhost:5000/api/AHFULworkout/${userId}`, {credentials: 'include'});
 
     // Handle empty or not found responses for new users
     if (res.status === 404 || res.status === 204) {
@@ -505,7 +509,7 @@ export async function fetchWorkout(userId) {
 
 export async function fetchWorkoutById(workoutId) {
   try {
-    const res = await fetch(`http://localhost:5000/api/AHFULworkout/id/${workoutId}`);
+    const res = await fetch(`http://localhost:5000/api/AHFULworkout/id/${workoutId}`, {credentials: 'include'});
 
     if (res.status === 404 || res.status === 204) {
       return null;
@@ -532,6 +536,7 @@ export async function updateWorkout(workoutId, data) {
     `http://localhost:5000/api/AHFULworkout/update/${workoutId}`,
     {
       method: "PUT",
+      credentials: 'include',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     },
@@ -548,7 +553,7 @@ export async function updateWorkout(workoutId, data) {
 export async function fetchPersonalExerciseById(userId) {
   try {
     const res = await fetch(
-      `http://localhost:5000/api/AHFULpersonalEx/${userId}`,
+      `http://localhost:5000/api/AHFULpersonalEx/${userId}`, {credentials: 'include'}
     );
     if (res.status === 404 || res.status === 204) {
       return [];
@@ -571,7 +576,7 @@ export async function fetchPersonalExerciseById(userId) {
 export async function fetchPersonalExercises(workoutId) {
   try {
     const res = await fetch(
-      `http://localhost:5000/api/AHFULpersonalEx/workout/${workoutId}`,
+      `http://localhost:5000/api/AHFULpersonalEx/workout/${workoutId}`, {credentials: 'include'}
     );
 
     // Handle empty or not found responses
@@ -600,6 +605,7 @@ export async function fetchPersonalExercises(workoutId) {
 export async function createPersonalExercise(data) {
   const res = await fetch("http://localhost:5000/api/AHFULpersonalEx/create", {
     method: "POST",
+    credentials: 'include',
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
@@ -615,6 +621,7 @@ export async function updatePersonalExercise(exerciseId, data) {
     `http://localhost:5000/api/AHFULpersonalEx/update/${exerciseId}`,
     {
       method: "PUT",
+      credentials: 'include',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     },
@@ -631,6 +638,7 @@ export async function deletePersonalExercise(exerciseId) {
     `http://localhost:5000/api/AHFULpersonalEx/delete/${exerciseId}`,
     {
       method: "DELETE",
+      credentials: 'include',
     },
   );
   if (!res.ok) {
@@ -645,6 +653,7 @@ export async function createPersonalExercises(peData) {
   try {
     const res = await fetch("http://localhost:5000/api/AHFULpersonalEx/create", {
       method: "POST",
+      credentials: 'include',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(peData),
     });
@@ -668,6 +677,7 @@ export async function updatePersonalExercises(peId, peData) {
       `http://localhost:5000/api/AHFULpersonalEx/update/${peId}`,
       {
         method: "PUT",
+        credentials: 'include',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(peData),
       },
@@ -692,6 +702,7 @@ export async function updateTask(taskId, updates) {
       `http://localhost:5000/api/AHFULtasks/update/${taskId}`,
       {
         method: "PUT",
+        credentials: 'include',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates),
       }
