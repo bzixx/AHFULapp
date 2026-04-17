@@ -16,6 +16,7 @@ export function NotVerified() {
         "http://localhost:5000/api/AHFULverify/verify/email/user_id/",
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },

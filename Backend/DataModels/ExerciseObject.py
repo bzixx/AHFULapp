@@ -13,7 +13,7 @@ class ExerciseObject:
         """Convert MongoDB document to JSON-safe dict."""
         if exercise:
             exercise["_id"] = str(exercise["_id"])
-            if exercise["owner_id"]:
+            if "owner_id" in exercise and exercise["owner_id"] is not None:
                 exercise["owner_id"] = str(exercise["owner_id"])
         return exercise
     
