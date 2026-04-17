@@ -1,25 +1,32 @@
 import Body from "react-muscle-highlighter";
 import "./HeatMap.css";
-import { useEffect } from "react";
-
+import { useState } from "react";
 
 const HEAT_COLORS = ["#ef4444", "#ef4444", "#ef4444"];
 
 export function HeatMap({ data = {}, onMuscleClick }) {
-
-  const bodyData = Object.entries(data)
-    .map(([slug, intensity]) => ({
-      slug,
-      intensity: Math.min(intensity, 3),
-    }))
-    .filter((part) => part.intensity > 0);
+  const [highlightedMuscles, setHighlightedMuscles] = useState([]);
 
   const handleClick = (part, side) => {
+    const slug = part.slug;
+    if (!slug) return;
+
+    setHighlightedMuscles((prev) => {
+      if (prev.includes(slug)) {
+        return prev.filter((s) => s !== slug);
+      }
+      return [...prev, slug];
+    });
+
     if (onMuscleClick) {
-      onMuscleClick(part.slug || "", side);
+      onMuscleClick(slug, side);
     }
   };
 
+  const bodyData = highlightedMuscles.map((slug) => ({
+    slug,
+    intensity: 3,
+  }));
 
   return (
     <div className="heatmap-container">
