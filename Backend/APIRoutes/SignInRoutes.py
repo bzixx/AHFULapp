@@ -32,8 +32,6 @@ def google_login():
         #Return 401 Error -- Invalid Token.
         return jsonify({"error": "Invalid google token provided to Backend.  Dont come in here with Sloppily Copied Keys."}), 401
 
-    tokenBits = token[-32:] 
-
     routeUserObject, errorNeedtoCreatAcct = UserDriver.get_user_by_email(decodedUserInfo.get("email"))
 
     if errorNeedtoCreatAcct:
@@ -46,7 +44,7 @@ def google_login():
             "last_login_expire" : decodedUserInfo.get("exp"),
             "roles": ["user"],
             "updated_at": datetime.now(),
-            "magic_bits" : tokenBits
+            "magic_bits" : token
         })
     elif routeUserObject:
         #User Account Exists, Update Object.
@@ -58,7 +56,7 @@ def google_login():
         # Update last login time
         routeUserObject['last_login_time'] = trunc(time())
         routeUserObject["last_login_expire"] = decodedUserInfo.get("exp")
-        routeUserObject['magic_bits'] = tokenBits
+        routeUserObject['magic_bits'] = token
         
         UserDriver.update_user_info(dataToBeUpdated=routeUserObject)
     else:
@@ -83,23 +81,52 @@ def google_login():
             retrievedUserSettings, settings_err = UserSettingsDriver.get_user_settings(routeUserObject["_id"])
             
         if settings_err:
-            return jsonify({"error": "I'm Fried, we just tried to pull user settings on login and failed."}), 500
+            try:
+                UserSettingsDriver.create_default_user_settings(routeUserObject["_id"])
+            except Exception as e:
+                return jsonify({"error": f"I'm Fried, we just tried to pull user settings on login and failed. {e} "}), 500
+  
 
 
         # 1. Create the response object with the user info and flags
         response = make_response(jsonify({
-            "message": "UserSetting Found on Logoin successful",
+            "message": "Google Login Registered & Logged with Backend.",
             "user_info": {
-                "display_Mode": retrievedUserSettings.get("displayMode"),
-                "units": retrievedUserSettings.get("units"),
+                "_id": routeUserObject["_id"],
+                "name": routeUserObject["name"],
+                "email": routeUserObject["email"],
+                "picture": routeUserObject["picture"],
+                "roles": routeUserObject["roles"],
+                "last_login_time": routeUserObject["last_login_time"],
             }
         }))
 
-        # 2. Set the cookie with security flags
+        # 2. Set the cookie with User ID
+        # We store ONLY the session/user ID here
+        response.set_cookie(
+            'session_id',        # Cookie name
+            routeUserObject["_id"],# Cookie value
+            httponly=True,       # Prevents JS access (XSS protection)
+            secure=False,         # Ensures cookie is sent over HTTPS only
+            samesite='Strict',      # CSRF protection (use 'Strict' for high security)
+            max_age=3600         # Expiration in seconds (e.g., 1 hour)
+        )
+
+        # 3. Set the cookie with User Settings ID
         # We store ONLY the session/user ID here
         response.set_cookie(
             'user_settings',        # Cookie name
             retrievedUserSettings["_id"],# Cookie value
+            httponly=True,       # Prevents JS access (XSS protection)
+            secure=False,         # Ensures cookie is sent over HTTPS only
+            samesite='Strict',      # CSRF protection (use 'Strict' for high security)
+            max_age=3600         # Expiration in seconds (e.g., 1 hour)
+        )
+
+        # 4. Set MagicBits Cookie with Token.
+        response.set_cookie(
+            'magic_bits',        # Cookie name
+            token,              # Cookie value
             httponly=True,       # Prevents JS access (XSS protection)
             secure=False,         # Ensures cookie is sent over HTTPS only
             samesite='Strict',      # CSRF protection (use 'Strict' for high security)
@@ -159,7 +186,7 @@ def whoami():
             response = make_response(jsonify({
                 "message": "UserSettings Found successful",
                 "user_info": {
-                    "display_Mode": retrievedUserSettings.get("displayMode"),
+                    "theme": retrievedUserSettings.get("theme"),
                     "units": retrievedUserSettings.get("units"),
                 }
             }))

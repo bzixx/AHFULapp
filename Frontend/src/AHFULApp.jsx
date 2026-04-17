@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { WorkoutLogger } from "./Pages/WorkoutLogger/WorkoutLogger.jsx";
@@ -27,7 +27,6 @@ function AHFULApp() {
     // Example: detect page changes and refresh a value when the route changes.
   // This component is rendered inside a <Router> (see `main.jsx`), so useLocation works here.
   const location = useLocation();
-  const [pageChangeCount, setPageChangeCount] = useState(0);
   const theme = useSelector((state) => state.setting.theme);
   const {
     isActive: tutorialActive,
@@ -41,18 +40,13 @@ function AHFULApp() {
 
   // Apply theme globally - runs on all pages
   useEffect(() => {
-    if (theme === "Dark") {
+    if (theme === "dark") {
       document.body.classList.add("dark");
     } else {
       document.body.classList.remove("dark");
     }
-  }, [theme]);
+  }, [theme]);  
 
-  useEffect(() => {
-        // increment a counter every time the pathname changes — used for debugging route changes
-    setPageChangeCount((c) => c + 1);
-    // console.log("route changed to", location.pathname);
-  }, [location.pathname]);
 
   return (
     <>
@@ -100,6 +94,7 @@ function AHFULApp() {
         </Route>
         <Route path="Settings" element={<Settings/>} />
       </Routes>
+``
       {tutorialActive && currentStepData && (
         <TutorialOverlay
           step={currentStep}
@@ -112,8 +107,10 @@ function AHFULApp() {
           onComplete={completeTutorial}
         />
       )}
+
     </>
   );
+
 }
 
 export default AHFULApp

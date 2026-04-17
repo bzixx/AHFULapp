@@ -16,8 +16,7 @@ DEFAULT_USER_SETTINGS = {
     "dateOfBirth": "",
     "availableEquipment": "basic",
     "notifications": "false",
-    # Track whether user has completed onboarding tutorial
-    "tutorialComplete": "false"
+    "tutorialComplete": False
 }
 
 class UserSettingsObject:

@@ -188,6 +188,7 @@ export async function handle_google_login(response) {
       });
 
       let backendUserData = await backendResponse.json();
+      return backendUserData;
 
     }
 
@@ -271,27 +272,19 @@ export async function createTemplate(templateData) {
 }
 
 // ──  User Settings functions ─────────────────────────────────────────────────────────
-export async function getUserSettings(userId) {
-  const foundUserSettingsResponse = await fetch(`http://localhost:5000/api/AHFULuserSettings/${userId}`);
-  if (foundUserSettingsResponse.status === 404) {
-    // Create default settings if not found
-    const createDefaultSettingsResponse = await fetch(
-      `http://localhost:5000/api/AHFULuserSettings/createDefault/${userId}`,
-      {
-        method: "POST",
-      },
-    );
-    if (!createDefaultSettingsResponse.ok)
-      throw new Error(
-        "Failed to create default settings" +
-          createDefaultSettingsResponse.status,
-      );
-    return createDefaultSettingsResponse.json();
-  }
-  if (!foundUserSettingsResponse.ok)
+export async function getUserSettings() {
+  const foundUserSettingsResponse = await fetch(`http://localhost:5000/api/AHFULuserSettings`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (foundUserSettingsResponse.ok){
+
+  }else{
     throw new Error(
       "Failed to fetch settings" + foundUserSettingsResponse.status,
     );
+  }
   return foundUserSettingsResponse.json();
 }
 
