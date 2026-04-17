@@ -272,15 +272,24 @@ export async function createTemplate(templateData) {
 }
 
 // ──  User Settings functions ─────────────────────────────────────────────────────────
-export async function getUserSettings() {
-  const foundUserSettingsResponse = await fetch(`https://www.ahful.app/api/AHFULuserSettings`, {
-    method: "GET",
-    credentials: "include",
-  });
-
-  if (foundUserSettingsResponse.ok){
-
-  }else{
+export async function getUserSettings(userId) {
+  const foundUserSettingsResponse = await fetch(`https://www.ahful.app/api/AHFULuserSettings/${userId}`);
+  if (foundUserSettingsResponse.status === 404) {
+    // Create default settings if not found
+    const createDefaultSettingsResponse = await fetch(
+      `https://www.ahful.app/api/AHFULuserSettings/createDefault/${userId}`,
+      {
+        method: "POST",
+      },
+    );
+    if (!createDefaultSettingsResponse.ok)
+      throw new Error(
+        "Failed to create default settings" +
+          createDefaultSettingsResponse.status,
+      );
+    return createDefaultSettingsResponse.json();
+  }
+  if (!foundUserSettingsResponse.ok)
     throw new Error(
       "Failed to fetch settings" + foundUserSettingsResponse.status,
     );
