@@ -192,10 +192,10 @@ export function useTutorial() {
   useEffect(() => {
     if (hasAutoStarted.current) return;
     
-    if ((tutorialComplete === false || tutorialComplete === undefined) && user && user._id) {
+    if (tutorialComplete === false  && user) {
       startTutorial();
     }
-  }, [user, tutorialComplete]);
+  }, []);
 
   /**
    * Returned interface for components using this hook

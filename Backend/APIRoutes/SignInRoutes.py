@@ -1,10 +1,11 @@
-from flask import Blueprint, request, jsonify, current_app, make_response
+from flask import Blueprint, request, jsonify, current_app, make_response, g
 from Services.SignInDriver import SignInDriver
 from Services.UserDriver import UserDriver
 from Services.UserSettingsDriver import UserSettingsDriver
 from datetime import datetime
 from time import time
 from math import trunc
+from APIRoutes.SecurityRoutes import login_required
 
 # Used to group views
 signInRouteBlueprint = Blueprint('auth', __name__, url_prefix='/AHFULauth')
@@ -156,59 +157,58 @@ def logout():
 
 #── GET whoami (Logged in or not) ────────────────────────────────────────────────────────────
 @signInRouteBlueprint.route('/whoami', methods=['POST'])
+@login_required
 def whoami():
     try:
-        # Use Cookie Session validation (httpOnly cookie set during login)
-        session_id = request.cookies.get('session_id')
         currTime = trunc(time())
+        
+        # Validate session by user id from cookie
+        routeUserObject, error = UserDriver.get_user_by_id(g.user_id)
+        if not routeUserObject:
+            return jsonify({"error": "No session cookie found. 2. Please Sign in."}), 401
 
-        if session_id:
-            # Validate session by user id from cookie
-            routeUserObject, error = UserDriver.get_user_by_id(session_id)
-            if not routeUserObject:
-                return jsonify({"error": "No session cookie found. 2. Please Sign in."}), 401
+        # Check expiry stored on server
+        foundExpiryTime = routeUserObject["last_login_expire"]
+        # Normalize any Rouge foundExpiryTime (treat non-numeric as expired)
+        try:
+            foundExpiryTime = int(foundExpiryTime)
+        except Exception:
+            foundExpiryTime = 0
 
-            # Check expiry stored on server
-            foundExpiryTime = routeUserObject["last_login_expire"]
-            # Normalize any Rouge foundExpiryTime (treat non-numeric as expired)
-            try:
-                foundExpiryTime = int(foundExpiryTime)
-            except Exception:
-                foundExpiryTime = 0
+        if currTime > foundExpiryTime:
+            return jsonify({"error": "Session expired.  Please Sign in again."}), 401
 
-            if currTime > foundExpiryTime:
-                return jsonify({"error": "Session expired.  Please Sign in again."}), 401
+        #Successful Auth, return user info
+        retrievedUserSettings, settings_err = UserSettingsDriver.get_user_settings(g.user_id)
 
-            #Successful Auth, return user info
-            retrievedUserSettings, settings_err = UserSettingsDriver.get_user_settings(session_id)
+        # 1. Create the response object with the user info and flags
+        response = make_response(jsonify({
+            "message": "Session Cookie Verified & Logged with Backend.",
+            "user_info": {
+                "_id": routeUserObject["_id"],
+                "name": routeUserObject["name"],
+                "email": routeUserObject["email"],
+                "picture": routeUserObject["picture"],
+                "roles": routeUserObject["roles"],
+                "last_login_time": routeUserObject["last_login_time"],
+            }
+        }))
 
-            # 1. Create the response object with the user info and flags
-            response = make_response(jsonify({
-                "message": "UserSettings Found successful",
-                "user_info": {
-                    "theme": retrievedUserSettings.get("theme"),
-                    "units": retrievedUserSettings.get("units"),
-                }
-            }))
+        # 2. Set the cookie with security flags
+        # We store ONLY the session/user ID here
+        response.set_cookie(
+            'user_settings',        # Cookie name
+            retrievedUserSettings["_id"],# Cookie value
+            httponly=True,       # Prevents JS access (XSS protection)
+            secure=False,         # Ensures cookie is sent over HTTPS only
+            samesite='Strict',      # CSRF protection (use 'Strict' for high security)
+            max_age=3600         # Expiration in seconds (e.g., 1 hour)
+        )
 
-            # 2. Set the cookie with security flags
-            # We store ONLY the session/user ID here
-            response.set_cookie(
-                'user_settings',        # Cookie name
-                retrievedUserSettings["_id"],# Cookie value
-                httponly=True,       # Prevents JS access (XSS protection)
-                secure=False,         # Ensures cookie is sent over HTTPS only
-                samesite='Strict',      # CSRF protection (use 'Strict' for high security)
-                max_age=3600         # Expiration in seconds (e.g., 1 hour)
-            )
+        #Log to Console & Security Logging. 
+        print (f"Settings Retrieved with Session Cookie: {retrievedUserSettings['_id']} for user: {g.user_id}")
+        return response
 
-            #Log to Console & Security Logging. 
-            print (f"Settings Retrieved with Session Cookie: {retrievedUserSettings['_id']} for user: {session_id}")
-            return response
-
-        else:
-            # No session cookie, treat as unauthorized
-            return jsonify({"error": "No session cookie found.  Please Sign in."}), 401
     except Exception as e:
         print(f"Error in whoami route: {e}")
         return jsonify({"error": f"Whatever you sent was not properly handeled yet.  Read more here: {e}."}), 500
