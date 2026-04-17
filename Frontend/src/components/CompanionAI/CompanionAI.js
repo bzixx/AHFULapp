@@ -1,4 +1,4 @@
-export function initCompanionAI({ textInput, sendButton, characterImage, voiceSelect, status }) {
+export function initCompanionAI({ textInput, sendButton, characterImage, voiceSelect, status, responsesContainer, onResponseAdded }) {
     const openMouthImg = 'https://www.ahful.app/images/char-mouth-open.png';
     const closedMouthImg = 'https://www.ahful.app/images/char-mouth-closed.png';
 
@@ -103,13 +103,19 @@ export function initCompanionAI({ textInput, sendButton, characterImage, voiceSe
 
             if (!response.ok) throw new Error('Network response was not ok');
             const data = await response.json();
-            typewriter(data.response, status);
+            if (onResponseAdded) {
+                onResponseAdded(data.response);
+            }
             speak(data.response);
+            if (status) status.textContent = "Ask me something!";
         } catch (error) {
             console.error('Error:', error);
             const errorMessage = 'Sorry, something went wrong. Please try again.';
-            typewriter(errorMessage, status);
+            if (onResponseAdded) {
+                onResponseAdded(errorMessage);
+            }
             speak(errorMessage);
+            if (status) status.textContent = "Ask me something!";
         }
     };
 
