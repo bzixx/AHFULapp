@@ -39,7 +39,7 @@ export function Profile() {
   
   const handleVerifyEmail = async () => {
     try {
-      const res = await fetch(
+      const verifyUserEmailResponse = await fetch(
         "https://www.ahful.app/api/AHFULverify/verify/email/user_id/",
         {
           method: "POST",
