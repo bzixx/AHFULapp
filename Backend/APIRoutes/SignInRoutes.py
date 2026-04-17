@@ -108,7 +108,7 @@ def google_login():
             'session_id',        # Cookie name
             routeUserObject["_id"],# Cookie value
             httponly=True,       # Prevents JS access (XSS protection)
-            secure=False,         # Ensures cookie is sent over HTTPS only
+            secure=True,         # Ensures cookie is sent over HTTPS only
             samesite='Strict',      # CSRF protection (use 'Strict' for high security)
             max_age=3600         # Expiration in seconds (e.g., 1 hour)
         )
@@ -119,7 +119,7 @@ def google_login():
             'user_settings',        # Cookie name
             retrievedUserSettings["_id"],# Cookie value
             httponly=True,       # Prevents JS access (XSS protection)
-            secure=False,         # Ensures cookie is sent over HTTPS only
+            secure=True,         # Ensures cookie is sent over HTTPS only
             samesite='Strict',      # CSRF protection (use 'Strict' for high security)
             max_age=3600         # Expiration in seconds (e.g., 1 hour)
         )
@@ -129,7 +129,7 @@ def google_login():
             'magic_bits',        # Cookie name
             token,              # Cookie value
             httponly=True,       # Prevents JS access (XSS protection)
-            secure=False,         # Ensures cookie is sent over HTTPS only
+            secure=True,         # Ensures cookie is sent over HTTPS only
             samesite='Strict',      # CSRF protection (use 'Strict' for high security)
             max_age=3600         # Expiration in seconds (e.g., 1 hour)
         )
@@ -152,7 +152,24 @@ def logout():
 
     # Clear cookie on logout (instruct browser to remove)
     response = make_response(jsonify({"message": "Logout successful"}), 200)
-    response.set_cookie('session_id', '', httponly=True, secure=True, samesite='Strict', max_age=0, path='/')
+    response.set_cookie(
+        'session_id', 
+        '', 
+        httponly=True, 
+        secure=True, 
+        samesite='Strict', 
+        max_age=0, 
+        path='/')
+    
+    response.set_cookie(
+        'magic_bits', 
+        '', 
+        httponly=True, 
+        secure=True, 
+        samesite='Strict', 
+        max_age=0, 
+        path='/')
+    
     return response
 
 #── GET whoami (Logged in or not) ────────────────────────────────────────────────────────────
@@ -161,7 +178,7 @@ def logout():
 def whoami():
     try:
         currTime = trunc(time())
-        
+
         # Validate session by user id from cookie
         routeUserObject, error = UserDriver.get_user_by_id(g.user_id)
         if not routeUserObject:
@@ -200,7 +217,7 @@ def whoami():
             'user_settings',        # Cookie name
             retrievedUserSettings["_id"],# Cookie value
             httponly=True,       # Prevents JS access (XSS protection)
-            secure=False,         # Ensures cookie is sent over HTTPS only
+            secure=True,         # Ensures cookie is sent over HTTPS only
             samesite='Strict',      # CSRF protection (use 'Strict' for high security)
             max_age=3600         # Expiration in seconds (e.g., 1 hour)
         )
