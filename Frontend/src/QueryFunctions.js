@@ -279,13 +279,12 @@ export async function getUserSettings() {
   });
 
   if (foundUserSettingsResponse.ok){
-
+    return foundUserSettingsResponse.json();
   }else{
     throw new Error(
       "Failed to fetch settings" + foundUserSettingsResponse.status,
     );
   }
-  return foundUserSettingsResponse.json();
 }
 
 export async function updateUserSettings(userId, settings) {
