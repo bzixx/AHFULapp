@@ -1,11 +1,16 @@
 import Body from "react-muscle-highlighter";
 import "./HeatMap.css";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
-const HEAT_COLORS = ["#ef4444", "#ef4444", "#ef4444"];
+const HEAT_COLORS = ["#ef4444"];
 
 export function HeatMap({ data = {}, onMuscleClick }) {
   const [highlightedMuscles, setHighlightedMuscles] = useState([]);
+  const pullSelectedDate = useSelector((state) => state.selectedDate);
+  const pullExercises = useSelector((state) => state.persistedPullExercises);
+  const pullWorkoutTemplates = useSelector((state) => state.persistedPullWorkoutTemplates);
+  const pullPersonalExercises = useSelector((state) => state.persistedPullPersonalExercises);
 
   const handleClick = (part, side) => {
     const slug = part.slug;
@@ -25,7 +30,7 @@ export function HeatMap({ data = {}, onMuscleClick }) {
 
   const bodyData = highlightedMuscles.map((slug) => ({
     slug,
-    intensity: 3,
+    intensity: 1,
   }));
 
   return (

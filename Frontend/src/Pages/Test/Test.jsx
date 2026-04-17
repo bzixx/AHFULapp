@@ -1,23 +1,43 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { pullPersonalExercises } from "../../components/Cache/PersonalExerciseCache/PersonalExercise";
+import { pullExercises } from "../../components/Cache/ExerciseCache/PullExercise";
 
 export function Test() {
-  const pullPersonalExerciseState = useSelector((state) => state.pullPersonalExercise);
+  const [loading, setLoading] = useState(true);
+  const pullExerciseState = useSelector(
+    (state) => state.pullExercise?.exercises || []
+  );
+
+  useEffect(() => {
+    pullExercises().then(() => setLoading(false));
+  }, []);
+
+  const targetedMuscles = useMemo(() => {
+    const muscles = new Set();
+    pullExerciseState.forEach((ex) => {
+      (ex.targetMuscles || []).forEach((muscle) => {
+        if (muscle) muscles.add(muscle);
+      });
+    });
+    return Array.from(muscles).sort();
+  }, [pullExerciseState]);
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <>
       <h1>Test Page</h1>
-      <h2>Personal Exercises in Cache:</h2>
+      <p>Exercises loaded: {pullExerciseState.length}</p>
+      <h2>Targeted Muscles ({targetedMuscles.length}):</h2>
 
-      {pullPersonalExerciseState.personalExercises && pullPersonalExerciseState.personalExercises.length > 0 ? (
-        pullPersonalExerciseState.personalExercises.map((exercise, index) => (
-          <div key={index}>
-            {exercise.title || exercise._id || JSON.stringify(exercise)}
-          </div>
-        ))
+      {targetedMuscles.length > 0 ? (
+        <ul>
+          {targetedMuscles.map((muscle) => (
+            <li key={muscle}>{muscle}</li>
+          ))}
+        </ul>
       ) : (
-        <p>No personal exercises found</p>
+        <p>No exercises found</p>
       )}
     </>
   );
