@@ -1,11 +1,12 @@
 from functools import wraps
 from flask import request, jsonify, g # 'g' is Flask's global temp storage
 from Services.UserDriver import UserDriver
+import asyncio
 
 
 def login_required(f):
     @wraps(f)
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         # 1. Extraction
         user_id = request.cookies.get("session_id")
         magic_bits = request.cookies.get("magic_bits")
@@ -23,5 +24,7 @@ def login_required(f):
         g.user_id = user_id  # Store user_id in Flask's global context for access in the wrapped-route
         g.magic_bits = magic_bits
 
-        return f(*args, **kwargs)
+        if asyncio.iscoroutinefunction(f):
+            return await f(*args, **kwargs)  # async route
+        return f(*args, **kwargs)            # regular sync route
     return decorated_function
