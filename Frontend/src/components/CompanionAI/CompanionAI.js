@@ -97,7 +97,8 @@ export function initCompanionAI({ textInput, sendButton, characterImage, voiceSe
             const response = await fetch('https://www.ahful.app/api/AHFULChat/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message })
+                body: JSON.stringify({ message }),
+                credentials: 'include' // include cookies for session management
             });
 
             if (!response.ok) throw new Error('Network response was not ok');

@@ -151,7 +151,7 @@ export async function handle_logout() {
     const backendResponse = await fetch(backendPOSTURL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ logout_email: parsedData.email }),
+      body: {},
       credentials: "include",
     });
 
@@ -188,32 +188,8 @@ export async function handle_google_login(response) {
       });
 
       let backendUserData = await backendResponse.json();
+      return backendUserData;
 
-      console.log(backendResponse.status);
-      //Error Handeling for if Backend Logic reported Failed to Frontend
-      if (!backendResponse.ok) {
-        const message = backendUserData?.error || backendResponse.statusText;
-        throw new Error(`${message}`);
-      }
-
-      //Explicit check over response from server
-      const contentType = backendResponse.headers.get("content-type");
-
-      //If it exisits and the content type mathces, then set the frontendUserInfo variable
-      //Also Sotre it to local Storage
-      if (contentType && contentType.includes("application/json")) {
-        const frontendUserInfo = backendUserData.user_info;
-        const userString = JSON.stringify(frontendUserInfo);
-        localStorage.setItem("user_data", userString);
-        //If we want to swap to https use below line instead.
-        //document.cookie = `user_data=${userString}; path=/; secure; samesite=strict`;
-        return frontendUserInfo;
-      } else {
-        //If its not JSON try to parse it into text.
-        throw new Error(
-          `AHFUL Frontend API response error: Expected JSON but got ${contentType}`,
-        );
-      }
     }
 
     console.log("AHFUL context_login Completed successfully.");
@@ -226,22 +202,20 @@ export async function handle_google_login(response) {
   }
 }
 
-export async function whoami(userDataToVerify) {
+export async function whoami() {
   try {
     const backendVerificationResponse = await fetch('https://www.ahful.app/api/AHFULauth/whoami', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: userDataToVerify.email,
-        last_login_expire: userDataToVerify.last_login_expire,
-        magic_bits: userDataToVerify.magic_bits
-      }),
+      body: {},
       credentials: 'include'
     });
 
     if (backendVerificationResponse.ok) {
       const data = await backendVerificationResponse.json();
       return data;
+    } else if (backendVerificationResponse.status === 401) {
+      console.log("Please Login. ")
     } else {
       throw new Error(
         `Session validation failed: ${backendVerificationResponse.status} ${backendVerificationResponse.statusText}`,
@@ -319,6 +293,7 @@ export async function getUserSettings(userId) {
     throw new Error(
       "Failed to fetch settings" + foundUserSettingsResponse.status,
     );
+  }
   return foundUserSettingsResponse.json();
 }
 

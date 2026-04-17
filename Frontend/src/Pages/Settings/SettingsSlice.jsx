@@ -4,7 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 export const SettingSlice = createSlice({
     name: "setting",
     initialState: {
-        theme: "Light", // default to light theme
+        theme: "light", // default to light theme
         units: "Imperial",
         goals: "Maintain",
         shame: "Off",
