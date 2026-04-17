@@ -67,7 +67,7 @@ export function WorkoutChart({ defaultWeeks = 6 }) {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch(`${API_BASE}/${userId}`);
+      const res = await fetch(`${API_BASE}/${userId}`, {credentials: "include"});
       
       if (!res.ok) {
         if (res.status === 404) {
