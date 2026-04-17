@@ -126,9 +126,22 @@ export function MeasurementLogger() {
         try {
             setLoading(true);
 
+            // Convert metric to imperial if needed (backend stores everything in imperial)
+            const convertedFormData = { ...formData };
+            if (isMetric) {
+                // Convert dimensions from cm to inches
+                if (formData.chest) convertedFormData.chest = parseFloat(cmToInches(formData.chest));
+                if (formData.waist) convertedFormData.waist = parseFloat(cmToInches(formData.waist));
+                if (formData.hips) convertedFormData.hips = parseFloat(cmToInches(formData.hips));
+                if (formData.thighs) convertedFormData.thighs = parseFloat(cmToInches(formData.thighs));
+                if (formData.arms) convertedFormData.arms = parseFloat(cmToInches(formData.arms));
+                // Convert weight from kg to lbs
+                if (formData.weight) convertedFormData.weight = parseFloat(kgToLbs(formData.weight));
+            }
+
             const payload = {
                 user_id: userId,
-                ...formData,
+                ...convertedFormData,
                 date: Math.floor(new Date(formData.date).getTime() / 1000)
             };
 
@@ -175,15 +188,22 @@ export function MeasurementLogger() {
     };
 
     const handleEditMeasurement = (measurement) => {
-        setFormData({
-            chest: measurement.chest?.toString() ?? "",
-            waist: measurement.waist?.toString() ?? "",
-            hips: measurement.hips?.toString() ?? "",
-            thighs: measurement.thighs?.toString() ?? "",
-            arms: measurement.arms?.toString() ?? "",
-            weight: measurement.weight?.toString() ?? "",
-            date: new Date(measurement.date * 1000).toISOString().split("T")[0]
+        // Convert imperial values to metric if in metric mode
+        const displayChest = isMetric && measurement.chest ? parseFloat(inchesToCm(measurement.chest)) : measurement.chest ?? "";
+        const displayWaist = isMetric && measurement.waist ? parseFloat(inchesToCm(measurement.waist)) : measurement.waist ?? "";
+        const displayHips = isMetric && measurement.hips ? parseFloat(inchesToCm(measurement.hips)) : measurement.hips ?? "";
+        const displayThighs = isMetric && measurement.thighs ? parseFloat(inchesToCm(measurement.thighs)) : measurement.thighs ?? "";
+        const displayArms = isMetric && measurement.arms ? parseFloat(inchesToCm(measurement.arms)) : measurement.arms ?? "";
+        const displayWeight = isMetric && measurement.weight ? parseFloat(lbsToKg(measurement.weight)) : measurement.weight ?? "";
 
+        setFormData({
+            chest: displayChest.toString(),
+            waist: displayWaist.toString(),
+            hips: displayHips.toString(),
+            thighs: displayThighs.toString(),
+            arms: displayArms.toString(),
+            weight: displayWeight.toString(),
+            date: new Date(measurement.date * 1000).toISOString().split("T")[0]
         });
         setEditingId(measurement._id);
         window.scrollTo({ top: 0, behavior: 'smooth' });
