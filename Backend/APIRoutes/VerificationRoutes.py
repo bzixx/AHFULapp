@@ -82,6 +82,15 @@ def verify_phone_token(token_id, token):
         f"{front_end_base}?status=success"
     )
 
+# ── Start email flow for user, admin only ────────────────────────────────────────────────────────────
+@verificationRouteBlueprint.route("/email_flow/<user_id>", methods=["GET"])
+@verify_user_admin
+def email_flow(user_id):
+    response, error = VerificationDriver.verify_user_email(user_id)
+    if error:
+        return jsonify({"error": error}), 404
+    return jsonify(response), 200
+
 # ── DEVERIFY email or phone by user_id ─────────────────────────────────────
 @verificationRouteBlueprint.route("/deverify/user_id/", methods=["POST"])
 @verify_user_admin

@@ -46,6 +46,8 @@ class VerificationDriver:
             user = UserObject.find_by_id(user_id)
             if not user:
                 return None, "User not found"
+            elif user["deactivated"] == True:
+                return None, "Your account has been deactivated :("
             elif user["magic_bits"] != bits:
                 return None, "These bits don't match :("
             # Commented out for ease of development

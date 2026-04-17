@@ -18,10 +18,16 @@ export function Login() {
   // ----- LOGIN Debug Functions ---------------------------------------------------------------------------
   useEffect(() => {
     if (isAuthenticated && user) {
-      setStatusText(`Logged in as ${user.email}`);
-      navigate("/Login", { replace: true });
+      if (user.email_verified === false) {
+        setStatusText(`Logged in as ${user.email}, email not verified`);
+        navigate("/NotVerified", { replace: true });
+      }
+      else {
+        setStatusText(`Logged in as ${user.email}`);
+        navigate("/Login", { replace: true });
+      }
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, navigate]);
 
   const handle_google_success = async (response) => {
     try {

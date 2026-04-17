@@ -10,6 +10,10 @@ export function AuthRouteCheck({ children }) {
     return <Navigate to="/Login" replace />;
   }
 
+  if (user?.email_verified === false) {
+    return <Navigate to="/NotVerified" replace />;
+  }
+
   const now = Math.floor(Date.now() / 1000);
 
   if (user?.last_login_expire && user.last_login_expire < now) {

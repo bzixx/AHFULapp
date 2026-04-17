@@ -2988,6 +2988,71 @@ swaggerConfig = {
         }
       }
     },
+    
+    "/AHFULauth/email_flow/{user_id}": {
+      "get": {
+        "summary": "Trigger email verification flow (Admin)",
+        "description": "Initiates or verifies the email verification flow for a specified user. Requires admin authentication.",
+        "tags": ["Auth"],
+        "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": True,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Target user ID whose email verification flow is being triggered"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email verification triggered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Verification service response"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized or insufficient permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Missing or invalid Authorization header"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found or verification failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "User not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
 
     "/AHFULtasks/": {
       "get": {

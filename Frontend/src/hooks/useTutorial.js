@@ -104,6 +104,10 @@ export function useTutorial() {
     }
   }, [navigate]);
 
+  const email_redirect = useCallback(() => {
+    navigate("/NotVerified");
+  }, [navigate]);
+
   /**
    * endTutorial - Handles tutorial exit (via skip or completion)
    * 
@@ -193,7 +197,12 @@ export function useTutorial() {
     if (hasAutoStarted.current) return;
     
     if ((tutorialComplete === false || tutorialComplete === undefined) && user && user._id) {
-      startTutorial();
+      if (user.email_verified) {
+        startTutorial();
+      }
+      else {
+        email_redirect();
+      }
     }
   }, [user, tutorialComplete]);
 
