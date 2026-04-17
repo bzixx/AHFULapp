@@ -19,7 +19,7 @@ export function Layout() {
 
     // Apply theme globally whenever it changes
     useEffect(() => {
-        if (theme === "Dark") {
+        if (theme === "dark") {
             document.body.classList.add("dark");
         } else {
             document.body.classList.remove("dark");

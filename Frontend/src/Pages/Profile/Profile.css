@@ -106,9 +106,10 @@
 .profile-notifications-section {
   margin-top: 16px;
   text-align: center;
+  flex-direction: column;
 }
 
-.profile-notifications-btn {
+.profile-page-btn {
   font-size: 1.1rem;
   font-weight: bold;
   padding: 10px 20px;
@@ -120,7 +121,7 @@
   color: var(--text-primary);
 }
 
-.profile-notifications-btn:hover {
+.profile-page-btn:hover {
   transform: scale(1.05);
   box-shadow: var(--shadow-md);
 }
