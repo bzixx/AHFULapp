@@ -151,7 +151,7 @@ export async function handle_logout() {
     const backendResponse = await fetch(backendPOSTURL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ logout_email: parsedData.email }),
+      body: {},
       credentials: "include",
     });
 
@@ -188,32 +188,8 @@ export async function handle_google_login(response) {
       });
 
       let backendUserData = await backendResponse.json();
+      return backendUserData;
 
-      console.log(backendResponse.status);
-      //Error Handeling for if Backend Logic reported Failed to Frontend
-      if (!backendResponse.ok) {
-        const message = backendUserData?.error || backendResponse.statusText;
-        throw new Error(`${message}`);
-      }
-
-      //Explicit check over response from server
-      const contentType = backendResponse.headers.get("content-type");
-
-      //If it exisits and the content type mathces, then set the frontendUserInfo variable
-      //Also Sotre it to local Storage
-      if (contentType && contentType.includes("application/json")) {
-        const frontendUserInfo = backendUserData.user_info;
-        const userString = JSON.stringify(frontendUserInfo);
-        localStorage.setItem("user_data", userString);
-        //If we want to swap to https use below line instead.
-        //document.cookie = `user_data=${userString}; path=/; secure; samesite=strict`;
-        return frontendUserInfo;
-      } else {
-        //If its not JSON try to parse it into text.
-        throw new Error(
-          `AHFUL Frontend API response error: Expected JSON but got ${contentType}`,
-        );
-      }
     }
 
     console.log("AHFUL context_login Completed successfully.");
@@ -226,22 +202,20 @@ export async function handle_google_login(response) {
   }
 }
 
-export async function whoami(userDataToVerify) {
+export async function whoami() {
   try {
     const backendVerificationResponse = await fetch('http://localhost:5000/api/AHFULauth/whoami', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: userDataToVerify.email,
-        last_login_expire: userDataToVerify.last_login_expire,
-        magic_bits: userDataToVerify.magic_bits
-      }),
+      body: {},
       credentials: 'include'
     });
 
     if (backendVerificationResponse.ok) {
       const data = await backendVerificationResponse.json();
       return data;
+    } else if (backendVerificationResponse.status === 401) {
+      console.log("Please Login. ")
     } else {
       throw new Error(
         `Session validation failed: ${backendVerificationResponse.status} ${backendVerificationResponse.statusText}`,
@@ -254,9 +228,8 @@ export async function whoami(userDataToVerify) {
 
 // ──  Template functions ─────────────────────────────────────────────────────────
 export async function fetchTemplate(userId) {
-  console.log(userId);
   const res = await fetch(
-    `http://localhost:5000/api/AHFULworkout/templates/${userId}`,
+    `http://localhost:5000/api/AHFULworkout/templates/user/${userId}`,
   );
   if (!res.ok) {
     let bodyText = "";
@@ -299,28 +272,19 @@ export async function createTemplate(templateData) {
 }
 
 // ──  User Settings functions ─────────────────────────────────────────────────────────
-export async function getUserSettings(userId) {
-  const foundUserSettingsResponse = await fetch(`http://localhost:5000/api/AHFULuserSettings/${userId}`);
-  if (foundUserSettingsResponse.status === 404) {
-    // Create default settings if not found
-    const createDefaultSettingsResponse = await fetch(
-      `http://localhost:5000/api/AHFULuserSettings/createDefault/${userId}`,
-      {
-        method: "POST",
-      },
-    );
-    if (!createDefaultSettingsResponse.ok)
-      throw new Error(
-        "Failed to create default settings" +
-          createDefaultSettingsResponse.status,
-      );
-    return createDefaultSettingsResponse.json();
-  }
-  if (!foundUserSettingsResponse.ok)
+export async function getUserSettings() {
+  const foundUserSettingsResponse = await fetch(`http://localhost:5000/api/AHFULuserSettings`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (foundUserSettingsResponse.ok){
+    return foundUserSettingsResponse.json();
+  }else{
     throw new Error(
       "Failed to fetch settings" + foundUserSettingsResponse.status,
     );
-  return foundUserSettingsResponse.json();
+  }
 }
 
 export async function updateUserSettings(userId, settings) {
@@ -525,7 +489,6 @@ export async function fetchWorkout(userId) {
     }
 
     const data = await res.json();
-    // Ensure we always return an array
     return data
 
   } catch (err) {
@@ -537,11 +500,10 @@ export async function fetchWorkout(userId) {
 
 export async function fetchWorkoutById(workoutId) {
   try {
-    const res = await fetch(`http://localhost:5000/api/AHFULworkout/${workoutId}`);
+    const res = await fetch(`http://localhost:5000/api/AHFULworkout/id/${workoutId}`);
 
-    // Handle empty or not found responses for new users
     if (res.status === 404 || res.status === 204) {
-      return [];
+      return null;
     }
 
     if (!res.ok) {
@@ -552,17 +514,13 @@ export async function fetchWorkoutById(workoutId) {
     }
 
     const data = await res.json();
-    // Ensure we always return an array
-    if (Array.isArray(data)) return data;
-    if (data && Array.isArray(data.workouts)) return data.workouts;
-    if (data && Array.isArray(data.data)) return data.data;
-    return [];
+    return data; 
   } catch (err) {
     console.error("fetchWorkout error:", err);
-    // Return empty array for network errors on new user accounts
     throw err;
   }
 }
+
 
 export async function updateWorkout(workoutId, data) {
   const res = await fetch(
@@ -581,6 +539,29 @@ export async function updateWorkout(workoutId, data) {
 }
 
 // ── Personal Exercise Functions ─────────────────────────────────────────────────
+
+export async function fetchPersonalExerciseById(userId) {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/AHFULpersonalEx/${userId}`,
+    );
+    if (res.status === 404 || res.status === 204) {
+      return [];
+    }
+    if (!res.ok) {
+      const bodyText = await res.text().catch(() => "");
+      throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
+    }
+    const data = await res.json();
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.exercises)) return data.exercises;
+    if (data && Array.isArray(data.data)) return data.data;
+    return [];
+  } catch (err) {
+    console.error("fetchPersonalExerciseById error:", err);
+    return [];
+  }
+}
 
 export async function fetchPersonalExercises(workoutId) {
   try {

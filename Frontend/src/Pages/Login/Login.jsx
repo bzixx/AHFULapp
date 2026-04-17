@@ -1,21 +1,19 @@
 import "./Login.css";
 import { GoogleLogin } from "@react-oauth/google";
 import { useSelector, useDispatch } from "react-redux";
-import { handle_google_login } from "../../QueryFunctions.js";
+import { handle_google_login, getUserSettings } from "../../QueryFunctions.js";
 import { authLogin } from "../../Pages/Login/AuthSlice.jsx";
-import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { onLoginCache } from "../../components/Cache/OnLoginCache/OnLoginCache.jsx";
+import { setSettings } from '../../Pages/Settings/SettingsSlice.jsx';
 
 export function Login() {
-  // ----- LOGIN STATE MANAGEMENT ---------------------------------------------------------------------------
+  const dispatch = useDispatch();
   //Redux Site Wide Auth State
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const theme = useSelector((state) => state.setting?.theme || "Light");
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [statusText, setStatusText] = useState("");
 
-  // ----- LOGIN Debug Functions ---------------------------------------------------------------------------
   useEffect(() => {
     if (isAuthenticated && user) {
       if (user.email_verified === false) {
@@ -25,6 +23,7 @@ export function Login() {
       else {
         setStatusText(`Logged in as ${user.email}`);
         navigate("/Login", { replace: true });
+        onLoginCache();
       }
     }
   }, [isAuthenticated, user, navigate]);
@@ -33,7 +32,28 @@ export function Login() {
     try {
       setStatusText(`Logging in with Google...`);
       let fetchResponse = await handle_google_login(response);
-      dispatch(authLogin(fetchResponse));
+
+      if (!fetchResponse || fetchResponse?.ok === false) {
+        console.error("Google login failed:", fetchResponse?.error || fetchResponse);
+        setStatusText(
+          fetchResponse?.error || `Google login failed (${fetchResponse?.status || "unknown"})`,
+        );
+        return;
+      }
+
+      let userSettingsResponse = await getUserSettings();
+
+      if (!userSettingsResponse || userSettingsResponse?.ok === false) {
+        console.error("Failed to get user settings:", userSettingsResponse?.error || userSettingsResponse);
+        setStatusText(
+          userSettingsResponse?.error || `Failed to fetch user settings`,
+        );
+        return;
+      }
+
+      dispatch(authLogin(fetchResponse.user_info));
+      dispatch(setSettings(userSettingsResponse));
+
     } catch (error) {
       console.error("Google login error:", error);
       setStatusText(error.message || "Login failed. Please try again.");
@@ -86,7 +106,7 @@ export function Login() {
             size="large"
             width="200"
             text="signin_with"
-            theme={theme === "Dark" ? "filled_black" : "outline"}
+            theme={theme === "dark" ? "filled_black" : "outline"}
             shape="pill"
             onSuccess={handle_google_success}
             onError={handle_google_failure}

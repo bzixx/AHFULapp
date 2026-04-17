@@ -27,7 +27,7 @@ class UserDriver:
             return ObjectId(str(id)), None
         except (bson_errors.InvalidId, TypeError, ValueError):
             return None, f"Invalid {name} format; must be a 24-hex string"
-        
+                
     @staticmethod
     def verify_operation(user_id_op, user_id_on):
         if (not user_id_op) or (not user_id_on):
@@ -55,6 +55,22 @@ class UserDriver:
             return "Operation valid", None
         else:
             return None, "You must operate on your own object or have sufficient privileges"
+
+    @staticmethod
+    def _validate_token(id, token):
+        if id and token:
+            user, err = UserDriver.get_user_by_id(id)
+            if user:
+                if user.get("magic_bits") == token:
+                    return True, None
+                else:
+                    return False, "EWWWWWWW Are those Sweet Potato Bits? Error."
+            elif err:
+                return False, f"Error validating token: {err}"
+            else:
+                return False, "Ghost Error"
+        else:
+            return False, "Missing parameters for validation"
 
     # ── Create ─────────────────────────────────────────────────────────────────
 

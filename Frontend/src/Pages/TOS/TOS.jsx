@@ -1,6 +1,6 @@
 import React from "react";
 import "./TOS.css";
-import "../../SiteStyles.css";
+import "../../siteStyles.css";
 
 export function TOS() {
     return (

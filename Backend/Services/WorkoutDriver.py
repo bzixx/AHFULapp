@@ -136,7 +136,7 @@ class WorkoutDriver:
         if err:
             return None, err
         try:
-            workout = WorkoutObject.find_by_id(id)
+            workout = WorkoutObject.find_by_id(oid)
             if not workout:
                 return None, "Workout not found"
             return workout, None

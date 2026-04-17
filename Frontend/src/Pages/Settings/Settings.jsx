@@ -13,7 +13,7 @@ import { getUserSettings, updateUserSettings } from "../../QueryFunctions";
 export function Settings() {
   const dispatch = useDispatch();
   const answers = useSelector((state) => state.setting);
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector((state)  => state.auth.user);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -23,13 +23,13 @@ const update = (key, val) => {
   // Auto-save theme changes immediately to backend
   if (key === "theme" && user && user._id) {
     updateUserSettings(user._id, { 
-      displayMode: val === "Dark" ? "dark" : "light" 
+      theme: val === "dark" ? "dark" : "light" 
     }).catch(err => console.error("Failed to save theme:", err));
   }
 };
 
   useEffect(() => {
-    if (answers.theme === "Dark") {
+    if (answers.theme === "dark") {
       document.body.classList.add("dark");
     } else {
       document.body.classList.remove("dark");
@@ -43,7 +43,7 @@ const update = (key, val) => {
     setSaveSuccess(false);
 
     const payload = {
-      displayMode: answers.theme === "Dark" ? "dark" : "light",
+      theme: answers.theme === "dark" ? "dark" : "light",
       units: answers.units.toLowerCase(),
       goals: answers.goals.toLowerCase().replace(" ", "_"),
       shameLevel: answers.shame === "Off" ? "low" : "medium",
@@ -80,7 +80,7 @@ const update = (key, val) => {
 
           <DropdownRow
             label="Theme"
-            options={["Light", "Dark"]}
+            options={["light", "dark"]}
             value={answers.theme}
             onChange={(v) => update("theme", v)}
           />

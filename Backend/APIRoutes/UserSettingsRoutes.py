@@ -1,8 +1,18 @@
 from flask import Blueprint, request, jsonify, g
 from Services.UserSettingsDriver import UserSettingsDriver
 from Auth.verification import verify_user_login, verify_user_developer, verify_user_admin
+from APIRoutes.SecurityRoutes import login_required
 
 userSettingsBlueprint = Blueprint("userSettings", __name__, url_prefix="/AHFULuserSettings")
+
+@userSettingsBlueprint.route("/", methods=["GET"])
+@login_required
+def cookie_get_user_settings():
+    settings, error = UserSettingsDriver.get_user_settings(g.user_id)
+    if error:
+        return jsonify({"error": f"Error getting user settings: {error}"}), 500
+    return jsonify(settings), 200
+
 
 @userSettingsBlueprint.route("/<user_id>", methods=["GET"])
 @verify_user_login
