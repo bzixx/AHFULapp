@@ -50,7 +50,7 @@ def get_template(template_id):
     return jsonify(workouts), 200
 
 # ── GET single workout ────────────────────────────────────────────────────────
-@workoutRouteBlueprint.route("/id/<id>", methods=["GET"])
+@workoutRouteBlueprint.route("/id/<workout_id>", methods=["GET"])
 @login_required_user
 def get_workout(workout_id):
     res, err = WorkoutDriver.verify_operation(g.user_id, workout_id)

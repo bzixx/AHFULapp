@@ -1621,9 +1621,9 @@ swaggerConfig = {
   }
 },
 
-"/AHFULworkout/id/{id}": {
+"/AHFULworkout/id/{workout_id}": {
   "get": {
-    "summary": "Get workout by id (User or Dev/Admin)",
+    "summary": "Get workout by workout_id (User or Dev/Admin)",
     "tags": ["Workout"],
     "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "parameters": [
