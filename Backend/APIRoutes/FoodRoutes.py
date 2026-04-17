@@ -1,12 +1,12 @@
 from flask import Blueprint, request, jsonify, g
 from Services.FoodDriver import FoodDriver
-from Auth.verification import verify_user_login, verify_user_developer, verify_user_admin
+from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
 foodRouteBlueprint = Blueprint("food", __name__, url_prefix="/AHFULfood")
 
 # ── SEARCH USDA FoodData Central API (MUST BE BEFORE CATCH-ALL ROUTES) ────────────────────────────────
 @foodRouteBlueprint.route("/search/usda", methods=["GET"])
-@verify_user_login
+@login_required_user
 def search_usda_foods():
     """
     Search USDA FoodData Central for foods.
@@ -27,7 +27,7 @@ def search_usda_foods():
 
 # ── GET all foods ────────────────────────────
 @foodRouteBlueprint.route("/", methods=["GET"])
-@verify_user_developer
+@login_required_dev
 def get_all_food():
     food, error = FoodDriver.get_all_food()
     if error:
@@ -36,7 +36,7 @@ def get_all_food():
 
 # ── GET specific food ────────────────────────────────────────────────────────────
 @foodRouteBlueprint.route("/<user_id>", methods=["GET"])
-@verify_user_login
+@login_required_user
 def get_food_by_user(user_id):
     # Own user request, devs or admins only
     if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
@@ -47,7 +47,7 @@ def get_food_by_user(user_id):
     return jsonify(food), 200
 
 @foodRouteBlueprint.route("/id/<id>", methods=["GET"])
-@verify_user_developer
+@login_required_dev
 def get_food_by_id(id):
     food, error = FoodDriver.get_food_by_id(id)
     if error:
@@ -56,7 +56,7 @@ def get_food_by_id(id):
 
 # ── CREATE food ────────────────────────────────────────────────────────────────
 @foodRouteBlueprint.route("/create", methods=["POST"])
-@verify_user_login
+@login_required_user
 def create_food():
     data = request.get_json()
     if not data:
@@ -77,7 +77,7 @@ def create_food():
 
 # ── UPDATE food ────────────────────────────────────────────────────────────────
 @foodRouteBlueprint.route("/update/<food_id>", methods=["PUT"])
-@verify_user_login
+@login_required_user
 def update_food(food_id):
     data = request.get_json()
 
@@ -104,7 +104,7 @@ def update_food(food_id):
 
 # ── DELETE food ────────────────────────────────────────────────────────────────
 @foodRouteBlueprint.route("/delete/<food_id>", methods=["DELETE"])
-@verify_user_login
+@login_required_user
 def delete_food(food_id):
     if not food_id:
         return jsonify({"error": "You must provide a food id to delete"}), 400
@@ -120,7 +120,7 @@ def delete_food(food_id):
 
 # ── GET food streak for user ──────────────────────────────────────
 @foodRouteBlueprint.route("/streak/<user_id>", methods=["GET"])
-@verify_user_login
+@login_required_user
 def get_food_streak(user_id):
     if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
         return jsonify({"error": "You may only access your own data"}), 403

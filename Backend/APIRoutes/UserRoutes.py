@@ -1,12 +1,12 @@
 from flask import Blueprint, request, jsonify, g
 from Services.UserDriver import UserDriver
-from Auth.verification import verify_user_login, verify_user_developer, verify_user_admin
+from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
 userRouteBlueprint = Blueprint("users", __name__, url_prefix="/AHFULusers")
 
 # ── GET all users ──────────────────────────────────────────────────────────────
-@verify_user_admin
 @userRouteBlueprint.route("/", methods=["GET"])
+@login_required_admin
 def get_all_users():
     users, error = UserDriver.get_all_users()
     if error:
@@ -14,8 +14,8 @@ def get_all_users():
     return jsonify(users), 200
 
 # ── GET single user by email───────────────────────────────────────────────────────────
-@verify_user_admin
 @userRouteBlueprint.route("/<email>", methods=["GET"])
+@login_required_admin
 def get_user(email):
     user, error = UserDriver.get_user_by_email(email)
     if error:
@@ -24,7 +24,7 @@ def get_user(email):
 
 # ── GET single user by id ───────────────────────────────────────────────────────────
 @userRouteBlueprint.route("/id/<id>", methods=["GET"])
-@verify_user_login
+@login_required_user
 def get_user_id(user_id):
     if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
         return jsonify({"error": "You may only access your own data"}), 403
@@ -38,7 +38,7 @@ def get_user_id(user_id):
 
 # ── ADD role to user by id ───────────────────────────────────────────────────────────
 @userRouteBlueprint.route("/add/role/id/", methods=["POST"])
-@verify_user_admin
+@login_required_admin
 def add_role_by_id():
     data = request.get_json()
     if not data:
@@ -51,7 +51,7 @@ def add_role_by_id():
 
 # ── ADD role to user by email ───────────────────────────────────────────────────────────
 @userRouteBlueprint.route("/add/role/email/", methods=["POST"])
-@verify_user_admin
+@login_required_admin
 def add_role_by_email():
     data = request.get_json()
     if not data:
@@ -64,7 +64,7 @@ def add_role_by_email():
 
 # ── REMOVE role from user by id ───────────────────────────────────────────────────────────
 @userRouteBlueprint.route("/remove/role/id/", methods=["POST"])
-@verify_user_admin
+@login_required_admin
 def remove_role_by_id():
     data = request.get_json()
     if not data:
@@ -77,7 +77,7 @@ def remove_role_by_id():
 
 # ── REMOVE role from user by email ───────────────────────────────────────────────────────────
 @userRouteBlueprint.route("/remove/role/email/", methods=["POST"])
-@verify_user_admin
+@login_required_admin
 def remove_role_by_email():
     data = request.get_json()
     if not data:
@@ -90,7 +90,7 @@ def remove_role_by_email():
 
 # ── DEACTIVATE user by id ─────────────────────────────────────────────────────
 @userRouteBlueprint.route("/deactivate/id/", methods=["POST"])
-@verify_user_admin
+@login_required_admin
 def deactivate_user_by_id():
     data = request.get_json()
     if not data:

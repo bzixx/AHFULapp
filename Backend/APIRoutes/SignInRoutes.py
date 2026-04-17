@@ -6,8 +6,7 @@ from Services.UserSettingsDriver import UserSettingsDriver
 from datetime import datetime
 from time import time
 from math import trunc
-from Auth.verification import verify_user_login, verify_user_developer, verify_user_admin, login_required
-
+from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
 # Used to group views
 signInRouteBlueprint = Blueprint('auth', __name__, url_prefix='/AHFULauth')
@@ -31,11 +30,11 @@ def google_login():
     if err:
         return jsonify({"error": err}), 401
 
-    return jsonify({"message": "Login successful", "response": response}), 200
+    return response
 
 # ── POST Log Out ────────────────────────────────────────────────────────────
 @signInRouteBlueprint.route('/logout', methods=['POST'])
-@verify_user_login
+@login_required_user
 def logout():
     session_id = request.cookies.get('session_id')
     userData, err = UserDriver.get_user_by_id(session_id)
@@ -67,7 +66,7 @@ def logout():
 
 #── GET whoami (Logged in or not) ────────────────────────────────────────────────────────────
 @signInRouteBlueprint.route('/whoami', methods=['POST'])
-@login_required
+@login_required_user
 def whoami():
     try:
         currTime = trunc(time())

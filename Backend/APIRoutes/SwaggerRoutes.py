@@ -1379,7 +1379,7 @@ swaggerConfig = {
 
 "/AHFULexercises/delete/{exercise_id}": {
   "delete": {
-    "summary": "Delete internal exercise by id (Owner or Dev/Admin)",
+    "summary": "Delete internal exercise by id (Dev/Admin)",
     "tags": ["Exercises"],
     "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
     "parameters": [

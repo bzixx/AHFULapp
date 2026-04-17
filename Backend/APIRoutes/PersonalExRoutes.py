@@ -1,12 +1,12 @@
 from flask import Blueprint, request, jsonify, g
 from Services.PersonalExDriver import PersonalExDriver
-from Auth.verification import verify_user_login, verify_user_developer, verify_user_admin
+from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
 personalExRouteBlueprint = Blueprint("personalEx", __name__, url_prefix="/AHFULpersonalEx")
 
 # ── GET all personalExs ──────────────────────────────────────
 @personalExRouteBlueprint.route("/", methods=["GET"])
-@verify_user_developer
+@login_required_dev
 def get_all_personal_exs():
     personalExs, error = PersonalExDriver.get_all_personal_exs()
     if error:
@@ -15,7 +15,7 @@ def get_all_personal_exs():
 
 # ── GET all personalExs for a specific user ──────────────────────────────────────
 @personalExRouteBlueprint.route("/<user_id>", methods=["GET"])
-@verify_user_login
+@login_required_user
 def get_personal_exs_by_user(user_id):
     if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
         return jsonify({"error": "You may only access your own data"}), 403
@@ -27,9 +27,10 @@ def get_personal_exs_by_user(user_id):
             return jsonify({"error": error}), 400
     return jsonify(personalExs), 200
 
-# Ensure only grab own obj??
+# Ensure only grab own obj??, dev for now
 # ── GET all personalExs for a specific workout ──────────────────────────────────────
 @personalExRouteBlueprint.route("/workout/<workout_id>", methods=["GET"])
+@login_required_dev
 def get_personal_exs_by_workout(workout_id):
     personalExs, error = PersonalExDriver.get_personal_exs_by_workout(workout_id=workout_id)
     if error:
@@ -39,9 +40,10 @@ def get_personal_exs_by_workout(workout_id):
             return jsonify({"error": error}), 400
     return jsonify(personalExs), 200
 
-# Ensure only grab own obj??
+# Ensure only grab own obj?? dev for now
 # ── GET single personalEx ────────────────────────────────────────────────────────
 @personalExRouteBlueprint.route("/id/<id>", methods=["GET"])
+@login_required_dev
 def get_personal_ex(id):
     personalEx, error = PersonalExDriver.get_personal_ex_by_id(id)
     if error:
@@ -53,7 +55,7 @@ def get_personal_ex(id):
 
 # ── CREATE personalEx ────────────────────────────────────────────────────────────
 @personalExRouteBlueprint.route("/create", methods=["POST"])
-@verify_user_login
+@login_required_user
 def create_personal_ex():
     data = request.get_json()
     if not data:
@@ -82,9 +84,10 @@ def create_personal_ex():
         return jsonify({"error": error}), 400
     return jsonify({"personal_ex_id": personal_ex_id, "message": "Personal Ex created"}), 201
 
-# Only update own???
+# Only update own???, dev for now
 # ── UPDATE personalEx ───────────────────────────────────────────────────────────
 @personalExRouteBlueprint.route("/update/<personal_ex_id>", methods=["PUT"])
+@login_required_dev
 def update_personal_ex(personal_ex_id):
     if not personal_ex_id:
         return jsonify({"error": "You must provide a personal ex id to update"}), 400
@@ -101,9 +104,10 @@ def update_personal_ex(personal_ex_id):
     
     return jsonify({"message": "Personal ex updated", "personal_ex": updated}), 200
 
-# Only update own??
+# Only update own?? dev for now
 # ── DELETE personalEx ────────────────────────────────────────────────────────────────
 @personalExRouteBlueprint.route("/delete/<personal_ex_id>", methods=["DELETE"])
+@login_required_dev
 def delete_personal_ex(personal_ex_id):
     if not personal_ex_id:
         return jsonify({"error": "You must provide a personal ex id to delete"}), 400

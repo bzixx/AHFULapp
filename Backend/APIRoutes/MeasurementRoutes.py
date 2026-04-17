@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, g
-from Auth.verification import verify_user_login, verify_user_developer, verify_user_admin
+from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
 from Services.MeasurementDriver import MeasurementDriver
 
@@ -7,7 +7,7 @@ measurementRouteBlueprint = Blueprint("measurements", __name__, url_prefix="/AHF
 
 # Get all measurements
 @measurementRouteBlueprint.route("/", methods=["GET"])
-@verify_user_developer
+@login_required_dev
 def get_all_measurements():
     measurements, error = MeasurementDriver.get_all_measurements()
     if error:
@@ -16,7 +16,7 @@ def get_all_measurements():
 
 # Get measurement by user id
 @measurementRouteBlueprint.route("/<user_id>", methods=["GET"])
-@verify_user_login
+@login_required_user
 def get_measurements_by_user(user_id):
     if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
         return jsonify({"error": "You may only access your own data"}), 403
@@ -27,7 +27,7 @@ def get_measurements_by_user(user_id):
 
 # Get measurement by id
 @measurementRouteBlueprint.route("/id/<measurement_id>", methods=["GET"])
-@verify_user_developer
+@login_required_dev
 def get_measurement_by_id(measurement_id):
     measurement, error = MeasurementDriver.get_measurement_by_id(measurement_id)
     if error:
@@ -36,7 +36,7 @@ def get_measurement_by_id(measurement_id):
 
 # Create new measurement
 @measurementRouteBlueprint.route("/create", methods=["POST"])
-@verify_user_login
+@login_required_user
 def create_measurement():
     data = request.get_json()
     if not data:
@@ -53,7 +53,7 @@ def create_measurement():
 
 # Update measurement by id
 @measurementRouteBlueprint.route("/update/<measurement_id>", methods=["PUT"])
-@verify_user_login
+@login_required_user
 def update_measurement(measurement_id):
     data = request.get_json(silent=True)
     if not data or not isinstance(data, dict):
@@ -72,7 +72,7 @@ def update_measurement(measurement_id):
 
 # Delete measurement by id
 @measurementRouteBlueprint.route("/delete/<measurement_id>", methods=["DELETE"])
-@verify_user_login
+@login_required_user
 def delete_measurement(measurement_id):
     res, err = MeasurementDriver.verify_operation(g.user_id, measurement_id)
     if err:

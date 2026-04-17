@@ -109,37 +109,45 @@ class SignInDriver:
                 }
             }))
 
+            print("1 ", str(response))
+
             # 2. Set the cookie with User ID
             # We store ONLY the session/user ID here
             response.set_cookie(
                 'session_id',        # Cookie name
                 routeUserObject["_id"],# Cookie value
-                httponly=True,       # Prevents JS access (XSS protection)
-                secure=True,         # Ensures cookie is sent over HTTPS only
-                samesite='Strict',      # CSRF protection (use 'Strict' for high security)
+                httponly=False,       # Prevents JS access (XSS protection)
+                secure=False,         # Ensures cookie is sent over HTTPS only
+                samesite='Lax',      # CSRF protection (use 'Strict' for high security)
                 max_age=3600         # Expiration in seconds (e.g., 1 hour)
             )
+
+            print("2 ", str(response))
 
             # 3. Set the cookie with User Settings ID
             # We store ONLY the session/user ID here
             response.set_cookie(
                 'user_settings',        # Cookie name
                 retrievedUserSettings["_id"],# Cookie value
-                httponly=True,       # Prevents JS access (XSS protection)
-                secure=True,         # Ensures cookie is sent over HTTPS only
-                samesite='Strict',      # CSRF protection (use 'Strict' for high security)
+                httponly=False,       # Prevents JS access (XSS protection)
+                secure=False,         # Ensures cookie is sent over HTTPS only
+                samesite='Lax',      # CSRF protection (use 'Strict' for high security)
                 max_age=3600         # Expiration in seconds (e.g., 1 hour)
             )
+
+            print("3 ", str(response))
 
             # 4. Set MagicBits Cookie with Token.
             response.set_cookie(
                 'magic_bits',        # Cookie name
                 token,              # Cookie value
-                httponly=True,       # Prevents JS access (XSS protection)
-                secure=True,         # Ensures cookie is sent over HTTPS only
-                samesite='Strict',      # CSRF protection (use 'Strict' for high security)
+                httponly=False,       # Prevents JS access (XSS protection)
+                secure=False,         # Ensures cookie is sent over HTTPS only
+                samesite='Lax',      # CSRF protection (use 'Strict' for high security)
                 max_age=3600         # Expiration in seconds (e.g., 1 hour)
             )
+
+            print("4 ", str(response))
 
             #Log to Console & Security Logging. 
             print (f"Logged in & set cookie(s!) for user_id: {routeUserObject['_id']}")

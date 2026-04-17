@@ -56,22 +56,6 @@ class UserDriver:
         else:
             return None, "You must operate on your own object or have sufficient privileges"
 
-    @staticmethod
-    def _validate_token(id, token):
-        if id and token:
-            user, err = UserDriver.get_user_by_id(id)
-            if user:
-                if user.get("magic_bits") == token:
-                    return True, None
-                else:
-                    return False, "EWWWWWWW Are those Sweet Potato Bits? Error."
-            elif err:
-                return False, f"Error validating token: {err}"
-            else:
-                return False, "Ghost Error"
-        else:
-            return False, "Missing parameters for validation"
-
     # ── Create ─────────────────────────────────────────────────────────────────
 
     # ── Read ─────────────────────────────────────────────────────────────────

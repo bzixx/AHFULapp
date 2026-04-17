@@ -4,11 +4,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { handle_google_login, getUserSettings } from "../../QueryFunctions.js";
 import { authLogin } from "../../Pages/Login/AuthSlice.jsx";
 import { useState, useEffect } from "react";
+import {useNavigate } from "react-router-dom";
 import { onLoginCache } from "../../components/Cache/OnLoginCache/OnLoginCache.jsx";
 import { setSettings } from '../../Pages/Settings/SettingsSlice.jsx';
 
 export function Login() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   //Redux Site Wide Auth State
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const theme = useSelector((state) => state.setting?.theme || "Light");

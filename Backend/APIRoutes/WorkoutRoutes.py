@@ -1,12 +1,12 @@
 from flask import Blueprint, request, jsonify, g
 from Services.WorkoutDriver import WorkoutDriver
-from Auth.verification import verify_user_login, verify_user_developer, verify_user_admin
+from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
 workoutRouteBlueprint = Blueprint("workouts", __name__, url_prefix="/AHFULworkout")
 
 # ── GET all workouts ───────────────────────────────────────
 @workoutRouteBlueprint.route("/", methods=["GET"])
-@verify_user_admin
+@login_required_admin
 def get_all_workouts():
     workouts, error = WorkoutDriver.get_all_workouts()
     if error:
@@ -15,7 +15,7 @@ def get_all_workouts():
 
 # ── GET all workouts for a specific user ──────────────────────────────────────
 @workoutRouteBlueprint.route("/<user_id>", methods=["GET"])
-@verify_user_login
+@login_required_user
 def get_workouts_by_user(user_id):
     # Own user request, devs or admins only
     if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
@@ -27,7 +27,7 @@ def get_workouts_by_user(user_id):
 
 # ── GET all templates for a specific user ──────────────────────────────────────
 @workoutRouteBlueprint.route("/templates/user/<user_id>", methods=["GET"])
-@verify_user_login
+@login_required_user
 def get_templates(user_id):
     # Own user request, devs or admins only
     if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
@@ -39,7 +39,7 @@ def get_templates(user_id):
 
 # ── GET template by id ──────────────────────────────────────
 @workoutRouteBlueprint.route("/templates/<id>", methods=["GET"])
-@verify_user_login
+@login_required_user
 def get_template(template_id):
     res, err = WorkoutDriver.verify_operation(g.user_id, template_id)
     if err:
@@ -51,7 +51,7 @@ def get_template(template_id):
 
 # ── GET single workout ────────────────────────────────────────────────────────
 @workoutRouteBlueprint.route("/id/<id>", methods=["GET"])
-@verify_user_login
+@login_required_user
 def get_workout(workout_id):
     res, err = WorkoutDriver.verify_operation(g.user_id, workout_id)
     if err:
@@ -63,7 +63,7 @@ def get_workout(workout_id):
 
 # ── CREATE workout────────────────────────────────────────────────────────────
 @workoutRouteBlueprint.route("/create", methods=["POST"])
-@verify_user_login
+@login_required_user
 def create_workout():
     data = request.get_json()
     if not data:
@@ -83,7 +83,7 @@ def create_workout():
 
 # ── CREATE template ────────────────────────────────────────────────────────────
 @workoutRouteBlueprint.route("/create/template", methods=["POST"])
-@verify_user_login
+@login_required_user
 def create_template():
     data = request.get_json()
     if not data:
@@ -98,9 +98,10 @@ def create_template():
         return jsonify({"error": error}), 400
     return jsonify({"workout_id": workout_id, "message": "Template created"}), 201
 
+# Only update own? dev for now
 # ── UPDATE personalEx ───────────────────────────────────────────────────────────
 @workoutRouteBlueprint.route("/update/<workout_id>", methods=["PUT"])
-@verify_user_login
+@login_required_user
 def update_workout(workout_id):
     if not workout_id:
         return jsonify({"error": "You must provide a workout id to update"}), 400
@@ -124,9 +125,10 @@ def update_workout(workout_id):
     
     return jsonify({"message": "Workout updated", "workout": updated}), 200
 
+# Only delete own? dev for now
 # ── DELETE workout ────────────────────────────────────────────────────────────────
 @workoutRouteBlueprint.route("/delete/<workout_id>", methods=["DELETE"])
-@verify_user_login
+@login_required_dev
 def delete_workout(workout_id):
     if not workout_id:
         return jsonify({"error": "You must provide a workout id to delete"}), 400
@@ -142,7 +144,7 @@ def delete_workout(workout_id):
 
 # ── GET workout streak for user ──────────────────────────────────────
 @workoutRouteBlueprint.route("/streak/<user_id>", methods=["GET"])
-@verify_user_login
+@login_required_user
 def get_workout_streak(user_id):
     # Own user request, devs or admins only
     if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):

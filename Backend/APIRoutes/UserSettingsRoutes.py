@@ -1,21 +1,19 @@
 from flask import Blueprint, request, jsonify, g
 from Services.UserSettingsDriver import UserSettingsDriver
-from Auth.verification import verify_user_login, verify_user_developer, verify_user_admin
-from APIRoutes.SecurityRoutes import login_required
+from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
 userSettingsBlueprint = Blueprint("userSettings", __name__, url_prefix="/AHFULuserSettings")
 
 @userSettingsBlueprint.route("/", methods=["GET"])
-@login_required
+@login_required_user
 def cookie_get_user_settings():
     settings, error = UserSettingsDriver.get_user_settings(g.user_id)
     if error:
         return jsonify({"error": f"Error getting user settings: {error}"}), 500
     return jsonify(settings), 200
 
-
 @userSettingsBlueprint.route("/<user_id>", methods=["GET"])
-@verify_user_login
+@login_required_user
 def get_user_settings(user_id):
     # Own user request, devs or admins only
     if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
@@ -26,7 +24,7 @@ def get_user_settings(user_id):
     return jsonify(settings), 200
 
 @userSettingsBlueprint.route("/create/<user_id>", methods=["POST"])
-@verify_user_login
+@login_required_user
 def create_user_settings(user_id):
     # Own user request, devs or admins only
     if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
@@ -38,7 +36,7 @@ def create_user_settings(user_id):
     return jsonify(settings), 201
 
 @userSettingsBlueprint.route("/createDefault/<user_id>", methods=["POST"])
-@verify_user_login
+@login_required_user
 def create_default_user_settings(user_id):
     # Own user request, devs or admins only
     if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
@@ -49,7 +47,7 @@ def create_default_user_settings(user_id):
     return jsonify(settings), 201
 
 @userSettingsBlueprint.route("/update/<user_id>", methods=["PUT"])
-@verify_user_login
+@login_required_user
 def update_user_settings(user_id):
     # Own user request, devs or admins only
     if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
@@ -63,7 +61,7 @@ def update_user_settings(user_id):
     return jsonify(settings), 200
 
 @userSettingsBlueprint.route("/delete/<user_id>", methods=["DELETE"])
-@verify_user_login
+@login_required_user
 def delete_user_settings(user_id):
     # Own user request, devs or admins only
     if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):

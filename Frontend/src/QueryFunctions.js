@@ -15,6 +15,7 @@ export async function loadEquipment() {
       {
         method: "GET",
         mode: "cors",
+        credentials: "include",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -58,6 +59,7 @@ export async function loadBodyParts() {
     const res = await fetch("http://localhost:5000/api/AHFULexercises/bodyparts/", {
       method: "GET",
       mode: "cors",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -100,6 +102,7 @@ export async function loadTargetMuscles() {
     const res = await fetch("http://localhost:5000/api/AHFULexercises/muscles/", {
       method: "GET",
       mode: "cors",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -229,7 +232,9 @@ export async function whoami() {
 // ──  Template functions ─────────────────────────────────────────────────────────
 export async function fetchTemplate(userId) {
   const res = await fetch(
-    `http://localhost:5000/api/AHFULworkout/templates/user/${userId}`,
+    `http://localhost:5000/api/AHFULworkout/templates/user/${userId}`,{
+      credentials: 'include'
+    }
   );
   if (!res.ok) {
     let bodyText = "";
