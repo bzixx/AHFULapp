@@ -5,7 +5,7 @@ import character
 import asyncio
 from dotenv import load_dotenv
 load_dotenv()
-from APIRoutes.SecurityRoutes import login_required
+from Auth.verification import verify_user_login, verify_user_developer, verify_user_admin, login_required
 
 chatRouteBlueprint = Blueprint("chat", __name__,  url_prefix="/AHFULChat")
 

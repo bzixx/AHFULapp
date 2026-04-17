@@ -3,11 +3,11 @@ from Services.SignInDriver import SignInDriver
 from Services.UserDriver import UserDriver
 from Services.VerificationDriver import VerificationDriver
 from Services.UserSettingsDriver import UserSettingsDriver
-from Auth.verification import verify_user_login, verify_user_developer, verify_user_admin
 from datetime import datetime
 from time import time
 from math import trunc
-from APIRoutes.SecurityRoutes import login_required
+from Auth.verification import verify_user_login, verify_user_developer, verify_user_admin, login_required
+
 
 # Used to group views
 signInRouteBlueprint = Blueprint('auth', __name__, url_prefix='/AHFULauth')
@@ -29,9 +29,9 @@ def google_login():
 
     response, err = routeSignInDriver.google_login(postAuthData)
     if err:
-        return jsonify({"error": response}), 401
+        return jsonify({"error": err}), 401
 
-    return jsonify({"message": "Login successful", "user_info": response[0], "email_response": response[1]}), 200
+    return jsonify({"message": "Login successful", "response": response}), 200
 
 # ── POST Log Out ────────────────────────────────────────────────────────────
 @signInRouteBlueprint.route('/logout', methods=['POST'])
