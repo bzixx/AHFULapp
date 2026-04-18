@@ -116,9 +116,9 @@ class SignInDriver:
             response.set_cookie(
                 'session_id',        # Cookie name
                 routeUserObject["_id"],# Cookie value
-                httponly=False,       # Prevents JS access (XSS protection)
-                secure=False,         # Ensures cookie is sent over HTTPS only
-                samesite='Lax',      # CSRF protection (use 'Strict' for high security)
+                httponly=True,       # Prevents JS access (XSS protection)
+                secure=True,         # Ensures cookie is sent over HTTPS only
+                samesite='Strict',      # CSRF protection (use 'Strict' for high security)
                 max_age=3600         # Expiration in seconds (e.g., 1 hour)
             )
 
@@ -129,9 +129,9 @@ class SignInDriver:
             response.set_cookie(
                 'user_settings',        # Cookie name
                 retrievedUserSettings["_id"],# Cookie value
-                httponly=False,       # Prevents JS access (XSS protection)
-                secure=False,         # Ensures cookie is sent over HTTPS only
-                samesite='Lax',      # CSRF protection (use 'Strict' for high security)
+                httponly=True,       # Prevents JS access (XSS protection)
+                secure=True,         # Ensures cookie is sent over HTTPS only
+                samesite='Strict',      # CSRF protection (use 'Strict' for high security)
                 max_age=3600         # Expiration in seconds (e.g., 1 hour)
             )
 
@@ -141,9 +141,9 @@ class SignInDriver:
             response.set_cookie(
                 'magic_bits',        # Cookie name
                 token,              # Cookie value
-                httponly=False,       # Prevents JS access (XSS protection)
-                secure=False,         # Ensures cookie is sent over HTTPS only
-                samesite='Lax',      # CSRF protection (use 'Strict' for high security)
+                httponly=True,       # Prevents JS access (XSS protection)
+                secure=True,         # Ensures cookie is sent over HTTPS only
+                samesite='Strict',      # CSRF protection (use 'Strict' for high security)
                 max_age=3600         # Expiration in seconds (e.g., 1 hour)
             )
 
