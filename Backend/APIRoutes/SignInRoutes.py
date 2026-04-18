@@ -24,8 +24,6 @@ def google_login():
         return jsonify({"error": "No authentication data provided"}), 400
     print("Logging in with AHFUL Google Auth")
 
-    routeSignInDriver: SignInDriver = current_app.AHFULSignInDriver
-
     response, err = routeSignInDriver.google_login(postAuthData)
     if err:
         return jsonify({"error": err}), 401

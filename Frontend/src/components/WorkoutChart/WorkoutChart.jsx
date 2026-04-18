@@ -52,10 +52,7 @@ export function WorkoutChart({ defaultWeeks = 6 }) {
 
   const getUserId = () => {
     if (user?._id) return user._id;
-    try {
-      const stored = JSON.parse(localStorage.getItem("user_data"));
-      return stored?._id || null;
-    } catch { return null; }
+    return null
   };
   const userId = getUserId();
 

@@ -2,12 +2,11 @@ from functools import wraps
 from flask import request, jsonify, g
 from Services.VerificationDriver import VerificationDriver
 from functools import wraps
-from Services.UserDriver import UserDriver
 import asyncio
 
 def login_required_user(f):
     @wraps(f)
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         # 1. Extraction
         user_id = request.cookies.get("session_id")
         magic_bits = request.cookies.get("magic_bits")
@@ -34,14 +33,14 @@ def login_required_user(f):
         else:
             g.role = "User"
 
-        # if asyncio.iscoroutinefunction(f):
-        #     return await f(*args, **kwargs)  # async route
+        if asyncio.iscoroutinefunction(f):
+            return await f(*args, **kwargs)  # async route
         return f(*args, **kwargs)            # regular sync route
     return decorated_function
 
 def login_required_dev(f):
     @wraps(f)
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         # 1. Extraction
         user_id = request.cookies.get("session_id")
         magic_bits = request.cookies.get("magic_bits")
@@ -62,8 +61,8 @@ def login_required_dev(f):
         g.token = magic_bits
         g.role = "Developer"
 
-        # if asyncio.iscoroutinefunction(f):
-        #     return await f(*args, **kwargs)  # async route
+        if asyncio.iscoroutinefunction(f):
+            return await f(*args, **kwargs)  # async route
         return f(*args, **kwargs)            # regular sync route
     return decorated_function
 

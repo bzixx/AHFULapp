@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 export function NotVerified() {
   // ----- Verification STATE MANAGEMENT ---------------------------------------------------------------------------
   //Redux Site Wide Auth State
-  const theme = useSelector((state) => state.setting?.theme || "Light");
+  const theme = useSelector((state) => state.setting?.theme || "light");
 
   const [statusText, setStatusText] = useState("");
   const user = useSelector((state) => state.auth.user);
