@@ -238,8 +238,8 @@ class VerificationDriver:
                 "Our records show that your email has not been verified yet.\n\n"
                 "You currently may have limited access to the application.\n\n"
                 "Please verify your email to unlock full access.\n\n"
-                "Your verification link is {link}"
-                "— AHFUL Team"
+                "Your verification link is {link}\n\n"
+                "Thank you for Signing up from the AHFUL Team!"
             ).format(link=link)
         )
         current_app.mail.send(msg)
@@ -289,8 +289,8 @@ class VerificationDriver:
                 "Our records show that your phone number has not been verified yet.\n\n"
                 "You currently may have limited access to the application.\n\n"
                 "Please verify your phone number to unlock full access.\n\n"
-                "Your verification link is {link}"
-                "— AHFUL Team"
+                "Your verification link is {link}\n\n"
+                "Thank you for Signing up from the AHFUL Team!"
             ).format(link=link)
         )
         current_app.mail.send(msg)

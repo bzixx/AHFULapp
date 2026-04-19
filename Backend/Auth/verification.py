@@ -11,17 +11,17 @@ def login_required_user(f):
         user_id = request.cookies.get("session_id")
         magic_bits = request.cookies.get("magic_bits")
         if not user_id:
-            return jsonify({"error": "We require goodies to enter. Please provide a user_id cookie"}), 401  
+            return jsonify({"authenticated": False, "error": "We require goodies to enter."}), 200  
 
         if not magic_bits:
-            return jsonify({"error": "The Dragon roared too Loudly for your Magic. Please provide magic_bits cookie"}), 401
+            return jsonify({"authenticated": False, "error": "The Dragon roared too Loudly for your Magic."}), 200
 
         magic_bits = magic_bits[-32:]
 
         # 2. Database Verification
         res, err = VerificationDriver.confirm_user_login(user_id, magic_bits)
         if err:
-            return jsonify({"error": err}), 401
+            return jsonify({"authenticated": False, "error": f"Invalid session token. Hint: {err}"}), 200
 
         g.user_id = user_id  # Store user_id in Flask's global context for access in the wrapped-route
         g.token = magic_bits
@@ -45,17 +45,17 @@ def login_required_dev(f):
         user_id = request.cookies.get("session_id")
         magic_bits = request.cookies.get("magic_bits")
         if not user_id:
-            return jsonify({"error": "We require goodies to enter. Please provide a user_id cookie"}), 401  
+            return jsonify({"authenticated": False, "error": "We require goodies to enter."}), 200
 
         if not magic_bits:
-            return jsonify({"error": "The Dragon roared too Loudly for your Magic. Please provide magic_bits cookie"}), 401
+            return jsonify({"authenticated": False, "error": "The Dragon roared too Loudly for your Magic."}), 200
 
         magic_bits = magic_bits[-32:]
 
         # 2. Database Verification
         res, err = VerificationDriver.confirm_user_developer(user_id, magic_bits)
         if err:
-            return jsonify({"error": err}), 401
+            return jsonify({"authenticated": False, "error": f"Invalid session token. Hint: {err}"}), 200
 
         g.user_id = user_id  # Store user_id in Flask's global context for access in the wrapped-route
         g.token = magic_bits
@@ -73,17 +73,17 @@ def login_required_admin(f):
         user_id = request.cookies.get("session_id")
         magic_bits = request.cookies.get("magic_bits")
         if not user_id:
-            return jsonify({"error": "We require goodies to enter. Please provide a user_id cookie"}), 401  
+            return jsonify({"authenticated": False, "error": "We require goodies to enter."}), 200
 
         if not magic_bits:
-            return jsonify({"error": "The Dragon roared too Loudly for your Magic. Please provide magic_bits cookie"}), 401
+            return jsonify({"authenticated": False, "error": "The Dragon roared too Loudly for your Magic."}), 200
 
         magic_bits = magic_bits[-32:]
 
         # 2. Database Verification
         res, err = VerificationDriver.confirm_user_admin(user_id, magic_bits)
         if err:
-            return jsonify({"error": err}), 401
+            return jsonify({"authenticated": False, "error": f"Invalid session token. Hint: {err}"}), 200
 
         g.user_id = user_id  # Store user_id in Flask's global context for access in the wrapped-route
         g.token = magic_bits
@@ -101,17 +101,17 @@ def login_required_gym_owner(f):
         user_id = request.cookies.get("session_id")
         magic_bits = request.cookies.get("magic_bits")
         if not user_id:
-            return jsonify({"error": "We require goodies to enter. Please provide a user_id cookie"}), 401  
+            return jsonify({"authenticated": False, "error": "We require goodies to enter."}), 200
 
         if not magic_bits:
-            return jsonify({"error": "The Dragon roared too Loudly for your Magic. Please provide magic_bits cookie"}), 401
+            return jsonify({"authenticated": False, "error": "The Dragon roared too Loudly for your Magic."}), 200
 
         magic_bits = magic_bits[-32:]
 
         # 2. Database Verification
         res, err = VerificationDriver.confirm_user_gym_owner(user_id, magic_bits)
         if err:
-            return jsonify({"error": err}), 401
+            return jsonify({"authenticated": False, "error": f"Invalid session token. Hint: {err}"}), 200
 
         g.user_id = user_id  # Store user_id in Flask's global context for access in the wrapped-route
         g.token = magic_bits

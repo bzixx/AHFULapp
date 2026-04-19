@@ -41,14 +41,17 @@ class SignInDriver:
             routeUserObject = UserDriver.create_user({
                 "name": decodedUserInfo.get("name"),
                 "email": decodedUserInfo.get("email"),
+                "email_verified": False,
+                "phone_number" : "", # No phone number from google, will update later with phone verification.
+                "phone_verified": False,
                 "picture": decodedUserInfo.get("picture"),
+                "updated_at": datetime.now(),
                 "last_login_time": trunc(time()),
                 "last_login_expire" : decodedUserInfo.get("exp"),
-                "roles": ["user"],
-                "updated_at": datetime.now(),
+                "deactivated": False, 
                 "magic_bits" : tokenBits,
-                "email_verified": False,
-                "phone_verified": False
+                "roles": ["user"],
+
             })
         elif routeUserObject:
             # Disabled user check in sign in, untested
@@ -140,7 +143,7 @@ class SignInDriver:
             # 4. Set MagicBits Cookie with Token.
             response.set_cookie(
                 'magic_bits',        # Cookie name
-                token,              # Cookie value
+                tokenBits,              # Cookie value
                 httponly=True,       # Prevents JS access (XSS protection)
                 secure=True,         # Ensures cookie is sent over HTTPS only
                 samesite='Strict',      # CSRF protection (use 'Strict' for high security)
