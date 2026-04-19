@@ -5,49 +5,68 @@ import { useState, useEffect } from "react";
 
 const HEAT_COLORS = ["#ef4444"];
 
-const MUSCLE_SLUG_MAP = {
-  chest: ["chest"],
-  back: ["upper-back", "lower-back"],
-  shoulders: ["deltoids"],
-  biceps: ["biceps"],
-  triceps: ["triceps"],
-  forearms: ["forearm"],
-  abs: ["abs"],
-  obliques: ["obliques"],
-  quads: ["quadriceps"],
-  hamstrings: ["hamstring"],
-  glutes: ["gluteal"],
-  calves: ["calves"],
-  hip_flexors: ["adductors"],
-  traps: ["trapezius"],
-  lats: ["upper-back"],
-  serratus: ["chest"],
-};
-
 function mapTargetMuscleToSlug(targetMuscle) {
   if (!targetMuscle) return [];
-  const lower = targetMuscle.toLowerCase().replace(/\s+/g, '_');
-  if (MUSCLE_SLUG_MAP[lower]) {
-    return MUSCLE_SLUG_MAP[lower];
+  
+  const key = targetMuscle.toLowerCase().trim();
+  
+  const exactMap = {
+    abdominals: ["abs"],
+    abductors: ["abductors"],
+    abs: ["abs"],
+    adductors: ["adductors"],
+    biceps: ["biceps"],
+    calves: ["calves"],
+    chest: ["chest"],
+    core: ["abs", "obliques"],
+    forearms: ["forearm"],
+    "full body": ["chest", "upper-back", "deltoids", "biceps", "triceps", "quadriceps", "hamstrings"],
+    "glute medius": ["gluteal"],
+    glutes: ["gluteal"],
+    grip: ["forearm"],
+    hamstrings: ["hamstring"],
+    "inner thighs": ["adductors"],
+    lats: ["upper-back"],
+    legs: ["quadriceps", "hamstrings", "calves"],
+    "lower abs": ["abs"],
+    "lower back": ["lower-back"],
+    "mid back": ["upper-back"],
+    "middle back": ["upper-back"],
+    neck: ["neck"],
+    obliques: ["obliques"],
+    quadriceps: ["quadriceps"],
+    "rear delts": ["deltoids"],
+    shins: ["tibialis"],
+    shoulders: ["deltoids"],
+    sternocleidomastoid: ["neck"],
+    traps: ["trapezius"],
+    triceps: ["triceps"],
+    "upper chest": ["chest"],
+  };
+  
+  if (exactMap[key]) {
+    return exactMap[key];
   }
-  if (lower.includes('abs')) return MUSCLE_SLUG_MAP.abs;
-  if (lower.includes('chest') || lower.includes('pectoral')) return MUSCLE_SLUG_MAP.chest;
-  if (lower.includes('back') && (lower.includes('upper') || lower.includes('lat'))) return ['upper-back'];
-  if (lower.includes('back') && lower.includes('lower')) return ['lower-back'];
-  if (lower.includes('back')) return MUSCLE_SLUG_MAP.back;
-  if (lower.includes('shoulder') || lower.includes('deltoid')) return MUSCLE_SLUG_MAP.shoulders;
-  if (lower.includes('bicep')) return MUSCLE_SLUG_MAP.biceps;
-  if (lower.includes('tricep')) return MUSCLE_SLUG_MAP.triceps;
-  if (lower.includes('forearm')) return MUSCLE_SLUG_MAP.forearms;
-  if (lower.includes('oblique')) return MUSCLE_SLUG_MAP.obliques;
-  if (lower.includes('quad') || lower.includes('rectus_femoris')) return MUSCLE_SLUG_MAP.quads;
-  if (lower.includes('hamstring')) return MUSCLE_SLUG_MAP.hamstrings;
-  if (lower.includes('glute')) return MUSCLE_SLUG_MAP.glutes;
-  if (lower.includes('calf') || lower.includes('gastroc') || lower.includes('soleus')) return MUSCLE_SLUG_MAP.calves;
-  if (lower.includes('hip') && lower.includes('flexor')) return MUSCLE_SLUG_MAP.hip_flexors;
-  if (lower.includes('trap')) return MUSCLE_SLUG_MAP.traps;
-  if (lower.includes('serratus')) return MUSCLE_SLUG_MAP.serratus;
-  if (lower.includes('adductor')) return MUSCLE_SLUG_MAP.hip_flexors;
+  
+  if (key.includes('abs')) return ["abs"];
+  if (key.includes('chest') || key.includes('pectoral')) return ["chest"];
+  if (key.includes('back') && key.includes('lower')) return ["lower-back"];
+  if (key.includes('back')) return ["upper-back"];
+  if (key.includes('shoulder') || key.includes('deltoid')) return ["deltoids"];
+  if (key.includes('bicep')) return ["biceps"];
+  if (key.includes('tricep')) return ["triceps"];
+  if (key.includes('forearm')) return ["forearm"];
+  if (key.includes('oblique')) return ["obliques"];
+  if (key.includes('quad')) return ["quadriceps"];
+  if (key.includes('hamstring')) return ["hamstring"];
+  if (key.includes('glute')) return ["gluteal"];
+  if (key.includes('calf')) return ["calves"];
+  if (key.includes('trap')) return ["trapezius"];
+  if (key.includes('adductor') || key.includes('thigh')) return ["adductors"];
+  if (key.includes('lat')) return ["upper-back"];
+  if (key.includes('neck')) return ["neck"];
+  if (key.includes('shin')) return ["tibialis"];
+  
   return [];
 }
 
@@ -64,9 +83,8 @@ export function HeatMap({ data = {} }) {
   const personalExercises = useSelector((state) => state.pullPersonalExercise.personalExercises);
 
   const [highlightedMuscles, setHighlightedMuscles] = useState([]);
-
+  //Start of logic to determine which muscles to highlight based on selectedDate and workouts/exercises data
   useEffect(() => {
-    console.log('========== HEATMAP DEBUG ==========');
     console.log('selectedDate:', selectedDate);
     console.log('workouts:', workouts);
     console.log('exercises:', exercises);
@@ -76,7 +94,7 @@ export function HeatMap({ data = {} }) {
       setHighlightedMuscles([]);
       return;
     }
-
+    //Trim date to just YYYY-MM-DD
     const selectedDateStr = selectedDate.slice(0, 10);
     console.log('selectedDateStr:', selectedDateStr);
 
