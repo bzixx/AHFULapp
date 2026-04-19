@@ -147,9 +147,6 @@ export async function handle_logout() {
 
   //Try to Get LocalStorage Cookie for data
   try {
-    let storedUserData = localStorage.getItem("user_data");
-    let parsedData = JSON.parse(storedUserData);
-
     // POST response Object to BACKEND API ROUTE for processing.
     const backendResponse = await fetch(backendPOSTURL, {
       method: "POST",
@@ -158,7 +155,6 @@ export async function handle_logout() {
       credentials: "include",
     });
 
-    localStorage.removeItem("user_data");
     //TODO: UPDATE REDUX
     //setIsLoggedIn(false);
     console.log("AHFUL Logout Completed successfully.");

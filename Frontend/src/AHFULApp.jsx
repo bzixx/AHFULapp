@@ -58,11 +58,19 @@ function AHFULApp() {
     const checkCookies = async () => {
       // We only want to run this check once on app load, not on every route change.
       const whomstResponse = await whoami();
+
+      if (!whomstResponse) {
+        navigate('/Login');
+        return;
+      }
+
       if (whomstResponse.ok){
         dispatch(authLogin(whomstResponse.data.user_info));
 
         const userSettingsResponse = await getUserSettings();
         dispatch(setSettings(userSettingsResponse));
+      }else{
+        navigate('/Login');
       }
     }
 
@@ -78,41 +86,25 @@ function AHFULApp() {
           <Route path="/Login" element={<Login/>}/>
           <Route path="/TOS" element={<TOS/>}/>
           <Route path="/WorkoutLogger" element={
-            <AuthRouteCheck>
-              <WorkoutLogger/>
-            </AuthRouteCheck>} />
+              <WorkoutLogger/>} />
           <Route path="/ExploreWorkout" element={
-            <AuthRouteCheck>
-              <ExploreWorkouts/>
-            </AuthRouteCheck>}/>
+              <ExploreWorkouts/>}/>
           <Route path="/FoodLog" element={
-            <AuthRouteCheck>
-              <FoodLog/>
-            </AuthRouteCheck>}/>
+              <FoodLog/>}/>
           <Route path="/EmailVerification" element={
               <VerifyEmail/>}/>
           <Route path="/NotVerified" element={
               <NotVerified/>}/>
           <Route path="/AIChat" element={
-            <AuthRouteCheck>
-              <AIChat/>
-            </AuthRouteCheck>}/>
+              <AIChat/>}/>
           <Route path="/Map" element={
-            <AuthRouteCheck>
-              <Map/>
-            </AuthRouteCheck>}/>
+              <Map/>}/>
           <Route path="/MeasurementLogger" element={
-            <AuthRouteCheck>
-              <MeasurementLogger/>
-            </AuthRouteCheck>}/>
+              <MeasurementLogger/>}/>
           <Route path="/Profile" element={
-            <AuthRouteCheck>
-              <Profile/>
-            </AuthRouteCheck>}/>
+              <Profile/>}/>
           <Route path="/ExploreTasks" element={
-            <AuthRouteCheck>
-              <ExploreTasks/>
-            </AuthRouteCheck>}/>
+              <ExploreTasks/>}/>
           <Route path="/Test" element={<Test/>}/>
         </Route>
         <Route path="Settings" element={<Settings/>} />

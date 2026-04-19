@@ -4,6 +4,7 @@ import "../../siteStyles.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect, use } from "react";
 import { authLogout } from "../Login/AuthSlice";
+import { setSettings, settingsInitialState } from "../Settings/SettingsSlice.jsx";
 import {registerService} from "../../firebase.js";
 import {handle_logout,updateUserSettings} from "../../QueryFunctions.js"
 import {ProfileSettingsButton} from "../../components/ProfileSettings/ProfileSettingsButton"
@@ -154,7 +155,7 @@ export function Profile() {
         <div className="profile-logout-section">
           <button
             className="profile-logout-btn" id="logout-btn"
-            onClick={() => {handle_logout(); dispatch(authLogout());}}
+            onClick={() => {handle_logout(); dispatch(authLogout()); dispatch(setSettings(settingsInitialState)); navigate("/");}}
           >
             Logout
           </button>
