@@ -598,7 +598,8 @@ export function WorkoutLogger() {
       today.setHours(0, 0, 0, 0);
       const startUnix = Math.floor(today.getTime() / 1000);
 
-      const gymId = "69af3c3e94310c6e29840229"; // your current default
+      //TODO: UPDATE THIS SO USER CAN SELECT GYM WORKOUT WAS DONE AT
+      const gymId = "699cff88400d9d43a32e924d"; // your current default
 
       const payload = {
         endTime: startUnix,
