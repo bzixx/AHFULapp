@@ -4,6 +4,15 @@ importScripts('https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-com
 // Initialize the Firebase app in the service worker by passing in
 // your app's Firebase config object.
 // https://firebase.google.com/docs/web/setup#config-object
+firebase.initializeApp({
+  apiKey: "REDACTED",
+  authDomain: "REDACTED",
+  projectId: "REDACTED",
+  storageBucket: "REDACTED.firebasestorage.app",
+  messagingSenderId: "REDACTED",
+  appId: "1:REDACTED:web:ca5268e9602f1b7dcadf74",
+  measurementId: "REDACTED"
+});
 
 // Retrieve an instance of Firebase Messaging so that it can handle background
 // messages.

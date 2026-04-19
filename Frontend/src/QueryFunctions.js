@@ -306,7 +306,7 @@ export async function reverseGeocode(lat, lng) {
   try {
     const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
     const res = await fetch(url, {
-      headers: { "User-Agent": "AHFULApp/1.0" },credentials: 'include',
+      headers: { "User-Agent": "AHFULApp/1.0" },
     });
     if (!res.ok) {
       throw new Error(`Geocoding API returned ${res.status}`);
