@@ -1,5 +1,5 @@
 import {  useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { WorkoutLogger } from "./Pages/WorkoutLogger/WorkoutLogger.jsx";
 import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
@@ -31,6 +31,7 @@ function AHFULApp() {
   const theme = useSelector((state) => state.setting.theme);
   const userData = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     isActive: tutorialActive,
@@ -55,11 +56,13 @@ function AHFULApp() {
   useEffect(() => {
     const checkCookies = async () => {
       // We only want to run this check once on app load, not on every route change.
-      let whomstResponse = await whoami();
-      dispatch(authLogin(whomstResponse.user_info));
+      const whomstResponse = await whoami();
+      if (whomstResponse.ok){
+        dispatch(authLogin(whomstResponse.user_info));
 
-      let userSettingsResponse = await getUserSettings();
-      dispatch(setSettings(userSettingsResponse));
+        const userSettingsResponse = await getUserSettings();
+        dispatch(setSettings(userSettingsResponse));
+      }
     }
 
     checkCookies();

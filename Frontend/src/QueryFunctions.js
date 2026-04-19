@@ -211,15 +211,12 @@ export async function whoami() {
       credentials: 'include'
     });
 
-    if (backendVerificationResponse.ok) {
-      const data = await backendVerificationResponse.json();
-      return data;
-    } else if (backendVerificationResponse.status === 401) {
-      console.log("Please Login. ")
+    const data = await backendVerificationResponse.json();
+
+    if (data.authenticated) {
+      return { ok: true, data };
     } else {
-      throw new Error(
-        `Session validation failed: ${backendVerificationResponse.status} ${backendVerificationResponse.statusText}`,
-      );
+      return { ok: false, error: data.error };
     }
   } catch (err) {
     console.error("Query Function Session validation failed:", err);
