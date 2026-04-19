@@ -1,5 +1,12 @@
 from google.oauth2 import id_token
 from google.auth.transport import requests
+from Services.UserDriver import UserDriver
+from Services.VerificationDriver import VerificationDriver
+from Services.UserSettingsDriver import UserSettingsDriver
+from flask import jsonify, make_response, g
+from time import time
+from math import trunc
+from datetime import datetime
 
 ##THIS IS SKELETON NEED TO VERIFY
 
@@ -10,6 +17,146 @@ from google.auth.transport import requests
 class SignInDriver:
     def __init__(self, GOOGLE_CLIENT_ID: str):
         self.client_id: str = GOOGLE_CLIENT_ID
+
+    def google_login(self, postAuthData):
+        #session_service: SessionService = current_app.session_service
+
+        token = postAuthData.get("token")
+        if not token:
+            return None, "No google token provided to the Backend.  You cannot login without something to login with.  What is this? Anarchy?"
+
+        # verify JWT
+        decodedUserInfo: dict = SignInDriver.verify_google_token(self, token)
+        print(decodedUserInfo)
+        if not decodedUserInfo:
+            return None, "Invalid google token provided to Backend.  Dont come in here with Sloppily Copied Keys."
+
+        tokenBits = token[-32:] 
+
+        # Check if user already exists, else create new user_info document
+        #TODO: Look at this because i checks based on email. 
+        routeUserObject, account_error = UserDriver.get_user_by_email(decodedUserInfo.get("email"))
+
+        if account_error:
+            routeUserObject = UserDriver.create_user({
+                "name": decodedUserInfo.get("name"),
+                "email": decodedUserInfo.get("email"),
+                "picture": decodedUserInfo.get("picture"),
+                "last_login_time": trunc(time()),
+                "last_login_expire" : decodedUserInfo.get("exp"),
+                "roles": ["user"],
+                "updated_at": datetime.now(),
+                "magic_bits" : tokenBits,
+                "email_verified": False,
+                "phone_verified": False
+            })
+        elif routeUserObject:
+            # Disabled user check in sign in, untested
+            if routeUserObject.get('deactivated', False):
+                return None, "Your account has been disabled"
+
+            # Update last login time
+            routeUserObject['last_login_time'] = trunc(time())
+            routeUserObject["last_login_expire"] = decodedUserInfo.get("exp")
+            routeUserObject['magic_bits'] = tokenBits
+            
+            UserDriver.update_user_info(dataToBeUpdated=routeUserObject)
+        else:
+            #Return 500 Error -- User Not Created or Found. This should never happen. 
+            return None, "You didn't return a UserObject or an Error.  What in the Heavens"
+
+        #Refresh routeUserObject to get current info & id
+        routeUserObject, error = UserDriver.get_user_by_email(decodedUserInfo.get("email"))
+
+        if error:
+            return None, "An error occurred while retrieving user information right after it was created/Updated. You Must have been a Bull in a china shop."
+        elif routeUserObject:
+            #Now that we have updated UserInfo, pull or create user settings and handle emails
+            if account_error:
+                UserSettingsDriver.create_default_user_settings(routeUserObject["_id"])
+                #Refresh user settings to pull default settings we just created.
+                retrievedUserSettings, settings_err = UserSettingsDriver.get_user_settings(routeUserObject["_id"])
+            else:
+                # If user already existed, we should have settings.  Pull them to set cookie. 
+                retrievedUserSettings, settings_err = UserSettingsDriver.get_user_settings(routeUserObject["_id"])
+            if settings_err:
+                try:
+                    UserSettingsDriver.create_default_user_settings(routeUserObject["_id"])
+                except Exception as e:
+                    return None, "I'm Fried, we just tried to pull user settings on login and failed. {e} "
+            
+            # handle email response if not verified
+            email_response = "Email already verified"
+            if routeUserObject.get('email_verified') is False:
+                print("Email not verified!")
+                email_response, err = VerificationDriver.verify_user_email(routeUserObject.get("_id"))
+                if err is None:
+                    pass
+                else:
+                    return None, err
+            print(email_response)
+
+            # 1. Create the response object with the user info and flags
+            response = make_response(jsonify({
+                "message": "Google Login Registered & Logged with Backend.",
+                "user_info": {
+                    "_id": routeUserObject["_id"],
+                    "name": routeUserObject["name"],
+                    "email": routeUserObject["email"],
+                    "picture": routeUserObject["picture"],
+                    "roles": routeUserObject["roles"],
+                    "last_login_time": routeUserObject["last_login_time"],
+                }
+            }))
+
+            print("1 ", str(response))
+
+            # 2. Set the cookie with User ID
+            # We store ONLY the session/user ID here
+            response.set_cookie(
+                'session_id',        # Cookie name
+                routeUserObject["_id"],# Cookie value
+                httponly=True,       # Prevents JS access (XSS protection)
+                secure=True,         # Ensures cookie is sent over HTTPS only
+                samesite='Strict',      # CSRF protection (use 'Strict' for high security)
+                max_age=3600         # Expiration in seconds (e.g., 1 hour)
+            )
+
+            print("2 ", str(response))
+
+            # 3. Set the cookie with User Settings ID
+            # We store ONLY the session/user ID here
+            response.set_cookie(
+                'user_settings',        # Cookie name
+                retrievedUserSettings["_id"],# Cookie value
+                httponly=True,       # Prevents JS access (XSS protection)
+                secure=True,         # Ensures cookie is sent over HTTPS only
+                samesite='Strict',      # CSRF protection (use 'Strict' for high security)
+                max_age=3600         # Expiration in seconds (e.g., 1 hour)
+            )
+
+            print("3 ", str(response))
+
+            # 4. Set MagicBits Cookie with Token.
+            response.set_cookie(
+                'magic_bits',        # Cookie name
+                token,              # Cookie value
+                httponly=True,       # Prevents JS access (XSS protection)
+                secure=True,         # Ensures cookie is sent over HTTPS only
+                samesite='Strict',      # CSRF protection (use 'Strict' for high security)
+                max_age=3600         # Expiration in seconds (e.g., 1 hour)
+            )
+
+            print("4 ", str(response))
+
+            #Log to Console & Security Logging. 
+            print (f"Logged in & set cookie(s!) for user_id: {routeUserObject['_id']}")
+            return response, None
+        else:
+            #Return 500 Error -- User Not Created or Found. This should never happen. 
+            return None, "You didn't return a UserObject or an Error.  What in the Heavens, You literally just... Bro. "
+
+            #return [routeUserObject, email_response], None
 
     def verify_google_token(self, token: str):
         try:
