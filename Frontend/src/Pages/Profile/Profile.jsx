@@ -2,7 +2,7 @@ import "./Profile.css";
 import "../../siteStyles.css";
 
 import { useDispatch, useSelector } from "react-redux";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { authLogout } from "../Login/AuthSlice";
 import { setSettings, settingsInitialState } from "../Settings/SettingsSlice.jsx";
 import {registerService} from "../../firebase.js";
@@ -19,13 +19,24 @@ export function Profile() {
   const UserData = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    if (UserData?.user_bio) {
+    // If there's no user data, redirect to home.
+    if (!UserData) {
+      navigate("/Login");
+      return;
+    }
+
+    // If user data exists and they have a bio, populate it.
+    if (UserData.user_bio) {
       setBio(UserData.user_bio);
     }
   }, [UserData]);
 
   const handleSaveBio = async () => {
-    //TODO: STORE OR ACTUALL SAVE THIS
+    // Guard: ensure we have a user id before attempting to save.
+    if (!UserData?._id) {
+      console.error("Cannot save bio: user ID not available");
+      return;
+    }
     await updateUserSettings(UserData._id, { user_bio: bio });
     setIsEditingBio(false);
   };
@@ -39,6 +50,12 @@ export function Profile() {
   };
   
   const handleVerifyEmail = async () => {
+    if (!UserData?._id) {
+      console.error("Cannot verify email: user ID not available");
+      alert("User not signed in");
+      return;
+    }
+
     try {
       const verifyUserEmailResponse = await fetch(
         "http://localhost:5000/api/AHFULverify/verify/email/user_id/",
@@ -83,12 +100,12 @@ export function Profile() {
         <div className="profile-picture-section">
           <img
             className="profile-picture"
-            src={UserData.picture || "https://ui-avatars.com/api/?name=AH&background=c3cfe2&color=333&size=150"}
-            alt={`${UserData.name}'s profile`}
+            src={UserData?.picture || "https://ui-avatars.com/api/?name=AH&background=c3cfe2&color=333&size=150"}
+            alt={`${UserData?.name || "User"}'s profile`}
             referrerPolicy="no-referrer"
           />
-          <h2 className="profile-name">{UserData.name}</h2>
-          <p className="profile-email">{UserData.email}</p>
+          <h2 className="profile-name">{UserData?.name || "User"}</h2>
+          <p className="profile-email">{UserData?.email || ""}</p>
         </div>
 
           {/* Bio Section */}

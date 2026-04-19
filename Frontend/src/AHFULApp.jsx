@@ -58,8 +58,18 @@ function AHFULApp() {
     const checkCookies = async () => {
       // We only want to run this check once on app load, not on every route change.
       const whomstResponse = await whoami();
+      const path = window.location.pathname || '/';
 
+      // If whoami fails to return (network or missing cookies),
+      // don't force a redirect when the user is already on the public
+      // root path ('/'). But if they're trying to visit any other
+      // route, send them to the Login page.
       if (!whomstResponse) {
+        if (path === '/' || path === '/TOS') {
+          // allow browsing the public dashboard/root without forcing login
+          return;
+        }
+
         navigate('/Login');
         return;
       }
@@ -70,6 +80,10 @@ function AHFULApp() {
         const userSettingsResponse = await getUserSettings();
         dispatch(setSettings(userSettingsResponse));
       }else{
+        if (path === '/' || path === '/TOS') {
+          // allow browsing the public dashboard/root without forcing login
+          return;
+        }
         navigate('/Login');
       }
     }
