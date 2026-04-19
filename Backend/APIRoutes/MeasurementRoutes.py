@@ -1,35 +1,42 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, g
+from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
 from Services.MeasurementDriver import MeasurementDriver
 
 measurementRouteBlueprint = Blueprint("measurements", __name__, url_prefix="/AHFULmeasurements")
 
-#Not Active in Prod. 
-# @measurementRouteBlueprint.route("/", methods=["GET"])
-# def get_all_measurements():
-#     measurements, error = MeasurementDriver.get_all_measurements()
-#     if error:
-#         return jsonify({"error": error}), 500
-#     return jsonify(measurements), 200
+# Get all measurements
+@measurementRouteBlueprint.route("/", methods=["GET"])
+@login_required_dev
+def get_all_measurements():
+    measurements, error = MeasurementDriver.get_all_measurements()
+    if error:
+        return jsonify({"error": error}), 500
+    return jsonify(measurements), 200
 
-
+# Get measurement by user id
 @measurementRouteBlueprint.route("/<user_id>", methods=["GET"])
+@login_required_user
 def get_measurements_by_user(user_id):
+    if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
+        return jsonify({"error": "You may only access your own data"}), 403
     measurements, error = MeasurementDriver.get_measurements_by_user(user_id)
     if error:
         return jsonify({"error": error}), 400
     return jsonify(measurements), 200
 
-
+# Get measurement by id
 @measurementRouteBlueprint.route("/id/<measurement_id>", methods=["GET"])
+@login_required_dev
 def get_measurement_by_id(measurement_id):
     measurement, error = MeasurementDriver.get_measurement_by_id(measurement_id)
     if error:
         return jsonify({"error": error}), 404
     return jsonify(measurement), 200
 
-
+# Create new measurement
 @measurementRouteBlueprint.route("/create", methods=["POST"])
+@login_required_user
 def create_measurement():
     data = request.get_json()
     if not data:
@@ -44,12 +51,17 @@ def create_measurement():
         return jsonify({"error": error}), 400
     return jsonify({"measurement_id": measurement_id, "message": "Measurement created"}), 201
 
-
+# Update measurement by id
 @measurementRouteBlueprint.route("/update/<measurement_id>", methods=["PUT"])
+@login_required_user
 def update_measurement(measurement_id):
     data = request.get_json(silent=True)
     if not data or not isinstance(data, dict):
         return jsonify({"error": "You must provide a JSON body with at least one field to update"}), 400
+
+    res, err = MeasurementDriver.verify_operation(g.user_id, measurement_id)
+    if err:
+        return jsonify({"error": err}), 400
 
     updated, error = MeasurementDriver.update_measurement(measurement_id, data)
     if error:
@@ -58,9 +70,14 @@ def update_measurement(measurement_id):
         return jsonify({"error": error}), 400
     return jsonify(updated), 200
 
-
+# Delete measurement by id
 @measurementRouteBlueprint.route("/delete/<measurement_id>", methods=["DELETE"])
+@login_required_user
 def delete_measurement(measurement_id):
+    res, err = MeasurementDriver.verify_operation(g.user_id, measurement_id)
+    if err:
+        return jsonify({"error": err}), 400
+    
     response, error = MeasurementDriver.delete_measurement(measurement_id)
     if error:
         return jsonify({"error": error}), 400

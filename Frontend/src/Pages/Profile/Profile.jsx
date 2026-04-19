@@ -43,6 +43,7 @@ export function Profile() {
         "https://www.ahful.app/api/AHFULverify/verify/email/user_id/",
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },

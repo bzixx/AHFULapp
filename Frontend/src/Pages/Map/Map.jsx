@@ -40,7 +40,7 @@ export function Map() {
   const fetchGyms = async () => {
     try {
       // Use a relative path so the dev server proxy (if configured) will forward to backend.
-      const res = await fetch("https://www.ahful.app/api/AHFULgyms");
+      const res = await fetch("https://www.ahful.app/api/AHFULgyms", {credentials: "include"});
 
       if (!res.ok) {
         // Provide a clearer error including body text when possible
@@ -189,7 +189,7 @@ export function Map() {
   }
 
   function removeGym(_id) {
-    const BACKENDDELETE_URL = `https://www.ahful.app/api/AHFULgyms/delete/${_id}`;
+    const BACKENDDELETE_URL = (`https://www.ahful.app/api/AHFULgyms/delete/${_id}`, {credentials: "include"});
 
     fetch(BACKENDDELETE_URL, {
       method: "DELETE",

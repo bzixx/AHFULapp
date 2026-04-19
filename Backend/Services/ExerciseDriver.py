@@ -1,5 +1,6 @@
 #Services & Drivers know how to implement business Logic related to the Route operations.  Intermediate between Routes and Objects.  Ensures validations and rules are applied before Calling Objects to interact with
 from DataModels.ExerciseObject import ExerciseObject
+from DataModels.UserObject import UserObject
 from http.client import HTTPSConnection
 import ssl
 import certifi
@@ -46,6 +47,34 @@ class ExerciseDriver:
             return ObjectId(str(id)), None
         except (bson_errors.InvalidId, TypeError, ValueError):
             return None, f"Invalid {name} format; must be a 24-hex string"
+        
+    @staticmethod
+    def verify_operation(user_id, exercise_id):
+        if (not user_id) or (not exercise_id):
+            return None, "Missing user or exercise_id"
+        
+        # Convert IDs safely
+        user_id, err = ExerciseDriver._validate_obj_id(user_id, "user_id")
+        if err:
+            return None, err
+        # Convert IDs safely
+        exercise_id, err = ExerciseDriver._validate_obj_id(exercise_id, "exercise_id")
+        if err:
+            return None, err
+        
+        user = UserObject.find_by_id(user_id)
+        if not user:
+            return None, "User not found"
+        exercise = ExerciseObject.find_by_id(exercise_id)
+        if not exercise:
+            return None, "Exercise not found"
+        
+        if user["_id"] == exercise["user_id"]:
+            return "Operation valid", None
+        elif ("Admin" in user["roles"]) or ("Developer" in user["roles"]):
+            return "Operation valid", None
+        else:
+            return None, "You must operate on your own object or have sufficient privileges"
 
     @staticmethod
     def get_initial_metadata():
@@ -202,8 +231,6 @@ class ExerciseDriver:
             return externalExercises, None
         except Exception as e:
             return None, str(e)
-
-
         
     #Search exercises by name using external API and internal DB, then combine results
     @staticmethod
@@ -299,7 +326,7 @@ class ExerciseDriver:
                 return None, "Exercise not found"
 
     @staticmethod
-    def create_exercise(formData):
+    def create_exercise(formData, owner_id):
         try:
             instructions_raw = formData.get("instructions", "")
             if isinstance(instructions_raw, str):
@@ -311,6 +338,7 @@ class ExerciseDriver:
             equipments = [equipment_value] if equipment_value else []
 
             exercise_data = {
+                "owner_id": owner_id,
                 "name": formData.get("name"),
                 "targetMuscles": formData.get("targetMuscles", []),
                 "bodyParts": formData.get("bodyParts", []),
@@ -334,7 +362,7 @@ class ExerciseDriver:
                 return False, "Exercise not found"
 
             # Update fields
-            for key in ["name", "body_part", "difficulty", "equipment", "instructions", "type"]:
+            for key in ["owner_id", "name", "body_part", "difficulty", "equipment", "instructions", "type"]:
                 if key in update_data:
                     existing_exercise[key] = update_data[key]
 
@@ -358,7 +386,6 @@ class ExerciseDriver:
             return True, None
         except Exception as e:
             return False, str(e)
-        
 
     @staticmethod
     def get_bodyparts():

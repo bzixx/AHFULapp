@@ -120,6 +120,10 @@ export function useTutorial() {
     }
   }, [navigate]);
 
+  const email_redirect = useCallback(() => {
+    navigate("/NotVerified");
+  }, [navigate]);
+
   /**
    * endTutorial - Handles tutorial exit (via skip or completion)
    * 
@@ -192,8 +196,13 @@ export function useTutorial() {
   useEffect(() => {
     if (hasAutoStarted.current) return;
     
-    if (tutorialComplete === false  && user) {
-      startTutorial();
+    if ((tutorialComplete === false || tutorialComplete === undefined) && user && user._id) {
+      if (user.email_verified) {
+        startTutorial();
+      }
+      else {
+        email_redirect();
+      }
     }
   }, []);
 

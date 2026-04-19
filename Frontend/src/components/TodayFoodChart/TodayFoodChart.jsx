@@ -35,7 +35,7 @@ export function TodayFoodChart() {
         return;
       }
 
-      fetch(`${API_BASE}/${userId}`)
+      fetch(`${API_BASE}/${userId}`, {credentials: "include"})
         .then(async (res) => {
           if (!res.ok) return [];
           return res.json();

@@ -7,6 +7,7 @@ import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
 import { Dashboard } from "./Pages/Dashboard/Dashboard.jsx";
 import { Login } from "./Pages/Login/Login.jsx";
 import { VerifyEmail } from "./Pages/Verification/VerifyEmail.jsx";
+import { NotVerified } from "./Pages/Verification/NotVerified.jsx";
 import { Map } from "./Pages/Map/Map.jsx";
 import { AIChat } from "./Pages/AIChat/AIChat.jsx";
 import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
@@ -80,14 +81,15 @@ function AHFULApp() {
           <Route path="/ExploreWorkout" element={
             <AuthRouteCheck>
               <ExploreWorkouts/>
-            </AuthRouteCheck>
-            }/>
+            </AuthRouteCheck>}/>
           <Route path="/FoodLog" element={
             <AuthRouteCheck>
               <FoodLog/>
             </AuthRouteCheck>}/>
           <Route path="/EmailVerification" element={
               <VerifyEmail/>}/>
+          <Route path="/NotVerified" element={
+              <NotVerified/>}/>
           <Route path="/AIChat" element={
             <AuthRouteCheck>
               <AIChat/>

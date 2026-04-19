@@ -211,8 +211,8 @@ function InternalDashboard() {
       const fetchStreaks = async () => {
         try {
           const [workoutRes, foodRes] = await Promise.all([
-            fetch(`https://www.ahful.app/api/AHFULworkout/streak/${user._id}`),
-            fetch(`https://www.ahful.app/api/AHFULfood/streak/${user._id}`),
+            fetch(`https://www.ahful.app/api/AHFULworkout/streak/${user._id}`, {credentials: "include"}),
+            fetch(`https://www.ahful.app/api/AHFULfood/streak/${user._id}`, {credentials: "include"}),
           ]);
 
           const workoutData = await workoutRes.json();

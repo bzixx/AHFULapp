@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useSelector } from "react-redux";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
@@ -47,16 +48,13 @@ export function WorkoutChart({ defaultWeeks = 6 }) {
   const [weeklyData, setWeeklyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [userId, setUserId] = useState(null);
+  const user = useSelector((state) => state.auth.user);
 
-  useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user_data") || "null");
-    if (userData?._id) {
-      setUserId(userData._id);
-    } else {
-      setLoading(false);
-    }
-  }, []);
+  const getUserId = () => {
+    if (user?._id) return user._id;
+    return null
+  };
+  const userId = getUserId();
 
   const fetchWorkouts = useCallback(async () => {
     if (!userId) {
@@ -67,7 +65,7 @@ export function WorkoutChart({ defaultWeeks = 6 }) {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch(`${API_BASE}/${userId}`);
+      const res = await fetch(`${API_BASE}/${userId}`, {credentials: "include"});
       
       if (!res.ok) {
         if (res.status === 404) {

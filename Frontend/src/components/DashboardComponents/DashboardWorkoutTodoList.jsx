@@ -26,7 +26,7 @@ export function DashboardWorkoutTodoList() {
 
     const fetchWorkouts = async () => {
       try {
-        const res = await fetch(`https://www.ahful.app/api/AHFULworkout/${userId}`);
+        const res = await fetch(`https://www.ahful.app/api/AHFULworkout/${userId}` , {credentials: "include"});
         if (res.ok) {
           const data = await res.json();
           const sorted = (Array.isArray(data) ? data : [])
