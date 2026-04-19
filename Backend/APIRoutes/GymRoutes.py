@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
 from Services.GymDriver import GymDriver
+from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
 gymRouteBlueprint = Blueprint("gym", __name__, url_prefix="/AHFULgyms")
 
 # ── GET all gyms ────────────────────────────────────────────────────────
 @gymRouteBlueprint.route("/", methods=["GET"])
+@login_required_user
 def get_all_gyms():
     gyms, error = GymDriver.get_all_gyms()
     if error:
@@ -13,14 +15,17 @@ def get_all_gyms():
 
 # ── GET single gym ────────────────────────────────────────────────────────────
 @gymRouteBlueprint.route("/<gym_id>", methods=["GET"])
+@login_required_user
 def get_gym(gym_id):
     gym, error = GymDriver.get_gym_by_id(gym_id)
     if error:
         return jsonify({"error": error}), 404
     return jsonify(gym), 200
 
+# Update gyms to hold owner, only allow owner to update, dev for now
 # ── UPDATE gym ────────────────────────────────────────────────────────────────
 @gymRouteBlueprint.route("/update/<gym_id>", methods=["PUT"])
+@login_required_dev
 def update_gym(gym_id):
     if not gym_id:
         return jsonify({"error": "You must provide a gym id to update"}), 400
@@ -41,6 +46,7 @@ def update_gym(gym_id):
 
 # ── CREATE gym ────────────────────────────────────────────────────────────────
 @gymRouteBlueprint.route("/create", methods=["POST"])
+@login_required_gym_owner
 def create_gym():
     data = request.get_json()
     if not data:
@@ -61,8 +67,10 @@ def create_gym():
         return jsonify({"error": error}), 400
     return jsonify({"gym_id": gym_id, "message": "Gym created"}), 201
 
+# Same as update, dev for now
 # ── DELETE gym ────────────────────────────────────────────────────────────────
 @gymRouteBlueprint.route("/delete/<gym_id>", methods=["DELETE"])
+@login_required_dev
 def delete_gym(gym_id):
     if not gym_id:
         return jsonify({"error": "You must provide a gym id to delete"}), 400
