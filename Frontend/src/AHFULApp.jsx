@@ -59,7 +59,7 @@ function AHFULApp() {
       // We only want to run this check once on app load, not on every route change.
       const whomstResponse = await whoami();
       if (whomstResponse.ok){
-        dispatch(authLogin(whomstResponse.user_info));
+        dispatch(authLogin(whomstResponse.data.user_info));
 
         const userSettingsResponse = await getUserSettings();
         dispatch(setSettings(userSettingsResponse));

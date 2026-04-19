@@ -91,6 +91,7 @@ def whoami():
 
         # 1. Create the response object with the user info and flags
         response = make_response(jsonify({
+            "authenticated": True,
             "message": "Session Cookie Verified & Logged with Backend.",
             "user_info": {
                 "_id": routeUserObject["_id"],
