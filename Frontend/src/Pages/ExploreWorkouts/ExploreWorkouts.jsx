@@ -51,9 +51,8 @@ export function ExploreWorkouts() {
       if (!userId) {
         throw new Error("User ID not found. Please log in to view your workouts.");
       }
-
-      const url = `http://localhost:5000/api/AHFULworkout/${userId}`;
-      const res = await fetch(url);
+      
+      const res = await fetch(`http://localhost:5000/api/AHFULworkout/${userId}`,{method: "GET",credentials: "include",});
 
       if (!res.ok) {
         let bodyText = "";
@@ -122,7 +121,7 @@ export function ExploreWorkouts() {
             continue;
           }
           try {
-            const response = await fetch(`http://localhost:5000/api/AHFULexercises/id/${id}`);
+            const response = await fetch(`http://localhost:5000/api/AHFULexercises/id/${id}`, {credentials: "include"});
 
             if (!response.ok) {
               results[id] = "Unknown Exercise";

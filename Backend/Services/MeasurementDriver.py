@@ -53,6 +53,34 @@ class MeasurementDriver:
             return None, "No fields to update"
 
         return sanitized, None
+    
+    @staticmethod
+    def verify_operation(user_id, measurement_id):
+        if (not user_id) or (not measurement_id):
+            return None, "Missing user or measurement_id"
+        
+        # Convert IDs safely
+        user_id, err = MeasurementDriver._validate_obj_id(user_id, "user_id")
+        if err:
+            return None, err
+        # Convert IDs safely
+        measurement_id, err = MeasurementDriver._validate_obj_id(measurement_id, "measurement_id")
+        if err:
+            return None, err
+        
+        user = UserObject.find_by_id(user_id)
+        if not user:
+            return None, "User not found"
+        measurement = MeasurementObject.find_by_id(measurement_id)
+        if not measurement:
+            return None, "Measurement not found"
+        
+        if user["_id"] == measurement["user_id"]:
+            return "Operation valid", None
+        elif ("Admin" in user["roles"]) or ("Developer" in user["roles"]):
+            return "Operation valid", None
+        else:
+            return None, "You must operate on your own object or have sufficient privileges"
 
     @staticmethod
     def create_measurement(user_id, data):

@@ -67,7 +67,7 @@ export function MeasurementLogger() {
 
         try {
             setLoading(true);
-            const response = await fetch(`${API_BASE}/${userId}`);
+            const response = await fetch(`${API_BASE}/${userId}`, {credentials: "include"});
 
             if (response.status === 404) {
                 setMeasurements([]);
@@ -153,6 +153,7 @@ export function MeasurementLogger() {
 
             const response = await fetch(endpoint, {
                 method,
+                credentials: "include",
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -214,7 +215,7 @@ export function MeasurementLogger() {
             try {
                 setLoading(true);
                 const response = await fetch(`${API_BASE}/delete/${id}`, {
-                    method: 'DELETE'
+                    method: 'DELETE', credentials: "include",
                 });
 
                 if (!response.ok) {

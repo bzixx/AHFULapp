@@ -1,4 +1,5 @@
 from DataModels.TokenObject import TokenObject
+from DataModels.UserObject import UserObject
 from bson import ObjectId, errors as bson_errors
 
 class TokenDriver:
@@ -8,6 +9,34 @@ class TokenDriver:
             return ObjectId(str(id)), None
         except (bson_errors.InvalidId, TypeError, ValueError):
             return None, f"Invalid {name} format; must be a 24-hex string"
+        
+    @staticmethod
+    def verify_operation(user_id, token_id):
+        if (not user_id) or (not token_id):
+            return None, "Missing user or food_id"
+        
+        # Convert IDs safely
+        user_id, err = TokenDriver._validate_obj_id(user_id, "user_id")
+        if err:
+            return None, err
+        # Convert IDs safely
+        token_id, err = TokenDriver._validate_obj_id(token_id, "token_id")
+        if err:
+            return None, err
+        
+        user = UserObject.find_by_id(user_id)
+        if not user:
+            return None, "User not found"
+        token = TokenObject.find_by_id(token_id)
+        if not token:
+            return None, "Token not found"
+        
+        if user["_id"] == token["user_id"]:
+            return "Operation valid", None
+        elif ("Admin" in user["roles"]) or ("Developer" in user["roles"]):
+            return "Operation valid", None
+        else:
+            return None, "You must operate on your own object or have sufficient privileges"
 
     @staticmethod
     def get_token_by_user(user_id):

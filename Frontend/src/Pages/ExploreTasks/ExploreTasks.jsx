@@ -33,8 +33,7 @@ export function ExploreTasks() {
         throw new Error("User ID not found. Please log in to view your tasks.");
       }
 
-      const url = `http://localhost:5000/api/AHFULtasks/user/${userId}`;
-      const res = await fetch(url);
+      const res = await fetch(`http://localhost:5000/api/AHFULtasks/user/${userId}`, {credentials: "include"});
 
       if (!res.ok) {
         let bodyText = "";
@@ -82,6 +81,7 @@ export function ExploreTasks() {
     try {
       const res = await fetch(`http://localhost:5000/api/AHFULtasks/create/${userId}`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: taskName,

@@ -11,6 +11,8 @@ class GymObject:
             gym["_id"] = str(gym["_id"])
             if "user_id" in gym:
                 gym["user_id"] = str(gym["user_id"])
+            if gym.get("owner_id"):
+                gym["owner_id"] = str(gym["owner_id"])
         return gym
 
     @staticmethod

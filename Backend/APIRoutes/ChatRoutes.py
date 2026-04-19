@@ -5,7 +5,7 @@ import character
 import asyncio
 from dotenv import load_dotenv
 load_dotenv()
-from APIRoutes.SecurityRoutes import login_required
+from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
 chatRouteBlueprint = Blueprint("chat", __name__,  url_prefix="/AHFULChat")
 
@@ -18,7 +18,7 @@ runner = InMemoryRunner(
 )
 
 @chatRouteBlueprint.route("/", methods=["POST"])
-@login_required
+@login_required_user
 async def chat():
     user_message = request.json.get("message")
 

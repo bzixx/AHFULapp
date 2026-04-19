@@ -1,16 +1,23 @@
-from flask import Blueprint, request, jsonify, redirect
+from flask import Blueprint, request, jsonify, redirect, g
 from Services.VerificationDriver import VerificationDriver
+from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
 verificationRouteBlueprint = Blueprint("verification", __name__, url_prefix="/AHFULverify")
 
 # ── VERIFY email by id ─────────────────────────────────────────────────────
 @verificationRouteBlueprint.route("/verify/email/user_id/", methods=["POST"])
+@login_required_user
 def verify_email_by_user_id():
     data = request.get_json()
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
     user_id = data.get("user_id")
+
+    # Own user request, devs or admins only
+    if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
+        return jsonify({"error": "You may only access your own data"}), 403
+
     res, err = VerificationDriver.verify_user_email(user_id)
 
     if err:
@@ -22,13 +29,19 @@ def verify_email_by_user_id():
 
 # ── VERIFY phone by id ─────────────────────────────────────────────────────
 @verificationRouteBlueprint.route("/verify/phone/user_id/", methods=["POST"])
+@login_required_user
 def verify_phone_by_user_id():
     data = request.get_json()
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
     user_id = data.get("user_id")
-    res, err = VerificationDriver.verify_user_phone_number(user_id)
+
+    # Own user request, devs or admins only
+    if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
+        return jsonify({"error": "You may only access your own data"}), 403
+    
+    res, err = VerificationDriver.verify_user_phone(user_id)
 
     if err:
         if "not found" in err.lower():
@@ -53,7 +66,7 @@ def verify_email_token(token_id, token):
         f"{front_end_base}?status=success"
     )
 
-# ── VERIFY email token─────────────────────────────────────────────────────
+# ── VERIFY phone token─────────────────────────────────────────────────────
 @verificationRouteBlueprint.route("/verify/phone/<token_id>/<token>",methods=["GET"])
 def verify_phone_token(token_id, token):
     res, err = VerificationDriver.confirm_phone_token(token_id, token)
@@ -69,8 +82,18 @@ def verify_phone_token(token_id, token):
         f"{front_end_base}?status=success"
     )
 
+# ── Start email flow for user, admin only ────────────────────────────────────────────────────────────
+@verificationRouteBlueprint.route("/email_flow/<user_id>", methods=["GET"])
+@login_required_admin
+def email_flow(user_id):
+    response, error = VerificationDriver.verify_user_email(user_id)
+    if error:
+        return jsonify({"error": error}), 404
+    return jsonify(response), 200
+
 # ── DEVERIFY email or phone by user_id ─────────────────────────────────────
 @verificationRouteBlueprint.route("/deverify/user_id/", methods=["POST"])
+@login_required_admin
 def deverify_user():
     data = request.get_json()
     if not data:
