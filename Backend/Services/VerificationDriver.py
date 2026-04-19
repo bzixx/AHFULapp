@@ -227,7 +227,7 @@ class VerificationDriver:
             return None, str(e)
         
         # Link contains token id and token text
-        link = f"http://localhost:5000/api/AHFULverify/verify/email/{response}/{token}"
+        link = f"https://www.ahful.app/api/AHFULverify/verify/email/{response}/{token}"
 
         # Send message with enable link
         msg = Message(
@@ -278,7 +278,7 @@ class VerificationDriver:
             return None, str(e)
         
         # Link contains token id and token text
-        link = f"http://localhost:5000/api/AHFULverify/verify/phone/{response}/{token}"
+        link = f"https://www.ahful.app/api/AHFULverify/verify/phone/{response}/{token}"
 
         # Send message with enable link
         msg = Message(
