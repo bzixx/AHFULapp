@@ -8,7 +8,7 @@ export async function pullExercises() {
     const metadata = list.map(e => ({
       _id: e._id,
       name: e.name,
-      targetedMuscles: e.targetedMuscles,
+      targetMuscles: e.targetMuscles,
       bodyParts: e.bodyParts,
       equipment: e.equipment,
       secondaryMuscles: e.secondaryMuscles,
