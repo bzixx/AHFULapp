@@ -95,33 +95,33 @@ function AHFULApp() {
   return (
     <>
       <Routes>
-        <Route element={<Layout/>}>
-          <Route path="/" element={<Dashboard/>}/>
-          <Route path="/Login" element={<Login/>}/>
-          <Route path="/TOS" element={<TOS/>}/>
-          <Route path="/WorkoutLogger" element={
-              <WorkoutLogger/>} />
-          <Route path="/ExploreWorkout" element={
-              <ExploreWorkouts/>}/>
-          <Route path="/FoodLog" element={
-              <FoodLog/>}/>
-          <Route path="/EmailVerification" element={
-              <VerifyEmail/>}/>
-          <Route path="/NotVerified" element={
-              <NotVerified/>}/>
-          <Route path="/AIChat" element={
-              <AIChat/>}/>
-          <Route path="/Map" element={
-              <Map/>}/>
-          <Route path="/MeasurementLogger" element={
-              <MeasurementLogger/>}/>
-          <Route path="/Profile" element={
-              <Profile/>}/>
-          <Route path="/ExploreTasks" element={
-              <ExploreTasks/>}/>
-          <Route path="/Test" element={<Test/>}/>
-        </Route>
-        <Route path="Settings" element={<Settings/>} />
+        <Route path="/" element={<Layout/>}>
+        <Route path="/" element={<Dashboard/>}/>
+        <Route path="/TOS" element={<TOS/>}/>
+        <Route path="/WorkoutLogger" element={
+            <WorkoutLogger/>} />
+        <Route path="/ExploreWorkout" element={
+            <ExploreWorkouts/>}/>
+        <Route path="/FoodLog" element={
+            <FoodLog/>}/>
+        <Route path="/EmailVerification" element={
+            <VerifyEmail/>}/>
+        <Route path="/NotVerified" element={
+            <NotVerified/>}/>
+        <Route path="/AIChat" element={
+            <AIChat/>}/>
+        <Route path="/Map" element={
+            <Map/>}/>
+        <Route path="/MeasurementLogger" element={
+            <MeasurementLogger/>}/>
+        <Route path="/Profile" element={
+            <Profile/>}/>
+        <Route path="/ExploreTasks" element={
+            <ExploreTasks/>}/>
+        <Route path="/Test" element={<Test/>}/>
+      </Route>
+      <Route path="/Login" element={<Login/>}/>
+      <Route path="Settings" element={<Settings/>} />
       </Routes>
 ``
       {tutorialActive && currentStepData && (
