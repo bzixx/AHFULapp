@@ -470,7 +470,7 @@ def test_find_gym_by_id():
 
 def test_create_delete_gym():
     # Give a valid gym_id
-    user_id = "699d0093795741a59fe13616"
+    user_id = ObjectId("699d0093795741a59fe13616")
     name = "A test Gym, you shouldnt see this"
     address = "Hell"
     type = "General"
