@@ -140,7 +140,7 @@ export function Login() {
             />
           </div>
           <div className={`scroll-down-text ${showScrollText ? 'fade-in' : ''}`}>
-            {typedText}<span className="typing-cursor">|</span>
+            {typedText}<span className="typing-cursor"></span>
           </div>
         </div>
       </div>
@@ -207,10 +207,91 @@ export function Login() {
                     Get personalized workout and nutrition advice from our AI coach.
                   </div>
                 </div>
+                <div className="section_card">
+                  <div className="section_icon">📍</div>
+                  <div className="section_name">Gym Discovery</div>
+                  <div className="section_body">
+                    Find gyms near you and connect with fitness professionals.
+                  </div>
+                </div>
+                <div className="section_card">
+                  <div className="section_icon">👨‍🏫</div>
+                  <div className="section_name">Trainer Tools</div>
+                  <div className="section_body">
+                    Personal trainers can manage clients and assign workouts.
+                  </div>
+                </div>
+                <div className="section_card">
+                  <div className="section_icon">🔔</div>
+                  <div className="section_name">Real Time Task Notifications</div>
+                  <div className="section_body">
+                    Stay on track with reminders and motivational alerts.
+                  </div>
+                </div>
               </div>
             </div>
           </section>
         </div>
+        <div className="login-dashboard-content">
+          <section id="features" className="section">
+            <div className="solo-page-container">
+              <div className="label">Who is it for?</div>
+              <div className="section-title">
+                One app, every role
+              </div>
+              <div className="section_grid">
+                <div className="section_card">
+                  <div className="section_name">Gym Member & Home Users</div>
+                  <div className="section_body">
+                    Private tracking, habit streaks, body metrics, and a customizable dashboard for your goals.
+                  </div>
+                </div>
+                <div className="section_card">
+                  <div className="section_name">Personal trainers</div>
+                  <div className="section_body">
+                    Manage clients, assign workouts, schedule sessions, and track client progress — all in one place.
+                  </div>
+                </div>
+                <div className="section_card">
+                  <div className="section_name">Gym owners</div>
+                  <div className="section_body">
+                    Create events, publish workout calendars, and promote your gym to AHFUL's growing user base.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div className="login-dashboard-content">
+          <section id="features" className="section">
+            <div className="solo-page-container">
+              <div className="label">By the numbers</div>
+              <div className="section-title">
+                Built to move with you
+              </div>
+              <div className="section_grid">
+                <div className="section_card">
+                  <div className="section_name">Two Factor Verification</div>
+                  <div className="section_body">
+                    Account security built in
+                  </div>
+                </div>
+                <div className="section_card">
+                  <div className="section_name">User Roles</div>
+                  <div className="section_body">
+                    Member, Trainer, Gym Owner, Gym Admins, Developers
+                  </div>
+                </div>
+                <div className="section_card">
+                  <div className="section_name">Always on</div>
+                  <div className="section_body">
+                    Live notifications & reminders
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div> 
         <div className="login-tos-button">
           <button onClick={() => setShowTOS(true)} className="tos-link">Terms of Service</button>
         </div>
@@ -240,7 +321,7 @@ export function Login() {
               <p>We may update these Terms from time to time. If we make material changes we will provide notice. Continued use of the Service after changes constitutes acceptance of the updated Terms.</p>
               <h2>9. Contact</h2>
               <p>If you have questions about these Terms, please contact the app owners or maintainers as described on the project repository.</p>
-              <h2>10. Contact</h2>
+              <h2>10. Contract</h2>
               <p>The Gemini API Additional Terms of Service and the Google Privacy Policy apply. Prompts and responses may be reviewed and used to train Google AI, so don't submit sensitive or personal information. Learn more about data use. Google AI models can make mistakes, so double-check responses before relying on, publishing, or otherwise using generated content.</p>
               <p className="tos-last-updated">Last updated: April 9, 2026</p>
             </div>
