@@ -73,8 +73,8 @@ export function Login() {
       }
       else {
         setStatusText(`Logged in as ${user.email}`);
-        navigate("/Login", { replace: true });
         onLoginCache();
+        navigate("/", { replace: true });
       }
     }
   }, [isAuthenticated, user, navigate]);
