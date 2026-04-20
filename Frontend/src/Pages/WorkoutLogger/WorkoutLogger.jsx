@@ -25,9 +25,12 @@ import {
   loadBodyParts,
   createExercise,
 } from "../../QueryFunctions";
+import { pullWorkouts } from "../../components/Cache/WorkoutCache/PullWorkout.jsx";
+import { pullTemplates } from "../../components/Cache/TemplateCache/PullTemplate.jsx";
+import { pullPersonalExercises } from "../../components/Cache/PersonalExerciseCache/PersonalExercise.jsx";
 
 /**
- * WorkoutLogger - Main workout tracking page
+ * Logger - Main workout tracking page
  *
  * Features:
  * - Create/manage daily workouts
@@ -42,11 +45,13 @@ import {
  * - Loads existing personal exercises for the workout
  */
 export function WorkoutLogger() {
-  // ─── Redux Auth State ─────────────────────────────────────────────────────────
+  // ─── Redux State ─────────────────────────────────────────────────────────
   const user = useSelector((state) => state.auth.user);
   const userAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const selectedDate = useSelector((state) => state.calendar.selectedDate);
-
+  const cachedWorkouts = useSelector((state) => state.pullWorkout.workouts);
+  const cachedPersonalExercises = useSelector((state) => state.pllPersonalExercise.personalExercises);
+u
   // ─── Personal Exercise State ──────────────────────────────────────────────────
   // Tracks exercises to be deleted when workout is submitted (removed from UI but need DB deletion)
   const [personalExToRemove, setPersonalExToRemove] = useState({});
@@ -267,6 +272,50 @@ export function WorkoutLogger() {
   useEffect(() => {
     fetch_exercises();
   }, []);
+  
+  // useEffect(() => {
+  //   location.reload();
+  // }, [selectedDate]);
+
+  // ─── Load Workout when selectedDate changes ─────────────────────────────────────
+  useEffect(() => {
+    if (!selectedDate) return;
+
+    const dateStr = selectedDate.slice(0, 10);
+    console.log("Loading workout for date:", dateStr);
+    console.log("Cached workouts:", cachedWorkouts);
+    console.log("Cached personal exercises:", cachedPersonalExercises);
+
+    // Find workout for selected date from Redux
+    const todaysWorkout = cachedWorkouts?.find(w => {
+      if (!w?.startTime) return false;
+      const workoutDate = new Date(w.startTime * 1000).toISOString().slice(0, 10);
+      console.log("Comparing:", workoutDate, "===", dateStr, ":", workoutDate === dateStr);
+      return workoutDate === dateStr;
+    });
+
+    console.log("Found workout:", todaysWorkout);
+
+    if (todaysWorkout) {
+      setWorkout(todaysWorkout);
+      setWorkoutId(todaysWorkout._id);
+      setWorkoutTitle(todaysWorkout.title || "");
+
+      // Load personal exercises for this workout from cache
+      const workoutPersonalExercises = cachedPersonalExercises?.filter(
+        pe => pe?.workout_id === todaysWorkout._id
+      ) || [];
+
+      console.log("Workout personal exercises:", workoutPersonalExercises);
+      setExercisesInProgressTable(workoutPersonalExercises);
+    } else {
+      // No workout for this date - reset state
+      setWorkout(null);
+      setWorkoutId("");
+      setWorkoutTitle("");
+      setExercisesInProgressTable([]);
+    }
+  }, [selectedDate, cachedWorkouts, cachedPersonalExercises]);
 
   // ─── Toggle Exercise Completion ───────────────────────────────────────────────
   const toggleCompleted = (index) => {
@@ -383,6 +432,7 @@ export function WorkoutLogger() {
       console.error("Error saving template:", err);
       alert("Failed to save template.");
     }
+    await pullPersonalExercises();
   };
 
   async function handleApplyTemplate(template) {
@@ -499,6 +549,9 @@ export function WorkoutLogger() {
     } catch (err) {
       console.error("Error submitting workout:", err);
     }
+    await pullWorkouts();
+    await pullPersonalExercises();
+    await pullTemplates();
   };
 
   // ─── Remove Exercise from Workout ─────────────────────────────────────────────
