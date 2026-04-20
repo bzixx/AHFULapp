@@ -425,7 +425,7 @@ def test_food_partial_empty_unknown_updates():
 def test_find_gym_by_id():
     # Give a valid gym_id
     oid = "699cff88400d9d43a32e924d"
-    gym, err = GymDriver.get_gym_by_id(oid)
+    gym, err = GymDriver.get_gym_by_id(oid, "699d0093795741a59fe13616")
 
     if err is not None:
         print(gym, err)
@@ -438,10 +438,11 @@ def test_find_gym_by_id():
     assert gym.get("address") == "123 Main St, Anytown, USA"
     assert gym.get("cost") == 49.99
     assert gym.get("link") == "https://examplegym.com"
+    assert gym.get("isPublic") == True
 
     # Give a bad gym_id
     bad_oid = "699cff88400d9d43a32e924"
-    gym, err = GymDriver.get_gym_by_id(bad_oid)
+    gym, err = GymDriver.get_gym_by_id(bad_oid, "699d0093795741a59fe13616")
 
     if err is not None:
         print(gym, err)
@@ -455,7 +456,7 @@ def test_find_gym_by_id():
 
     # Give an invalid gym_id
     inv_oid = "000000000000000000000000"
-    gym, err = GymDriver.get_gym_by_id(inv_oid)
+    gym, err = GymDriver.get_gym_by_id(inv_oid, "699d0093795741a59fe13616")
 
     if err is not None:
         print(gym, err)
@@ -469,6 +470,7 @@ def test_find_gym_by_id():
 
 def test_create_delete_gym():
     # Give a valid gym_id
+    user_id = ObjectId("699d0093795741a59fe13616")
     name = "A test Gym, you shouldnt see this"
     address = "Hell"
     type = "General"
@@ -477,12 +479,12 @@ def test_create_delete_gym():
     lat = 1.0
     long = 2.0
     notes = "test"
-    response_id, err = GymDriver.create_gym(name, address, type, cost, link, lat, long, notes)
+    response_id, res_err = GymDriver.create_gym(user_id, name, address, type, cost, link, lat, long, notes)
 
     print("Response: ", response_id)
 
-    if err is not None:
-        print(response_id, err)
+    if res_err is not None:
+        print(response_id, res_err)
 
     # Check if response is valid id
     try:
@@ -491,7 +493,7 @@ def test_create_delete_gym():
         assert(False)
 
     # Give created gym_id
-    gym, err = GymDriver.get_gym_by_id(response_id)
+    gym, err = GymDriver.get_gym_by_id(response_id, user_id)
 
     if err is not None:
         print(gym, err)
@@ -506,7 +508,7 @@ def test_create_delete_gym():
     assert gym.get("link") == "www.testgym.com"
 
     # Delete created gym
-    response, err = GymDriver.delete_gym(response_id)
+    response, err = GymDriver.delete_gym(response_id, user_id)
     if err is not None:
         print(response, err)
     # Assertions
@@ -516,7 +518,7 @@ def test_update_gym_roundtrip():
     gym_id = "699cff88400d9d43a32e924d"  # replace with a known existing id in your test DB
 
     # Fetch current/original state
-    original, err = GymDriver.get_gym_by_id(gym_id)
+    original, err = GymDriver.get_gym_by_id(gym_id, "699d0093795741a59fe13616")
     if err is not None:
         print("Fetch original gym failed:", err)
     assert err is None
@@ -542,7 +544,7 @@ def test_update_gym_roundtrip():
         "lng":     -91.5678,
         "notes":   "Test roundtrip"
     }
-    updated, err = GymDriver.update_gym(id=gym_id, updates=new_values)
+    updated, err = GymDriver.update_gym(gym_id, "699d0093795741a59fe13616", new_values)
     if err is not None:
         print("Update gym failed:", err)
     assert err is None
@@ -559,7 +561,7 @@ def test_update_gym_roundtrip():
     assert updated.get("notes") == new_values["notes"]
 
     # Re-fetch to confirm persistence
-    fetched_after_update, err = GymDriver.get_gym_by_id(gym_id)
+    fetched_after_update, err = GymDriver.get_gym_by_id(gym_id, "699d0093795741a59fe13616")
     if err is not None:
         print("Fetch after update failed:", err)
     assert err is None
@@ -584,7 +586,7 @@ def test_update_gym_roundtrip():
         "lng":     orig_lng,
         "notes":   orig_notes
     }
-    restored, err = GymDriver.update_gym(id=gym_id, updates=restore_payload)
+    restored, err = GymDriver.update_gym(gym_id, "699d0093795741a59fe13616", restore_payload)
     if err is not None:
         print("Restore gym failed:", err)
     assert err is None
@@ -601,7 +603,7 @@ def test_update_gym_roundtrip():
     assert restored.get("notes") == orig_notes
 
     # Re-fetch to confirm final persistence
-    fetched_after_restore, err = GymDriver.get_gym_by_id(gym_id)
+    fetched_after_restore, err = GymDriver.get_gym_by_id(gym_id, "699d0093795741a59fe13616")
     if err is not None:
         print("Fetch after restore failed:", err)
     assert err is None
@@ -621,36 +623,36 @@ def test_gym_invalid_inputs_combined():
 
     # CREATE — INVALID INPUTS
     # Missing required name/address
-    resp, err = GymDriver.create_gym("", "Address", "General", 0, "", 0, 0, "")
+    resp, err = GymDriver.create_gym("699d0093795741a59fe13616", "", "Address", "General", 0, "", 0, 0, "")
     assert resp is None
     assert err == "You are missing a name or address. Please fix, then attempt to create gym again"
 
-    resp, err = GymDriver.create_gym("Gym", "", "General", 0, "", 0, 0, "")
+    resp, err = GymDriver.create_gym("699d0093795741a59fe13616", "Gym", "", "General", 0, "", 0, 0, "")
     assert resp is None
     assert err == "You are missing a name or address. Please fix, then attempt to create gym again"
 
     # GET GYM INVALID INPUTS
     for bad in [None, "", "nothex", 123, [], {}]:
-        resp, err = GymDriver.get_gym_by_id(bad)
+        resp, err = GymDriver.get_gym_by_id(bad, "699d0093795741a59fe13616")
         assert resp is None
         assert err == "Invalid gym_id format; must be a 24-hex string" or err is not None
 
     # Valid format but not found
-    resp, err = GymDriver.get_gym_by_id("000000000000000000000000")
+    resp, err = GymDriver.get_gym_by_id("000000000000000000000000", "699d0093795741a59fe13616")
     assert resp is None
     assert err == "Gym not found"
 
     # DELETE GYM INVALID INPUTS
-    resp, err = GymDriver.delete_gym(None)
+    resp, err = GymDriver.delete_gym(None, "699d0093795741a59fe13616")
     assert resp is None
     assert err == "You must provide a gym_id to delete"
 
     for bad in ["", [], {}, 123]:
-        resp, err = GymDriver.delete_gym(bad)
+        resp, err = GymDriver.delete_gym(bad, "699d0093795741a59fe13616")
         assert resp is None
         assert err == "Invalid gym_id format; must be a 24-hex string" or "You must provide a gym_id to delete"
 
-    resp, err = GymDriver.delete_gym("000000000000000000000000")
+    resp, err = GymDriver.delete_gym("000000000000000000000000", "699d0093795741a59fe13616")
     assert resp is None
     assert err == "Gym not found or already deleted"
 
@@ -658,7 +660,7 @@ def test_gym_partial_empty_unknown_updates():
     gym_id = "699cff88400d9d43a32e924d"
 
     # Fetch original state to restore later
-    original, err = GymDriver.get_gym_by_id(gym_id)
+    original, err = GymDriver.get_gym_by_id(gym_id, "699d0093795741a59fe13616")
     assert err is None
 
     orig_values = {
@@ -673,17 +675,17 @@ def test_gym_partial_empty_unknown_updates():
 
     # PARTIAL UPDATE
     update_1 = {"name": "PartialName"}
-    updated, err = GymDriver.update_gym(gym_id, update_1)
+    updated, err = GymDriver.update_gym(gym_id, "699d0093795741a59fe13616", update_1)
     assert err is None
     assert updated["name"] == "PartialName"
 
     # EMPTY UPDATE (should error)
-    resp, err = GymDriver.update_gym(gym_id, {})
+    resp, err = GymDriver.update_gym(gym_id, "699d0093795741a59fe13616", {})
     assert resp is None
     assert err == "You must provide at least one field to update" or err == "No valid fields to update"
 
     # ONLY UNKNOWN FIELDS (should error)
-    resp, err = GymDriver.update_gym(gym_id, {"notAField": 123, "junk": True})
+    resp, err = GymDriver.update_gym(gym_id, "699d0093795741a59fe13616", {"notAField": 123, "junk": True})
     assert resp is None
     assert err == "No valid fields to update"
 
@@ -694,7 +696,7 @@ def test_gym_partial_empty_unknown_updates():
         "junk": 5,
         "invalidField": "ignore",
     }
-    updated, err = GymDriver.update_gym(gym_id, update_2)
+    updated, err = GymDriver.update_gym(gym_id, "699d0093795741a59fe13616", update_2)
     assert err is None
     assert updated["name"] == "MixedName"
     assert updated["cost"] == 999.99
@@ -702,7 +704,7 @@ def test_gym_partial_empty_unknown_updates():
     assert "invalidField" not in updated
 
     # RESTORE ORIGINAL VALUES
-    restored, err = GymDriver.update_gym(gym_id, orig_values)
+    restored, err = GymDriver.update_gym(gym_id, "699d0093795741a59fe13616", orig_values)
     assert err is None
 
     for key, val in orig_values.items():
@@ -1815,7 +1817,8 @@ def test_workout_invalid_inputs_combined():
 
     resp, err = WorkoutDriver.create_workout(valid_user_id, "000000000000000000000000", "Test", "1", "2")
     assert resp is None
-    assert err == "Gym not found"
+    # Accept either the short or more descriptive error returned by the driver
+    assert err == "Gym not found" or err == "Gym not found or inaccessible"
 
     # CREATE TEMPLATE — INVALID INPUTS
     resp, err = WorkoutDriver.create_template(None, "TestTemplate")

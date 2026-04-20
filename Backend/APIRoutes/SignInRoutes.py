@@ -26,7 +26,8 @@ def google_login():
 
     response, err = routeSignInDriver.google_login(postAuthData)
     if err:
-        return jsonify({"error": err}), 401
+        print(f"Error in google_login route: {err}")
+        return jsonify({"error": err}), 500
 
     return response
 
@@ -72,7 +73,7 @@ def whoami():
         # Validate session by user id from cookie
         routeUserObject, error = UserDriver.get_user_by_id(g.user_id)
         if not routeUserObject:
-            return jsonify({"error": "No session cookie found. 2. Please Sign in."}), 401
+            return jsonify({"authenticated": False, "error": "No session cookie found. 2. Please Sign in."}), 200
 
         # Check expiry stored on server
         foundExpiryTime = routeUserObject["last_login_expire"]
@@ -83,13 +84,14 @@ def whoami():
             foundExpiryTime = 0
 
         if currTime > foundExpiryTime:
-            return jsonify({"error": "Session expired.  Please Sign in again."}), 401
+            return jsonify({"authenticated": False, "error": "Session expired.  Please Sign in again."}), 200
 
         #Successful Auth, return user info
         retrievedUserSettings, settings_err = UserSettingsDriver.get_user_settings(g.user_id)
 
         # 1. Create the response object with the user info and flags
         response = make_response(jsonify({
+            "authenticated": True,
             "message": "Session Cookie Verified & Logged with Backend.",
             "user_info": {
                 "_id": routeUserObject["_id"],
@@ -103,6 +105,7 @@ def whoami():
 
         # 2. Set the cookie with security flags
         # We store ONLY the session/user ID here
+        #Magic Bits and session are not refreshed here. 
         response.set_cookie(
             'user_settings',        # Cookie name
             retrievedUserSettings["_id"],# Cookie value

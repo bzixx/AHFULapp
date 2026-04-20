@@ -7,7 +7,7 @@ export function AuthRouteCheck({ children }) {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   if (!isAuthenticated) {
-    return <Navigate to="/Login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   if (user?.email_verified === false) {
@@ -18,7 +18,7 @@ export function AuthRouteCheck({ children }) {
 
   if (user?.last_login_expire && user.last_login_expire < now) {
     dispatch(authLogout());
-    return <Navigate to="/Login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return children;

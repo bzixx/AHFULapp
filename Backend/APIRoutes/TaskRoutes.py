@@ -49,10 +49,11 @@ def create_task(user_id):
         return jsonify({"error": error}), 400
     return jsonify(task), 201
 
+#TODO:
 # Ensure only op on own objs? dev for now
 # Update an existing task by ID
 @taskBlueprint.route("/update/<task_id>", methods=["PUT"])
-@login_required_dev
+@login_required_user
 def update_task(task_id):
     data = request.get_json()
     if not data:

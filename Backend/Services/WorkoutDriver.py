@@ -71,9 +71,10 @@ class WorkoutDriver:
 
         # Ensure the gym exists if provided
         if gym_oid is not None:
-            gym = GymObject.find_by_id(gym_id)
+            # GymObject.find_by_id requires both gym id and the requesting user's id
+            gym = GymObject.find_by_id(gym_id, user_id)
             if not gym:
-                return None, "Gym not found"
+                return None, "Gym not found or inaccessible"
 
         workout_data = {
             "user_id": ObjectId(user_id),

@@ -1,15 +1,16 @@
 #Services & Drivers know how to implement business Logic related to the Route operations.  
 #   Intermediate between Routes and Objects.  Ensures validations and rules are applied before 
 #   Calling Objects to interact with DB
-from DataModels.GymObject import GymObject
+# from DataModels.GymObject import GymObject
 from bson import ObjectId, errors as bson_errors
+from DataModels.GymObject import GymObject
 
 # The GymDriver is responsible for implementing the business logic related to gym operations.
 #   It acts as an intermediary between the API routes and the data models, 
 #   ensuring that all necessary validations and rules are applied before interacting with 
 #   the database.
 class GymDriver:
-    # ── Helper ─────────────────────────────────────────────────────────────────
+# ── Helper ─────────────────────────────────────────────────────────────────
     @staticmethod
     def _validate_obj_id(id, name):
         try:
@@ -19,8 +20,7 @@ class GymDriver:
         
     # ── Create ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def create_gym(name, address, type, cost, link, lat, lng, notes):
-        # Validate required fields
+    def create_gym(user_id, name, address, type, cost, link, lat, lng, notes, is_public=False):
         if (not name) or (not address):
             return None, "You are missing a name or address. Please fix, then attempt to create gym again"
 
@@ -32,7 +32,9 @@ class GymDriver:
             "lat": lat,
             "lng": lng,
             "notes": notes,
-            "type": type
+            "type": type,
+            "user_id": ObjectId(user_id),
+            "isPublic": is_public
         }
 
         try:
@@ -43,22 +45,22 @@ class GymDriver:
 
     # ── Read ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def get_all_gyms():
+    def get_all_gyms(user_id):
         try:
-            gyms = GymObject.find_all()
+            gyms = GymObject.find_all(user_id)
             return gyms, None
         except Exception as e:
             return None, str(e)
 
     @staticmethod
-    def get_gym_by_id(id):
+    def get_gym_by_id(id, user_id):
         if not id:
             return None, "You must provide a gym_id to get"
         oid, err = GymDriver._validate_obj_id(id, "gym_id")
         if err:
             return None, err
         try:
-            gym = GymObject.find_by_id(id)
+            gym = GymObject.find_by_id(id, user_id)
             if not gym:
                 return None, "Gym not found"
             return gym, None
@@ -67,7 +69,7 @@ class GymDriver:
     
     # ── Update ─────────────────────────────────────────────────────────────────
     @staticmethod
-    def update_gym(id, updates):
+    def update_gym(id, user_id, updates):
         # Validate input
         if not id:
             return None, "You must provide a gym_id to update"
@@ -80,13 +82,7 @@ class GymDriver:
 
         # Allowed fields to update
         allowed_fields = {
-            "name",
-            "address",
-            "cost",
-            "link",
-            "lat",
-            "lng",
-            "notes"
+            "name", "address", "cost", "link", "lat", "lng", "notes", "isPublic"
         }
 
         # Filter only allowed fields
@@ -96,7 +92,7 @@ class GymDriver:
             return None, "No valid fields to update"
 
         try:
-            updated = GymObject.update(id, sanitized_updates)
+            updated = GymObject.update(id, user_id, sanitized_updates)
             if not updated:
                 # Could be not found or no actual changes applied (same values)
                 return None, "Gym not found or no changes applied"
@@ -106,8 +102,7 @@ class GymDriver:
         
     # ── Delete ─────────────────────────────────────────────────────────────────    
     @staticmethod
-    def delete_gym(id):
-        # Validate input
+    def delete_gym(id, user_id):
         if not id:
             return None, "You must provide a gym_id to delete"
         oid, err = GymDriver._validate_obj_id(id, "gym_id")
@@ -115,10 +110,10 @@ class GymDriver:
             return None, err
 
         try:
-            response = GymObject.delete(id)
+            response = GymObject.delete(id, user_id)
             if not response:
                 # Either not found, or already removed
-                return None, "Gym not found or already deleted"
+               return None, "Gym not found or already deleted"
             return response, None
         except Exception as e:
             return None, str(e)
