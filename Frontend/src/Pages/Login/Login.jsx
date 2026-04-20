@@ -144,9 +144,6 @@ export function Login() {
           </div>
         </div>
       </div>
-      <div className="login-tos-button">
-        <button onClick={() => setShowTOS(true)} className="tos-link">Terms of Service</button>
-      </div>
       <div className="login-dashboard-content">
           <section className="section">
             <div className="solo-page-container">
@@ -161,7 +158,7 @@ export function Login() {
                 <StreakCounter count={3} type="workout" loading={false} />
                 <StreakCounter count={5} type="food" loading={false} />
               </div>
-              <div>
+              <div className="login-dashboard-cta">
                 <a href="#features" className="secondary-cta">
                   Learn More
                 </a>
