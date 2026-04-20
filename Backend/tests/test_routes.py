@@ -438,7 +438,7 @@ def test_find_gym_by_id():
     assert gym.get("address") == "123 Main St, Anytown, USA"
     assert gym.get("cost") == 49.99
     assert gym.get("link") == "https://examplegym.com"
-    assert gym.get("isPublic") == "://examplegym.com"
+    assert gym.get("isPublic") == True
 
     # Give a bad gym_id
     bad_oid = "699cff88400d9d43a32e924"
