@@ -207,7 +207,7 @@ export function ExploreWorkouts() {
         {/* Left Column: Workout List */}
         <div className="explore-left">
           {/* Error Message */}
-          {error && <div className="explore-error">Error: {error}</div>}
+          {error && <div className="explore-error">No Workouts currently saved! Check out the Workout Logger to create a Workout!</div>}
 
           {!error && (
             <div className="exercise-list">

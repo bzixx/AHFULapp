@@ -1,5 +1,5 @@
 import {  useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { WorkoutLogger } from "./Pages/WorkoutLogger/WorkoutLogger.jsx";
 import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
@@ -32,6 +32,7 @@ function AHFULApp() {
   const theme = useSelector((state) => state.setting.theme);
   const userData = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     isActive: tutorialActive,
@@ -56,11 +57,35 @@ function AHFULApp() {
   useEffect(() => {
     const checkCookies = async () => {
       // We only want to run this check once on app load, not on every route change.
-      let whomstResponse = await whoami();
-      dispatch(authLogin(whomstResponse.user_info));
+      const whomstResponse = await whoami();
+      const path = window.location.pathname || '/';
 
-      let userSettingsResponse = await getUserSettings();
-      dispatch(setSettings(userSettingsResponse));
+      // If whoami fails to return (network or missing cookies),
+      // don't force a redirect when the user is already on the public
+      // root path ('/'). But if they're trying to visit any other
+      // route, send them to the Login page.
+      if (!whomstResponse) {
+        if (path === '/' || path === '/TOS') {
+          // allow browsing the public dashboard/root without forcing login
+          return;
+        }
+
+        navigate('/Login');
+        return;
+      }
+
+      if (whomstResponse.ok){
+        dispatch(authLogin(whomstResponse.data.user_info));
+
+        const userSettingsResponse = await getUserSettings();
+        dispatch(setSettings(userSettingsResponse));
+      }else{
+        if (path === '/' || path === '/TOS') {
+          // allow browsing the public dashboard/root without forcing login
+          return;
+        }
+        navigate('/Login');
+      }
     }
 
     checkCookies();
@@ -75,41 +100,25 @@ function AHFULApp() {
           <Route path="/Login" element={<Login/>}/>
           <Route path="/TOS" element={<TOS/>}/>
           <Route path="/WorkoutLogger" element={
-            <AuthRouteCheck>
-              <WorkoutLogger/>
-            </AuthRouteCheck>} />
+              <WorkoutLogger/>} />
           <Route path="/ExploreWorkout" element={
-            <AuthRouteCheck>
-              <ExploreWorkouts/>
-            </AuthRouteCheck>}/>
+              <ExploreWorkouts/>}/>
           <Route path="/FoodLog" element={
-            <AuthRouteCheck>
-              <FoodLog/>
-            </AuthRouteCheck>}/>
+              <FoodLog/>}/>
           <Route path="/EmailVerification" element={
               <VerifyEmail/>}/>
           <Route path="/NotVerified" element={
               <NotVerified/>}/>
           <Route path="/AIChat" element={
-            <AuthRouteCheck>
-              <AIChat/>
-            </AuthRouteCheck>}/>
+              <AIChat/>}/>
           <Route path="/Map" element={
-            <AuthRouteCheck>
-              <Map/>
-            </AuthRouteCheck>}/>
+              <Map/>}/>
           <Route path="/MeasurementLogger" element={
-            <AuthRouteCheck>
-              <MeasurementLogger/>
-            </AuthRouteCheck>}/>
+              <MeasurementLogger/>}/>
           <Route path="/Profile" element={
-            <AuthRouteCheck>
-              <Profile/>
-            </AuthRouteCheck>}/>
+              <Profile/>}/>
           <Route path="/ExploreTasks" element={
-            <AuthRouteCheck>
-              <ExploreTasks/>
-            </AuthRouteCheck>}/>
+              <ExploreTasks/>}/>
           <Route path="/Test" element={<Test/>}/>
         </Route>
         <Route path="Settings" element={<Settings/>} />

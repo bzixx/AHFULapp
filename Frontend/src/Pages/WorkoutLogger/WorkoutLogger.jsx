@@ -14,6 +14,7 @@ import {
   fetchWorkoutById,
   fetchPersonalExercises,
   fetchExerciseById,
+  fetchAllGyms,
   createWorkout,
   updateWorkout,
   createPersonalExercise,
@@ -85,6 +86,31 @@ export function WorkoutLogger() {
     useState(null);
   // New workout name (for creation)
   const [newWorkoutName, setNewWorkoutName] = useState("");
+  // Available gyms and selected gym for new workouts
+  const [availableGyms, setAvailableGyms] = useState([]);
+  const [selectedGymId, setSelectedGymId] = useState("");
+
+  // Load gyms for the select dropdown
+  useEffect(() => {
+    let mounted = true;
+    async function loadGyms() {
+      try {
+        const list = await fetchAllGyms();
+        if (!mounted) return;
+        setAvailableGyms(list || []);
+        // default to first gym or user's home gym if available
+        if (list && list.length > 0) {
+          const home = user?.settings?.homeGymId;
+          const foundHome = home ? list.find((g) => g._id === home) : null;
+          setSelectedGymId(foundHome ? foundHome._id : list[0]._id);
+        }
+      } catch (err) {
+        console.error("Failed to load gyms for workout picker:", err);
+      }
+    }
+    loadGyms();
+    return () => (mounted = false);
+  }, [user]);
 
   // ─── Timer State ─────────────────────────────────────────────────────────────
   const [isRunning, setIsRunning] = useState(false);
@@ -598,7 +624,8 @@ export function WorkoutLogger() {
       today.setHours(0, 0, 0, 0);
       const startUnix = Math.floor(today.getTime() / 1000);
 
-      const gymId = "69af3c3e94310c6e29840229"; // your current default
+  // Use selected gym (or fall back to user's home gym if available)
+  const gymId = selectedGymId || (user?.settings?.homeGymId || "") || "";
 
       const payload = {
         endTime: startUnix,
@@ -725,7 +752,7 @@ export function WorkoutLogger() {
     }
 
     getTemplates();
-  }, [user._id]);
+  }, []);
 
   // ─── Loading State ────────────────────────────────────────────────────────────
   if (workoutLoading) {
@@ -1376,6 +1403,23 @@ export function WorkoutLogger() {
                 value={newWorkoutName}
                 onChange={(e) => setNewWorkoutName(e.target.value)}
               />
+              <div style={{ marginTop: 8 }}>
+                <label style={{ display: "block", fontSize: 12, marginBottom: 6 }}>
+                  Gym (optional)
+                </label>
+                <select
+                  value={selectedGymId}
+                  onChange={(e) => setSelectedGymId(e.target.value)}
+                  style={{ width: "100%", padding: "8px 10px", borderRadius: 6 }}
+                >
+                  <option value="">None / No Gym</option>
+                  {availableGyms.map((g) => (
+                    <option key={g._id} value={g._id}>
+                      {g.name || `${g.address || "Unnamed"} (${g._id.slice(0, 6)})`}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <button
                 className="create-workout-button"
                 onClick={handleCreateWorkout}

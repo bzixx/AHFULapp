@@ -147,9 +147,6 @@ export async function handle_logout() {
 
   //Try to Get LocalStorage Cookie for data
   try {
-    let storedUserData = localStorage.getItem("user_data");
-    let parsedData = JSON.parse(storedUserData);
-
     // POST response Object to BACKEND API ROUTE for processing.
     const backendResponse = await fetch(backendPOSTURL, {
       method: "POST",
@@ -158,7 +155,6 @@ export async function handle_logout() {
       credentials: "include",
     });
 
-    localStorage.removeItem("user_data");
     //TODO: UPDATE REDUX
     //setIsLoggedIn(false);
     console.log("AHFUL Logout Completed successfully.");
@@ -214,15 +210,12 @@ export async function whoami() {
       credentials: 'include'
     });
 
-    if (backendVerificationResponse.ok) {
-      const data = await backendVerificationResponse.json();
-      return data;
-    } else if (backendVerificationResponse.status === 401) {
-      console.log("Please Login. ")
+    const data = await backendVerificationResponse.json();
+
+    if (data.authenticated) {
+      return { ok: true, data };
     } else {
-      throw new Error(
-        `Session validation failed: ${backendVerificationResponse.status} ${backendVerificationResponse.statusText}`,
-      );
+      return { ok: false, error: data.error };
     }
   } catch (err) {
     console.error("Query Function Session validation failed:", err);
@@ -313,7 +306,7 @@ export async function reverseGeocode(lat, lng) {
   try {
     const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`;
     const res = await fetch(url, {
-      headers: { "User-Agent": "AHFULApp/1.0" },credentials: 'include',
+      headers: { "User-Agent": "AHFULApp/1.0" },
     });
     if (!res.ok) {
       throw new Error(`Geocoding API returned ${res.status}`);
@@ -362,6 +355,66 @@ export async function fetchGym(gymId) {
     return null;
   }
 }
+export async function fetchAllGyms() {
+  try {
+    const res = await fetch("https://www.ahful.app/api/AHFULgyms", {
+      credentials: "include"
+    });
+    if (!res.ok) {
+      let bodyText = "";
+      try { bodyText = await res.text(); } catch (e) { /* ignore */ }
+      throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
+    }
+    const data = await res.json();
+    let list = [];
+    if (Array.isArray(data)) { list = data; }
+    else if (data && Array.isArray(data.data)) { list = data.data; }
+    else if (data && Array.isArray(data.results)) { list = data.results; }
+    else { list = []; }
+    return list;
+  } catch (err) {
+    console.error("fetchAllGyms error:", err);
+    const friendly = err && err.name ? `${err.name}: ${err.message}` : String(err);
+    throw new Error(friendly || "Unknown error");
+  }
+}
+
+export async function createGym(gymData) {
+  try {
+    const res = await fetch("https://www.ahful.app/api/AHFULgyms/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(gymData),
+      credentials: "include"
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      return { error: data.error || `Server returned ${res.status}` };
+    }
+    return { success: true, data };
+  } catch (err) {
+    console.error("createGym error:", err);
+    return { error: err.message || "Failed to create gym" };
+  }
+}
+
+export async function deleteGym(gymId) {
+  try {
+    const res = await fetch(`https://www.ahful.app/api/AHFULgyms/delete/${gymId}`, {
+      method: "DELETE",
+      credentials: "include"
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`Failed to delete gym: ${res.status} ${err}`);
+    }
+    return { success: true };
+  } catch (err) {
+    console.error("deleteGym error:", err);
+    return { error: err.message || "Failed to delete gym" };
+  }
+}
+
 
 // ── Exercise Functions ─────────────────────────────────────────────────────────
 

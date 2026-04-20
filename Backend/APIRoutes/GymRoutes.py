@@ -1,4 +1,5 @@
-from flask import Blueprint, request, jsonify
+from bson import ObjectId
+from flask import Blueprint, request, jsonify, g
 from Services.GymDriver import GymDriver
 from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
@@ -8,7 +9,7 @@ gymRouteBlueprint = Blueprint("gym", __name__, url_prefix="/AHFULgyms")
 @gymRouteBlueprint.route("/", methods=["GET"])
 @login_required_user
 def get_all_gyms():
-    gyms, error = GymDriver.get_all_gyms()
+    gyms, error = GymDriver.get_all_gyms(g.user_id)
     if error:
         return jsonify({"error": error}), 500
     return gyms, 200
@@ -17,7 +18,7 @@ def get_all_gyms():
 @gymRouteBlueprint.route("/<gym_id>", methods=["GET"])
 @login_required_user
 def get_gym(gym_id):
-    gym, error = GymDriver.get_gym_by_id(gym_id)
+    gym, error = GymDriver.get_gym_by_id(gym_id, g.user_id)
     if error:
         return jsonify({"error": error}), 404
     return jsonify(gym), 200
@@ -34,7 +35,7 @@ def update_gym(gym_id):
     if not data or not isinstance(data, dict):
         return jsonify({"error": "You must provide a JSON body with at least one field to update"}), 400
 
-    updated, error = GymDriver.update_gym(id=gym_id, updates=data)
+    updated, error = GymDriver.update_gym(id=gym_id, user_id=g.user_id, updates=data)
 
     if error:
         err_lower = error.lower()
@@ -53,14 +54,16 @@ def create_gym():
         return jsonify({"error": "No data provided"}), 400
 
     gym_id, error = GymDriver.create_gym(
+        user_id=ObjectId(g.user_id),
         name=data.get("name"),
         address=data.get("address"),
         type=data.get("type"),
-        cost=data.get("cost"),
+        cost=float(data.get("cost")),
         link=data.get("link"),
         lat=data.get("lat"),
         lng=data.get("lng"),
         notes=data.get("notes"),
+        is_public=False,
     )
     
     if error:
@@ -75,7 +78,7 @@ def delete_gym(gym_id):
     if not gym_id:
         return jsonify({"error": "You must provide a gym id to delete"}), 400
 
-    response, error = GymDriver.delete_gym(gym_id)
+    response, error = GymDriver.delete_gym(gym_id, g.user_id)
     if error:
         return jsonify({"error": error}), 400
     return jsonify({"message": "Gym deleted", "gym_id": response}), 200

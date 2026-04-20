@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./Map.css";
 import "../../siteStyles.css";
 
@@ -7,7 +7,7 @@ import "leaflet/dist/leaflet.css";
 
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import L from "leaflet";
-import { reverseGeocode, forwardGeocode } from "../../QueryFunctions";
+import { reverseGeocode, forwardGeocode, fetchAllGyms, createGym, deleteGym } from "../../QueryFunctions";
 
 // Fix marker icon paths for bundlers (Vite/webpack). Importing the images returns
 // a resolved URL which Leaflet can use when creating the default icon.
@@ -38,52 +38,18 @@ export function Map() {
   const [addressLocked, setAddressLocked] = useState(false);
 
   const fetchGyms = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      // Use a relative path so the dev server proxy (if configured) will forward to backend.
-      const res = await fetch("https://www.ahful.app/api/AHFULgyms", {credentials: "include"});
-
-      if (!res.ok) {
-        // Provide a clearer error including body text when possible
-        let bodyText = "";
-        try {
-          bodyText = await res.text();
-        } catch (e) {
-          /* ignore */
-        }
-        throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
-      }
-
-      const data = await res.json();
-
-      // Helpful debug output (visible in browser console) when something odd happens
-      console.debug("/AHFULgyms response:", data);
-
-      // Normalize common envelope patterns to an array
-      let list = [];
-      if (Array.isArray(data)) {
-        list = data;
-      } else if (data && Array.isArray(data.data)) {
-        list = data.data;
-      } else if (data && Array.isArray(data.results)) {
-        list = data.results;
-      } else {
-        // Not an array; keep empty but log for debugging
-        console.warn("Unexpected /AHFULgyms response shape, expected array or {data: [...]}:", data);
-        list = [];
-      }
-
+      const list = await fetchAllGyms();
       setSavedGyms(list);
     } catch (err) {
-      // Log the full error for debugging
       console.error("Failed to fetch gyms:", err);
-      // Some Error objects (DOMExceptions) have a name and message
-      const friendly = err && err.name ? `${err.name}: ${err.message}` : String(err);
-      setError(friendly || "Unknown error");
+      setError(err.message || "Unknown error");
       setSavedGyms([]);
     } finally {
       setLoading(false);
     }
-
   };
 
 
@@ -150,12 +116,14 @@ export function Map() {
     }
   }
 
-  function saveGym(e) {
-    //post to backend to actually save to database
+  async function saveGym(e) {
     e.preventDefault();
 
-    const BACKENDPOST_URL = "https://www.ahful.app/api/AHFULgyms/create";
-    
+    if (form.cost && !/^[0-9.]+$/.test(form.cost)) {
+      alert('Cost must be a valid number');
+      return;
+    }
+
     const gymData = {
       name: form.name,
       address: form.address,
@@ -167,43 +135,29 @@ export function Map() {
       notes: form.notes,
     };
 
-    console.log(JSON.stringify(gymData));
-    
-    fetch(BACKENDPOST_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(gymData),
-    })
-      .then((res) => {
-        return res.json().then((data) => {
-          console.log("Status:", res.status);
-          console.log("Response body:", data);
-          if (res.ok) {
-            fetchGyms();
-          }
-        });
-      })
-      .catch((error) => {
-        console.error("Error saving gym:", error);
-      });
+    try {
+      const result = await createGym(gymData);
+      if (result.success) {
+        fetchGyms();
+      } else {
+        console.error("Error saving gym:", result.error);
+      }
+    } catch (error) {
+      console.error("Error saving gym:", error);
+    }
   }
 
-  function removeGym(_id) {
-    const BACKENDDELETE_URL = (`https://www.ahful.app/api/AHFULgyms/delete/${_id}`, {credentials: "include"});
-
-    fetch(BACKENDDELETE_URL, {
-      method: "DELETE",
-    })
-      .then((res) => {
-        if (res.ok) {
-          fetchGyms(); // Refresh the gym list after deletion
-        } else {
-          console.error("Failed to delete gym:", res.statusText);
-        }
-      })
-      .catch((error) => {
-        console.error("Error deleting gym:", error);
-      });
+  async function removeGym(_id) {
+    try {
+      const result = await deleteGym(_id);
+      if (result.success) {
+        fetchGyms();
+      } else {
+        console.error("Failed to delete gym:", result.error);
+      }
+    } catch (error) {
+      console.error("Error deleting gym:", error);
+    }
   }
 
   // Component to capture map clicks and report coordinates
