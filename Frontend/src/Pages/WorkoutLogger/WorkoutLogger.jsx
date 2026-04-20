@@ -25,8 +25,9 @@ import {
   createExercise,
 } from "../../QueryFunctions";
 
+
 /**
- * WorkoutLogger - Main workout tracking page
+ * Logger - Main workout tracking page
  *
  * Features:
  * - Create/manage daily workouts
@@ -230,6 +231,10 @@ export function WorkoutLogger() {
   useEffect(() => {
     fetch_exercises();
   }, []);
+  
+  useEffect(() => {
+    location.reload();
+  }, [selectedDate]);
 
   // ─── Toggle Exercise Completion ───────────────────────────────────────────────
   const toggleCompleted = (index) => {
@@ -462,6 +467,8 @@ export function WorkoutLogger() {
     } catch (err) {
       console.error("Error submitting workout:", err);
     }
+
+
   };
 
   // ─── Remove Exercise from Workout ─────────────────────────────────────────────
