@@ -425,7 +425,7 @@ def test_food_partial_empty_unknown_updates():
 def test_find_gym_by_id():
     # Give a valid gym_id
     oid = "699cff88400d9d43a32e924d"
-    gym, err = GymDriver.get_gym_by_id(oid, "699d0093795741a59fe13616")
+    gym, err = GymDriver.get_gym_by_id(oid, "699cff88400d9d43a32e924d")
 
     if err is not None:
         print(gym, err)
@@ -438,6 +438,7 @@ def test_find_gym_by_id():
     assert gym.get("address") == "123 Main St, Anytown, USA"
     assert gym.get("cost") == 49.99
     assert gym.get("link") == "https://examplegym.com"
+    assert gym.get("isPublic") == True
 
     # Give a bad gym_id
     bad_oid = "699cff88400d9d43a32e924"
