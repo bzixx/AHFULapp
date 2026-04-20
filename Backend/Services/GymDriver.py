@@ -33,7 +33,7 @@ class GymDriver:
             "lng": lng,
             "notes": notes,
             "type": type,
-            "user_id": user_id,
+            "user_id": ObjectId(user_id),
             "isPublic": is_public
         }
 

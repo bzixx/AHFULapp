@@ -425,7 +425,7 @@ def test_food_partial_empty_unknown_updates():
 def test_find_gym_by_id():
     # Give a valid gym_id
     oid = "699cff88400d9d43a32e924d"
-    gym, err = GymDriver.get_gym_by_id(oid, "699cff88400d9d43a32e924d")
+    gym, err = GymDriver.get_gym_by_id(oid, "699d0093795741a59fe13616")
 
     if err is not None:
         print(gym, err)
@@ -438,7 +438,7 @@ def test_find_gym_by_id():
     assert gym.get("address") == "123 Main St, Anytown, USA"
     assert gym.get("cost") == 49.99
     assert gym.get("link") == "https://examplegym.com"
-    assert gym.get("isPublic") == True
+    assert gym.get("isPublic") == "://examplegym.com"
 
     # Give a bad gym_id
     bad_oid = "699cff88400d9d43a32e924"
@@ -479,12 +479,12 @@ def test_create_delete_gym():
     lat = 1.0
     long = 2.0
     notes = "test"
-    response_id, err = GymDriver.create_gym(user_id, name, address, type, cost, link, lat, long, notes)
+    response_id, res_err = GymDriver.create_gym(user_id, name, address, type, cost, link, lat, long, notes)
 
     print("Response: ", response_id)
 
-    if err is not None:
-        print(response_id, err)
+    if res_err is not None:
+        print(response_id, res_err)
 
     # Check if response is valid id
     try:
