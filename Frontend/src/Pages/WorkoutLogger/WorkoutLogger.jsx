@@ -50,8 +50,8 @@ export function WorkoutLogger() {
   const userAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const selectedDate = useSelector((state) => state.calendar.selectedDate);
   const cachedWorkouts = useSelector((state) => state.pullWorkout.workouts);
-  const cachedPersonalExercises = useSelector((state) => state.pllPersonalExercise.personalExercises);
-u
+  const cachedPersonalExercises = useSelector((state) => state.pullPersonalExercise.personalExercises);
+
   // ─── Personal Exercise State ──────────────────────────────────────────────────
   // Tracks exercises to be deleted when workout is submitted (removed from UI but need DB deletion)
   const [personalExToRemove, setPersonalExToRemove] = useState({});
