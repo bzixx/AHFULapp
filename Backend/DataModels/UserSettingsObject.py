@@ -16,7 +16,8 @@ DEFAULT_USER_SETTINGS = {
     "dateOfBirth": "",
     "availableEquipment": "basic",
     "notifications": "false",
-    "tutorialComplete": False
+    "tutorialComplete": False,
+    "homeGymId": ""
 }
 
 class UserSettingsObject:

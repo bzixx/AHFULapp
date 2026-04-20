@@ -67,10 +67,11 @@ def get_more_exercises():
         return jsonify({"error": error}), 500
     return jsonify(metadata), 200
 
+#TODO: NEED TO VERIFY USER OPERATES ON OWN 
 # Add owner to custom exercises, only return ownerless + self owned exercises. dev for now
 # ── GET single exercise ───────────────────────────────────────────────────────
 @exerciseRouteBlueprint.route("/id/<exercise_id>", methods=["GET"])
-@login_required_dev
+@login_required_user
 def get_exercise(exercise_id):
     exercise, error = ExerciseDriver.get_exercise_by_id(exercise_id)
     if error:

@@ -1,21 +1,31 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+export const settingsInitialState = {
+  theme: "light",
+  units: "Imperial",
+  goals: "Maintain",
+  shame: "Off",
+  equipment: [],
+  gender: "",
+  pronouns: "",
+  dateOfBirth: "",
+  locations: [],
+  tutorialComplete: false,
+  timezone: "EST",
+  // backend keys
+  _id: "",
+  availableEquipment: "",
+  created_at: "",
+  homeGymId: "",
+  notifications: "",
+  shameLevel: "",
+  updated_at: "",
+  user_id: "",
+}
 
 export const SettingSlice = createSlice({
     name: "setting",
-    initialState: {
-        theme: "light", // default to light theme
-        units: "Imperial",
-        goals: "Maintain",
-        shame: "Off",
-        equipment: [],
-        gender: "",
-        pronouns: "",
-        dateOfBirth: "",
-        locations: [],
-        tutorialComplete: false,
-        timezone: "EST",
-    },
+    initialState: settingsInitialState,  // reference it here
     reducers: {
     updateSetting: (state, action) => {
         const { key, value } = action.payload;
@@ -27,5 +37,5 @@ export const SettingSlice = createSlice({
     }
 });
 
-export const { updateSetting, setSettings } = SettingSlice.actions;
+export const { updateSetting, setSettings, settingsLogout } = SettingSlice.actions;
 export default SettingSlice.reducer;
