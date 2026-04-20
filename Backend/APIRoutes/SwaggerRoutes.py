@@ -2989,11 +2989,11 @@ swaggerConfig = {
       }
     },
     
-    "/AHFULauth/email_flow/{user_id}": {
+    "/AHFULverify/email_flow/{user_id}": {
       "get": {
         "summary": "Trigger email verification flow (Admin)",
         "description": "Initiates or verifies the email verification flow for a specified user. Requires admin authentication.",
-        "tags": ["Auth"],
+        "tags": ["Verify"],
         "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
         "parameters": [
           {
