@@ -24,7 +24,9 @@ import {
   loadBodyParts,
   createExercise,
 } from "../../QueryFunctions";
-
+import { WorkoutCache } from "../../components/Cache/WorkoutCach/PullWorkout.jsx";
+import { TemplateCache } from "../../components/Cache/TemplateCache/PullTemplate.jsx";
+import { PersonalExerciseCache } from "../../components/Cache/PersonalExerciseCache/PullPersonalExercise.jsx";
 
 /**
  * Logger - Main workout tracking page
@@ -362,6 +364,7 @@ export function WorkoutLogger() {
       console.error("Error saving template:", err);
       alert("Failed to save template.");
     }
+    PersonalExerciseCache();
   };
 
   async function handleApplyTemplate(template) {
@@ -478,8 +481,9 @@ export function WorkoutLogger() {
     } catch (err) {
       console.error("Error submitting workout:", err);
     }
-
-
+    WorkoutCache();
+    PersonalExerciseCache();
+    TemplateCache();
   };
 
   // ─── Remove Exercise from Workout ─────────────────────────────────────────────
