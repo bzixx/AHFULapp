@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import "./TodayFoodChart.css";
 
-const API_BASE = "http://localhost:5000/AHFULfood";
+const API_BASE = "http://localhost:5000/api/AHFULfood";
 
 const COLORS = ["#4f46e5", "#10b981", "#f59e0b", "#ef4444"];
 
@@ -35,7 +35,7 @@ export function TodayFoodChart() {
         return;
       }
 
-      fetch(`${API_BASE}/${userId}`)
+      fetch(`${API_BASE}/${userId}`, {credentials: "include"})
         .then(async (res) => {
           if (!res.ok) return [];
           return res.json();

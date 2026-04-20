@@ -16,8 +16,16 @@ Custom Auth Context component for persistent authentication
         #Use Ctrl+C to terminate development process.
         ```
 
+1(a). **Use ESLint to Check Imports**:
+    - In vscode, open a terminal (ctrl + ~) 
+        Navigate to the Frontend folder then run the following: 
+        
+        ```bash
+        npx eslint "src/**/*.{js,jsx,ts,tsx}"
+        ```
+
 2. **Access the Application**:
-    - Open your browser and navigate to `http://localhost:5173`.
+    - Open your browser and navigate to `https://ahful.app`.
 
 ### CSS Information
   -Start with theme pages under Stylesheets/Themes/
@@ -62,7 +70,7 @@ frontend/
     ├── Layout.jsx                                  --- Navigation Setup and Template for Mobile
     ├── Main.jsx                                    --- Main App Entry Point, Holds Redux and Router Wrappers
     ├── QueryFunctions.js                           --- Frontend Wide Accessible functions (Fetches)
-    ├── SiteStyles.css                              --- Frontend Wide Accessible Style Sheet
+    ├── siteStyles.css                              --- Frontend Wide Accessible Style Sheet
     ├── Store.jsx                                   --- Redux Store
     ├── components/                                 ### Page Components Dir
     │   ├── Calendar/                               ### Calendar Component Dir

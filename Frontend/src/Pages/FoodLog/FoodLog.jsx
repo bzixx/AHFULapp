@@ -3,9 +3,9 @@
 import React, {useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import "./FoodLog.css";
-import "../../SiteStyles.css";
+import "../../siteStyles.css";
 
-const API_BASE = "http://localhost:5000/AHFULfood";
+const API_BASE = "http://localhost:5000/api/AHFULfood";
 
 export function FoodLog() {
     const user = useSelector((state) => state.auth.user);
@@ -82,7 +82,7 @@ export function FoodLog() {
 
         setUsda_searching(true);
         try {
-            const res = await fetch(`${API_BASE}/search/usda?q=${encodeURIComponent(query)}&limit=8`);
+            const res = await fetch(`${API_BASE}/search/usda?q=${encodeURIComponent(query)}&limit=8`, {credentials: "include"});
             if (!res.ok) {
                 const errData = await res.json().catch(() => ({}));
                 console.error("USDA Search error:", errData.error);
@@ -139,7 +139,7 @@ export function FoodLog() {
     useEffect(() => {
         if (!userId) return;
         setLoading(true);
-        fetch(`${API_BASE}/${userId}`)
+        fetch(`${API_BASE}/${userId}`, {credentials: "include"})
             .then(async (res) => {
                 if (res.status === 404) {
                     return [];
@@ -228,6 +228,7 @@ export function FoodLog() {
         try {
             const res = await fetch(`${API_BASE}/create`, {
                 method: "POST",
+                credentials: "include",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     user_id: userId,
@@ -247,7 +248,7 @@ export function FoodLog() {
 
             const result = await res.json();
             // Fetch the newly created food from the server to get the full document
-            const newRes = await fetch(`${API_BASE}/id/${result.food_id}`);
+            const newRes = await fetch(`${API_BASE}/id/${result.food_id}`, {credentials: "include"});
             if (newRes.ok) {
                 const newDoc = await newRes.json();
                 setFoods((prev) => [...prev, normalizeFood(newDoc)]);
@@ -266,7 +267,7 @@ export function FoodLog() {
 
     const removeFood = async (id) => {
         try {
-            const res = await fetch(`${API_BASE}/delete/${id}`, { method: "DELETE" });
+            const res = await fetch(`${API_BASE}/delete/${id}`, { method: "DELETE" }, {credentials: "include"});
             if (!res.ok) {
                 console.error("Failed to delete food");
                 return;
@@ -302,6 +303,7 @@ export function FoodLog() {
         try {
             const res = await fetch(`${API_BASE}/update/${editingId}`, {
                 method: "PUT",
+                credentials: "include",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     name: foodName,

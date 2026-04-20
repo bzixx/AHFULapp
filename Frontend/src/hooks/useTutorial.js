@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { setSettings } from '../Pages/Settings/SettingsSlice';
-import { getUserSettings, updateUserSettings } from '../QueryFunctions';
+import { updateUserSettings } from '../QueryFunctions';
 
 /**
  * TUTORIAL_STEPS - Configuration for the onboarding tutorial flow
@@ -28,21 +27,39 @@ export const TUTORIAL_STEPS = [
     highlightSelector: '#add-exercises-btn'
   },
   {
+    page: '/AIChat',
+    title: 'Chat with AI',
+    message: 'Ask questions and get instant answers from our AI chatbot.',
+    highlightSelector: '#ai-text-input'
+  },
+  {
+    page: '/ExploreWorkout',
+    title: 'Explore Workouts',
+    message: 'Visit Previous workouts and view their details. Our Heat Map visualization helps you identify trends and patterns in your workout history.',
+    highlightSelector: '#heatmap-container'
+  },
+  {
     page: '/FoodLog',
     title: 'Log Your Nutrition',
     message: 'Track your meals and nutrition to stay on top of your diet.',
     highlightSelector: null
   },
   {
-    page: '/MeasurementLogger',
-    title: 'Record Measurements',
-    message: 'Keep track of your body measurements to monitor your progress.',
-    highlightSelector: null
-  },
-  {
     page: '/ExploreTasks',
     title: 'Manage Tasks',
     message: 'Stay organized with your daily tasks and goals.',
+    highlightSelector: null
+  },
+  {
+    page: '/Map',
+    title: 'Gyms & Maps',
+    message: 'Find gyms and workout locations near you. Add your own by clicking on the map and we will find the nearest address!',
+    highlightSelector: null
+  },
+  {
+    page: '/MeasurementLogger',
+    title: 'Record Measurements',
+    message: 'Keep track of your body measurements to monitor your progress.',
     highlightSelector: null
   },
   {
@@ -66,7 +83,6 @@ export const TUTORIAL_STEPS = [
  * @returns {Object} Tutorial state and control functions
  */
 export function useTutorial() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   
   // Redux state selectors
@@ -104,6 +120,10 @@ export function useTutorial() {
     }
   }, [navigate]);
 
+  const email_redirect = useCallback(() => {
+    navigate("/NotVerified");
+  }, [navigate]);
+
   /**
    * endTutorial - Handles tutorial exit (via skip or completion)
    * 
@@ -123,27 +143,11 @@ export function useTutorial() {
         // Step 1: Update backend with tutorial completion status
         await updateUserSettings(user._id, { tutorialComplete: true });
         
-        // Step 2: Fetch fresh settings from backend to sync Redux state
-        const freshSettings = await getUserSettings(user._id);
-        
-        // Step 3: Update Redux store with all fresh settings
-        dispatch(setSettings({
-          theme: freshSettings.displayMode,
-          units: freshSettings.units,
-          goals: freshSettings.goals ,
-          shame: freshSettings.shameLevel ,
-          equipment: freshSettings.availableEquipment,
-          gender: freshSettings.gender,
-          pronouns: freshSettings.pronouns,
-          dateOfBirth: freshSettings.dateOfBirth,
-          locations: freshSettings.locations,
-          tutorialComplete: true
-        }));
       } catch (err) {
         console.error("Failed to update tutorial status:", err);
       }
     }
-  }, [user, dispatch]);
+  }, [user]);
 
   /**
    * skipTutorial - Called when user clicks "Skip Tutorial" button
@@ -193,9 +197,14 @@ export function useTutorial() {
     if (hasAutoStarted.current) return;
     
     if ((tutorialComplete === false || tutorialComplete === undefined) && user && user._id) {
-      startTutorial();
+      if (user.email_verified) {
+        startTutorial();
+      }
+      else {
+        email_redirect();
+      }
     }
-  }, [user, tutorialComplete]);
+  }, []);
 
   /**
    * Returned interface for components using this hook

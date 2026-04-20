@@ -2,7 +2,6 @@
 #   Intermediate between Routes and Objects.  Ensures validations and rules are applied before
 #   Calling Objects to interact with DB
 from DataModels.UserObject import UserObject
-from Services.EmailDriver import EmailDriver
 from datetime import datetime
 from bson import ObjectId, errors as bson_errors
 
@@ -28,6 +27,34 @@ class UserDriver:
             return ObjectId(str(id)), None
         except (bson_errors.InvalidId, TypeError, ValueError):
             return None, f"Invalid {name} format; must be a 24-hex string"
+                
+    @staticmethod
+    def verify_operation(user_id_op, user_id_on):
+        if (not user_id_op) or (not user_id_on):
+            return None, "Missing user_id_op or user_id_on"
+        
+        # Convert IDs safely
+        user_id_op, err = UserDriver._validate_obj_id(user_id_op, "user_id_op")
+        if err:
+            return None, err
+        # Convert IDs safely
+        user_id_on, err = UserDriver._validate_obj_id(user_id_on, "user_id_on")
+        if err:
+            return None, err
+        
+        user_op = UserObject.find_by_id(user_id_op)
+        if not user_op:
+            return None, "user_op not found"
+        user_on = UserObject.find_by_id(user_id_on)
+        if not user_on:
+            return None, "user_on not found"
+        
+        if user_op["_id"] == user_on["user_id"]:
+            return "Operation valid", None
+        elif ("Admin" in user_op["roles"]) or ("Developer" in user_op["roles"]):
+            return "Operation valid", None
+        else:
+            return None, "You must operate on your own object or have sufficient privileges"
 
     # ── Create ─────────────────────────────────────────────────────────────────
 
@@ -257,58 +284,7 @@ class UserDriver:
         except Exception as e:
             return None, f"Failed to deactivate user: {e}"
 
-    # ── Untested ─────────────────────────────────────────────────────────────────
-    @staticmethod
-    def verify_email(user_id):
-        # Validate inputs
-        if not user_id:
-            return None, "user_id is required"
-
-        # Validate ObjectIds
-        oid, err = UserDriver._validate_obj_id(user_id, "user_id")
-        if err:
-            return None, err
-        
-        try:
-            user = UserObject.find_by_id(user_id)
-            if not user:
-                return None, "User not found"
-            else:
-                if user.get("email_verified"):
-                    return "User already verified", None
-                if not user.get("email"):
-                    return None, "User lacks email"
-                
-                response = EmailDriver.verify_email(user_id, user.get("email"))
-                return response, None
-        except Exception as e:
-            return None, str(e)
-        
-    @staticmethod
-    def verify_phone_number(user_id):
-        # Validate inputs
-        if not user_id:
-            return None, "user_id is required"
-
-        # Validate ObjectIds
-        oid, err = UserDriver._validate_obj_id(user_id, "user_id")
-        if err:
-            return None, err
-        
-        try:
-            user = UserObject.find_by_id(user_id)
-            if not user:
-                return None, "User not found"
-            else:
-                if user.get("phone_verified"):
-                    return "User already verified", None
-                
-                if not user.get("phone"):
-                    return None, "User lacks phone number"
-
-        except Exception as e:
-            return None, str(e)
-
+    # ── Untested ────────────────────────────────────────────────────────────────
     @staticmethod
     def create_user(userJSONObject):
         UserObject.create(userJSONObject)

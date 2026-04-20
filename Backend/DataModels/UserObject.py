@@ -83,11 +83,59 @@ class UserObject:
         updated = userCollection.find_one({"_id": ObjectId(user_id)})
         return UserObject._serialize(updated)
     
+    @staticmethod
+    def enable_verification(user_id, type):
+        if type == "email":
+            result = userCollection.update_one(
+                {"_id": ObjectId(user_id)},
+                {
+                    "$set": {"email_verified": True}
+                }
+            )
+        else :
+            result = userCollection.update_one(
+                {"_id": ObjectId(user_id)},
+                {
+                    "$set": {"phone_verified": True}
+                }
+            )
+
+        if result.matched_count == 0:
+            return None
+        # return updated document
+        updated = userCollection.find_one({"_id": ObjectId(user_id)})
+        return UserObject._serialize(updated)
+    
+    @staticmethod
+    def disable_verification(user_id, type):
+        if type == "email":
+            result = userCollection.update_one(
+                {"_id": ObjectId(user_id)},
+                {
+                    "$set": {"email_verified": False}
+                }
+            )
+        else :
+            result = userCollection.update_one(
+                {"_id": ObjectId(user_id)},
+                {
+                    "$set": {"phone_verified": False}
+                }
+            )
+
+        if result.matched_count == 0:
+            return None
+        # return updated document
+        updated = userCollection.find_one({"_id": ObjectId(user_id)})
+        return UserObject._serialize(updated)
+    
     # ── Untested ──────────────────────────────────────────────────────────────────
     #Not tested
     @staticmethod
     def create(user_data):
         user_data["roles"] = ["User"]
+        user_data["email_verified"] = False
+        user_data["phone_verified"] = False
         result = userCollection.insert_one(user_data)
         return str(result.inserted_id)
     

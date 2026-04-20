@@ -1,6 +1,6 @@
-export function initCompanionAI({ textInput, sendButton, characterImage, voiceSelect, status }) {
-    const openMouthImg = '../../../images/char-mouth-open.png';
-    const closedMouthImg = '../../../images/char-mouth-closed.png';
+export function initCompanionAI({ textInput, sendButton, characterImage, voiceSelect, status, responsesContainer, onResponseAdded }) {
+    const openMouthImg = 'https://www.ahful.app/images/char-mouth-open.png';
+    const closedMouthImg = 'https://www.ahful.app/images/char-mouth-closed.png';
 
     let voices = [];
     let lipSyncInterval;
@@ -94,21 +94,28 @@ export function initCompanionAI({ textInput, sendButton, characterImage, voiceSe
         if (status) status.textContent = "Thinking...";
 
         try {
-            const response = await fetch('http://127.0.0.1:5000/AHFULChat/', {
+            const response = await fetch('http://localhost:5000/api/AHFULChat/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message })
+                body: JSON.stringify({ message }),
+                credentials: 'include' // include cookies for session management
             });
 
             if (!response.ok) throw new Error('Network response was not ok');
             const data = await response.json();
-            typewriter(data.response, status);
+            if (onResponseAdded) {
+                onResponseAdded(data.response);
+            }
             speak(data.response);
+            if (status) status.textContent = "Ask me something!";
         } catch (error) {
             console.error('Error:', error);
             const errorMessage = 'Sorry, something went wrong. Please try again.';
-            typewriter(errorMessage, status);
+            if (onResponseAdded) {
+                onResponseAdded(errorMessage);
+            }
             speak(errorMessage);
+            if (status) status.textContent = "Ask me something!";
         }
     };
 

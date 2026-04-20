@@ -1,33 +1,38 @@
-import React, { useEffect, useState } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import {  useEffect } from "react";
+import { Routes, Route } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { WorkoutLogger } from "./Pages/WorkoutLogger/WorkoutLogger.jsx";
 import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
 import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
 import { Dashboard } from "./Pages/Dashboard/Dashboard.jsx";
 import { Login } from "./Pages/Login/Login.jsx";
+import { VerifyEmail } from "./Pages/Verification/VerifyEmail.jsx";
+import { NotVerified } from "./Pages/Verification/NotVerified.jsx";
 import { Map } from "./Pages/Map/Map.jsx";
 import { AIChat } from "./Pages/AIChat/AIChat.jsx";
 import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
 import { Profile } from "./Pages/Profile/Profile.jsx";
 import { TOS } from "./Pages/TOS/TOS.jsx";
-import { Layout } from "./layout.jsx"
+import { Layout } from "./Layout.jsx"
 import { AuthRouteCheck } from "./AuthRouteCheck.jsx";
 import { Settings } from "./Pages/Settings/Settings.jsx";
 import { ExploreTasks } from "./Pages/ExploreTasks/ExploreTasks.jsx";
+import { Test } from "./Pages/Test/Test.jsx";
 import { useTutorial } from "./hooks/useTutorial.js";
 import { TutorialOverlay } from "./components/Tutorial/TutorialOverlay.jsx";
-import "./SiteStyles.css";
+import "./siteStyles.css";
 import "./Stylesheets/Themes/Lightmode.css";
 import "./Stylesheets/Themes/Darkmode.css";
+import { whoami, getUserSettings } from "./QueryFunctions.js";
+import { setSettings } from './Pages/Settings/SettingsSlice.jsx';
+import { authLogin } from "./Pages/Login/AuthSlice.jsx";
 
 
 function AHFULApp() {
-    // Example: detect page changes and refresh a value when the route changes.
-  // This component is rendered inside a <Router> (see `main.jsx`), so useLocation works here.
-  const location = useLocation();
-  const [pageChangeCount, setPageChangeCount] = useState(0);
   const theme = useSelector((state) => state.setting.theme);
+  const userData = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
+
   const {
     isActive: tutorialActive,
     currentStep,
@@ -40,18 +45,27 @@ function AHFULApp() {
 
   // Apply theme globally - runs on all pages
   useEffect(() => {
-    if (theme === "Dark") {
+    if (theme === "dark") {
       document.body.classList.add("dark");
     } else {
       document.body.classList.remove("dark");
     }
-  }, [theme]);
+  }, [theme]);  
 
+  // Apply WhoAmI Check globally - runs on all pages
   useEffect(() => {
-        // increment a counter every time the pathname changes — used for debugging route changes
-    setPageChangeCount((c) => c + 1);
-    // console.log("route changed to", location.pathname);
-  }, [location.pathname]);
+    const checkCookies = async () => {
+      // We only want to run this check once on app load, not on every route change.
+      let whomstResponse = await whoami();
+      dispatch(authLogin(whomstResponse.user_info));
+
+      let userSettingsResponse = await getUserSettings();
+      dispatch(setSettings(userSettingsResponse));
+    }
+
+    checkCookies();
+  }, []);  
+
 
   return (
     <>
@@ -67,12 +81,15 @@ function AHFULApp() {
           <Route path="/ExploreWorkout" element={
             <AuthRouteCheck>
               <ExploreWorkouts/>
-            </AuthRouteCheck>
-            }/>
+            </AuthRouteCheck>}/>
           <Route path="/FoodLog" element={
             <AuthRouteCheck>
               <FoodLog/>
             </AuthRouteCheck>}/>
+          <Route path="/EmailVerification" element={
+              <VerifyEmail/>}/>
+          <Route path="/NotVerified" element={
+              <NotVerified/>}/>
           <Route path="/AIChat" element={
             <AuthRouteCheck>
               <AIChat/>
@@ -93,9 +110,11 @@ function AHFULApp() {
             <AuthRouteCheck>
               <ExploreTasks/>
             </AuthRouteCheck>}/>
+          <Route path="/Test" element={<Test/>}/>
         </Route>
         <Route path="Settings" element={<Settings/>} />
       </Routes>
+``
       {tutorialActive && currentStepData && (
         <TutorialOverlay
           step={currentStep}
@@ -108,8 +127,10 @@ function AHFULApp() {
           onComplete={completeTutorial}
         />
       )}
+
     </>
   );
+
 }
 
 export default AHFULApp

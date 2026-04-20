@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Map.css";
-import "../../SiteStyles.css";
+import "../../siteStyles.css";
 
 // Leaflet styles are required for tiles/controls to render correctly
 import "leaflet/dist/leaflet.css";
@@ -40,7 +40,7 @@ export function Map() {
   const fetchGyms = async () => {
     try {
       // Use a relative path so the dev server proxy (if configured) will forward to backend.
-      const res = await fetch("http://localhost:5000/AHFULgyms");
+      const res = await fetch("http://localhost:5000/api/AHFULgyms", {credentials: "include"});
 
       if (!res.ok) {
         // Provide a clearer error including body text when possible
@@ -154,7 +154,7 @@ export function Map() {
     //post to backend to actually save to database
     e.preventDefault();
 
-    const BACKENDPOST_URL = "http://localhost:5000/AHFULgyms/create";
+    const BACKENDPOST_URL = "http://localhost:5000/api/AHFULgyms/create";
     
     const gymData = {
       name: form.name,
@@ -189,7 +189,7 @@ export function Map() {
   }
 
   function removeGym(_id) {
-    const BACKENDDELETE_URL = `http://localhost:5000/AHFULgyms/delete/${_id}`;
+    const BACKENDDELETE_URL = (`http://localhost:5000/api/AHFULgyms/delete/${_id}`, {credentials: "include"});
 
     fetch(BACKENDDELETE_URL, {
       method: "DELETE",

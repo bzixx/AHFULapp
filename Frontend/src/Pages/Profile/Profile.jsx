@@ -1,51 +1,70 @@
 import "./Profile.css";
-import "../../SiteStyles.css";
+import "../../siteStyles.css";
 
 import { useDispatch, useSelector } from "react-redux";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { authLogout } from "../Login/AuthSlice";
 import {registerService} from "../../firebase.js";
-import {handle_logout} from "../../QueryFunctions.js"
+import {handle_logout,updateUserSettings} from "../../QueryFunctions.js"
 import {ProfileSettingsButton} from "../../components/ProfileSettings/ProfileSettingsButton"
 import { useNavigate } from "react-router-dom";
 
 export function Profile() {
-  const [userData, setUserData] = useState({name: "", email: "", picture: ""});
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [bio, setBio] = useState("");
   const [isEditingBio, setIsEditingBio] = useState(false);
 
-  const reduxUserData = useSelector((state) => state.auth.user);
-
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const UserData = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    try {
-      setUserData({
-        name: reduxUserData?.name,
-        email: reduxUserData?.email,
-        picture: reduxUserData?.picture,
-      });
-
-      //TODO: LOAD BIO FROM BACKEND OR DB INSTEAD. 
-      const savedBio = localStorage.getItem("user_bio");
-      if (savedBio) setBio(savedBio);
-    } catch (e) {
-      console.error("Error loading user data:", e);
+    if (UserData?.user_bio) {
+      setBio(UserData.user_bio);
     }
-  }, []);
+  }, [UserData]);
 
-  const handleSaveBio = () => {
+  const handleSaveBio = async () => {
     //TODO: STORE OR ACTUALL SAVE THIS
-    localStorage.setItem("user_bio", bio);
+    await updateUserSettings(UserData._id, { user_bio: bio });
     setIsEditingBio(false);
   };
 
   const handleEnableNotifications = () => {
-    if (reduxUserData?._id) {
-      registerService(reduxUserData._id);
+    if (UserData?._id) {
+      registerService(UserData._id);
     } else {
       console.error("User ID not available");
+    }
+  };
+  
+  const handleVerifyEmail = async () => {
+    try {
+      const verifyUserEmailResponse = await fetch(
+        "http://localhost:5000/api/AHFULverify/verify/email/user_id/",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_id: UserData._id,
+          }),
+        }
+      );
+
+      const verifyEmailData = await verifyUserEmailResponse.json(); // parse JSON
+      console.log("Response JSON:", verifyEmailData);
+
+      if (!verifyUserEmailResponse.ok) {
+        alert(verifyEmailData.error || "Failed to send verification email");
+        return;
+      }
+
+      alert(verifyEmailData.message);
+    } catch (err) {
+      console.error("Verify email failed:", err);
+      alert("Network error sending verification email");
     }
   };
 
@@ -63,12 +82,12 @@ export function Profile() {
         <div className="profile-picture-section">
           <img
             className="profile-picture"
-            src={userData.picture || "https://ui-avatars.com/api/?name=AH&background=c3cfe2&color=333&size=150"}
-            alt={`${userData.name}'s profile`}
+            src={UserData.picture || "https://ui-avatars.com/api/?name=AH&background=c3cfe2&color=333&size=150"}
+            alt={`${UserData.name}'s profile`}
             referrerPolicy="no-referrer"
           />
-          <h2 className="profile-name">{userData.name}</h2>
-          <p className="profile-email">{userData.email}</p>
+          <h2 className="profile-name">{UserData.name}</h2>
+          <p className="profile-email">{UserData.email}</p>
         </div>
 
           {/* Bio Section */}
@@ -103,22 +122,33 @@ export function Profile() {
         {/* Notifications */}
         <div className="profile-notifications-section">
           <button
-            className="profile-notifications-btn"
+            className="profile-page-btn"
             onClick={handleEnableNotifications}
           >
             Enable Push Notifications
           </button>
-        </div>
+          <br />
 
-        {/* Terms of Service (visible from profile when logged in) */}
-        <div className="profile-tos-section">
           <button
-            className="profile-tos-btn"
+            className="profile-page-btn"
             onClick={() => navigate("/TOS")}
           >
             Terms of Service
           </button>
         </div>
+
+
+        {/* Manually verify user email*/}
+        {UserData?.email_verified === false && (
+          <div className="profile-email-verify-section">
+            <button
+              className="profile-email-verify-btn"
+              onClick={handleVerifyEmail}
+            >
+              Verify Email
+            </button>
+          </div>
+        )}
 
         {/* Logout */}
         <div className="profile-logout-section">

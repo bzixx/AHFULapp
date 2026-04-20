@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import "./ExploreWorkouts.css";
-import "../../SiteStyles.css";
+import "../../siteStyles.css";
 import { CalendarButton } from "../../components/CalendarButton/CalendarButton.jsx";
 import { HeatMap } from "../../components/HeatMap/HeatMap";
 import { WorkoutChart } from "../../components/WorkoutChart/WorkoutChart";
@@ -27,7 +27,6 @@ export function ExploreWorkouts() {
   const [workouts, setWorkouts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [showAll, setShowAll] = useState(true);
   const [selectedWorkout, setSelectedWorkout] = useState(null);
   const [personalExercises, setPersonalExercises] = useState([]);
   const [personalExercisesLoading, setPersonalExercisesLoading] = useState(false);
@@ -49,12 +48,11 @@ export function ExploreWorkouts() {
     setLoading(true);
     setError(null);
     try {
-      let url = "http://localhost:5000/AHFULworkout";
-      if (!showAll && userId) {
-        url = `http://localhost:5000/AHFULworkout/${userId}`;
+      if (!userId) {
+        throw new Error("User ID not found. Please log in to view your workouts.");
       }
-
-      const res = await fetch(url);
+      
+      const res = await fetch(`http://localhost:5000/api/AHFULworkout/${userId}`,{method: "GET",credentials: "include",});
 
       if (!res.ok) {
         let bodyText = "";
@@ -81,7 +79,7 @@ export function ExploreWorkouts() {
   // ─── Load Workouts on Mount ───────────────────────────────────────────────────
   useEffect(() => {
     fetchExercises();
-  }, [showAll, userId]);
+  }, [userId]);
 
   // ─── Fetch Personal Exercises when Workout is Selected ────────────────────────
   useEffect(() => {
@@ -104,7 +102,7 @@ export function ExploreWorkouts() {
 
   // ─── Fetch Exercise Names for Personal Exercises ───────────────────────────────
   useEffect(() => {
-    const exerciseIds = personalExercises.map((ex) => ex.exerciseId);
+    const exerciseIds = personalExercises.map((ex) => ex.exercise_id);
 
     if (exerciseIds.length === 0) return;
 
@@ -123,7 +121,7 @@ export function ExploreWorkouts() {
             continue;
           }
           try {
-            const response = await fetch(`http://localhost:5000/AHFULexercises/id/${id}`);
+            const response = await fetch(`http://localhost:5000/api/AHFULexercises/id/${id}`, {credentials: "include"});
 
             if (!response.ok) {
               results[id] = "Unknown Exercise";
@@ -198,21 +196,6 @@ export function ExploreWorkouts() {
       <header className="explore-header">
         <h1>Explore Workouts</h1>
         <div className="header-controls">
-          <div className="toggle-container">
-            <button
-              className={`toggle-btn ${showAll ? 'active' : ''}`}
-              onClick={() => setShowAll(true)}
-            >
-              All Workouts
-            </button>
-            <button
-              className={`toggle-btn ${!showAll ? 'active' : ''}`}
-              onClick={() => setShowAll(false)}
-              disabled={!userId}
-            >
-              My Workouts
-            </button>
-          </div>
           <button onClick={fetchExercises} disabled={loading} className="refresh-btn">
             {loading ? "Refreshing..." : "Refresh"}
           </button>
@@ -234,7 +217,7 @@ export function ExploreWorkouts() {
               ) : workouts.length === 0 ? (
                 /* Empty State - no workouts yet */
                 <div className="explore-empty">
-                  {showAll ? "No workouts found." : "No workouts found. Start a workout to see it here!"}
+                  {"No workouts found. Start a workout to see it here!"}
                 </div>
               ) : (
                 /* Workout List */
@@ -386,7 +369,7 @@ export function ExploreWorkouts() {
                       <div key={exercise._id || idx} className="workout-exercise-item">
                         <div className="exercise-item-header">
                           <span className="exercise-item-number">
-                            {exerciseNames[exercise.exerciseId] || "Unknown Exercise"}
+                            {exerciseNames[exercise.exercise_id] || "Unknown Exercise"}
                           </span>
                         </div>
                         {exercise.weight && (
@@ -395,22 +378,28 @@ export function ExploreWorkouts() {
                             <span>{exercise.weight} lbs</span>
                           </div>
                         )}
-                        {exercise.sets && (
+                        {exercise.sets != null && exercise.sets !== undefined && exercise.sets !== "" && exercise.sets !== 0 && (
                           <div className="exercise-item-detail">
                             <span className="exercise-detail-label">Sets:</span>{" "}
                             <span>{exercise.sets}</span>
                           </div>
                         )}
-                        {exercise.reps && (
+                        {exercise.reps != null && exercise.reps !== undefined && exercise.reps !== "" && exercise.reps !== 0 && (
                           <div className="exercise-item-detail">
                             <span className="exercise-detail-label">Reps:</span>{" "}
                             <span>{exercise.reps}</span>
                           </div>
                         )}
-                        {exercise.duration && exercise.duration > 0 && (
+                        {exercise.duration != null && exercise.duration !== undefined && Number(exercise.duration) > 0 && (
                           <div className="exercise-item-detail">
                             <span className="exercise-detail-label">Duration:</span>{" "}
                             <span>{exercise.duration}s</span>
+                          </div>
+                        )}
+                        {exercise.distance != null && exercise.distance !== undefined && Number(exercise.distance) > 0 && (
+                          <div className="exercise-item-detail">
+                            <span className="exercise-detail-label">Distance:</span>{" "}
+                            <span>{exercise.distance}m</span>
                           </div>
                         )}
                         {(exercise.complete || exercise.completed) && (

@@ -15,7 +15,8 @@ DEFAULT_USER_SETTINGS = {
     "pronouns": "",
     "dateOfBirth": "",
     "availableEquipment": "basic",
-    "notifications": "false"
+    "notifications": "false",
+    "tutorialComplete": False
 }
 
 class UserSettingsObject:

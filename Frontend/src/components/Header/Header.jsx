@@ -8,16 +8,16 @@ import "../../Stylesheets/Themes/Darkmode.css";
 
 export function Header({ onMenuToggle = null, isMenuOpen = false }) {
   const dispatch = useDispatch();
-  const theme = useSelector((state) => state.setting?.theme || "Light");
+  const theme = useSelector((state) => state.setting?.theme || "light");
   const user = useSelector((state) => state.auth.user);
 
   const handleThemeToggle = () => {
-    const newTheme = theme === "Light" ? "Dark" : "Light";
+    const newTheme = theme === "light" ? "dark" : "light";
     dispatch(updateSetting({ key: "theme", value: newTheme }));
     
     if (user && user._id) {
       updateUserSettings(user._id, { 
-        displayMode: newTheme === "Dark" ? "dark" : "light" 
+        theme: newTheme === "dark" ? "dark" : "light" 
       }).catch(err => console.error("Failed to save theme:", err));
     }
   };
@@ -39,9 +39,9 @@ export function Header({ onMenuToggle = null, isMenuOpen = false }) {
           className="theme-toggle"
           onClick={handleThemeToggle}
           aria-label="Toggle theme"
-          title={`Switch to ${theme === "Light" ? "Dark" : "Light"} mode`}
+          title={`Switch to ${theme === "light" ? "Dark" : "Light"} mode`}
         >
-          {theme === "Light" ? "🌙" : "☀️"}
+          {theme === "light" ? "🌙" : "☀️"}
         </button>
         <NavLink to="/Profile" className="profile-link">Profile</NavLink>
       </div>

@@ -13,6 +13,8 @@ class GymObject:
         """Convert MongoDB document to JSON-safe dict."""
         if gym:
             gym["_id"] = str(gym["_id"])
+            if gym.get("owner_id"):
+                gym["owner_id"] = str(gym["owner_id"])
         return gym
 
     # ── Create ─────────────────────────────────────────────────────────────────

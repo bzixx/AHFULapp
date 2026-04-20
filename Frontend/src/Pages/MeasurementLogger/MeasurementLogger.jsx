@@ -2,15 +2,16 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import "./MeasurementLogger.css";
-import "../../SiteStyles.css";
+import "../../siteStyles.css";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const API_BASE = "http://localhost:5000/AHFULmeasurements";
+const API_BASE = "http://localhost:5000/api/AHFULmeasurements";
 
 export function MeasurementLogger() {
     const user = useSelector((state) => state.auth.user);
     const [measurements, setMeasurements] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [isMetric, setIsMetric] = useState(false);
     const [formData, setFormData] = useState({
         chest: "",
         waist: "",
@@ -35,14 +36,22 @@ export function MeasurementLogger() {
 
     const userId = getUserId();
 
+    // Conversion functions
+    const inchesToCm = (inches) => inches ? (inches * 2.54).toFixed(1) : "";
+    const cmToInches = (cm) => cm ? (cm / 2.54).toFixed(1) : "";
+    const lbsToKg = (lbs) => lbs ? (lbs * 0.453592).toFixed(1) : "";
+    const kgToLbs = (kg) => kg ? (kg / 0.453592).toFixed(1) : "";
+
     const measurements_to_track = [
-        {key: "chest", label: "Chest (inches)"},
-        {key: "waist", label: "Waist (inches)"},
-        {key: "hips", label: "Hips (inches)"},
-        {key: "thighs", label: "Thighs (inches)"},
-        {key: "arms", label: "Arms (inches)"},
-        {key: "weight", label: "Weight (lbs)"}
+        {key: "chest", labelImperial: "Chest (inches)", labelMetric: "Chest (cm)"},
+        {key: "waist", labelImperial: "Waist (inches)", labelMetric: "Waist (cm)"},
+        {key: "hips", labelImperial: "Hips (inches)", labelMetric: "Hips (cm)"},
+        {key: "thighs", labelImperial: "Thighs (inches)", labelMetric: "Thighs (cm)"},
+        {key: "arms", labelImperial: "Arms (inches)", labelMetric: "Arms (cm)"},
+        {key: "weight", labelImperial: "Weight (lbs)", labelMetric: "Weight (kg)"}
     ];
+
+    const getLabel = (measurement) => isMetric ? measurement.labelMetric : measurement.labelImperial;
 
     // Load measurements on component mount
     useEffect(() => {
@@ -58,7 +67,7 @@ export function MeasurementLogger() {
 
         try {
             setLoading(true);
-            const response = await fetch(`${API_BASE}/${userId}`);
+            const response = await fetch(`${API_BASE}/${userId}`, {credentials: "include"});
 
             if (response.status === 404) {
                 setMeasurements([]);
@@ -102,7 +111,7 @@ export function MeasurementLogger() {
             return;
         }
 
-        
+
         const hasAtLeastOne = measurements_to_track.some(
         m =>
             formData[m.key] !== "" &&
@@ -117,9 +126,22 @@ export function MeasurementLogger() {
         try {
             setLoading(true);
 
+            // Convert metric to imperial if needed (backend stores everything in imperial)
+            const convertedFormData = { ...formData };
+            if (isMetric) {
+                // Convert dimensions from cm to inches
+                if (formData.chest) convertedFormData.chest = parseFloat(cmToInches(formData.chest));
+                if (formData.waist) convertedFormData.waist = parseFloat(cmToInches(formData.waist));
+                if (formData.hips) convertedFormData.hips = parseFloat(cmToInches(formData.hips));
+                if (formData.thighs) convertedFormData.thighs = parseFloat(cmToInches(formData.thighs));
+                if (formData.arms) convertedFormData.arms = parseFloat(cmToInches(formData.arms));
+                // Convert weight from kg to lbs
+                if (formData.weight) convertedFormData.weight = parseFloat(kgToLbs(formData.weight));
+            }
+
             const payload = {
                 user_id: userId,
-                ...formData,
+                ...convertedFormData,
                 date: Math.floor(new Date(formData.date).getTime() / 1000)
             };
 
@@ -131,6 +153,7 @@ export function MeasurementLogger() {
 
             const response = await fetch(endpoint, {
                 method,
+                credentials: "include",
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -166,15 +189,22 @@ export function MeasurementLogger() {
     };
 
     const handleEditMeasurement = (measurement) => {
-        setFormData({
-            chest: measurement.chest?.toString() ?? "",
-            waist: measurement.waist?.toString() ?? "",
-            hips: measurement.hips?.toString() ?? "",
-            thighs: measurement.thighs?.toString() ?? "",
-            arms: measurement.arms?.toString() ?? "",
-            weight: measurement.weight?.toString() ?? "",
-            date: new Date(measurement.date * 1000).toISOString().split("T")[0]
+        // Convert imperial values to metric if in metric mode
+        const displayChest = isMetric && measurement.chest ? parseFloat(inchesToCm(measurement.chest)) : measurement.chest ?? "";
+        const displayWaist = isMetric && measurement.waist ? parseFloat(inchesToCm(measurement.waist)) : measurement.waist ?? "";
+        const displayHips = isMetric && measurement.hips ? parseFloat(inchesToCm(measurement.hips)) : measurement.hips ?? "";
+        const displayThighs = isMetric && measurement.thighs ? parseFloat(inchesToCm(measurement.thighs)) : measurement.thighs ?? "";
+        const displayArms = isMetric && measurement.arms ? parseFloat(inchesToCm(measurement.arms)) : measurement.arms ?? "";
+        const displayWeight = isMetric && measurement.weight ? parseFloat(lbsToKg(measurement.weight)) : measurement.weight ?? "";
 
+        setFormData({
+            chest: displayChest.toString(),
+            waist: displayWaist.toString(),
+            hips: displayHips.toString(),
+            thighs: displayThighs.toString(),
+            arms: displayArms.toString(),
+            weight: displayWeight.toString(),
+            date: new Date(measurement.date * 1000).toISOString().split("T")[0]
         });
         setEditingId(measurement._id);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -185,7 +215,7 @@ export function MeasurementLogger() {
             try {
                 setLoading(true);
                 const response = await fetch(`${API_BASE}/delete/${id}`, {
-                    method: 'DELETE'
+                    method: 'DELETE', credentials: "include",
                 });
 
                 if (!response.ok) {
@@ -222,17 +252,33 @@ export function MeasurementLogger() {
         .sort((a, b) => a.date - b.date)
         .map((measurement) => ({
             date: new Date(measurement.date * 1000).toLocaleDateString(),
-            chest: measurement.chest ?? null,
-            waist: measurement.waist ?? null,
-            hips: measurement.hips ?? null,
-            thighs: measurement.thighs ?? null,
-            arms: measurement.arms ?? null,
-            weight: measurement.weight ?? null
+            chest: isMetric ? (measurement.chest ? parseFloat(inchesToCm(measurement.chest)) : null) : measurement.chest ?? null,
+            waist: isMetric ? (measurement.waist ? parseFloat(inchesToCm(measurement.waist)) : null) : measurement.waist ?? null,
+            hips: isMetric ? (measurement.hips ? parseFloat(inchesToCm(measurement.hips)) : null) : measurement.hips ?? null,
+            thighs: isMetric ? (measurement.thighs ? parseFloat(inchesToCm(measurement.thighs)) : null) : measurement.thighs ?? null,
+            arms: isMetric ? (measurement.arms ? parseFloat(inchesToCm(measurement.arms)) : null) : measurement.arms ?? null,
+            weight: isMetric ? (measurement.weight ? parseFloat(lbsToKg(measurement.weight)) : null) : measurement.weight ?? null
         }));
 
     return (
         <div className="measurement-container">
-            <h1>Measurement Logger</h1>
+            <div className="measurement-header">
+                <h1>Measurement Logger</h1>
+                <div className="unit-toggle">
+                    <button
+                        className={`unit-btn ${!isMetric ? 'active' : ''}`}
+                        onClick={() => setIsMetric(false)}
+                    >
+                        Imperial
+                    </button>
+                    <button
+                        className={`unit-btn ${isMetric ? 'active' : ''}`}
+                        onClick={() => setIsMetric(true)}
+                    >
+                        Metric
+                    </button>
+                </div>
+            </div>
 
             <div className="measurement-content">
                 {/* Add/Edit Measurement Form */}
@@ -255,7 +301,7 @@ export function MeasurementLogger() {
 
                         {measurements_to_track.map(measurement => (
                             <div key={measurement.key} className="form-group">
-                                <label htmlFor={measurement.key}>{measurement.label}</label>
+                                <label htmlFor={measurement.key}>{getLabel(measurement)}</label>
                                 <input
                                     id={measurement.key}
                                     type="number"
@@ -263,7 +309,7 @@ export function MeasurementLogger() {
                                     step="0.1"
                                     value={formData[measurement.key]}
                                     onChange={handleInputChange}
-                                    placeholder={`Enter ${measurement.label.toLowerCase()}`}
+                                    placeholder={`Enter ${getLabel(measurement).toLowerCase()}`}
                                     disabled={loading}
                                 />
                             </div>
@@ -307,7 +353,7 @@ export function MeasurementLogger() {
                                         <YAxis />
                                         <Tooltip />
                                         <Legend />
-                                        <Line type="monotone" dataKey="weight" stroke="#8884d8" name="Weight (lbs)" />
+                                        <Line type="monotone" dataKey="weight" stroke="#8884d8" name={isMetric ? "Weight (kg)" : "Weight (lbs)"} />
                                     </LineChart>
                                 </ResponsiveContainer>
                             </div>
@@ -324,11 +370,11 @@ export function MeasurementLogger() {
                                         <YAxis />
                                         <Tooltip />
                                         <Legend />
-                                        <Line type="monotone" dataKey="chest" stroke="#82ca9d" name="Chest (in)" />
-                                        <Line type="monotone" dataKey="waist" stroke="#ffc658" name="Waist (in)" />
-                                        <Line type="monotone" dataKey="hips" stroke="#ff7c7c" name="Hips (in)" />
-                                        <Line type="monotone" dataKey="arms" stroke="#8dd1e1" name="Arms (in)" />
-                                        <Line type="monotone" dataKey="thighs" stroke="#d084d0" name="Thighs (in)" />
+                                        <Line type="monotone" dataKey="chest" stroke="#82ca9d" name={isMetric ? "Chest (cm)" : "Chest (in)"} />
+                                        <Line type="monotone" dataKey="waist" stroke="#ffc658" name={isMetric ? "Waist (cm)" : "Waist (in)"} />
+                                        <Line type="monotone" dataKey="hips" stroke="#ff7c7c" name={isMetric ? "Hips (cm)" : "Hips (in)"} />
+                                        <Line type="monotone" dataKey="arms" stroke="#8dd1e1" name={isMetric ? "Arms (cm)" : "Arms (in)"} />
+                                        <Line type="monotone" dataKey="thighs" stroke="#d084d0" name={isMetric ? "Thighs (cm)" : "Thighs (in)"} />
                                     </LineChart>
                                 </ResponsiveContainer>
                             </div>
@@ -350,12 +396,12 @@ export function MeasurementLogger() {
                                         {new Date(measurement.date * 1000).toLocaleDateString()}
                                     </div>
                                     <div className="measurement-values">
-                                        {measurement.weight && <p><strong>Weight:</strong> {measurement.weight} lbs</p>}
-                                        {measurement.chest && <p><strong>Chest:</strong> {measurement.chest}"</p>}
-                                        {measurement.waist && <p><strong>Waist:</strong> {measurement.waist}"</p>}
-                                        {measurement.hips && <p><strong>Hips:</strong> {measurement.hips}"</p>}
-                                        {measurement.arms && <p><strong>Arms:</strong> {measurement.arms}"</p>}
-                                        {measurement.thighs && <p><strong>Thighs:</strong> {measurement.thighs}"</p>}
+                                        {measurement.weight && <p><strong>Weight:</strong> {isMetric ? lbsToKg(measurement.weight) : measurement.weight} {isMetric ? 'kg' : 'lbs'}</p>}
+                                        {measurement.chest && <p><strong>Chest:</strong> {isMetric ? inchesToCm(measurement.chest) : measurement.chest} {isMetric ? 'cm' : '"'}</p>}
+                                        {measurement.waist && <p><strong>Waist:</strong> {isMetric ? inchesToCm(measurement.waist) : measurement.waist} {isMetric ? 'cm' : '"'}</p>}
+                                        {measurement.hips && <p><strong>Hips:</strong> {isMetric ? inchesToCm(measurement.hips) : measurement.hips} {isMetric ? 'cm' : '"'}</p>}
+                                        {measurement.arms && <p><strong>Arms:</strong> {isMetric ? inchesToCm(measurement.arms) : measurement.arms} {isMetric ? 'cm' : '"'}</p>}
+                                        {measurement.thighs && <p><strong>Thighs:</strong> {isMetric ? inchesToCm(measurement.thighs) : measurement.thighs} {isMetric ? 'cm' : '"'}</p>}
                                     </div>
                                     <div className="measurement-actions">
                                         <button

@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
-import "./Navbar.css";
+import "./navbar.css";
 
 export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -92,11 +92,11 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
             className={({ isActive }) => (isActive ? "active" : "")}
             onClick={handleNavClick}
           >
-            Profile
+            Measurement Logger
           </NavLink> 
 
           <a
-            href="http://localhost:5000/APIDocs"
+            href="http://localhost:5000/api/APIDocs"
             target="_blank"
             rel="noreferrer"
             onClick={handleNavClick}

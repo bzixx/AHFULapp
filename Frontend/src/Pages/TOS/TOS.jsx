@@ -1,15 +1,20 @@
 import React from "react";
 import "./TOS.css";
-import "../../SiteStyles.css";
+import "../../siteStyles.css";
 
 export function TOS() {
     return (
         <div className="tos-page page-layout">
-            <div className="tos-container">
+            <div className="solo-page-container">
                 <h1>Terms of Service</h1>
 
                 <p className="tos-intro">
                     These Terms of Service ("Terms") govern your access to and use of the AHFUL app and related services (the "Service"). By accessing or using the Service you agree to be bound by these Terms. If you do not agree to all of the terms, then you may not access the Service.
+                </p>
+
+                <h2>This website is a UW-Stout Student Group Project for Spring 2026</h2>
+                <p>
+                    The authors of this website are students at the University of Wisconsin-Stout implementing their skills to show off the functional secure website they have built over the semester.
                 </p>
 
                 <h2>1. Using the Service</h2>
@@ -57,7 +62,15 @@ export function TOS() {
                     If you have questions about these Terms, please contact the app owners or maintainers as described on the project repository.
                 </p>
 
-                <p className="tos-last-updated">Last updated: March 25, 2026</p>
+                <h2>10. Contact</h2>
+                <p>
+                The Gemini API Additional Terms of Service and the Google Privacy Policy apply. Prompts and responses may be reviewed and used to train Google AI, so don’t submit sensitive or personal information. Learn more about data use. Google AI models can make mistakes, so double-check responses before relying on, publishing, or otherwise using generated content.
+                </p>
+
+
+
+
+                <p className="tos-last-updated">Last updated: April 9, 2026</p>
             </div>
         </div>
     );
