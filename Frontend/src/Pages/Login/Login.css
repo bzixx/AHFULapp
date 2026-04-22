@@ -23,7 +23,7 @@
 }
 
 .login-page.scrolled .login-background {
-  filter: blur(3px);
+  filter: none;
 }
 
 .login-top-overlay {
@@ -43,7 +43,7 @@
   text-align: center;
   color: white;
   padding: 20px;
-  padding-top: 120px;
+  padding-top: 200px;
   min-height: 100vh;
   opacity: 0;
 }
@@ -73,14 +73,17 @@
 .login-dashboard-content {
   position: relative;
   z-index: 1;
-  margin-top: 100px;
-  min-height: 100vh;
+  margin-top: 150px;
+  padding: 10px;
   background: transparent !important;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .login-dashboard-content .section {
   margin: 0;
-  padding: 60px 20px;
+  padding: 20px 10px;
   width: 100%;
   border-bottom: none !important;
   background: transparent !important;
@@ -110,6 +113,7 @@
 }
 .login-dashboard-content-cta {
   margin-top: 40px;
+  padding-top: 30px;
 }
 .login-dashboard-content .secondary-cta {
   color: white !important;
@@ -139,6 +143,12 @@
   padding: 8px 20px !important;
 }
 
+.login-dashboard-content .label {
+  font-size: 28px !important;
+  font-weight: bold !important;
+  margin-bottom: 0 !important;
+}
+
 .login-dashboard-content .solo-page-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -163,25 +173,29 @@
 
 .login-title {
   text-align: center;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
 
 .login-title h1 {
-  font-size: 80px;
+  font-size: 120px;
   font-weight: 700;
   margin: 0;
   color: white;
 }
 
 .login-title > div {
-  font-size: 22px;
+  font-size: 33px;
   color: white;
 }
 
 .login-button {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 40px;
+}
+
+.login-button > div {
+  transform: scale(1.5);
 }
 
 

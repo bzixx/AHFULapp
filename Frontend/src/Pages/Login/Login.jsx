@@ -19,7 +19,7 @@ export function Login() {
   const theme = useSelector((state) => state.setting?.theme || "Light");
   const [statusText, setStatusText] = useState("");
   const [showContent, setShowContent] = useState(false);
-  const [showScrollText, setShowScrollText] = useState(false);
+  const [showScrollText, setShowScrollText] = useState(true);
   const [typedText, setTypedText] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -38,6 +38,7 @@ export function Login() {
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 100);
+      setShowScrollText(false);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
