@@ -51,7 +51,9 @@ export function WorkoutLogger() {
   const userAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const selectedDate = useSelector((state) => state.calendar.selectedDate);
   const cachedWorkouts = useSelector((state) => state.pullWorkout.workouts);
-  const cachedPersonalExercises = useSelector((state) => state.pullPersonalExercise.personalExercises);
+  const cachedPersonalExercises = useSelector(
+    (state) => state.pullPersonalExercise.personalExercises,
+  );
 
   // ─── Personal Exercise State ──────────────────────────────────────────────────
   // Tracks exercises to be deleted when workout is submitted (removed from UI but need DB deletion)
@@ -290,7 +292,7 @@ export function WorkoutLogger() {
   useEffect(() => {
     fetch_exercises();
   }, []);
-  
+
   // useEffect(() => {
   //   location.reload();
   // }, [selectedDate]);
@@ -305,10 +307,19 @@ export function WorkoutLogger() {
     console.log("Cached personal exercises:", cachedPersonalExercises);
 
     // Find workout for selected date from Redux
-    const todaysWorkout = cachedWorkouts?.find(w => {
+    const todaysWorkout = cachedWorkouts?.find((w) => {
       if (!w?.startTime) return false;
-      const workoutDate = new Date(w.startTime * 1000).toISOString().slice(0, 10);
-      console.log("Comparing:", workoutDate, "===", dateStr, ":", workoutDate === dateStr);
+      const workoutDate = new Date(w.startTime * 1000)
+        .toISOString()
+        .slice(0, 10);
+      console.log(
+        "Comparing:",
+        workoutDate,
+        "===",
+        dateStr,
+        ":",
+        workoutDate === dateStr,
+      );
       return workoutDate === dateStr;
     });
 
@@ -320,9 +331,10 @@ export function WorkoutLogger() {
       setWorkoutTitle(todaysWorkout.title || "");
 
       // Load personal exercises for this workout from cache
-      const workoutPersonalExercises = cachedPersonalExercises?.filter(
-        pe => pe?.workout_id === todaysWorkout._id
-      ) || [];
+      const workoutPersonalExercises =
+        cachedPersonalExercises?.filter(
+          (pe) => pe?.workout_id === todaysWorkout._id,
+        ) || [];
 
       console.log("Workout personal exercises:", workoutPersonalExercises);
       setExercisesInProgressTable(workoutPersonalExercises);
@@ -501,6 +513,18 @@ export function WorkoutLogger() {
   const handleSubmit = async () => {
     console.log("Submitting workout...");
 
+    // Alert if reps or sets are negative numbers
+
+    const invalid = exercisesInProgressTable.some(
+      (ex) => ex.sets < 0 || ex.reps < 0,
+    );
+
+    if (invalid) {
+      alert("Please make sure all reps and sets are not negative numbers.");
+
+      return;
+    }
+
     try {
       // --- CREATE + UPDATE REQUESTS ---
       const saveRequests = exercisesInProgressTable.map((ex) => {
@@ -657,6 +681,13 @@ export function WorkoutLogger() {
     setShowWorkoutPicker(false);
   }
 
+  const exitOnEnter = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      e.target.blur();
+    }
+  };
+
   async function handleLoadWorkout() {
     if (!selectedWorkoutIdForPicker) return;
 
@@ -695,8 +726,8 @@ export function WorkoutLogger() {
       today.setHours(0, 0, 0, 0);
       const startUnix = Math.floor(today.getTime() / 1000);
 
-  // Use selected gym (or fall back to user's home gym if available)
-  const gymId = selectedGymId || (user?.settings?.homeGymId || "") || "";
+      // Use selected gym (or fall back to user's home gym if available)
+      const gymId = selectedGymId || user?.settings?.homeGymId || "" || "";
 
       const payload = {
         endTime: startUnix,
@@ -810,7 +841,6 @@ export function WorkoutLogger() {
         console.log(user._id);
         const allTemplates = await fetchTemplate(user._id);
 
-
         // Normalize if needed (backend might return null or object)
         if (Array.isArray(allTemplates)) {
           setTemplates(allTemplates);
@@ -869,6 +899,7 @@ export function WorkoutLogger() {
                 placeholder="Search templates..."
                 value={templateSearch}
                 onChange={(e) => setTemplateSearch(e.target.value)}
+                onKeyDown={exitOnEnter}
               />
 
               <div className="dropdown-instructions">
@@ -998,9 +1029,20 @@ export function WorkoutLogger() {
                         <input
                           type="number"
                           value={ex.reps}
-                          onChange={(e) =>
-                            updateField(i, "reps", Number(e.target.value))
-                          }
+                          onChange={(e) => {
+                            const raw = e.target.value;
+                            updateField(
+                              i,
+                              "reps",
+                              raw === "" ? "" : Number(raw),
+                            );
+                          }}
+                          onBlur={(e) => {
+                            if (e.target.value === "") {
+                              updateField(i, "reps", 0);
+                            }
+                          }}
+                          onKeyDown={exitOnEnter}
                         />
                       )}
                     </div>
@@ -1012,9 +1054,20 @@ export function WorkoutLogger() {
                         <input
                           type="number"
                           value={ex.sets}
-                          onChange={(e) =>
-                            updateField(i, "sets", Number(e.target.value))
-                          }
+                          onChange={(e) => {
+                            const raw = e.target.value;
+                            updateField(
+                              i,
+                              "sets",
+                              raw === "" ? "" : Number(raw),
+                            );
+                          }}
+                          onBlur={(e) => {
+                            if (e.target.value === "") {
+                              updateField(i, "reps", 0);
+                            }
+                          }}
+                          onKeyDown={exitOnEnter}
                         />
                       )}
                     </div>
@@ -1029,6 +1082,7 @@ export function WorkoutLogger() {
                           onChange={(e) =>
                             updateField(i, "weight", e.target.value)
                           }
+                          onKeyDown={exitOnEnter}
                         />
                       )}
                     </div>
@@ -1068,7 +1122,7 @@ export function WorkoutLogger() {
                     className="workout-submit-button"
                     onClick={handleSubmit}
                   >
-                    Submit
+                    Save
                   </button>
                 </div>
               </div>
@@ -1106,6 +1160,12 @@ export function WorkoutLogger() {
                   placeholder="Search exercises..."
                   value={exerciseName}
                   onChange={(e) => setExerciseName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearch(exerciseName); // run search
+                      exitOnEnter(e); // blur input
+                    }
+                  }}
                 />
 
                 <button
@@ -1273,6 +1333,7 @@ export function WorkoutLogger() {
                 setNewExercise((p) => ({ ...p, name: e.target.value }))
               }
               style={{ width: "100%" }}
+              onKeyDown={exitOnEnter}
             />
 
             <label style={{ display: "block", marginTop: 8 }}>
@@ -1286,6 +1347,7 @@ export function WorkoutLogger() {
               }
               placeholder="https://..."
               style={{ width: "100%" }}
+              onKeyDown={exitOnEnter}
             />
             {newExercise.gifUrl && newExercise.gifUrl.startsWith("http") && (
               <div style={{ marginTop: 8, textAlign: "center" }}>
@@ -1501,20 +1563,28 @@ export function WorkoutLogger() {
                 placeholder="New workout name"
                 value={newWorkoutName}
                 onChange={(e) => setNewWorkoutName(e.target.value)}
+                onKeyDown={exitOnEnter}
               />
               <div style={{ marginTop: 8 }}>
-                <label style={{ display: "block", fontSize: 12, marginBottom: 6 }}>
+                <label
+                  style={{ display: "block", fontSize: 12, marginBottom: 6 }}
+                >
                   Gym (optional)
                 </label>
                 <select
                   value={selectedGymId}
                   onChange={(e) => setSelectedGymId(e.target.value)}
-                  style={{ width: "100%", padding: "8px 10px", borderRadius: 6 }}
+                  style={{
+                    width: "100%",
+                    padding: "8px 10px",
+                    borderRadius: 6,
+                  }}
                 >
                   <option value="">None / No Gym</option>
                   {availableGyms.map((g) => (
                     <option key={g._id} value={g._id}>
-                      {g.name || `${g.address || "Unnamed"} (${g._id.slice(0, 6)})`}
+                      {g.name ||
+                        `${g.address || "Unnamed"} (${g._id.slice(0, 6)})`}
                     </option>
                   ))}
                 </select>
