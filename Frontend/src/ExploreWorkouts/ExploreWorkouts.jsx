@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import "./ExploreWorkouts.css";
 import "../siteStyles.css";
 import { CalendarButton } from "../Calendar/CalendarButton";
-import { HeatMap } from "../components/HeatMap/HeatMap";
+import { HeatMap } from "./HeatMap";
 import { WorkoutChart } from "../ExploreWorkouts/WorkoutChart";
 import { fetchPersonalExercises, fetchGym, fetchExerciseById } from "../QueryFunctions";
 
