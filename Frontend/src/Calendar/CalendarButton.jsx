@@ -1,4 +1,4 @@
-import "./CalendarButton.css";
+import "./Calendar.css";
 import { useState, useEffect } from "react";
 import { Calendar } from "../Calendar/Calendar.jsx";
 /* Essentially the same as menu button, but without the list component on click */

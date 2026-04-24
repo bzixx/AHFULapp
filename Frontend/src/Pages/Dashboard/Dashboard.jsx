@@ -7,7 +7,7 @@ import { DashboardWorkoutTodoList } from "../../components/DashboardComponents/D
 import { DashboardTaskTodoList } from "../../components/DashboardComponents/DashboardTaskTodoList";
 import { WorkoutChart } from "../../components/WorkoutChart/WorkoutChart";
 import { TodayFoodChart } from "../../components/TodayFoodChart/TodayFoodChart";
-import { CalendarButton } from "../../components/CalendarButton/CalendarButton";
+import { CalendarButton } from "../../Calendar/CalendarButton";
 import { StreakCounter } from "../../components/StreakCounter/StreakCounter";
 import "../../siteStyles.css";
 
