@@ -280,28 +280,13 @@
   font-size: 14px;
 }
 
-@media (max-width: 768px) {
-  .login-title h1 {
-    font-size: 56px;
-    font-weight: bold;
-  }
+.google-button-fixed {
+  position: absolute;
+  bottom: 2%;
+  left: 2%;
+  z-index: 1000;
+}
 
-  .login-title > div {
-    font-size: 16px;
-    font-weight: bold;
-  }
-
-  .login-content {
-    padding-top: 80px;
-  }
-
-  .scroll-down-text {
-    font-size: 16px;
-    top: 450px;
-    bottom: auto;
-  }
-
-  .login-top-overlay {
-    min-height: 600px;
-  }
+.google-button-fixed > div {
+  transform: scale(0.6);
 }

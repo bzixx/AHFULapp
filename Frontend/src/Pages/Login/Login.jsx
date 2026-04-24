@@ -3,6 +3,7 @@ import veniceMobile from "../../../images/Login/venice mobile with overlay.jpg";
 import "./Login.css";
 import "../Dashboard/Dashboard.css";
 import { GoogleLogin } from "@react-oauth/google";
+import { GoogleButton } from "./GoogleButton";
 import { useSelector, useDispatch } from "react-redux";
 import { handle_google_login, getUserSettings } from "../../QueryFunctions.js";
 import { authLogin } from "../../Pages/Login/AuthSlice.jsx";
@@ -130,15 +131,22 @@ export function Login() {
               </div>
           </div>
           <div className="login-button">
-            <GoogleLogin
-              size="large"
-              width="200"
-              text="signin_with"
-              theme={theme === "dark" ? "filled_black" : "outline"}
-              shape="pill"
-              onSuccess={handle_google_success}
-              onError={handle_google_failure}
-            />
+            {!isScrolled ? (
+              <GoogleLogin
+                size="large"
+                width="200"
+                text="signin_with"
+                theme={theme === "dark" ? "filled_black" : "outline"}
+                shape="pill"
+                onSuccess={handle_google_success}
+                onError={handle_google_failure}
+              />
+            ) : (
+              <GoogleButton
+                onSuccess={() => setStatusText("Logged in!")}
+                onError={(err) => setStatusText(err || "Login failed")}
+              />
+            )}
           </div>
           <div className={`scroll-down-text ${showScrollText ? 'fade-in' : ''}`}>
             {typedText}<span className="typing-cursor"></span>
