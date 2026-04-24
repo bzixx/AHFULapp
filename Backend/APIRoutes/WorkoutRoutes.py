@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, g
 from Services.WorkoutDriver import WorkoutDriver
 from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
-workoutRouteBlueprint = Blueprint("workouts", __name__, url_prefix="/AHFULworkout")
+workoutRouteBlueprint = Blueprint("workouts", __name__, url_prefix="/AHFULworkouts")
 
 # ── GET all workouts ───────────────────────────────────────
 @workoutRouteBlueprint.route("/", methods=["GET"])
