@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { WorkoutLogger } from "./Pages/WorkoutLogger/WorkoutLogger.jsx";
 import { ExploreWorkouts } from "./ExploreWorkouts/ExploreWorkouts.jsx";
 import { FoodLog } from "./Food/FoodLog.jsx";
-import { Dashboard } from "./Pages/Dashboard/Dashboard.jsx";
+import { Dashboard } from "./Dashboard/Dashboard.jsx";
 import { Login } from "./Auth/Login.jsx";
 import { VerifyEmail } from "./Auth/VerifyEmail.jsx";
 import { NotVerified } from "./Auth/NotVerified.jsx";
@@ -16,7 +16,6 @@ import { TOS } from "./Pages/TOS/TOS.jsx";
 import { Layout } from "./Layout.jsx"
 import { Settings } from "./Auth/Settings.jsx";
 import { ExploreTasks } from "./Tasks/ExploreTasks.jsx";
-import { Test } from "./Pages/Test/Test.jsx";
 import { useTutorial } from "./Auth/useTutorial.js";
 import { TutorialOverlay } from "./Auth/TutorialOverlay.jsx";
 import "./siteStyles.css";
@@ -118,8 +117,6 @@ function AHFULApp() {
               <Profile/>}/>
           <Route path="/ExploreTasks" element={
               <ExploreTasks/>}/>
-          <Route path="/Test" element={
-              <Test/>}/>
           <Route path="Settings" element={
               <Settings/>} />
         </Route>

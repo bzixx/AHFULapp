@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import "./Dashboard.css";
-import { DashboardFoodTodoList } from "../../Food/DashboardFoodTodoList";
-import { DashboardWorkoutTodoList } from "../../ExploreWorkouts/DashboardWorkoutTodoList";
-import { DashboardTaskTodoList } from "../../Tasks/DashboardTaskTodoList";
-import { WorkoutChart } from "../../ExploreWorkouts/WorkoutChart";
-import { TodayFoodChart } from "../../Food/TodayFoodChart";
-import { CalendarButton } from "../../Calendar/CalendarButton";
-import { StreakCounter } from "../../components/StreakCounter/StreakCounter";
-import "../../siteStyles.css";
+import { DashboardFoodTodoList } from "../Food/DashboardFoodTodoList";
+import { DashboardWorkoutTodoList } from "../ExploreWorkouts/DashboardWorkoutTodoList";
+import { DashboardTaskTodoList } from "../Tasks/DashboardTaskTodoList";
+import { WorkoutChart } from "../ExploreWorkouts/WorkoutChart";
+import { TodayFoodChart } from "../Food/TodayFoodChart";
+import { CalendarButton } from "../Calendar/CalendarButton";
+import { StreakCounter } from "./StreakCounter";
+import "../siteStyles.css";
 
 function ExternalDashboard() {
   const [workoutStreak, setWorkoutStreak] = useState({
