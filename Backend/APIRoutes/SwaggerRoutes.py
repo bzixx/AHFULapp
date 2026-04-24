@@ -1471,7 +1471,7 @@ swaggerConfig = {
   }
 },
 
-"/AHFULworkout/": {
+"/AHFULworkouts/": {
     "get": {
       "summary": "Get all workouts (Admin)",
       "tags": ["Workout"],
@@ -1503,7 +1503,7 @@ swaggerConfig = {
     }
   },
 
-"/AHFULworkout/{user_id}": {
+"/AHFULworkouts/{user_id}": {
   "get": {
     "summary": "Get workouts by user id (User or Dev/Admin)",
     "security":[{"userIdHeader":[]},{"bearerAuth":[]}],
@@ -1543,7 +1543,7 @@ swaggerConfig = {
   }
 },
 
-"/AHFULworkout/templates/user/{user_id}": {
+"/AHFULworkouts/templates/user/{user_id}": {
   "get": {
     "summary": "Get workout templates for a user (User or Dev/Admin)",
     "tags": ["Workout"],
@@ -1582,7 +1582,7 @@ swaggerConfig = {
   }
 },
 
-"/AHFULworkout/templates/{id}": {
+"/AHFULworkouts/templates/{id}": {
   "get": {
     "summary": "Get template by id (User or Dev/Admin)",
     "tags": ["Workout"],
@@ -1621,7 +1621,7 @@ swaggerConfig = {
   }
 },
 
-"/AHFULworkout/id/{workout_id}": {
+"/AHFULworkouts/id/{workout_id}": {
   "get": {
     "summary": "Get workout by workout_id (User or Dev/Admin)",
     "tags": ["Workout"],
@@ -1658,7 +1658,7 @@ swaggerConfig = {
   }
 },
 
-"/AHFULworkout/create": {
+"/AHFULworkouts/create": {
   "post": {
     "summary": "Create a workout (Logged in)",
     "tags": ["Workout"],
@@ -1689,7 +1689,7 @@ swaggerConfig = {
   }
 },
 
-"/AHFULworkout/create/template": {
+"/AHFULworkouts/create/template": {
   "post": {
     "summary": "Create a workout template (logged in)",
     "tags": ["Workout"],
@@ -1717,7 +1717,7 @@ swaggerConfig = {
   }
 },
 
-"/AHFULworkout/update/{workout_id}": {
+"/AHFULworkouts/update/{workout_id}": {
   "put": {
     "summary": "Update a workout (User or Dev/Admin)",
     "tags": ["Workout"],
@@ -1753,7 +1753,7 @@ swaggerConfig = {
   }
 },
 
-"/AHFULworkout/delete/{workout_id}": {
+"/AHFULworkouts/delete/{workout_id}": {
   "delete": {
     "summary": "Delete a workout (User or Dev/Admin)",
     "tags": ["Workout"],
@@ -1774,7 +1774,7 @@ swaggerConfig = {
   }
 },
 
-"/AHFULworkout/streak/{user_id}": {
+"/AHFULworkouts/streak/{user_id}": {
   "get": {
     "summary": "Get workout streak (User or Dev/Admin)",
     "tags": ["Workout"],
@@ -2141,7 +2141,7 @@ swaggerConfig = {
       }
     },
 
-    "/AHFULfood/": {
+    "/AHFULfoods/": {
       "get": {
         "summary": "Get all foods (Dev/Admin)",
         "tags": ["Food"],   
@@ -2187,7 +2187,7 @@ swaggerConfig = {
       }
     },
 
-    "/AHFULfood/{user_id}": {
+    "/AHFULfoods/{user_id}": {
       "get": {
         "summary": "Get foods by user_id (User or Dev/Admin)",
         "tags": ["Food"],
@@ -2242,7 +2242,7 @@ swaggerConfig = {
       }
     },
 
-    "/AHFULfood/id/{id}": {
+    "/AHFULfoods/id/{id}": {
       "get": {
         "summary": "Get food by id (Dev/Admin)",
         "tags": ["Food"],
@@ -2294,7 +2294,7 @@ swaggerConfig = {
       }
     },
 
-    "/AHFULfood/create": {
+    "/AHFULfoods/create": {
       "post": {
         "summary": "Create a new food entry (Logged in)",
         "tags": ["Food"],
@@ -2351,7 +2351,7 @@ swaggerConfig = {
       }
     },
 
-    "/AHFULfood/delete/{food_id}": {
+    "/AHFULfoods/delete/{food_id}": {
       "delete": {
         "summary": "Delete food by id (Owner or Dev/Admin)",
         "tags": ["Food"],
@@ -2427,7 +2427,7 @@ swaggerConfig = {
       }
     }, 
 
-    "/AHFULfood/update/{food_id}": {
+    "/AHFULfoods/update/{food_id}": {
       "put": {
         "summary": "Update a food entry (Owner or Dev/Admin)",
         "description": "Updates allowed fields of a food entry by id. The server treats PUT as a partial update of allowed fields.",

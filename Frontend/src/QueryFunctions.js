@@ -225,7 +225,7 @@ export async function whoami() {
 // ──  Template functions ─────────────────────────────────────────────────────────
 export async function fetchTemplate(userId) {
   const res = await fetch(
-    `http://localhost:5000/api/AHFULworkout/templates/user/${userId}`,{
+    `http://localhost:5000/api/AHFULworkouts/templates/user/${userId}`,{
       credentials: 'include'
     }
   );
@@ -245,7 +245,7 @@ export async function fetchTemplate(userId) {
 export async function createTemplate(templateData) {
   try {
     const res = await fetch(
-      "http://localhost:5000/api/AHFULworkout/create/template",
+      "http://localhost:5000/api/AHFULworkouts/create/template",
       {
         method: "POST",
         credentials: 'include',
@@ -521,7 +521,7 @@ export async function searchExercises(searchQuery) {
 // ── Workout Functions ───────────────────────────────────────────────────────────
 
 export async function createWorkout(workoutData) {
-  const res = await fetch("http://localhost:5000/api/AHFULworkout/create", {
+  const res = await fetch("http://localhost:5000/api/AHFULworkouts/create", {
     method: "POST",
     credentials: 'include',
     headers: { "Content-Type": "application/json" },
@@ -536,7 +536,7 @@ export async function createWorkout(workoutData) {
 
 export async function fetchWorkout(userId) {
   try {
-    const res = await fetch(`http://localhost:5000/api/AHFULworkout/${userId}`, {credentials: 'include'});
+    const res = await fetch(`http://localhost:5000/api/AHFULworkouts/${userId}`, {credentials: 'include'});
 
     // Handle empty or not found responses for new users
     if (res.status === 404 || res.status === 204) {
@@ -562,7 +562,7 @@ export async function fetchWorkout(userId) {
 
 export async function fetchWorkoutById(workoutId) {
   try {
-    const res = await fetch(`http://localhost:5000/api/AHFULworkout/id/${workoutId}`, {credentials: 'include'});
+    const res = await fetch(`http://localhost:5000/api/AHFULworkouts/id/${workoutId}`, {credentials: 'include'});
 
     if (res.status === 404 || res.status === 204) {
       return null;
@@ -586,7 +586,7 @@ export async function fetchWorkoutById(workoutId) {
 
 export async function updateWorkout(workoutId, data) {
   const res = await fetch(
-    `http://localhost:5000/api/AHFULworkout/update/${workoutId}`,
+    `http://localhost:5000/api/AHFULworkouts/update/${workoutId}`,
     {
       method: "PUT",
       credentials: 'include',

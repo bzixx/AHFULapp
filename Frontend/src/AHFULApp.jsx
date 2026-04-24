@@ -1,31 +1,30 @@
 import {  useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { WorkoutLogger } from "./Pages/WorkoutLogger/WorkoutLogger.jsx";
-import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
-import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
-import { Dashboard } from "./Pages/Dashboard/Dashboard.jsx";
-import { Login } from "./Pages/Login/Login.jsx";
-import { VerifyEmail } from "./Pages/Verification/VerifyEmail.jsx";
-import { NotVerified } from "./Pages/Verification/NotVerified.jsx";
-import { Map } from "./Pages/Map/Map.jsx";
-import { AIChat } from "./Pages/AIChat/AIChat.jsx";
-import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
-import { Profile } from "./Pages/Profile/Profile.jsx";
-import { TOS } from "./Pages/TOS/TOS.jsx";
+import { WorkoutLogger } from "./WokoutLogger/WorkoutLogger.jsx";
+import { ExploreWorkouts } from "./ExploreWorkouts/ExploreWorkouts.jsx";
+import { FoodLog } from "./Food/FoodLog.jsx";
+import { Dashboard } from "./Dashboard/Dashboard.jsx";
+import { Login } from "./Auth/Login.jsx";
+import { VerifyEmail } from "./Auth/VerifyEmail.jsx";
+import { NotVerified } from "./Auth/NotVerified.jsx";
+import { Map } from "./Gyms/Map.jsx";
+import { AIChat } from "./AIChat/AIChat.jsx";
+import { MeasurementLogger } from "./MeasurementLogger/MeasurementLogger.jsx";
+import { Profile } from "./Auth/Profile.jsx";
+import { TOS } from "./TOS.jsx";
 import { Layout } from "./Layout.jsx"
-import { AuthRouteCheck } from "./AuthRouteCheck.jsx";
-import { Settings } from "./Pages/Settings/Settings.jsx";
-import { ExploreTasks } from "./Pages/ExploreTasks/ExploreTasks.jsx";
-import { Test } from "./Pages/Test/Test.jsx";
-import { useTutorial } from "./hooks/useTutorial.js";
-import { TutorialOverlay } from "./components/Tutorial/TutorialOverlay.jsx";
+import { Settings } from "./Auth/Settings.jsx";
+import { ExploreTasks } from "./Tasks/ExploreTasks.jsx";
+import { useTutorial } from "./Auth/useTutorial.js";
+import { TutorialOverlay } from "./Auth/TutorialOverlay.jsx";
 import "./siteStyles.css";
 import "./Stylesheets/Themes/Lightmode.css";
 import "./Stylesheets/Themes/Darkmode.css";
 import { whoami, getUserSettings } from "./QueryFunctions.js";
-import { setSettings } from './Pages/Settings/SettingsSlice.jsx';
-import { authLogin } from "./Pages/Login/AuthSlice.jsx";
+import { setSettings } from './Auth/SettingsSlice.jsx';
+import { authLogin } from "./Auth/AuthSlice.jsx";
+import { ExploreFriends } from "./Social/ExploreFriends.jsx";
 
 
 function AHFULApp() {
@@ -65,12 +64,7 @@ function AHFULApp() {
       // root path ('/'). But if they're trying to visit any other
       // route, send them to the Login page.
       if (!whomstResponse) {
-        if (path === '/' || path === '/TOS') {
-          // allow browsing the public dashboard/root without forcing login
-          return;
-        }
-
-        navigate('/Login');
+        navigate('/');
         return;
       }
 
@@ -80,11 +74,7 @@ function AHFULApp() {
         const userSettingsResponse = await getUserSettings();
         dispatch(setSettings(userSettingsResponse));
       }else{
-        if (path === '/' || path === '/TOS') {
-          // allow browsing the public dashboard/root without forcing login
-          return;
-        }
-        navigate('/Login');
+        navigate('/');
       }
     }
 
@@ -96,8 +86,7 @@ function AHFULApp() {
     <>
       <Routes>
         <Route element={<Layout/>}>
-          <Route path="/" element={<Dashboard/>}/>
-          <Route path="/Login" element={<Login/>}/>
+          <Route path="/Dashboard" element={<Dashboard/>}/>
           <Route path="/TOS" element={<TOS/>}/>
           <Route path="/WorkoutLogger" element={
               <WorkoutLogger/>} />
@@ -113,17 +102,21 @@ function AHFULApp() {
               <AIChat/>}/>
           <Route path="/Map" element={
               <Map/>}/>
+          <Route path="/ExploreFriends" element={
+              <ExploreFriends/>}/>
           <Route path="/MeasurementLogger" element={
               <MeasurementLogger/>}/>
           <Route path="/Profile" element={
               <Profile/>}/>
           <Route path="/ExploreTasks" element={
               <ExploreTasks/>}/>
-          <Route path="/Test" element={<Test/>}/>
+          <Route path="Settings" element={
+              <Settings/>} />
         </Route>
-        <Route path="Settings" element={<Settings/>} />
+        {/* Put outside of the Layout so it doesn't show the header/navbar */}
+        <Route path="/" element={<Login/>}/>
       </Routes>
-``
+
       {tutorialActive && currentStepData && (
         <TutorialOverlay
           step={currentStep}

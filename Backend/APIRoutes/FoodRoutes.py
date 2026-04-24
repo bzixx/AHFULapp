@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, g
 from Services.FoodDriver import FoodDriver
 from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
-foodRouteBlueprint = Blueprint("food", __name__, url_prefix="/AHFULfood")
+foodRouteBlueprint = Blueprint("foods", __name__, url_prefix="/AHFULfoods")
 
 # ── SEARCH USDA FoodData Central API (MUST BE BEFORE CATCH-ALL ROUTES) ────────────────────────────────
 @foodRouteBlueprint.route("/search/usda", methods=["GET"])
