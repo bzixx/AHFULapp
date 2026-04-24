@@ -9,7 +9,7 @@ import { Login } from "./Pages/Login/Login.jsx";
 import { VerifyEmail } from "./Pages/Verification/VerifyEmail.jsx";
 import { NotVerified } from "./Pages/Verification/NotVerified.jsx";
 import { Map } from "./Pages/Map/Map.jsx";
-import { AIChat } from "./Pages/AIChat/AIChat.jsx";
+import { AIChat } from "./AIChat/AIChat.jsx";
 import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
 import { Profile } from "./Pages/Profile/Profile.jsx";
 import { TOS } from "./Pages/TOS/TOS.jsx";
