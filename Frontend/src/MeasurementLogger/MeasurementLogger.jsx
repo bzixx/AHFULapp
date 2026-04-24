@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import "./MeasurementLogger.css";
-import "../../siteStyles.css";
+import "../siteStyles.css";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const API_BASE = "http://localhost:5000/api/AHFULmeasurements";

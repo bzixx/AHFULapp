@@ -10,7 +10,7 @@ import { VerifyEmail } from "./Auth/VerifyEmail.jsx";
 import { NotVerified } from "./Auth/NotVerified.jsx";
 import { Map } from "./Pages/Map/Map.jsx";
 import { AIChat } from "./AIChat/AIChat.jsx";
-import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
+import { MeasurementLogger } from "./MeasurementLogger/MeasurementLogger.jsx";
 import { Profile } from "./Auth/Profile.jsx";
 import { TOS } from "./Pages/TOS/TOS.jsx";
 import { Layout } from "./Layout.jsx"
