@@ -1,7 +1,7 @@
 import {  useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { WorkoutLogger } from "./Pages/WorkoutLogger/WorkoutLogger.jsx";
+import { WorkoutLogger } from "./WokoutLogger/WorkoutLogger.jsx";
 import { ExploreWorkouts } from "./ExploreWorkouts/ExploreWorkouts.jsx";
 import { FoodLog } from "./Food/FoodLog.jsx";
 import { Dashboard } from "./Dashboard/Dashboard.jsx";
@@ -12,7 +12,7 @@ import { Map } from "./Gyms/Map.jsx";
 import { AIChat } from "./AIChat/AIChat.jsx";
 import { MeasurementLogger } from "./MeasurementLogger/MeasurementLogger.jsx";
 import { Profile } from "./Auth/Profile.jsx";
-import { TOS } from "./Pages/TOS/TOS.jsx";
+import { TOS } from "./TOS.jsx";
 import { Layout } from "./Layout.jsx"
 import { Settings } from "./Auth/Settings.jsx";
 import { ExploreTasks } from "./Tasks/ExploreTasks.jsx";

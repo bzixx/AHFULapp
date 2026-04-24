@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import "./WorkoutLogger.css";
-import "../../siteStyles.css";
-import { CalendarButton } from "../../Calendar/CalendarButton.jsx";
+import "../siteStyles.css";
+import { CalendarButton } from "../Calendar/CalendarButton.jsx";
 import {
   getDefaultNewExercise,
   formatTime as formatTimeFn,
@@ -24,10 +24,10 @@ import {
   createTemplate,
   loadBodyParts,
   createExercise,
-} from "../../QueryFunctions";
-import { pullWorkouts } from "../../components/Cache/WorkoutCache/PullWorkout.jsx";
-import { pullTemplates } from "../../components/Cache/TemplateCache/PullTemplate.jsx";
-import { pullPersonalExercises } from "../../components/Cache/PersonalExerciseCache/PersonalExercise.jsx";
+} from "../QueryFunctions.js";
+import { pullWorkouts } from "../components/Cache/WorkoutCache/PullWorkout.jsx";
+import { pullTemplates } from "../components/Cache/TemplateCache/PullTemplate.jsx";
+import { pullPersonalExercises } from "../components/Cache/PersonalExerciseCache/PersonalExercise.jsx";
 
 /**
  * Logger - Main workout tracking page

@@ -632,4 +632,38 @@ tbody tr:hover {
 }
 
 
+/* ---------------------------------------------------TOS CSS--------------------------------------------------- */
+
+
+.tos-page {
+	display: flex;
+	justify-content: center;
+	padding: 24px;
+}
+
+
+.tos-page h1 {
+	margin-top: 0;
+	font-size: 28px;
+}
+
+.tos-page h2 {
+	margin-top: 20px;
+	font-size: 20px;
+}
+
+.tos-intro{
+	line-height: 1.5;
+	margin: 8px 0;
+}
+
+.tos-last-updated {
+	margin-top: 24px;
+	font-size: 12px;
+	color: var(--text-secondary);
+}
+
+
+
+
 
