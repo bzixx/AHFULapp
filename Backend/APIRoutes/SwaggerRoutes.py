@@ -2141,7 +2141,7 @@ swaggerConfig = {
       }
     },
 
-    "/AHFULfood/": {
+    "/AHFULfoods/": {
       "get": {
         "summary": "Get all foods (Dev/Admin)",
         "tags": ["Food"],   
@@ -2187,7 +2187,7 @@ swaggerConfig = {
       }
     },
 
-    "/AHFULfood/{user_id}": {
+    "/AHFULfoods/{user_id}": {
       "get": {
         "summary": "Get foods by user_id (User or Dev/Admin)",
         "tags": ["Food"],
@@ -2242,7 +2242,7 @@ swaggerConfig = {
       }
     },
 
-    "/AHFULfood/id/{id}": {
+    "/AHFULfoods/id/{id}": {
       "get": {
         "summary": "Get food by id (Dev/Admin)",
         "tags": ["Food"],
@@ -2294,7 +2294,7 @@ swaggerConfig = {
       }
     },
 
-    "/AHFULfood/create": {
+    "/AHFULfoods/create": {
       "post": {
         "summary": "Create a new food entry (Logged in)",
         "tags": ["Food"],
@@ -2351,7 +2351,7 @@ swaggerConfig = {
       }
     },
 
-    "/AHFULfood/delete/{food_id}": {
+    "/AHFULfoods/delete/{food_id}": {
       "delete": {
         "summary": "Delete food by id (Owner or Dev/Admin)",
         "tags": ["Food"],
@@ -2427,7 +2427,7 @@ swaggerConfig = {
       }
     }, 
 
-    "/AHFULfood/update/{food_id}": {
+    "/AHFULfoods/update/{food_id}": {
       "put": {
         "summary": "Update a food entry (Owner or Dev/Admin)",
         "description": "Updates allowed fields of a food entry by id. The server treats PUT as a partial update of allowed fields.",
