@@ -4,7 +4,6 @@ import { handle_google_login, getUserSettings } from "../QueryFunctions.js";
 import { authLogin } from "./AuthSlice.jsx";
 import { useDispatch } from "react-redux";
 import { setSettings } from '../Auth/SettingsSlice.jsx';
-import "./Login.css";
 
 export function GoogleButton({ onSuccess, onError }) {
   const dispatch = useDispatch();
@@ -44,15 +43,9 @@ export function GoogleButton({ onSuccess, onError }) {
   };
 
   return (
-    <div className="google-button-fixed">
-      <GoogleLogin
-        size="medium"
-        text={""}
-        theme={theme === "dark" ? "filled_black" : "outline"}
-        shape="circle"
-        onSuccess={handle_google_success}
-        onError={handle_google_failure}
-      />
-    </div>
+    <GoogleLogin
+      onSuccess={handle_google_success}
+      onError={handle_google_failure}
+    />
   );
 }
