@@ -2,7 +2,7 @@ import {  useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { WorkoutLogger } from "./Pages/WorkoutLogger/WorkoutLogger.jsx";
-import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
+import { ExploreWorkouts } from "./ExploreWorkouts/ExploreWorkouts.jsx";
 import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
 import { Dashboard } from "./Pages/Dashboard/Dashboard.jsx";
 import { Login } from "./Pages/Login/Login.jsx";
