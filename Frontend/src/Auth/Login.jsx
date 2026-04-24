@@ -1,5 +1,5 @@
-import veniceDesktop from "../../images/Login/venice desktop with overlay.jpg";
-import veniceMobile from "../../images/Login/venice mobile with overlay.jpg";
+import veniceDesktop from "../../images/Login/Backgrounds/venice desktop with overlay.jpg";
+import veniceMobile from "../../images/Login/Backgrounds/venice mobile with overlay.jpg";
 import "./Login.css";
 import "../Dashboard/Dashboard.css";
 import { GoogleLogin } from "@react-oauth/google";
@@ -122,6 +122,11 @@ export function Login() {
   return (
     <div className={`login-page ${isScrolled ? 'scrolled' : ''}`}>
       <div className="login-background" style={{ backgroundImage: `url(${isMobile ? veniceMobile : veniceDesktop})` }}></div>
+      <GoogleButton
+        onSuccess={() => setStatusText("Logged in!")}
+        onError={(err) => setStatusText(err || "Login failed")}
+        isScrolled={isScrolled}
+      />
       <div className="login-top-overlay">
         <div className={`login-content ${showContent ? 'fade-in' : ''}`}>
           <div className="login-title">
@@ -129,24 +134,6 @@ export function Login() {
                 <h1>AHFUL</h1>
                 A Helpful Fitness Utilization Logger App
               </div>
-          </div>
-          <div className="login-button">
-            {!isScrolled ? (
-              <GoogleLogin
-                size="large"
-                width="200"
-                text="signin_with"
-                theme={theme === "dark" ? "filled_black" : "outline"}
-                shape="pill"
-                onSuccess={handle_google_success}
-                onError={handle_google_failure}
-              />
-            ) : (
-              <GoogleButton
-                onSuccess={() => setStatusText("Logged in!")}
-                onError={(err) => setStatusText(err || "Login failed")}
-              />
-            )}
           </div>
           <div className={`scroll-down-text ${showScrollText ? 'fade-in' : ''}`}>
             {typedText}<span className="typing-cursor"></span>

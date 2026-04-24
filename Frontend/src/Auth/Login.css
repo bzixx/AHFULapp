@@ -2,6 +2,7 @@
   width: 100%;
   position: relative;
   margin-top: -7vh;
+  z-index: 100002;
 }
 
 .login-page main,
@@ -31,10 +32,7 @@
   width: 100%;
   min-height: 100vh;
   z-index: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
+  pointer-events: none;
 }
 
 .login-content {
@@ -43,9 +41,10 @@
   text-align: center;
   color: white;
   padding: 20px;
-  padding-top: 200px;
+  padding-top: 100px;
   min-height: 100vh;
   opacity: 0;
+  pointer-events: none;
 }
 
 .login-content.fade-in {
@@ -57,11 +56,12 @@
   top: 100%;
   left: 0;
   right: 0;
-  font-size: 20px;
+  font-size: 40px;
   font-weight: bold;
   color: white;
   opacity: 0;
   text-align: center;
+  pointer-events: none;
 }
 
 .scroll-down-text.fade-in {
@@ -72,13 +72,14 @@
 
 .login-dashboard-content {
   position: relative;
-  z-index: 1;
+  z-index: 100001;
   margin-top: 150px;
   padding: 10px;
   background: transparent !important;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  pointer-events: none;
 }
 
 .login-dashboard-content .section {
@@ -96,6 +97,7 @@
 .login-dashboard-content .section_card {
   background: white !important;
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  pointer-events: none;
 }
 
 .login-dashboard-content .section_name,
@@ -187,17 +189,6 @@
   font-size: 33px;
   color: white;
 }
-
-.login-button {
-  display: flex;
-  justify-content: center;
-  margin-top: 40px;
-}
-
-.login-button > div {
-  transform: scale(1.5);
-}
-
 
 .login-tos-button {
   position: relative;
