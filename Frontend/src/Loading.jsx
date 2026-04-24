@@ -1,4 +1,4 @@
-import './Loading.css';
+import './siteStyles.css';
 
 export function Loading({ message = "Loading..." }) {
   return (
