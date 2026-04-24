@@ -1,13 +1,13 @@
-from flask import Flask, Blueprint, render_template, request, jsonify
+from flask import  Blueprint, request, jsonify
 from google.adk.runners import InMemoryRunner
 from google.genai import types
 import character
 import asyncio
-import os
 from dotenv import load_dotenv
 load_dotenv()
+from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
-chatRouteBlueprint = Blueprint("chat", __name__,  url_prefix="/AHFULChat")
+chatRouteBlueprint = Blueprint("chat", __name__,  url_prefix="/AHFULchats")
 
 adk_session = None
 session_lock = asyncio.Lock()
@@ -18,6 +18,7 @@ runner = InMemoryRunner(
 )
 
 @chatRouteBlueprint.route("/", methods=["POST"])
+@login_required_user
 async def chat():
     user_message = request.json.get("message")
 

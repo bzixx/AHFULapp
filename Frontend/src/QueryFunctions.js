@@ -15,6 +15,7 @@ export async function loadEquipment() {
       {
         method: "GET",
         mode: "cors",
+        credentials: "include",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -58,6 +59,7 @@ export async function loadBodyParts() {
     const res = await fetch("https://www.ahful.app/api/AHFULexercises/bodyparts/", {
       method: "GET",
       mode: "cors",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -100,6 +102,7 @@ export async function loadTargetMuscles() {
     const res = await fetch("https://www.ahful.app/api/AHFULexercises/muscles/", {
       method: "GET",
       mode: "cors",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -144,18 +147,14 @@ export async function handle_logout() {
 
   //Try to Get LocalStorage Cookie for data
   try {
-    let storedUserData = localStorage.getItem("user_data");
-    let parsedData = JSON.parse(storedUserData);
-
     // POST response Object to BACKEND API ROUTE for processing.
     const backendResponse = await fetch(backendPOSTURL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ logout_email: parsedData.email }),
+      body: {},
       credentials: "include",
     });
 
-    localStorage.removeItem("user_data");
     //TODO: UPDATE REDUX
     //setIsLoggedIn(false);
     console.log("AHFUL Logout Completed successfully.");
@@ -188,32 +187,8 @@ export async function handle_google_login(response) {
       });
 
       let backendUserData = await backendResponse.json();
+      return backendUserData;
 
-      console.log(backendResponse.status);
-      //Error Handeling for if Backend Logic reported Failed to Frontend
-      if (!backendResponse.ok) {
-        const message = backendUserData?.error || backendResponse.statusText;
-        throw new Error(`${message}`);
-      }
-
-      //Explicit check over response from server
-      const contentType = backendResponse.headers.get("content-type");
-
-      //If it exisits and the content type mathces, then set the frontendUserInfo variable
-      //Also Sotre it to local Storage
-      if (contentType && contentType.includes("application/json")) {
-        const frontendUserInfo = backendUserData.user_info;
-        const userString = JSON.stringify(frontendUserInfo);
-        localStorage.setItem("user_data", userString);
-        //If we want to swap to https use below line instead.
-        //document.cookie = `user_data=${userString}; path=/; secure; samesite=strict`;
-        return frontendUserInfo;
-      } else {
-        //If its not JSON try to parse it into text.
-        throw new Error(
-          `AHFUL Frontend API response error: Expected JSON but got ${contentType}`,
-        );
-      }
     }
 
     console.log("AHFUL context_login Completed successfully.");
@@ -226,26 +201,21 @@ export async function handle_google_login(response) {
   }
 }
 
-export async function whoami(userDataToVerify) {
+export async function whoami() {
   try {
     const backendVerificationResponse = await fetch('https://www.ahful.app/api/AHFULauth/whoami', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: userDataToVerify.email,
-        last_login_expire: userDataToVerify.last_login_expire,
-        magic_bits: userDataToVerify.magic_bits
-      }),
+      body: {},
       credentials: 'include'
     });
 
-    if (backendVerificationResponse.ok) {
-      const data = await backendVerificationResponse.json();
-      return data;
+    const data = await backendVerificationResponse.json();
+
+    if (data.authenticated) {
+      return { ok: true, data };
     } else {
-      throw new Error(
-        `Session validation failed: ${backendVerificationResponse.status} ${backendVerificationResponse.statusText}`,
-      );
+      return { ok: false, error: data.error };
     }
   } catch (err) {
     console.error("Query Function Session validation failed:", err);
@@ -254,9 +224,10 @@ export async function whoami(userDataToVerify) {
 
 // ──  Template functions ─────────────────────────────────────────────────────────
 export async function fetchTemplate(userId) {
-  console.log(userId);
   const res = await fetch(
-    `https://www.ahful.app/api/AHFULworkout/templates/${userId}`,
+    `https://www.ahful.app/api/AHFULworkouts/templates/user/${userId}`,{
+      credentials: 'include'
+    }
   );
   if (!res.ok) {
     let bodyText = "";
@@ -274,9 +245,10 @@ export async function fetchTemplate(userId) {
 export async function createTemplate(templateData) {
   try {
     const res = await fetch(
-      "https://www.ahful.app/api/AHFULworkout/create/template",
+      "https://www.ahful.app/api/AHFULworkouts/create/template",
       {
         method: "POST",
+        credentials: 'include',
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -299,28 +271,19 @@ export async function createTemplate(templateData) {
 }
 
 // ──  User Settings functions ─────────────────────────────────────────────────────────
-export async function getUserSettings(userId) {
-  const foundUserSettingsResponse = await fetch(`https://www.ahful.app/api/AHFULuserSettings/${userId}`);
-  if (foundUserSettingsResponse.status === 404) {
-    // Create default settings if not found
-    const createDefaultSettingsResponse = await fetch(
-      `https://www.ahful.app/api/AHFULuserSettings/createDefault/${userId}`,
-      {
-        method: "POST",
-      },
-    );
-    if (!createDefaultSettingsResponse.ok)
-      throw new Error(
-        "Failed to create default settings" +
-          createDefaultSettingsResponse.status,
-      );
-    return createDefaultSettingsResponse.json();
-  }
-  if (!foundUserSettingsResponse.ok)
+export async function getUserSettings() {
+  const foundUserSettingsResponse = await fetch(`https://www.ahful.app/api/AHFULuserSettings`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (foundUserSettingsResponse.ok){
+    return foundUserSettingsResponse.json();
+  }else{
     throw new Error(
       "Failed to fetch settings" + foundUserSettingsResponse.status,
     );
-  return foundUserSettingsResponse.json();
+  }
 }
 
 export async function updateUserSettings(userId, settings) {
@@ -328,6 +291,7 @@ export async function updateUserSettings(userId, settings) {
     `https://www.ahful.app/api/AHFULuserSettings/update/${userId}`,
     {
       method: "PUT",
+      credentials: 'include',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(settings),
     },
@@ -359,7 +323,7 @@ export async function forwardGeocode(address) {
   try {
     const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
     const res = await fetch(url, {
-      headers: { "User-Agent": "AHFULApp/1.0" },
+      headers: { "User-Agent": "AHFULApp/1.0" },credentials: 'include',
     });
     if (!res.ok) {
       throw new Error(`Geocoding API returned ${res.status}`);
@@ -381,7 +345,7 @@ export async function forwardGeocode(address) {
 
 export async function fetchGym(gymId) {
   try {
-    const res = await fetch(`https://www.ahful.app/api/AHFULgyms/${gymId}`);
+    const res = await fetch(`https://www.ahful.app/api/AHFULgyms/${gymId}`, {credentials: 'include'});
     if (!res.ok) {
       throw new Error(`Failed to fetch gym: ${res.status} ${res.statusText}`);
     }
@@ -391,12 +355,72 @@ export async function fetchGym(gymId) {
     return null;
   }
 }
+export async function fetchAllGyms() {
+  try {
+    const res = await fetch("https://www.ahful.app/api/AHFULgyms", {
+      credentials: "include"
+    });
+    if (!res.ok) {
+      let bodyText = "";
+      try { bodyText = await res.text(); } catch (e) { /* ignore */ }
+      throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
+    }
+    const data = await res.json();
+    let list = [];
+    if (Array.isArray(data)) { list = data; }
+    else if (data && Array.isArray(data.data)) { list = data.data; }
+    else if (data && Array.isArray(data.results)) { list = data.results; }
+    else { list = []; }
+    return list;
+  } catch (err) {
+    console.error("fetchAllGyms error:", err);
+    const friendly = err && err.name ? `${err.name}: ${err.message}` : String(err);
+    throw new Error(friendly || "Unknown error");
+  }
+}
+
+export async function createGym(gymData) {
+  try {
+    const res = await fetch("https://www.ahful.app/api/AHFULgyms/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(gymData),
+      credentials: "include"
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      return { error: data.error || `Server returned ${res.status}` };
+    }
+    return { success: true, data };
+  } catch (err) {
+    console.error("createGym error:", err);
+    return { error: err.message || "Failed to create gym" };
+  }
+}
+
+export async function deleteGym(gymId) {
+  try {
+    const res = await fetch(`https://www.ahful.app/api/AHFULgyms/delete/${gymId}`, {
+      method: "DELETE",
+      credentials: "include"
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`Failed to delete gym: ${res.status} ${err}`);
+    }
+    return { success: true };
+  } catch (err) {
+    console.error("deleteGym error:", err);
+    return { error: err.message || "Failed to delete gym" };
+  }
+}
+
 
 // ── Exercise Functions ─────────────────────────────────────────────────────────
 
 export async function fetchExerciseById(exerciseId) {
   const res = await fetch(
-    `https://www.ahful.app/api/AHFULexercises/id/${exerciseId}`,
+    `https://www.ahful.app/api/AHFULexercises/id/${exerciseId}`, {credentials: 'include'}
   );
   if (!res.ok) {
     throw new Error(
@@ -422,6 +446,7 @@ export async function createExercise(exerciseData) {
     const res = await fetch("https://www.ahful.app/api/AHFULexercises/create/", {
       method: "POST",
       mode: "cors",
+      credentials: 'include',
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -444,7 +469,7 @@ export async function createExercise(exerciseData) {
 }
 
 export async function fetchExercisesFromBackend() {
-  const res = await fetch("https://www.ahful.app/api/AHFULexercises");
+  const res = await fetch("https://www.ahful.app/api/AHFULexercises", {credentials: 'include'});
   if (!res.ok) {
     let bodyText = "";
     try {
@@ -469,7 +494,7 @@ export async function fetchExercisesFromBackend() {
 
 export async function searchExercises(searchQuery) {
   const res = await fetch(
-    `https://www.ahful.app/api/AHFULexercises/search?search=${encodeURIComponent(searchQuery)}`,
+    `https://www.ahful.app/api/AHFULexercises/search?search=${encodeURIComponent(searchQuery)}`, {credentials: 'include'}
   );
   if (!res.ok) {
     let bodyText = "";
@@ -496,8 +521,9 @@ export async function searchExercises(searchQuery) {
 // ── Workout Functions ───────────────────────────────────────────────────────────
 
 export async function createWorkout(workoutData) {
-  const res = await fetch("https://www.ahful.app/api/AHFULworkout/create", {
+  const res = await fetch("https://www.ahful.app/api/AHFULworkouts/create", {
     method: "POST",
+    credentials: 'include',
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(workoutData),
   });
@@ -510,7 +536,7 @@ export async function createWorkout(workoutData) {
 
 export async function fetchWorkout(userId) {
   try {
-    const res = await fetch(`https://www.ahful.app/api/AHFULworkout/${userId}`);
+    const res = await fetch(`https://www.ahful.app/api/AHFULworkouts/${userId}`, {credentials: 'include'});
 
     // Handle empty or not found responses for new users
     if (res.status === 404 || res.status === 204) {
@@ -525,7 +551,6 @@ export async function fetchWorkout(userId) {
     }
 
     const data = await res.json();
-    // Ensure we always return an array
     return data
 
   } catch (err) {
@@ -537,11 +562,10 @@ export async function fetchWorkout(userId) {
 
 export async function fetchWorkoutById(workoutId) {
   try {
-    const res = await fetch(`https://www.ahful.app/api/AHFULworkout/${workoutId}`);
+    const res = await fetch(`https://www.ahful.app/api/AHFULworkouts/id/${workoutId}`, {credentials: 'include'});
 
-    // Handle empty or not found responses for new users
     if (res.status === 404 || res.status === 204) {
-      return [];
+      return null;
     }
 
     if (!res.ok) {
@@ -552,23 +576,20 @@ export async function fetchWorkoutById(workoutId) {
     }
 
     const data = await res.json();
-    // Ensure we always return an array
-    if (Array.isArray(data)) return data;
-    if (data && Array.isArray(data.workouts)) return data.workouts;
-    if (data && Array.isArray(data.data)) return data.data;
-    return [];
+    return data; 
   } catch (err) {
     console.error("fetchWorkout error:", err);
-    // Return empty array for network errors on new user accounts
     throw err;
   }
 }
 
+
 export async function updateWorkout(workoutId, data) {
   const res = await fetch(
-    `https://www.ahful.app/api/AHFULworkout/update/${workoutId}`,
+    `https://www.ahful.app/api/AHFULworkouts/update/${workoutId}`,
     {
       method: "PUT",
+      credentials: 'include',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     },
@@ -582,10 +603,33 @@ export async function updateWorkout(workoutId, data) {
 
 // ── Personal Exercise Functions ─────────────────────────────────────────────────
 
+export async function fetchPersonalExerciseById(userId) {
+  try {
+    const res = await fetch(
+      `https://www.ahful.app/api/AHFULpersonalEx/${userId}`, {credentials: 'include'}
+    );
+    if (res.status === 404 || res.status === 204) {
+      return [];
+    }
+    if (!res.ok) {
+      const bodyText = await res.text().catch(() => "");
+      throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
+    }
+    const data = await res.json();
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.exercises)) return data.exercises;
+    if (data && Array.isArray(data.data)) return data.data;
+    return [];
+  } catch (err) {
+    console.error("fetchPersonalExerciseById error:", err);
+    return [];
+  }
+}
+
 export async function fetchPersonalExercises(workoutId) {
   try {
     const res = await fetch(
-      `https://www.ahful.app/api/AHFULpersonalEx/workout/${workoutId}`,
+      `https://www.ahful.app/api/AHFULpersonalEx/workout/${workoutId}`, {credentials: 'include'}
     );
 
     // Handle empty or not found responses
@@ -614,6 +658,7 @@ export async function fetchPersonalExercises(workoutId) {
 export async function createPersonalExercise(data) {
   const res = await fetch("https://www.ahful.app/api/AHFULpersonalEx/create", {
     method: "POST",
+    credentials: 'include',
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
@@ -629,6 +674,7 @@ export async function updatePersonalExercise(exerciseId, data) {
     `https://www.ahful.app/api/AHFULpersonalEx/update/${exerciseId}`,
     {
       method: "PUT",
+      credentials: 'include',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     },
@@ -645,6 +691,7 @@ export async function deletePersonalExercise(exerciseId) {
     `https://www.ahful.app/api/AHFULpersonalEx/delete/${exerciseId}`,
     {
       method: "DELETE",
+      credentials: 'include',
     },
   );
   if (!res.ok) {
@@ -659,6 +706,7 @@ export async function createPersonalExercises(peData) {
   try {
     const res = await fetch("https://www.ahful.app/api/AHFULpersonalEx/create", {
       method: "POST",
+      credentials: 'include',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(peData),
     });
@@ -682,6 +730,7 @@ export async function updatePersonalExercises(peId, peData) {
       `https://www.ahful.app/api/AHFULpersonalEx/update/${peId}`,
       {
         method: "PUT",
+        credentials: 'include',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(peData),
       },
@@ -706,6 +755,7 @@ export async function updateTask(taskId, updates) {
       `https://www.ahful.app/api/AHFULtasks/update/${taskId}`,
       {
         method: "PUT",
+        credentials: 'include',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updates),
       }

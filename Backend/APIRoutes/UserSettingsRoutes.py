@@ -1,17 +1,34 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from Services.UserSettingsDriver import UserSettingsDriver
+from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
 userSettingsBlueprint = Blueprint("userSettings", __name__, url_prefix="/AHFULuserSettings")
 
+@userSettingsBlueprint.route("/", methods=["GET"])
+@login_required_user
+def cookie_get_user_settings():
+    settings, error = UserSettingsDriver.get_user_settings(g.user_id)
+    if error:
+        return jsonify({"error": f"Error getting user settings: {error}"}), 500
+    return jsonify(settings), 200
+
 @userSettingsBlueprint.route("/<user_id>", methods=["GET"])
+@login_required_user
 def get_user_settings(user_id):
+    # Own user request, devs or admins only
+    if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
+        return jsonify({"error": "You may only access your own data"}), 403
     settings, error = UserSettingsDriver.get_user_settings(user_id)
     if error:
         return jsonify({"error": error}), 404
     return jsonify(settings), 200
 
 @userSettingsBlueprint.route("/create/<user_id>", methods=["POST"])
+@login_required_user
 def create_user_settings(user_id):
+    # Own user request, devs or admins only
+    if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
+        return jsonify({"error": "You may only access your own data"}), 403
     data = request.get_json() or {}
     settings, error = UserSettingsDriver.create_user_settings(user_id, data)
     if error:
@@ -19,14 +36,22 @@ def create_user_settings(user_id):
     return jsonify(settings), 201
 
 @userSettingsBlueprint.route("/createDefault/<user_id>", methods=["POST"])
+@login_required_user
 def create_default_user_settings(user_id):
+    # Own user request, devs or admins only
+    if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
+        return jsonify({"error": "You may only access your own data"}), 403
     settings, error = UserSettingsDriver.create_default_user_settings(user_id)
     if error:
         return jsonify({"error": error}), 400
     return jsonify(settings), 201
 
 @userSettingsBlueprint.route("/update/<user_id>", methods=["PUT"])
+@login_required_user
 def update_user_settings(user_id):
+    # Own user request, devs or admins only
+    if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
+        return jsonify({"error": "You may only access your own data"}), 403
     data = request.get_json()
     if not data:
         return jsonify({"error": "No data provided"}), 400
@@ -36,7 +61,11 @@ def update_user_settings(user_id):
     return jsonify(settings), 200
 
 @userSettingsBlueprint.route("/delete/<user_id>", methods=["DELETE"])
+@login_required_user
 def delete_user_settings(user_id):
+    # Own user request, devs or admins only
+    if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
+        return jsonify({"error": "You may only access your own data"}), 403
     result, error = UserSettingsDriver.delete_user_settings(user_id)
     if error:
         return jsonify({"error": error}), 404

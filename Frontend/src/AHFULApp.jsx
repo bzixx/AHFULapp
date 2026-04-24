@@ -1,33 +1,38 @@
-import React, { useEffect, useState } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { WorkoutLogger } from "./Pages/WorkoutLogger/WorkoutLogger.jsx";
-import { ExploreWorkouts } from "./Pages/ExploreWorkouts/ExploreWorkouts.jsx";
-import { FoodLog } from "./Pages/FoodLog/FoodLog.jsx";
-import { Dashboard } from "./Pages/Dashboard/Dashboard.jsx";
-import { Login } from "./Pages/Login/Login.jsx";
-import { VerifyEmail } from "./Pages/Verification/VerifyEmail.jsx";
-import { Map } from "./Pages/Map/Map.jsx";
-import { AIChat } from "./Pages/AIChat/AIChat.jsx";
-import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
-import { Profile } from "./Pages/Profile/Profile.jsx";
-import { TOS } from "./Pages/TOS/TOS.jsx";
-import { Layout } from "./layout.jsx"
-import { AuthRouteCheck } from "./AuthRouteCheck.jsx";
-import { Settings } from "./Pages/Settings/Settings.jsx";
-import { ExploreTasks } from "./Pages/ExploreTasks/ExploreTasks.jsx";
-import { useTutorial } from "./hooks/useTutorial.js";
-import { TutorialOverlay } from "./components/Tutorial/TutorialOverlay.jsx";
-import "./SiteStyles.css";
+import {  useEffect } from "react";
+import { Routes, Route, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { WorkoutLogger } from "./WokoutLogger/WorkoutLogger.jsx";
+import { ExploreWorkouts } from "./ExploreWorkouts/ExploreWorkouts.jsx";
+import { FoodLog } from "./Food/FoodLog.jsx";
+import { Dashboard } from "./Dashboard/Dashboard.jsx";
+import { Login } from "./Auth/Login.jsx";
+import { VerifyEmail } from "./Auth/VerifyEmail.jsx";
+import { NotVerified } from "./Auth/NotVerified.jsx";
+import { Map } from "./Gyms/Map.jsx";
+import { AIChat } from "./AIChat/AIChat.jsx";
+import { MeasurementLogger } from "./MeasurementLogger/MeasurementLogger.jsx";
+import { Profile } from "./Auth/Profile.jsx";
+import { TOS } from "./TOS.jsx";
+import { Layout } from "./Layout.jsx"
+import { Settings } from "./Auth/Settings.jsx";
+import { ExploreTasks } from "./Tasks/ExploreTasks.jsx";
+import { useTutorial } from "./Auth/useTutorial.js";
+import { TutorialOverlay } from "./Auth/TutorialOverlay.jsx";
+import "./siteStyles.css";
 import "./Stylesheets/Themes/Lightmode.css";
 import "./Stylesheets/Themes/Darkmode.css";
+import { whoami, getUserSettings } from "./QueryFunctions.js";
+import { setSettings } from './Auth/SettingsSlice.jsx';
+import { authLogin } from "./Auth/AuthSlice.jsx";
+import { ExploreFriends } from "./Social/ExploreFriends.jsx";
+
 
 function AHFULApp() {
-    // Example: detect page changes and refresh a value when the route changes.
-  // This component is rendered inside a <Router> (see `main.jsx`), so useLocation works here.
-  const location = useLocation();
-  const [pageChangeCount, setPageChangeCount] = useState(0);
   const theme = useSelector((state) => state.setting.theme);
+  const userData = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const {
     isActive: tutorialActive,
     currentStep,
@@ -40,64 +45,78 @@ function AHFULApp() {
 
   // Apply theme globally - runs on all pages
   useEffect(() => {
-    if (theme === "Dark") {
+    if (theme === "dark") {
       document.body.classList.add("dark");
     } else {
       document.body.classList.remove("dark");
     }
-  }, [theme]);
+  }, [theme]);  
 
+  // Apply WhoAmI Check globally - runs on all pages
   useEffect(() => {
-        // increment a counter every time the pathname changes — used for debugging route changes
-    setPageChangeCount((c) => c + 1);
-    // console.log("route changed to", location.pathname);
-  }, [location.pathname]);
+    const checkCookies = async () => {
+      // We only want to run this check once on app load, not on every route change.
+      const whomstResponse = await whoami();
+      const path = window.location.pathname || '/';
+
+      // If whoami fails to return (network or missing cookies),
+      // don't force a redirect when the user is already on the public
+      // root path ('/'). But if they're trying to visit any other
+      // route, send them to the Login page.
+      if (!whomstResponse) {
+        navigate('/');
+        return;
+      }
+
+      if (whomstResponse.ok){
+        dispatch(authLogin(whomstResponse.data.user_info));
+
+        const userSettingsResponse = await getUserSettings();
+        dispatch(setSettings(userSettingsResponse));
+      }else{
+        navigate('/');
+      }
+    }
+
+    checkCookies();
+  }, []);  
+
 
   return (
     <>
       <Routes>
         <Route element={<Layout/>}>
-          <Route path="/" element={<Dashboard/>}/>
-          <Route path="/Login" element={<Login/>}/>
+          <Route path="/Dashboard" element={<Dashboard/>}/>
           <Route path="/TOS" element={<TOS/>}/>
           <Route path="/WorkoutLogger" element={
-            <AuthRouteCheck>
-              <WorkoutLogger/>
-            </AuthRouteCheck>} />
+              <WorkoutLogger/>} />
           <Route path="/ExploreWorkout" element={
-            <AuthRouteCheck>
-              <ExploreWorkouts/>
-            </AuthRouteCheck>
-            }/>
+              <ExploreWorkouts/>}/>
           <Route path="/FoodLog" element={
-            <AuthRouteCheck>
-              <FoodLog/>
-            </AuthRouteCheck>}/>
+              <FoodLog/>}/>
           <Route path="/EmailVerification" element={
               <VerifyEmail/>}/>
+          <Route path="/NotVerified" element={
+              <NotVerified/>}/>
           <Route path="/AIChat" element={
-            <AuthRouteCheck>
-              <AIChat/>
-            </AuthRouteCheck>}/>
+              <AIChat/>}/>
           <Route path="/Map" element={
-            <AuthRouteCheck>
-              <Map/>
-            </AuthRouteCheck>}/>
+              <Map/>}/>
+          <Route path="/ExploreFriends" element={
+              <ExploreFriends/>}/>
           <Route path="/MeasurementLogger" element={
-            <AuthRouteCheck>
-              <MeasurementLogger/>
-            </AuthRouteCheck>}/>
+              <MeasurementLogger/>}/>
           <Route path="/Profile" element={
-            <AuthRouteCheck>
-              <Profile/>
-            </AuthRouteCheck>}/>
+              <Profile/>}/>
           <Route path="/ExploreTasks" element={
-            <AuthRouteCheck>
-              <ExploreTasks/>
-            </AuthRouteCheck>}/>
+              <ExploreTasks/>}/>
+          <Route path="Settings" element={
+              <Settings/>} />
         </Route>
-        <Route path="Settings" element={<Settings/>} />
+        {/* Put outside of the Layout so it doesn't show the header/navbar */}
+        <Route path="/" element={<Login/>}/>
       </Routes>
+
       {tutorialActive && currentStepData && (
         <TutorialOverlay
           step={currentStep}
@@ -110,8 +129,10 @@ function AHFULApp() {
           onComplete={completeTutorial}
         />
       )}
+
     </>
   );
+
 }
 
 export default AHFULApp

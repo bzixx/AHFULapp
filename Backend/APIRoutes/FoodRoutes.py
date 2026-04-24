@@ -1,10 +1,12 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from Services.FoodDriver import FoodDriver
+from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
-foodRouteBlueprint = Blueprint("food", __name__, url_prefix="/AHFULfood")
+foodRouteBlueprint = Blueprint("foods", __name__, url_prefix="/AHFULfoods")
 
 # ── SEARCH USDA FoodData Central API (MUST BE BEFORE CATCH-ALL ROUTES) ────────────────────────────────
 @foodRouteBlueprint.route("/search/usda", methods=["GET"])
+@login_required_user
 def search_usda_foods():
     """
     Search USDA FoodData Central for foods.
@@ -25,21 +27,27 @@ def search_usda_foods():
 
 # ── GET all foods ────────────────────────────
 @foodRouteBlueprint.route("/", methods=["GET"])
+@login_required_dev
 def get_all_food():
     food, error = FoodDriver.get_all_food()
     if error:
         return jsonify({"error": error}), 500
     return jsonify(food), 200
 
-# ── GET single food ────────────────────────────────────────────────────────────
+# ── GET specific food ────────────────────────────────────────────────────────────
 @foodRouteBlueprint.route("/<user_id>", methods=["GET"])
+@login_required_user
 def get_food_by_user(user_id):
+    # Own user request, devs or admins only
+    if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
+        return jsonify({"error": "You may only access your own data"}), 403
     food, error = FoodDriver.get_food_by_user(user_id)
     if error:
         return jsonify({"error": error}), 404
     return jsonify(food), 200
 
 @foodRouteBlueprint.route("/id/<id>", methods=["GET"])
+@login_required_dev
 def get_food_by_id(id):
     food, error = FoodDriver.get_food_by_id(id)
     if error:
@@ -48,13 +56,14 @@ def get_food_by_id(id):
 
 # ── CREATE food ────────────────────────────────────────────────────────────────
 @foodRouteBlueprint.route("/create", methods=["POST"])
+@login_required_user
 def create_food():
     data = request.get_json()
     if not data:
         return jsonify({"error": "No data provided"}), 400
 
     food_id, error = FoodDriver.create_food(
-        user_id=data.get("user_id"),
+        user_id=g.user_id,
         name=data.get("name"),
         calsPerServing=data.get("calsPerServing"),
         servings=data.get("servings"),
@@ -66,14 +75,18 @@ def create_food():
         return jsonify({"error": error}), 400
     return jsonify({"food_id": food_id, "message": "food created"}), 201
 
-
 # ── UPDATE food ────────────────────────────────────────────────────────────────
 @foodRouteBlueprint.route("/update/<food_id>", methods=["PUT"])
+@login_required_user
 def update_food(food_id):
     data = request.get_json()
 
     if not data or not isinstance(data, dict):
         return jsonify({"error": "No data provided"}), 400
+    
+    res, err = FoodDriver.verify_operation(g.user_id, food_id)
+    if err:
+        return jsonify({"error": err}), 400
 
     updates = {
         "name": data.get("name"),
@@ -91,9 +104,14 @@ def update_food(food_id):
 
 # ── DELETE food ────────────────────────────────────────────────────────────────
 @foodRouteBlueprint.route("/delete/<food_id>", methods=["DELETE"])
+@login_required_user
 def delete_food(food_id):
     if not food_id:
         return jsonify({"error": "You must provide a food id to delete"}), 400
+    
+    res, err = FoodDriver.verify_operation(g.user_id, food_id)
+    if err:
+        return jsonify({"error": err}), 400 
 
     response, error = FoodDriver.delete_food(food_id)
     if error:
@@ -102,7 +120,10 @@ def delete_food(food_id):
 
 # ── GET food streak for user ──────────────────────────────────────
 @foodRouteBlueprint.route("/streak/<user_id>", methods=["GET"])
+@login_required_user
 def get_food_streak(user_id):
+    if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
+        return jsonify({"error": "You may only access your own data"}), 403
     streak_data, error = FoodDriver.get_streak(user_id)
     if error:
         return jsonify({"error": error}), 500

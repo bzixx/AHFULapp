@@ -1,8 +1,7 @@
-import { Navbar } from "./components/navbar/navbar";
+import { Navbar } from "./navbar.jsx";
 import { Outlet } from "react-router-dom";
-import { MenuButton } from "./components/MenuButton/MenuButton";
-import { Header } from "./components/Header/Header.jsx";
-import { Footer } from "./components/Footer/Footer.jsx";
+import { Header } from "./Header.jsx";
+import { Footer } from "./Footer.jsx";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 
@@ -20,7 +19,7 @@ export function Layout() {
 
     // Apply theme globally whenever it changes
     useEffect(() => {
-        if (theme === "Dark") {
+        if (theme === "dark") {
             document.body.classList.add("dark");
         } else {
             document.body.classList.remove("dark");
@@ -29,9 +28,6 @@ export function Layout() {
 
     return (
         <>
-            {/*Getting rid of this until I add a mobile view
-            <MenuButton/>
-            */}
             <main>
             <Header onMenuToggle={toggleNav} isMenuOpen={isNavOpen} />
             <Navbar isOpen={isNavOpen} onNavClick={closeNav} />
