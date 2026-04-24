@@ -20,7 +20,7 @@ export function Profile() {
   useEffect(() => {
     // If there's no user data, redirect to home.
     if (!UserData) {
-      navigate("/Login");
+      navigate("/");
       return;
     }
 
@@ -177,7 +177,7 @@ export function Profile() {
         <div className="profile-logout-section">
           <button
             className="profile-logout-btn" id="logout-btn"
-            onClick={() => {handle_logout(); dispatch(authLogout()); dispatch(setSettings(settingsInitialState)); navigate("/");}}
+            onClick={() => {handle_logout(); dispatch(authLogout()); dispatch(setSettings(settingsInitialState));}}
           >
             Logout
           </button>

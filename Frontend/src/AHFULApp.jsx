@@ -64,12 +64,7 @@ function AHFULApp() {
       // root path ('/'). But if they're trying to visit any other
       // route, send them to the Login page.
       if (!whomstResponse) {
-        if (path === '/' || path === '/TOS') {
-          // allow browsing the public dashboard/root without forcing login
-          return;
-        }
-
-        navigate('/Login');
+        navigate('/');
         return;
       }
 
@@ -79,11 +74,7 @@ function AHFULApp() {
         const userSettingsResponse = await getUserSettings();
         dispatch(setSettings(userSettingsResponse));
       }else{
-        if (path === '/' || path === '/TOS') {
-          // allow browsing the public dashboard/root without forcing login
-          return;
-        }
-        navigate('/Login');
+        navigate('/');
       }
     }
 
@@ -95,8 +86,7 @@ function AHFULApp() {
     <>
       <Routes>
         <Route element={<Layout/>}>
-          <Route path="/" element={<Dashboard/>}/>
-          <Route path="/Login" element={<Login/>}/>
+          <Route path="/Dashboard" element={<Dashboard/>}/>
           <Route path="/TOS" element={<TOS/>}/>
           <Route path="/WorkoutLogger" element={
               <WorkoutLogger/>} />
@@ -123,6 +113,8 @@ function AHFULApp() {
           <Route path="Settings" element={
               <Settings/>} />
         </Route>
+        {/* Put outside of the Layout so it doesn't show the header/navbar */}
+        <Route path="/" element={<Login/>}/>
       </Routes>
 
       {tutorialActive && currentStepData && (
