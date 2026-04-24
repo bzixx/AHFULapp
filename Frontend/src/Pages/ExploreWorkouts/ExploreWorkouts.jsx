@@ -52,7 +52,7 @@ export function ExploreWorkouts() {
         throw new Error("User ID not found. Please log in to view your workouts.");
       }
       
-      const res = await fetch(`http://localhost:5000/api/AHFULworkout/${userId}`,{method: "GET",credentials: "include",});
+      const res = await fetch(`http://localhost:5000/api/AHFULworkouts/${userId}`,{method: "GET",credentials: "include",});
 
       if (!res.ok) {
         let bodyText = "";
