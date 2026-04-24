@@ -7,7 +7,6 @@ import { authLogout } from "./AuthSlice";
 import { setSettings, settingsInitialState } from "./SettingsSlice.jsx";
 import {registerService} from "../Tasks/firebase.js";
 import {handle_logout,updateUserSettings} from "../QueryFunctions.js"
-import {ProfileSettingsButton} from "./ProfileSettingsButton.jsx"
 import { useNavigate } from "react-router-dom";
 
 export function Profile() {
@@ -88,7 +87,6 @@ export function Profile() {
 
   return (
   <div className="page-layout">
-    <ProfileSettingsButton />
     <div className="left-column" />
     <div className="center-column">
       <div className="profile-card">
@@ -177,6 +175,23 @@ export function Profile() {
             Logout
           </button>
         </div>
+
+        {/* Settings Bottom-right button */}
+        <div className="profile-settings-wrapper">
+          <button
+            className={`profile-settings-trigger ${open ? "active" : ""}`}
+            // onClick={toggle}
+            onClick={() => navigate("/Settings")}
+            >
+            ⚙️
+          </button>
+        </div>
+
+
+
+
+
+
       </div>
     </div>
     <div className="right-column" />
