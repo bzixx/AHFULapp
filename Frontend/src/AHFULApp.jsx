@@ -24,6 +24,7 @@ import "./Stylesheets/Themes/Darkmode.css";
 import { whoami, getUserSettings } from "./QueryFunctions.js";
 import { setSettings } from './Auth/SettingsSlice.jsx';
 import { authLogin } from "./Auth/AuthSlice.jsx";
+import { ExploreFriends } from "./Social/ExploreFriends.jsx";
 
 
 function AHFULApp() {
@@ -111,6 +112,8 @@ function AHFULApp() {
               <AIChat/>}/>
           <Route path="/Map" element={
               <Map/>}/>
+          <Route path="/ExploreFriends" element={
+              <ExploreFriends/>}/>
           <Route path="/MeasurementLogger" element={
               <MeasurementLogger/>}/>
           <Route path="/Profile" element={

@@ -151,6 +151,13 @@ export function Profile() {
           >
             Terms of Service
           </button>
+          <br />
+          <button
+            className="profile-page-btn"
+            onClick={() => navigate("/ExploreFriends")}
+          >
+            Explore Friends
+          </button>
         </div>
 
 
