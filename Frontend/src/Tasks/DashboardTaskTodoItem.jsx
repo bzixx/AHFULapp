@@ -1,6 +1,6 @@
 import "../siteStyles.css";
 
-export function DashboardTaskTodoItem({ task, onToggleComplete }) {
+export function DashboardTaskTodoItem({ task, onToggleComplete, onToggleFavorite }) {
   const formatDate = (timestamp) => {
     if (!timestamp) return "";
     return new Date(timestamp * 1000).toLocaleDateString();
@@ -23,6 +23,13 @@ export function DashboardTaskTodoItem({ task, onToggleComplete }) {
         title={task.completed ? "Mark as incomplete" : "Mark as complete"}
       >
         {task.completed ? "✅" : "❌"}
+      </button>
+      <button
+        className="task-favorite-btn"
+        onClick={() => onToggleFavorite && onToggleFavorite(task._id)}
+        title={task.favorite ? "Remove from favorites" : "Add to favorites"}
+      >
+        {task.favorite ? "⭐" : "☆"}
       </button>
       <div className="dashboard-todo-item-content">
         <div className="dashboard-todo-item-main">

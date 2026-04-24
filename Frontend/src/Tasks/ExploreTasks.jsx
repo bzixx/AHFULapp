@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import "./ExploreTasks.css";
 import "../siteStyles.css";
-import { updateTask } from "../QueryFunctions";
+import { updateTask, toggleTaskFavorite } from "../QueryFunctions";
 
 export function ExploreTasks() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const user = useSelector((state) => state.auth.user);
 
   // Form state
@@ -119,6 +120,17 @@ export function ExploreTasks() {
     }
   };
 
+  const handleToggleFavorite = async (taskId) => {
+    const { data, error } = await toggleTaskFavorite(taskId);
+    if (!error) {
+      setTasks(tasks.map(t =>
+        t._id === taskId ? { ...t, favorite: !t.favorite } : t
+      ));
+    } else {
+      console.error("Failed to toggle favorite:", error);
+    }
+  };
+
   useEffect(() => {
     fetchTasks();
   }, [userId]);
@@ -189,45 +201,63 @@ export function ExploreTasks() {
           {error && <div className="explore-error">Error: {error}</div>}
 
           {!error && (
-            <div className="exercise-list">
-              {loading && tasks.length === 0 ? (
-                <div className="explore-loading">Loading tasks…</div>
-              ) : tasks.length === 0 ? (
-                <div className="explore-empty">
-                  {"No tasks found. Create a task to see it here!"}
-                </div>
-              ) : (
-                tasks.map((task, idx) => {
-                  const key = task.id || task._id || task.name || `task-${idx}`;
-                  return (
-                    <div key={key} className="exercise-item">
-                      <div className="exercise-main">
-                        <button
-                          className="task-complete-btn"
-                          onClick={() => toggleTaskCompletion(task._id, task.completed)}
-                          title={task.completed ? "Mark as incomplete" : "Mark as complete"}
-                        >
-                          {task.completed ? "✅" : "❌"}
-                        </button>
-                        <div className="exercise-name" style={{ textDecoration: task.completed ? 'line-through' : 'none', opacity: task.completed ? 0.6 : 1 }}>
-                          {task.name || "Untitled Task"}
+            <>
+              <div className="favorite-filter-section">
+                <button
+                  className={`favorite-filter-btn ${showFavoritesOnly ? 'active' : ''}`}
+                  onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                  title="Show favorites only"
+                >
+                  {showFavoritesOnly ? '⭐ Favorites' : '☆ All'}
+                </button>
+              </div>
+              <div className="exercise-list">
+                {loading && tasks.length === 0 ? (
+                  <div className="explore-loading">Loading tasks…</div>
+                ) : (showFavoritesOnly ? tasks.filter(t => t.favorite) : tasks).length === 0 ? (
+                  <div className="explore-empty">
+                    {showFavoritesOnly ? "No favorite tasks. Star a task to add it here!" : "No tasks found. Create a task to see it here!"}
+                  </div>
+                ) : (
+                  (showFavoritesOnly ? tasks.filter(t => t.favorite) : tasks).map((task, idx) => {
+                    const key = task.id || task._id || task.name || `task-${idx}`;
+                    return (
+                      <div key={key} className="exercise-item">
+                        <div className="exercise-main">
+                          <button
+                            className="task-complete-btn"
+                            onClick={() => toggleTaskCompletion(task._id, task.completed)}
+                            title={task.completed ? "Mark as incomplete" : "Mark as complete"}
+                          >
+                            {task.completed ? "✅" : "❌"}
+                          </button>
+                          <button
+                            className="task-favorite-btn"
+                            onClick={() => handleToggleFavorite(task._id)}
+                            title={task.favorite ? "Remove from favorites" : "Add to favorites"}
+                          >
+                            {task.favorite ? "⭐" : "☆"}
+                          </button>
+                          <div className="exercise-name" style={{ textDecoration: task.completed ? 'line-through' : 'none', opacity: task.completed ? 0.6 : 1 }}>
+                            {task.name || "Untitled Task"}
+                          </div>
+                          <div className="exercise-meta">
+                            {task.note && <span>{task.note}</span>}
+                            {task.dueTime !== undefined && (
+                              <span> • Due: {formatDueDate(task.dueTime)}</span>
+                            )}
+                          </div>
                         </div>
-                        <div className="exercise-meta">
-                          {task.note && <span>{task.note}</span>}
-                          {task.dueTime !== undefined && (
-                            <span> • Due: {formatDueDate(task.dueTime)}</span>
-                          )}
+                        <div className="exercise-meta" style={{marginTop: '4px', fontSize: '12px'}}>
+                          Created: {task.created_at ? new Date(task.created_at).toLocaleString() : "Unknown"}
+                          {task.updated_at && ` • Updated: ${new Date(task.updated_at).toLocaleString()}`}
                         </div>
                       </div>
-                      <div className="exercise-meta" style={{marginTop: '4px', fontSize: '12px'}}>
-                        Created: {task.created_at ? new Date(task.created_at).toLocaleString() : "Unknown"}
-                        {task.updated_at && ` • Updated: ${new Date(task.updated_at).toLocaleString()}`}
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
+                    );
+                  })
+                )}
+              </div>
+            </>
           )}
         </div>
       </div>

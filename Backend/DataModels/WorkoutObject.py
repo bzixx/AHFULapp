@@ -105,3 +105,38 @@ class WorkoutObject:
     def delete(id):
         result = workoutCollection.delete_one({"_id": ObjectId(id)})
         return id if result.deleted_count == 1 else None
+
+    # ── Favorite ────────────────────────────────────────────────────────────────
+    @staticmethod
+    def toggle_favorite(id):
+        """Toggle the favorite status of a workout."""
+        workout = workoutCollection.find_one({"_id": ObjectId(id)})
+        if not workout:
+            return None
+        
+        # Toggle favorite field
+        current_favorite = workout.get("favorite", False)
+        new_favorite = not current_favorite
+        
+        result = workoutCollection.update_one(
+            {"_id": ObjectId(id)},
+            {"$set": {"favorite": new_favorite}}
+        )
+        
+        if result.matched_count == 0:
+            return None
+        
+        # Return updated workout
+        updated = workoutCollection.find_one({"_id": ObjectId(id)})
+        return WorkoutObject._serialize(updated)
+
+    @staticmethod
+    def find_favorites_by_user(user_id):
+        """Get all favorite workouts for a user."""
+        workouts = workoutCollection.find({
+            "user_id": ObjectId(user_id),
+            "favorite": True,
+            "template": False,
+            "startTime": {"$ne": 0}
+        })
+        return [WorkoutObject._serialize(w) for w in workouts]

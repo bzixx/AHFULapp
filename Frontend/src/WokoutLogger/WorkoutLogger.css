@@ -1228,3 +1228,86 @@ body {
   cursor: pointer;
   margin-top: 8px;
 }
+
+/* Workout Favorite Button Styling */
+.workout-favorite-btn {
+  background: transparent;
+  border: 2px solid var(--accent-blue);
+  color: var(--accent-blue);
+  font-size: 1rem;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.workout-favorite-btn:hover {
+  transform: scale(1.1);
+  background: rgba(59, 130, 246, 0.1);
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+}
+
+.workout-favorite-btn:active {
+  transform: scale(0.95);
+}
+
+/* Workout List Item Container Updates */
+.workout-list-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 10px;
+  border: 2px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.workout-list-item.selected {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: var(--accent-blue);
+}
+
+.workout-list-item:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.workout-list-content {
+  flex: 1;
+  cursor: pointer;
+}
+
+/* Favorite Filter Button for Workouts */
+.favorite-filter-section {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.favorite-filter-btn {
+  background: transparent;
+  border: 2px solid var(--color-border);
+  color: var(--text-primary);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.favorite-filter-btn:hover {
+  border-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.favorite-filter-btn.active {
+  border-color: var(--accent-blue);
+  background: rgba(59, 130, 246, 0.2);
+  color: var(--accent-blue);
+}
+}

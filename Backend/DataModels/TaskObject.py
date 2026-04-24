@@ -70,3 +70,36 @@ class TaskObject:
     def delete(task_id):
         result = taskCollection.delete_one({"_id": ObjectId(task_id)})
         return result.deleted_count > 0
+
+    # ── Favorite ────────────────────────────────────────────────────────────────
+    @staticmethod
+    def toggle_favorite(task_id):
+        """Toggle the favorite status of a task."""
+        task = taskCollection.find_one({"_id": ObjectId(task_id)})
+        if not task:
+            return None
+        
+        # Toggle favorite field
+        current_favorite = task.get("favorite", False)
+        new_favorite = not current_favorite
+        
+        result = taskCollection.update_one(
+            {"_id": ObjectId(task_id)},
+            {"$set": {"favorite": new_favorite, "updated_at": int(datetime.now().timestamp())}}
+        )
+        
+        if result.matched_count == 0:
+            return None
+        
+        # Return updated task
+        updated = taskCollection.find_one({"_id": ObjectId(task_id)})
+        return TaskObject._serialize(updated)
+
+    @staticmethod
+    def find_favorites_by_user(user_id):
+        """Get all favorite tasks for a user."""
+        tasks = taskCollection.find({
+            "user_id": ObjectId(user_id),
+            "favorite": True
+        })
+        return [TaskObject._serialize(t) for t in tasks]

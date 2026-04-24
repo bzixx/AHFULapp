@@ -24,6 +24,7 @@ import {
   createTemplate,
   loadBodyParts,
   createExercise,
+  toggleWorkoutFavorite,
 } from "../QueryFunctions.js";
 import { pullWorkouts } from "../components/Cache/WorkoutCache/PullWorkout.jsx";
 import { pullTemplates } from "../components/Cache/TemplateCache/PullTemplate.jsx";
@@ -147,6 +148,9 @@ export function WorkoutLogger() {
   const [templatePreview, setTemplatePreview] = useState(null);
   const [templates, setTemplates] = useState([]);
 
+  // ─── Favorite Filter State ───────────────────────────────────────────────────
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+
   // ─── Refs ───────────────────────────────────────────────────────────────────
   const searchTimeoutRef = useRef(null);
 
@@ -155,6 +159,20 @@ export function WorkoutLogger() {
 
   const unixToDate = (unix) => {
     return new Date(unix * 1000).toLocaleDateString("en-US");
+  };
+
+  const handleToggleFavorite = async () => {
+    if (!workoutId) return;
+    try {
+      const { data, error } = await toggleWorkoutFavorite(workoutId);
+      if (!error) {
+        setWorkout((prev) => ({ ...prev, favorite: !prev.favorite }));
+      } else {
+        console.error("Failed to toggle favorite:", error);
+      }
+    } catch (err) {
+      console.error("Error toggling favorite:", err);
+    }
   };
 
   // ─── Modal Handlers ─────────────────────────────────────────────────────────
@@ -1422,28 +1440,56 @@ export function WorkoutLogger() {
 
             {/* List of workouts for the selected date */}
             <div className="workout-list">
-              {(!dailyWorkouts || dailyWorkouts.length === 0) && (
-                <div className="no-workouts">No workouts for this day.</div>
+              <div className="favorite-filter-section">
+                <button
+                  className={`favorite-filter-btn ${showFavoritesOnly ? 'active' : ''}`}
+                  onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                  title="Show favorites only"
+                >
+                  {showFavoritesOnly ? '⭐ Favorites' : '☆ All'}
+                </button>
+              </div>
+
+              {(!dailyWorkouts || (showFavoritesOnly ? dailyWorkouts.filter((w) => w.favorite) : dailyWorkouts).length === 0) && (
+                <div className="no-workouts">
+                  {showFavoritesOnly ? "No favorite workouts for this day." : "No workouts for this day."}
+                </div>
               )}
 
               {dailyWorkouts &&
-                dailyWorkouts.map((w) => (
+                (showFavoritesOnly ? dailyWorkouts.filter((w) => w.favorite) : dailyWorkouts).map((w) => (
                   <div
                     key={w._id}
                     className={
                       "workout-list-item " +
                       (selectedWorkoutIdForPicker === w._id ? "selected" : "")
                     }
-                    onClick={() =>
-                      setSelectedWorkoutIdForPicker(
-                        selectedWorkoutIdForPicker === w._id ? null : w._id,
-                      )
-                    }
                   >
-                    <div className="workout-list-title">{w.title}</div>
-                    <div className="workout-list-date">
-                      {unixToDate(w.startTime)}
+                    <div
+                      className="workout-list-content"
+                      onClick={() =>
+                        setSelectedWorkoutIdForPicker(
+                          selectedWorkoutIdForPicker === w._id ? null : w._id,
+                        )
+                      }
+                    >
+                      <div className="workout-list-title">{w.title}</div>
+                      <div className="workout-list-date">
+                        {unixToDate(w.startTime)}
+                      </div>
                     </div>
+                    <button
+                      className="workout-favorite-btn"
+                      onClick={() => {
+                        handleToggleFavorite();
+                        setDailyWorkouts(dailyWorkouts.map((wk) =>
+                          wk._id === w._id ? { ...wk, favorite: !wk.favorite } : wk
+                        ));
+                      }}
+                      title={w.favorite ? "Remove from favorites" : "Add to favorites"}
+                    >
+                      {w.favorite ? "⭐" : "☆"}
+                    </button>
                   </div>
                 ))}
             </div>
