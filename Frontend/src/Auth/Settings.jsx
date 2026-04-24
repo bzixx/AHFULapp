@@ -1,7 +1,7 @@
 import "./Settings.css";
 import "../Stylesheets/Themes/Lightmode.css";
 import "../Stylesheets/Themes/Darkmode.css";
-import { Navbar } from "../components/navbar/navbar.jsx";
+import { Navbar } from "../navbar.jsx";
 import { Header } from "../components/Header/Header.jsx";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";

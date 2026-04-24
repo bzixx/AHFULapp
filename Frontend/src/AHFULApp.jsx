@@ -8,7 +8,7 @@ import { Dashboard } from "./Pages/Dashboard/Dashboard.jsx";
 import { Login } from "./Auth/Login.jsx";
 import { VerifyEmail } from "./Auth/VerifyEmail.jsx";
 import { NotVerified } from "./Auth/NotVerified.jsx";
-import { Map } from "./Pages/Map/Map.jsx";
+import { Map } from "./Gyms/Map.jsx";
 import { AIChat } from "./AIChat/AIChat.jsx";
 import { MeasurementLogger } from "./MeasurementLogger/MeasurementLogger.jsx";
 import { Profile } from "./Auth/Profile.jsx";

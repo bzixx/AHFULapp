@@ -7,7 +7,7 @@ import { authLogout } from "./AuthSlice";
 import { setSettings, settingsInitialState } from "./SettingsSlice.jsx";
 import {registerService} from "../Tasks/firebase.js";
 import {handle_logout,updateUserSettings} from "../QueryFunctions.js"
-import {ProfileSettingsButton} from "../components/ProfileSettings/ProfileSettingsButton.jsx"
+import {ProfileSettingsButton} from "./ProfileSettingsButton.jsx"
 import { useNavigate } from "react-router-dom";
 
 export function Profile() {

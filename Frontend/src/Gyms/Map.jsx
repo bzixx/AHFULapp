@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import "./Map.css";
-import "../../siteStyles.css";
+import "../siteStyles.css";
 
 // Leaflet styles are required for tiles/controls to render correctly
 import "leaflet/dist/leaflet.css";
 
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from "react-leaflet";
 import L from "leaflet";
-import { reverseGeocode, forwardGeocode, fetchAllGyms, createGym, deleteGym } from "../../QueryFunctions";
+import { reverseGeocode, forwardGeocode, fetchAllGyms, createGym, deleteGym } from "../QueryFunctions";
 
 // Fix marker icon paths for bundlers (Vite/webpack). Importing the images returns
 // a resolved URL which Leaflet can use when creating the default icon.
