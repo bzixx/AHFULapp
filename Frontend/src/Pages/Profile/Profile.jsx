@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { authLogout } from "../Login/AuthSlice";
 import { setSettings, settingsInitialState } from "../Settings/SettingsSlice.jsx";
-import {registerService} from "../../firebase.js";
+import {registerService} from "../../Tasks/firebase.js";
 import {handle_logout,updateUserSettings} from "../../QueryFunctions.js"
 import {ProfileSettingsButton} from "../../components/ProfileSettings/ProfileSettingsButton"
 import { useNavigate } from "react-router-dom";

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import "./ExploreTasks.css";
-import "../../siteStyles.css";
-import { updateTask } from "../../QueryFunctions";
+import "../siteStyles.css";
+import { updateTask } from "../QueryFunctions";
 
 export function ExploreTasks() {
   const [tasks, setTasks] = useState([]);

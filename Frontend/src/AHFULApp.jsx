@@ -16,7 +16,7 @@ import { TOS } from "./Pages/TOS/TOS.jsx";
 import { Layout } from "./Layout.jsx"
 import { AuthRouteCheck } from "./AuthRouteCheck.jsx";
 import { Settings } from "./Pages/Settings/Settings.jsx";
-import { ExploreTasks } from "./Pages/ExploreTasks/ExploreTasks.jsx";
+import { ExploreTasks } from "./Tasks/ExploreTasks.jsx";
 import { Test } from "./Pages/Test/Test.jsx";
 import { useTutorial } from "./hooks/useTutorial.js";
 import { TutorialOverlay } from "./components/Tutorial/TutorialOverlay.jsx";
