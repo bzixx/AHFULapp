@@ -1,10 +1,10 @@
 import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { updateSetting } from "../../Auth/SettingsSlice";
-import { updateUserSettings } from "../../QueryFunctions";
-import "./Header.css";
-import "../../Stylesheets/Themes/Lightmode.css";
-import "../../Stylesheets/Themes/Darkmode.css";
+import { updateSetting } from "./Auth/SettingsSlice";
+import { updateUserSettings } from "./QueryFunctions";
+import "./siteStyles.css";
+import "./Stylesheets/Themes/Lightmode.css";
+import "./Stylesheets/Themes/Darkmode.css";
 
 export function Header({ onMenuToggle = null, isMenuOpen = false }) {
   const dispatch = useDispatch();

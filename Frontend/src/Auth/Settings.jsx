@@ -1,11 +1,8 @@
 import "./Settings.css";
 import "../Stylesheets/Themes/Lightmode.css";
 import "../Stylesheets/Themes/Darkmode.css";
-import { Navbar } from "../navbar.jsx";
-import { Header } from "../components/Header/Header.jsx";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { DropdownRow, ActionRow } from "./SettingsHook.jsx";
 import { updateSetting, setSettings } from "./SettingsSlice.jsx";
 import { getUserSettings, updateUserSettings } from "../QueryFunctions.js";
