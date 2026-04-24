@@ -5,27 +5,26 @@ import { WorkoutLogger } from "./Pages/WorkoutLogger/WorkoutLogger.jsx";
 import { ExploreWorkouts } from "./ExploreWorkouts/ExploreWorkouts.jsx";
 import { FoodLog } from "./Food/FoodLog.jsx";
 import { Dashboard } from "./Pages/Dashboard/Dashboard.jsx";
-import { Login } from "./Pages/Login/Login.jsx";
+import { Login } from "./Auth/Login.jsx";
 import { VerifyEmail } from "./Pages/Verification/VerifyEmail.jsx";
 import { NotVerified } from "./Pages/Verification/NotVerified.jsx";
 import { Map } from "./Pages/Map/Map.jsx";
 import { AIChat } from "./AIChat/AIChat.jsx";
 import { MeasurementLogger } from "./Pages/MeasurementLogger/MeasurementLogger.jsx";
-import { Profile } from "./Pages/Profile/Profile.jsx";
+import { Profile } from "./Auth/Profile.jsx";
 import { TOS } from "./Pages/TOS/TOS.jsx";
 import { Layout } from "./Layout.jsx"
-import { AuthRouteCheck } from "./AuthRouteCheck.jsx";
-import { Settings } from "./Pages/Settings/Settings.jsx";
+import { Settings } from "./Auth/Settings.jsx";
 import { ExploreTasks } from "./Tasks/ExploreTasks.jsx";
 import { Test } from "./Pages/Test/Test.jsx";
-import { useTutorial } from "./hooks/useTutorial.js";
-import { TutorialOverlay } from "./components/Tutorial/TutorialOverlay.jsx";
+import { useTutorial } from "./Auth/useTutorial.js";
+import { TutorialOverlay } from "./Auth/TutorialOverlay.jsx";
 import "./siteStyles.css";
 import "./Stylesheets/Themes/Lightmode.css";
 import "./Stylesheets/Themes/Darkmode.css";
 import { whoami, getUserSettings } from "./QueryFunctions.js";
-import { setSettings } from './Pages/Settings/SettingsSlice.jsx';
-import { authLogin } from "./Pages/Login/AuthSlice.jsx";
+import { setSettings } from './Auth/SettingsSlice.jsx';
+import { authLogin } from "./Auth/AuthSlice.jsx";
 
 
 function AHFULApp() {

@@ -1,12 +1,12 @@
 import "./Login.css";
 import { GoogleLogin } from "@react-oauth/google";
 import { useSelector, useDispatch } from "react-redux";
-import { handle_google_login, getUserSettings } from "../../QueryFunctions.js";
-import { authLogin } from "../../Pages/Login/AuthSlice.jsx";
+import { handle_google_login, getUserSettings } from "../QueryFunctions.js";
+import { authLogin } from "./AuthSlice.jsx";
 import { useState, useEffect } from "react";
 import {useNavigate } from "react-router-dom";
-import { onLoginCache } from "../../components/Cache/OnLoginCache/OnLoginCache.jsx";
-import { setSettings } from '../../Pages/Settings/SettingsSlice.jsx';
+import { onLoginCache } from "./OnLoginCache.jsx";
+import { setSettings } from './SettingsSlice.jsx';
 
 export function Login() {
   const dispatch = useDispatch();

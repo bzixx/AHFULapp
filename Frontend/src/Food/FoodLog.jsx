@@ -3,7 +3,7 @@
 import React, {useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import "./FoodLog.css";
-import "../../siteStyles.css";
+import "../siteStyles.css";
 
 const API_BASE = "http://localhost:5000/api/AHFULfoods";
 
