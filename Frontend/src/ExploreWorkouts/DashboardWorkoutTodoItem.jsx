@@ -1,4 +1,4 @@
-import "./DashboardTodo.css";
+import "../siteStyles.css";
 
 export function DashboardWorkoutTodoItem({ workout }) {
   const formatDate = (timestamp) => {

@@ -1,4 +1,4 @@
-import "./DashboardTodo.css";
+import "../siteStyles.css";
 
 export function DashboardTaskTodoItem({ task, onToggleComplete }) {
   const formatDate = (timestamp) => {

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import "./DashboardTodo.css";
+import "../siteStyles.css";
 import { DashboardTaskTodoItem } from "./DashboardTaskTodoItem";
-import { updateTask } from "../../QueryFunctions";
+import { updateTask } from "../QueryFunctions";
 
 export function DashboardTaskTodoList() {
   const [tasks, setTasks] = useState([]);

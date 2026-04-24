@@ -1,4 +1,4 @@
-import "./DashboardTodo.css";
+import "../siteStyles.css";
 
 export function DashboardFoodTodoItem({ food }) {
   const formatDate = (timestamp) => {
