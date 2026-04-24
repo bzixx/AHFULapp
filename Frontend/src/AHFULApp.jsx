@@ -118,11 +118,13 @@ function AHFULApp() {
               <Profile/>}/>
           <Route path="/ExploreTasks" element={
               <ExploreTasks/>}/>
-          <Route path="/Test" element={<Test/>}/>
+          <Route path="/Test" element={
+              <Test/>}/>
+          <Route path="Settings" element={
+              <Settings/>} />
         </Route>
-        <Route path="Settings" element={<Settings/>} />
       </Routes>
-``
+
       {tutorialActive && currentStepData && (
         <TutorialOverlay
           step={currentStep}

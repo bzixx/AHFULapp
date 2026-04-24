@@ -73,8 +73,6 @@ const update = (key, val) => {
   return (
     <div className="settings-page">
       <div className="settings-container">
-        <Navbar/>
-        <Header />
         <div className="settings-content">
           <h2>Personal Settings</h2>
 
