@@ -1,7 +1,7 @@
-export function initCompanionAI({ textInput, sendButton, characterImage, voiceSelect, status, responsesContainer, onResponseAdded }) {
-    const openMouthImg = 'https://www.ahful.app/images/char-mouth-open.png';
-    const closedMouthImg = 'https://www.ahful.app/images/char-mouth-closed.png';
+import openMouthImg from '../../images/char-mouth-open.png';
+import closedMouthImg from '../../images/char-mouth-closed.png';
 
+export function initCompanionAI({ textInput, sendButton, characterImage, voiceSelect, status, responsesContainer, onResponseAdded }) {
     let voices = [];
     let lipSyncInterval;
 
