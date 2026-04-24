@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
 
-chatRouteBlueprint = Blueprint("chat", __name__,  url_prefix="/AHFULChat")
+chatRouteBlueprint = Blueprint("chat", __name__,  url_prefix="/AHFULchats")
 
 adk_session = None
 session_lock = asyncio.Lock()
