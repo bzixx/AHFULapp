@@ -202,12 +202,16 @@ class WorkoutDriver:
 
         if not updates:
             return None, "You must provide at least one field to update"
+        
+        if updates["gym_id"]:
+            updates["gym_id"] = ObjectId(updates["gym_id"])
 
         # Allowed fields to update
         allowed_fields = {
             "title",
             "startTime",
-            "endTime"
+            "endTime",
+            "gym_id"
         }
 
         # Filter only allowed fields
