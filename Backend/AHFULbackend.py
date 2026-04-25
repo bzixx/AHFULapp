@@ -100,7 +100,7 @@ def create_app():
 
     # Initialize Mongo connection teardown for the app (registers teardown)
     # The optional label helps identify this app's mongo registration.
-    connect_mongo(app, label="AHFUL")
+    connect_mongo(app)
 
     #Print an list of all Route maps on the AHFUL App after startup.
     print(app.url_map)
