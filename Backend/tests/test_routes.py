@@ -1816,7 +1816,7 @@ def test_workout_invalid_inputs_combined():
     assert resp is None
     assert err == "User not found"
 
-    resp, err = WorkoutDriver.create_workout(valid_user_id, "000000000000000000000000", "Test", "1", "2")
+    resp, err = WorkoutDriver.create_workout(valid_user_id, "111111111111111111111111", "Test", "1", "2")
     assert resp is None
     # Accept either the short or more descriptive error returned by the driver
     assert err == "Gym not found" or err == "Gym not found or inaccessible"
