@@ -36,6 +36,7 @@ mail = Mail()
 
 #Main AHFUL APP Backend Entry Point.
 def create_app():
+    print("----------------------------Let's Get AHFUL!--------------------------------------------")
     # Load environment variables from .env file
     load_dotenv()
 
