@@ -6,6 +6,7 @@ from flask_mail import Mail
 
 #Services/Drivers Imports
 from Services.SignInDriver import SignInDriver
+from Services.MongoDriver import connect_mongo
 
 #Routes/Blueprints Imports
 from APIRoutes.UserRoutes import userRouteBlueprint #[Local] Import User API routes as a Flask Blueprint
@@ -95,6 +96,10 @@ def create_app():
 
     #Start the notification scheduler
     start_scheduler()
+
+    # Initialize Mongo connection teardown for the app (registers teardown)
+    # The optional label helps identify this app's mongo registration.
+    connect_mongo(app, label="AHFUL")
 
     #Print an list of all Route maps on the AHFUL App after startup.
     print(app.url_map)

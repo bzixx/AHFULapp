@@ -1,10 +1,7 @@
 # DataModel & Objects are essentially the Database Access Layer
 # They know how to talk to Mongo DB Collection and that is it.
 from bson import ObjectId
-from Services.MongoDriver import getMongoDatabase
-
-ahfulAppDataDB = getMongoDatabase()
-foodCollection = ahfulAppDataDB['food']
+from Services.MongoDriver import get_collection
 
 class FoodObject:
     # ── Helpers ────────────────────────────────────────────────────────────────
@@ -19,26 +16,26 @@ class FoodObject:
     # ── Create ──────────────────────────────────────────────────────────────────
     @staticmethod
     def create(food_data):
-        result = foodCollection.insert_one(food_data)
+        result = get_collection('food').insert_one(food_data)
         return str(result.inserted_id)
 
     # ── Read ──────────────────────────────────────────────────────────────────
     def find_all():
-        food = foodCollection.find()
+        food = get_collection('food').find()
         return [FoodObject._serialize(g) for g in food]
 
     def find_by_id(id):
-        food = foodCollection.find_one({"_id": ObjectId(id)})
+        food = get_collection('food').find_one({"_id": ObjectId(id)})
         return FoodObject._serialize(food)
 
     def find_by_user(id):
-        food = foodCollection.find({"user_id": ObjectId(id)})
+        food = get_collection('food').find({"user_id": ObjectId(id)})
         return [FoodObject._serialize(g) for g in food]
 
     # ── Update ─────────────────────────────────────────────────────────────────
     @staticmethod
     def update(id, update_data):
-        result = foodCollection.update_one(
+        result = get_collection('food').update_one(
             {"_id": ObjectId(id)},
             {"$set": update_data}
         )
@@ -49,5 +46,5 @@ class FoodObject:
     # ── Delete ─────────────────────────────────────────────────────────────────
     @staticmethod
     def delete(id):
-        result = foodCollection.delete_one({"_id": ObjectId(id)})
+        result = get_collection('food').delete_one({"_id": ObjectId(id)})
         return str((result.deleted_count == 1) * id)
