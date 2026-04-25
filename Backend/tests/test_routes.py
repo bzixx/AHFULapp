@@ -455,7 +455,7 @@ def test_find_gym_by_id():
     assert err == bad_err_code
 
     # Give an invalid gym_id
-    inv_oid = "000000000000000000000000"
+    inv_oid = "111111111111111111111111"
     
     gym, err = GymDriver.get_gym_by_id(inv_oid, "699d0093795741a59fe13616")
 
@@ -1812,7 +1812,7 @@ def test_workout_invalid_inputs_combined():
         assert resp is None
         assert err == "Invalid gym_id format; must be a 24-hex string"
 
-    resp, err = WorkoutDriver.create_workout("000000000000000000000000", valid_gym_id, "Test", "1", "2")
+    resp, err = WorkoutDriver.create_workout("111111111111111111111111", valid_gym_id, "Test", "1", "2")
     assert resp is None
     assert err == "User not found"
 
