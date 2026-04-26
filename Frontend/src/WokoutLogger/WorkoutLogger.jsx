@@ -106,11 +106,12 @@ export function WorkoutLogger() {
         if (!mounted) return;
         setAvailableGyms(list || []);
         // default to first gym or user's home gym if available
-        if (list && list.length > 0) {
-          const home = user?.settings?.homeGymId;
-          const foundHome = home ? list.find((g) => g._id === home) : null;
-          setSelectedGymId(foundHome ? foundHome._id : list[0]._id);
-        }
+        // commented out for dev 
+        // if (!selectedGymId && list && list.length > 0) {
+        //   const home = user?.settings?.homeGymId;
+        //   const foundHome = home ? list.find((g) => g._id === home) : null;
+        //   setSelectedGymId(foundHome ? foundHome._id : list[0]._id);
+        // }
       } catch (err) {
         console.error("Failed to load gyms for workout picker:", err);
       }
@@ -118,6 +119,37 @@ export function WorkoutLogger() {
     loadGyms();
     return () => (mounted = false);
   }, [user]);
+
+  // Set gym_id from workout when page is loaded
+  useEffect(() => {
+    if (!selectedDate || !cachedWorkouts?.length) return;
+
+    const dateStr = selectedDate.slice(0, 10);
+
+    const todaysWorkout = cachedWorkouts.find((w) => {
+      if (!w?.startTime) return false;
+      const workoutDate = new Date(w.startTime * 1000)
+        .toISOString()
+        .slice(0, 10);
+      return workoutDate === dateStr;
+    });
+
+    if (!todaysWorkout) return;
+    (async () => {
+      try {
+        const fullWorkout = await fetchWorkoutById(todaysWorkout._id);
+
+        setWorkout(fullWorkout);
+        setWorkoutId(fullWorkout._id);
+        setWorkoutTitle(fullWorkout.title || "");
+        setSelectedGymId(fullWorkout.gym_id || "");
+
+      } catch (err) {
+        console.error("Failed to load full workout:", err);
+      }
+    })();
+
+  }, [selectedDate, cachedWorkouts]);
 
   // ─── Timer State ─────────────────────────────────────────────────────────────
   const [isRunning, setIsRunning] = useState(false);
@@ -311,6 +343,7 @@ export function WorkoutLogger() {
       setWorkout(todaysWorkout);
       setWorkoutId(todaysWorkout._id);
       setWorkoutTitle(todaysWorkout.title || "");
+      setSelectedGymId(todaysWorkout.gym_id || "");
 
       // Load personal exercises for this workout from cache
       const workoutPersonalExercises =
@@ -325,6 +358,7 @@ export function WorkoutLogger() {
       setWorkout(null);
       setWorkoutId("");
       setWorkoutTitle("");
+      //setSelectedGymId("");
       setExercisesInProgressTable([]);
     }
   }, [selectedDate, cachedWorkouts, cachedPersonalExercises]);
@@ -559,6 +593,7 @@ export function WorkoutLogger() {
         endTime: workout.startTime + time, // your endTime variable
         startTime: workout.startTime, // keep original startTime
         title: workoutTitle, // keep original title
+        gym_id: selectedGymId
       };
 
       const workoutRes = await updateWorkout(workoutId, workoutUpdatePayload);
@@ -686,6 +721,7 @@ export function WorkoutLogger() {
       setWorkout(fullWorkout);
       setWorkoutId(fullWorkout._id);
       setWorkoutTitle(fullWorkout.title);
+      setSelectedGymId(fullWorkout.gym_id || "");
 
       // Reset timer based on workout times
       if (fullWorkout.startTime && fullWorkout.endTime) {
@@ -732,6 +768,7 @@ export function WorkoutLogger() {
       setWorkout(persisted);
       setWorkoutId(persisted._id);
       setWorkoutTitle(persisted.title);
+      setSelectedGymId(persisted.gym_id);
       setTime(0);
 
       closeWorkoutPicker();
@@ -980,6 +1017,24 @@ export function WorkoutLogger() {
                     {workout?.startTime ? unixToDate(workout.startTime) : ""}
                   </h3>
                 </div>
+
+                <select
+                  value={selectedGymId}
+                  onChange={(e) => setSelectedGymId(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "8px 10px",
+                    borderRadius: 6,
+                  }}
+                >
+                  <option value="">None / No Gym</option>
+                  {availableGyms.map((g) => (
+                    <option key={g._id} value={g._id}>
+                      {g.name ||
+                        `${g.address || "Unnamed"} (${g._id.slice(0, 6)})`}
+                    </option>
+                  ))}
+                </select>
 
                 <button
                   className="select-workout-button"
