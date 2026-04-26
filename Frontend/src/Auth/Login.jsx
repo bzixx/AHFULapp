@@ -1,6 +1,6 @@
 import veniceDesktop from "../../images/Login/Backgrounds/venice desktop with overlay.jpg";
 import veniceMobile from "../../images/Login/Backgrounds/venice mobile with overlay.jpg";
-import "./Login.css";
+import "./Auth.css";
 import "../Dashboard/Dashboard.css";
 import { GoogleLogin } from "@react-oauth/google";
 import { GoogleButton } from "./GoogleButton";
@@ -135,7 +135,7 @@ export function Login() {
                 A Helpful Fitness Utilization Logger App
               </div>
           </div>
-          <div className={`scroll-down-text ${showScrollText ? 'fade-in' : ''}`}>
+          <div className={`scroll-down-text ${showScrollText ? 'fade-in' : ''} ${isScrolled ? 'hidden' : ''}`}>
             {typedText}<span className="typing-cursor"></span>
           </div>
         </div>
@@ -153,11 +153,6 @@ export function Login() {
               <div className="streaks-wrapper">
                 <StreakCounter count={3} type="workout" loading={false} />
                 <StreakCounter count={5} type="food" loading={false} />
-              </div>
-              <div className="login-dashboard-cta">
-                <a href="#features" className="secondary-cta">
-                  Learn More
-                </a>
               </div>
             </div>
           </section>
