@@ -202,10 +202,7 @@ class WorkoutDriver:
         if not updates:
             return None, "You must provide at least one field to update"
         
-        if updates.get("gym_id"):
-            updates["gym_id"] = ObjectId(updates["gym_id"])
-        else:
-            updates["gym_id"] = 
+        updates["gym_id"] = ObjectId(updates["gym_id"])
 
         # Allowed fields to update
         allowed_fields = {
