@@ -3317,6 +3317,310 @@ swaggerConfig = {
       }
     },
 
+    "/AHFULpromos/": {
+      "get": {
+        "summary": "Get all promos (Dev/Admin)",
+        "tags": ["Promo"],
+        "security": [
+          { "userIdHeader": [] },
+          { "bearerAuth": [] }
+        ],
+        "responses": {
+          "200": {
+            "description": "All promos retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "_id": { "type": "string", "example": "69efbaca3fb064208bde07c8" },
+                      "gym_id": { "type": "string", "example": "699cff88400d9d43a32e924d" },
+                      "type": { "type": "string", "example": "Coupon" },
+                      "timeStart": { "type": "integer", "example": 1778873896 },
+                      "timeEnd": { "type": "integer", "example": 1779451200 },
+                      "redeemable": { "type": "boolean", "example": true },
+                      "_testObject": { "type": "boolean", "example": true },
+                      "created_at": { "type": "integer", "example": 1778870000 },
+                      "updated_at": { "type": "integer", "example": 1778871111 }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error while retrieving promos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULpromos/{promo_id}": {
+      "get": {
+        "summary": "Get promo by id",
+        "tags": ["Promo"],
+        "parameters": [
+          {
+            "name": "promo_id",
+            "in": "path",
+            "required": true,
+            "description": "Promo ObjectId",
+            "schema": {
+              "type": "string",
+              "example": "69efbaca3fb064208bde07c8"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Promo found",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          },
+          "404": {
+            "description": "Promo not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULpromos/gym/{gym_id}": {
+      "get": {
+        "summary": "Get promos by gym id (Gym Owner)",
+        "tags": ["Promo"],
+        "security": [
+          { "userIdHeader": [] },
+          { "bearerAuth": [] }
+        ],
+        "parameters": [
+          {
+            "name": "gym_id",
+            "in": "path",
+            "required": true,
+            "description": "Gym ObjectId",
+            "schema": {
+              "type": "string",
+              "example": "699cff88400d9d43a32e924d"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Promos found for the gym",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "type": "object" }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Promos not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULpromos/create/{gym_id}": {
+      "post": {
+        "summary": "Create a new promo (Gym Owner)",
+        "tags": ["Promo"],
+        "security": [
+          { "userIdHeader": [] },
+          { "bearerAuth": [] }
+        ],
+        "parameters": [
+          {
+            "name": "gym_id",
+            "in": "path",
+            "required": true,
+            "description": "Gym ObjectId to associate promo with",
+            "schema": {
+              "type": "string",
+              "example": "699cff88400d9d43a32e924d"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "description": "Promo data fields"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Promo created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or creation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULpromos/update/{promo_id}": {
+      "put": {
+        "summary": "Update a promo",
+        "tags": ["Promo"],
+        "parameters": [
+          {
+            "name": "promo_id",
+            "in": "path",
+            "required": true,
+            "description": "Promo ObjectId",
+            "schema": {
+              "type": "string",
+              "example": "69efbaff3fb064208bde07cd"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "description": "Promo data fields to update"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Promo updated successfully",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or update error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/AHFULpromos/delete/{promo_id}": {
+      "delete": {
+        "summary": "Delete a promo by id",
+        "tags": ["Promo"],
+        "parameters": [
+          {
+            "name": "promo_id",
+            "in": "path",
+            "required": true,
+            "description": "Promo ObjectId",
+            "schema": {
+              "type": "string",
+              "example": "69efbb703fb064208bde07cf"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Promo deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          },
+          "404": {
+            "description": "Promo not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+
     "/AHFULtasks/delete/{task_id}": {
       "delete": {
         "summary": "Delete a task by id",
