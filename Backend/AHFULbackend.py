@@ -21,6 +21,7 @@ from APIRoutes.ExerciseRoutes import exerciseRouteBlueprint
 from APIRoutes.UserSettingsRoutes import userSettingsBlueprint
 from APIRoutes.TokenRoutes import tokenBlueprint
 from APIRoutes.TaskRoutes import taskBlueprint
+from APIRoutes.SocialRoutes import socialRouteBlueprint
 from APIRoutes.VerificationRoutes import verificationRouteBlueprint
 from APIRoutes.ChatRoutes import chatRouteBlueprint
 
@@ -81,6 +82,7 @@ def create_app():
     AHFULAPI.register_blueprint(userSettingsBlueprint)
     AHFULAPI.register_blueprint(tokenBlueprint)
     AHFULAPI.register_blueprint(taskBlueprint)
+    AHFULAPI.register_blueprint(socialRouteBlueprint)
     AHFULAPI.register_blueprint(chatRouteBlueprint)
     AHFULAPI.register_blueprint(verificationRouteBlueprint)
 
