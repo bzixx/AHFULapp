@@ -8,6 +8,7 @@ from Services.PersonalExDriver import PersonalExDriver
 from Services.WorkoutDriver import WorkoutDriver
 from Services.MeasurementDriver import MeasurementDriver
 from Services.TaskDriver import TaskDriver
+from Services.PromoDriver import PromoDriver
 
 # Food
 
@@ -2278,3 +2279,153 @@ def test_delete_task_not_found():
 
     assert deleted is None
     assert err == "Task not found"
+
+def test_find_promo_by_id():
+    oid = "69efbaca3fb064208bde07c8"
+    promo, err = PromoDriver.get_promo_by_id(oid)
+
+    if err is not None:
+        print(promo, err)
+
+    assert err is None
+    assert promo is not None
+    assert promo.get("_id") == oid
+    assert promo.get("gym_id") == "699cff88400d9d43a32e924d"
+    assert promo.get("type") == "Coupon"
+    assert promo.get("timeStart") == 1778873896
+    assert promo.get("timeEnd") == 1779451200
+    assert promo.get("redeemable") is True
+    assert promo.get("_testObject") is True
+
+    bad_oid = "69efbaca3fb064208bde07"
+    promo, err = PromoDriver.get_promo_by_id(bad_oid)
+
+    assert promo is None
+    assert "24-hex string" in err
+
+    inv_oid = "000000000000000000000000"
+    promo, err = PromoDriver.get_promo_by_id(inv_oid)
+
+    assert promo is None
+    assert err == "Promo not found"
+
+def test_find_promos_by_gym():
+    gym_id = "699cff88400d9d43a32e924d"
+    promos, err = PromoDriver.get_promos_by_gym(gym_id)
+
+    if err is not None:
+        print(promos, err)
+
+    assert err is None
+    assert isinstance(promos, list)
+    assert len(promos) >= 3
+
+    found_types = {p["type"] for p in promos}
+    assert "Coupon" in found_types
+    assert "Event" in found_types
+    assert "Give Away" in found_types
+
+    bad_gid = "699cff88400d9d43a32e92"
+    promos, err = PromoDriver.get_promos_by_gym(bad_gid)
+
+    assert promos is None
+    assert "24-hex string" in err
+
+def test_get_all_promos():
+    promos, err = PromoDriver.get_all_promos()
+
+    if err is not None:
+        print(promos, err)
+
+    assert err is None
+    assert isinstance(promos, list)
+    assert len(promos) >= 3
+
+def test_create_and_delete_promo():
+    gym_id = "699cff88400d9d43a32e924d"
+    user_id = "69996a73313d1a459f4529da"
+
+    data = {
+        "type": "Coupon",
+        "timeStart": 2000000000,
+        "timeEnd": 2000003600,
+        "redeemable": True,
+        "_testObject": True
+    }
+
+    created, err = PromoDriver.create_promo(gym_id, user_id, data)
+
+    if err is not None:
+        print(created, err)
+
+    assert err is None
+    assert created is not None
+
+    try:
+        ObjectId(str(created["_id"]))
+    except Exception:
+        assert False
+
+    fetched, err = PromoDriver.get_promo_by_id(created["_id"])
+    assert err is None
+    assert fetched.get("type") == "Coupon"
+    assert fetched.get("redeemable") is True
+    assert fetched.get("_testObject") is True
+
+    deleted, err = PromoDriver.delete_promo(created["_id"])
+    assert err is None
+    assert deleted.get("deleted") is True or deleted.get("deleted") == 1
+
+    after, err = PromoDriver.get_promo_by_id(created["_id"])
+    assert after is None
+
+def test_update_promo_roundtrip():
+    promo_id = "69efbaff3fb064208bde07cd"
+    user_id = "69996a73313d1a459f4529da"
+
+    original, err = PromoDriver.get_promo_by_id(promo_id)
+    assert err is None
+    assert original is not None
+
+    orig_type = original.get("type")
+    orig_redeem = original.get("redeemable")
+
+    updates = {
+        "type": "Event Updated",
+        "redeemable": True
+    }
+
+    updated, err = PromoDriver.update_promo(promo_id, user_id, updates)
+    assert err is None
+    assert updated is not None
+
+    assert updated.get("type") == "Event Updated"
+    assert updated.get("redeemable") is True
+
+    fetched, err = PromoDriver.get_promo_by_id(promo_id)
+    assert err is None
+    assert fetched.get("type") == "Event Updated"
+
+    restore = {
+        "type": orig_type,
+        "redeemable": orig_redeem
+    }
+
+    restored, err = PromoDriver.update_promo(promo_id, user_id, restore)
+    assert err is None
+    assert restored is not None
+
+    assert restored.get("type") == orig_type
+    assert restored.get("redeemable") == orig_redeem
+
+def test_delete_promo_invalid_id():
+    deleted, err = PromoDriver.delete_promo("123")
+
+    assert deleted is None
+    assert "24-hex string" in err
+
+def test_delete_promo_not_found():
+    deleted, err = PromoDriver.delete_promo("000000000000000000000000")
+
+    assert deleted is None
+    assert err == "Promo not found"
