@@ -3375,7 +3375,7 @@ swaggerConfig = {
           {
             "name": "promo_id",
             "in": "path",
-            "required": true,
+            "required": True,
             "description": "Promo ObjectId",
             "schema": {
               "type": "string",
@@ -3421,7 +3421,7 @@ swaggerConfig = {
           {
             "name": "gym_id",
             "in": "path",
-            "required": true,
+            "required": True,
             "description": "Gym ObjectId",
             "schema": {
               "type": "string",
@@ -3470,7 +3470,7 @@ swaggerConfig = {
           {
             "name": "gym_id",
             "in": "path",
-            "required": true,
+            "required": True,
             "description": "Gym ObjectId to associate promo with",
             "schema": {
               "type": "string",
@@ -3479,7 +3479,7 @@ swaggerConfig = {
           }
         ],
         "requestBody": {
-          "required": true,
+          "required": True,
           "content": {
             "application/json": {
               "schema": {
@@ -3528,7 +3528,7 @@ swaggerConfig = {
           {
             "name": "promo_id",
             "in": "path",
-            "required": true,
+            "required": True,
             "description": "Promo ObjectId",
             "schema": {
               "type": "string",
@@ -3537,7 +3537,7 @@ swaggerConfig = {
           }
         ],
         "requestBody": {
-          "required": true,
+          "required": True,
           "content": {
             "application/json": {
               "schema": {
@@ -3586,7 +3586,7 @@ swaggerConfig = {
           {
             "name": "promo_id",
             "in": "path",
-            "required": true,
+            "required": True,
             "description": "Promo ObjectId",
             "schema": {
               "type": "string",
