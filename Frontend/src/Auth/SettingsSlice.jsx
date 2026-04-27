@@ -12,6 +12,8 @@ export const settingsInitialState = {
   locations: [],
   tutorialComplete: false,
   timezone: "EST",
+    // user's profile bio (displayed on Profile page)
+    user_bio: "",
   // backend keys
   _id: "",
   availableEquipment: "",

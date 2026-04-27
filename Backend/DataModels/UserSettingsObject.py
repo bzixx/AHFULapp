@@ -1,9 +1,6 @@
 from bson import ObjectId
 from datetime import datetime
-from Services.MongoDriver import getMongoDatabase
-
-ahfulAppDataDB = getMongoDatabase()
-userSettingsCollection = ahfulAppDataDB['userSettings']
+from Services.MongoDriver import get_collection
 
 DEFAULT_USER_SETTINGS = {
     "theme": "light",
@@ -31,7 +28,7 @@ class UserSettingsObject:
 
     @staticmethod
     def find_by_user_id(user_id):
-        settings = userSettingsCollection.find_one({"user_id": ObjectId(user_id)})
+        settings = get_collection('userSettings').find_one({"user_id": ObjectId(user_id)})
         return UserSettingsObject._serialize(settings)
 
     @staticmethod
@@ -41,22 +38,22 @@ class UserSettingsObject:
         settings_data["user_id"] = ObjectId(user_id)
         settings_data["created_at"] = int(datetime.now().timestamp())
         settings_data["updated_at"] = int(datetime.now().timestamp())
-        result = userSettingsCollection.insert_one(settings_data)
+        result = get_collection('userSettings').insert_one(settings_data)
         return str(result.inserted_id)
 
     @staticmethod
     def update(user_id, updates):
         updates["updated_at"] = int(datetime.now().timestamp())
-        result = userSettingsCollection.update_one(
+        result = get_collection('userSettings').update_one(
             {"user_id": ObjectId(user_id)},
             {"$set": updates}
         )
         if result.matched_count == 0:
             return None
-        updated = userSettingsCollection.find_one({"user_id": ObjectId(user_id)})
+        updated = get_collection('userSettings').find_one({"user_id": ObjectId(user_id)})
         return UserSettingsObject._serialize(updated)
 
     @staticmethod
     def delete(user_id):
-        result = userSettingsCollection.delete_one({"user_id": ObjectId(user_id)})
+        result = get_collection('userSettings').delete_one({"user_id": ObjectId(user_id)})
         return result.deleted_count > 0

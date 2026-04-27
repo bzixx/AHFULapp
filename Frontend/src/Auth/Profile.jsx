@@ -16,6 +16,8 @@ export function Profile() {
   const [isEditingBio, setIsEditingBio] = useState(false);
 
   const UserData = useSelector((state) => state.auth.user);
+  // prefer settings slice bio so it persists across refreshes
+  const settingsBio = useSelector((state) => state.setting?.user_bio);
 
   useEffect(() => {
     // If there's no user data, redirect to home.
@@ -24,11 +26,10 @@ export function Profile() {
       return;
     }
 
-    // If user data exists and they have a bio, populate it.
-    if (UserData.user_bio) {
-      setBio(UserData.user_bio);
-    }
-  }, [UserData]);
+    // Prefer the bio from settings (persisted in Redux). Fall back to auth user bio.
+    const sourceBio = settingsBio ?? UserData?.user_bio ?? "";
+    setBio(sourceBio);
+  }, [UserData, settingsBio]);
 
   const handleSaveBio = async () => {
     // Guard: ensure we have a user id before attempting to save.
@@ -36,8 +37,15 @@ export function Profile() {
       console.error("Cannot save bio: user ID not available");
       return;
     }
-    await updateUserSettings(UserData._id, { user_bio: bio });
-    setIsEditingBio(false);
+    try {
+      await updateUserSettings(UserData._id, { user_bio: bio });
+      // mirror into Redux so the UI (and refresh) will show the new bio
+      dispatch(setSettings({ user_bio: bio }));
+      setIsEditingBio(false);
+    } catch (err) {
+      console.error("Failed to save bio:", err);
+      alert("Failed to save bio. Please try again.");
+    }
   };
 
   const handleEnableNotifications = () => {
@@ -120,7 +128,7 @@ export function Profile() {
               {isEditingBio ? "Save" : "Edit"}
             </button>
           </div>
-          {isEditingBio ? (
+            {isEditingBio ? (
             <textarea
               className="profile-bio-input"
               value={bio}
@@ -130,7 +138,7 @@ export function Profile() {
             />
           ) : (
             <p className="profile-bio-text">
-              {bio || "No bio yet. Click Edit to add one!"}
+              {bio || "No Bio Yet. Click Edit to Add One!"}
             </p>
           )}
         </div>

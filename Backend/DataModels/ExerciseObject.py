@@ -1,10 +1,7 @@
 # DataModel & Objects are essentially the Database Access Layer
 # They know how to talk to Mongo DB Collection and that is it. 
 from bson import ObjectId
-from Services.MongoDriver import getMongoDatabase
-
-ahfulAppDataDB = getMongoDatabase()
-ExerciseCollection = ahfulAppDataDB['exercise']
+from Services.MongoDriver import get_collection
 
 class ExerciseObject:
     # ── Helpers ────────────────────────────────────────────────────────────────
@@ -40,25 +37,24 @@ class ExerciseObject:
         is_valid, error = ExerciseObject.validate(exercise_data)
         if not is_valid:
             return None, error
-        
-        result = ExerciseCollection.insert_one(exercise_data)
+        result = get_collection('exercise').insert_one(exercise_data)
         return str(result.inserted_id), None
 
     # ── Read ──────────────────────────────────────────────────────────────────
     @staticmethod
     def find_all():
-        workout = ExerciseCollection.find()
+        workout = get_collection('exercise').find()
         return [ExerciseObject._serialize(w) for w in workout]
     
     @staticmethod
     def find_by_id(id):
-        workout = ExerciseCollection.find_one({"_id": ObjectId(id)})
+        workout = get_collection('exercise').find_one({"_id": ObjectId(id)})
         return ExerciseObject._serialize(workout)
         
     # ── Delete ─────────────────────────────────────────────────────────────────
     @staticmethod
     def delete(id):
-        result = ExerciseCollection.delete_one({"_id": ObjectId(id)})
+        result = get_collection('exercise').delete_one({"_id": ObjectId(id)})
         return id if result.deleted_count == 1 else None
     
     # ── Update ─────────────────────────────────────────────────────────────────
@@ -86,8 +82,7 @@ class ExerciseObject:
 
         if not sanitized_updates:
             return None
-
-        result = ExerciseCollection.update_one(
+        result = get_collection('exercise').update_one(
             {"_id": ObjectId(id)},
             {"$set": sanitized_updates}
         )
@@ -96,5 +91,5 @@ class ExerciseObject:
             return None
 
         # Return the updated document
-        updated = ExerciseCollection.find_one({"_id": ObjectId(id)})
+        updated = get_collection('exercise').find_one({"_id": ObjectId(id)})
         return ExerciseObject._serialize(updated)
