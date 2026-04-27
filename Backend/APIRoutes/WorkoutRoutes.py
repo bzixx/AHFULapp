@@ -71,7 +71,7 @@ def create_workout():
 
     workout_id, error = WorkoutDriver.create_workout(
         user_id=g.user_id,
-        gym_id=data.get("gym_id"),
+        gym_id=data.get("gym_id") or "000000000000000000000000",
         title=data.get("title"),
         startTime=data.get("startTime"),
         endTime=data.get("endTime"),

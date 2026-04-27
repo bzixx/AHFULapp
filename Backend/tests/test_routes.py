@@ -455,7 +455,8 @@ def test_find_gym_by_id():
     assert err == bad_err_code
 
     # Give an invalid gym_id
-    inv_oid = "000000000000000000000000"
+    inv_oid = "111111111111111111111111"
+    
     gym, err = GymDriver.get_gym_by_id(inv_oid, "699d0093795741a59fe13616")
 
     if err is not None:
@@ -638,7 +639,7 @@ def test_gym_invalid_inputs_combined():
         assert err == "Invalid gym_id format; must be a 24-hex string" or err is not None
 
     # Valid format but not found
-    resp, err = GymDriver.get_gym_by_id("000000000000000000000000", "699d0093795741a59fe13616")
+    resp, err = GymDriver.get_gym_by_id("111111111111111111111111", "699d0093795741a59fe13616")
     assert resp is None
     assert err == "Gym not found"
 
@@ -652,7 +653,7 @@ def test_gym_invalid_inputs_combined():
         assert resp is None
         assert err == "Invalid gym_id format; must be a 24-hex string" or "You must provide a gym_id to delete"
 
-    resp, err = GymDriver.delete_gym("000000000000000000000000", "699d0093795741a59fe13616")
+    resp, err = GymDriver.delete_gym("111111111111111111111111", "699d0093795741a59fe13616")
     assert resp is None
     assert err == "Gym not found or already deleted"
 
@@ -1811,11 +1812,11 @@ def test_workout_invalid_inputs_combined():
         assert resp is None
         assert err == "Invalid gym_id format; must be a 24-hex string"
 
-    resp, err = WorkoutDriver.create_workout("000000000000000000000000", valid_gym_id, "Test", "1", "2")
+    resp, err = WorkoutDriver.create_workout("111111111111111111111111", valid_gym_id, "Test", "1", "2")
     assert resp is None
     assert err == "User not found"
 
-    resp, err = WorkoutDriver.create_workout(valid_user_id, "000000000000000000000000", "Test", "1", "2")
+    resp, err = WorkoutDriver.create_workout(valid_user_id, "111111111111111111111111", "Test", "1", "2")
     assert resp is None
     # Accept either the short or more descriptive error returned by the driver
     assert err == "Gym not found" or err == "Gym not found or inaccessible"

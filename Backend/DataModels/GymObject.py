@@ -20,9 +20,14 @@ class GymObject:
     @staticmethod
     def find_all(user_id):
         filter_doc = {
-            "$or": [
-                {"isPublic": True},
-                {"user_id": ObjectId(user_id)}
+            "$and": [
+                {
+                    "$or": [
+                        {"isPublic": True},
+                        {"user_id": ObjectId(user_id)}
+                    ]
+                },
+                {"_id": {"$ne": ObjectId("000000000000000000000000")}}
             ]
         }
         gyms = get_collection('gym').find(filter_doc)
