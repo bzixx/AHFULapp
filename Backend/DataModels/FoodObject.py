@@ -48,3 +48,36 @@ class FoodObject:
     def delete(id):
         result = get_collection('food').delete_one({"_id": ObjectId(id)})
         return str((result.deleted_count == 1) * id)
+
+    # ── Favorite ────────────────────────────────────────────────────────────────
+    @staticmethod
+    def toggle_favorite(id):
+        """Toggle the favorite status of a food."""
+        food = foodCollection.find_one({"_id": ObjectId(id)})
+        if not food:
+            return None
+        
+        # Toggle favorite field
+        current_favorite = food.get("favorite", False)
+        new_favorite = not current_favorite
+        
+        result = foodCollection.update_one(
+            {"_id": ObjectId(id)},
+            {"$set": {"favorite": new_favorite}}
+        )
+        
+        if result.matched_count == 0:
+            return None
+        
+        # Return updated food
+        updated = foodCollection.find_one({"_id": ObjectId(id)})
+        return FoodObject._serialize(updated)
+
+    @staticmethod
+    def find_favorites_by_user(user_id):
+        """Get all favorite foods for a user."""
+        foods = foodCollection.find({
+            "user_id": ObjectId(user_id),
+            "favorite": True
+        })
+        return [FoodObject._serialize(f) for f in foods]
