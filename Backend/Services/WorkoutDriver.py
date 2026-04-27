@@ -82,9 +82,8 @@ class WorkoutDriver:
             "startTime": int(startTime),
             "endTime": int(endTime),
             "template": False,
+            "gym_id": ObjectId(gym_id)
         }
-        if gym_id:
-            workout_data["gym_id"] = ObjectId(gym_id)
 
         try:
             response = WorkoutObject.create(workout_data)
@@ -205,6 +204,8 @@ class WorkoutDriver:
         
         if updates.get("gym_id"):
             updates["gym_id"] = ObjectId(updates["gym_id"])
+        else:
+            updates["gym_id"] = 
 
         # Allowed fields to update
         allowed_fields = {
