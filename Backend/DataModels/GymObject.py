@@ -23,11 +23,17 @@ class GymObject:
     @staticmethod
     def find_all(user_id):
         filter_doc = {
-            "$or": [
-                {"isPublic": True},
-                {"user_id": ObjectId(user_id)}
+            "$and": [
+                {
+                    "$or": [
+                        {"isPublic": True},
+                        {"user_id": ObjectId(user_id)}
+                    ]
+                },
+                {"_id": {"$ne": ObjectId("000000000000000000000000")}}
             ]
         }
+
         gyms = gymCollection.find(filter_doc)
         return [GymObject._serialize(g) for g in gyms]
 
