@@ -3340,8 +3340,8 @@ swaggerConfig = {
                       "type": { "type": "string", "example": "Coupon" },
                       "timeStart": { "type": "integer", "example": 1778873896 },
                       "timeEnd": { "type": "integer", "example": 1779451200 },
-                      "redeemable": { "type": "boolean", "example": true },
-                      "_testObject": { "type": "boolean", "example": true },
+                      "redeemable": { "type": "boolean", "example": True },
+                      "_testObject": { "type": "boolean", "example": True },
                       "created_at": { "type": "integer", "example": 1778870000 },
                       "updated_at": { "type": "integer", "example": 1778871111 }
                     }
