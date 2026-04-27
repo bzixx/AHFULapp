@@ -528,7 +528,7 @@ export function WorkoutLogger() {
         setTime(0);
       } catch (e) {
         console.error("Error: ", e);
-        return; // stop — don’t apply exercises to a bad workout
+        return;
       }
     }
 
@@ -652,14 +652,46 @@ export function WorkoutLogger() {
   };
 
   // Append selected pending exercises to the in-progress table
-  const addExerciseToWorkout = (e) => {
+  const addExerciseToWorkout = async (e) => {
     if (e && typeof e.preventDefault === "function") e.preventDefault();
     console.log("Adding exercises...");
 
+    let targetWorkoutId = workoutId; // default to existing workout
+
     // Ensure workout is loaded before adding exercises
     if (workoutId == "") {
-      console.error("Cannot add exercises - workout not loaded yet");
-      return;
+      const today = selectedDate ? new Date(selectedDate) : new Date();
+      const workoutName = `New Workout`;
+      today.setHours(0, 0, 0, 0);
+      const startUnix = Math.floor(today.getTime() / 1000);
+
+      const payload = {
+        endTime: startUnix,
+        gym_id: "000000000000000000000000",
+        startTime: startUnix,
+        title: workoutName,
+        user_id: user._id,
+      };
+
+      try {
+        const created = await createWorkout(payload);
+        const persisted = await fetchWorkoutById(created.workout_id);
+
+        // Save the correct ID for later
+        targetWorkoutId = persisted._id;
+
+        // Update UI
+        setDailyWorkouts((prev) => (prev ? [...prev, persisted] : [persisted]));
+        setWorkout(persisted);
+        setWorkoutId(persisted._id);
+        setWorkoutTitle(persisted.title);
+        setSelectedGymId(persisted.gym_id);
+        setTime(0);
+      } catch (e) {
+        console.error("Error: ", e);
+        return;
+      }
+
     }
 
     if (pendingExercises.length === 0) return;
@@ -668,7 +700,7 @@ export function WorkoutLogger() {
     const newExercises = pendingExercises.map((rawName) => ({
       _id: null, // null = new exercise, will be assigned ID after DB save
       exercise_id: rawName,
-      workout_id: workoutId,
+      workout_id: targetWorkoutId,
       user_id: user._id,
       complete: false,
       reps: 0,
