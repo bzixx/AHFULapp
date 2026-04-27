@@ -106,7 +106,7 @@ export function WorkoutLogger() {
         if (!mounted) return;
         setAvailableGyms(list || []);
         // default to first gym or user's home gym if available
-        // commented out for dev 
+        // commented out for dev
         // if (!selectedGymId && list && list.length > 0) {
         //   const home = user?.settings?.homeGymId;
         //   const foundHome = home ? list.find((g) => g._id === home) : null;
@@ -143,12 +143,10 @@ export function WorkoutLogger() {
         setWorkoutId(fullWorkout._id);
         setWorkoutTitle(fullWorkout.title || "");
         setSelectedGymId(fullWorkout.gym_id || "");
-
       } catch (err) {
         console.error("Failed to load full workout:", err);
       }
     })();
-
   }, [selectedDate, cachedWorkouts]);
 
   // ─── Timer State ─────────────────────────────────────────────────────────────
@@ -316,9 +314,6 @@ export function WorkoutLogger() {
     if (!selectedDate) return;
 
     const dateStr = selectedDate.slice(0, 10);
-    console.log("Loading workout for date:", dateStr);
-    console.log("Cached workouts:", cachedWorkouts);
-    console.log("Cached personal exercises:", cachedPersonalExercises);
 
     // Find workout for selected date from Redux
     const todaysWorkout = cachedWorkouts?.find((w) => {
@@ -326,18 +321,8 @@ export function WorkoutLogger() {
       const workoutDate = new Date(w.startTime * 1000)
         .toISOString()
         .slice(0, 10);
-      console.log(
-        "Comparing:",
-        workoutDate,
-        "===",
-        dateStr,
-        ":",
-        workoutDate === dateStr,
-      );
       return workoutDate === dateStr;
     });
-
-    console.log("Found workout:", todaysWorkout);
 
     if (todaysWorkout) {
       setWorkout(todaysWorkout);
@@ -351,7 +336,6 @@ export function WorkoutLogger() {
           (pe) => pe?.workout_id === todaysWorkout._id,
         ) || [];
 
-      console.log("Workout personal exercises:", workoutPersonalExercises);
       setExercisesInProgressTable(workoutPersonalExercises);
     } else {
       // No workout for this date - reset state
@@ -496,18 +480,60 @@ export function WorkoutLogger() {
     }
   }
 
-  function handleConfirmTemplateApply() {
-    // 1. Move current exercises → personalExToRemove
-    setPersonalExToRemove((prev) => {
-      const removed = { ...prev };
+  async function handleConfirmTemplateApply() {
+    console.log("Applying template...");
 
-      exercisesInProgressTable.forEach((ex) => {
-        const key = ex._id || ex.exercise_id;
-        removed[key] = ex;
+    if (workoutId != "") {
+      // 1. Move current exercises → personalExToRemove
+      setPersonalExToRemove((prev) => {
+        const removed = { ...prev };
+
+        exercisesInProgressTable.forEach((ex) => {
+          const key = ex._id || ex.exercise_id;
+          removed[key] = ex;
+        });
+
+        return removed;
       });
+    } else {
+      // Creating workout
 
-      return removed;
-    });
+      const workoutName = "\"" + "templatePreview.template.title" + "\"" + " Workout";
+      const today = selectedDate ? new Date(selectedDate) : new Date();
+      today.setHours(0, 0, 0, 0);
+      const startUnix = Math.floor(today.getTime() / 1000);
+
+      const payload = {
+        endTime: startUnix,
+        gym_id: "000000000000000000000000",
+        startTime: startUnix,
+        title: workoutName,
+        user_id: user._id,
+      };
+
+      try{
+      // Create workout
+      const created = await createWorkout(payload);
+
+      console.log("Workout created");
+
+      // Fetch persisted version
+      const persisted = await fetchWorkoutById(created.workout_id);
+
+      // Add to daily list
+      setDailyWorkouts((prev) => (prev ? [...prev, persisted] : [persisted]));
+
+      // Load it immediately
+      setWorkout(persisted);
+      setWorkoutId(persisted._id);
+      setWorkoutTitle(persisted.title);
+      setSelectedGymId(persisted.gym_id);
+      setTime(0);
+      }
+      catch(e){
+        console.error("Error: ", e);
+      }
+    }
 
     // 2. Replace exercisesInProgressTable with template exercises
     setExercisesInProgressTable(
@@ -593,7 +619,7 @@ export function WorkoutLogger() {
         endTime: workout.startTime + time, // your endTime variable
         startTime: workout.startTime, // keep original startTime
         title: workoutTitle, // keep original title
-        gym_id: selectedGymId
+        gym_id: selectedGymId,
       };
 
       const workoutRes = await updateWorkout(workoutId, workoutUpdatePayload);
@@ -857,7 +883,6 @@ export function WorkoutLogger() {
   useEffect(() => {
     async function getTemplates() {
       try {
-        console.log(user._id);
         const allTemplates = await fetchTemplate(user._id);
 
         // Normalize if needed (backend might return null or object)
