@@ -153,3 +153,34 @@ def get_workout_streak(user_id):
     if error:
         return jsonify({"error": error}), 404
     return jsonify(streak_data), 200
+
+# ── FAVORITE workout ────────────────────────────────────────────────────────────
+@workoutRouteBlueprint.route("/<workout_id>/favorite", methods=["PUT"])
+@login_required_user
+def toggle_favorite_workout(workout_id):
+    if not workout_id:
+        return jsonify({"error": "workout_id is required"}), 400
+    
+    workout, error = WorkoutDriver.toggle_favorite(g.user_id, workout_id)
+    if error:
+        return jsonify({"error": error}), 400
+    
+    favorite_status = workout.get("favorite", False)
+    return jsonify({
+        "message": f"Workout marked as {'favorite' if favorite_status else 'not favorite'}",
+        "workout": workout
+    }), 200
+
+# ── GET favorite workouts for user ──────────────────────────────────────
+@workoutRouteBlueprint.route("/favorites/<user_id>", methods=["GET"])
+@login_required_user
+def get_favorite_workouts(user_id):
+    # Own user request, devs or admins only
+    if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
+        return jsonify({"error": "You may only access your own data"}), 403
+    
+    workouts, error = WorkoutDriver.get_favorite_workouts(user_id)
+    if error:
+        return jsonify({"error": error}), 404
+    
+    return jsonify(workouts), 200

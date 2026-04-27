@@ -141,3 +141,40 @@ class TaskDriver:
             return {"deleted": deleted}, None
         except Exception as e:
             return None, str(e)
+
+    # ── Favorite ───────────────────────────────────────────────────────────────
+    @staticmethod
+    def toggle_favorite(user_id, task_id):
+        """Toggle favorite status of a task."""
+        # Validate inputs
+        if not user_id or not task_id:
+            return None, "user_id and task_id are required"
+        
+        # Verify operation permission
+        res, err = TaskDriver.verify_operation(user_id, task_id)
+        if err:
+            return None, err
+        
+        try:
+            updated = TaskObject.toggle_favorite(task_id)
+            if not updated:
+                return None, "Task not found"
+            return updated, None
+        except Exception as e:
+            return None, str(e)
+
+    @staticmethod
+    def get_favorite_tasks(user_id):
+        """Get all favorite tasks for a user."""
+        if not user_id:
+            return None, "user_id is required"
+        
+        oid, err = TaskDriver._validate_obj_id(user_id, "user_id")
+        if err:
+            return None, err
+        
+        try:
+            tasks = TaskObject.find_favorites_by_user(user_id)
+            return tasks, None
+        except Exception as e:
+            return None, str(e)

@@ -298,3 +298,40 @@ class WorkoutDriver:
             return {"streak": streak, "lastWorkoutDate": str(most_recent)}, None
         except Exception as e:
             return None, str(e)
+
+    # ── Favorite ───────────────────────────────────────────────────────────────
+    @staticmethod
+    def toggle_favorite(user_id, workout_id):
+        """Toggle favorite status of a workout."""
+        # Validate inputs
+        if not user_id or not workout_id:
+            return None, "user_id and workout_id are required"
+        
+        # Verify operation permission
+        res, err = WorkoutDriver.verify_operation(user_id, workout_id)
+        if err:
+            return None, err
+        
+        try:
+            updated = WorkoutObject.toggle_favorite(workout_id)
+            if not updated:
+                return None, "Workout not found"
+            return updated, None
+        except Exception as e:
+            return None, str(e)
+
+    @staticmethod
+    def get_favorite_workouts(user_id):
+        """Get all favorite workouts for a user."""
+        if not user_id:
+            return None, "user_id is required"
+        
+        oid, err = WorkoutDriver._validate_obj_id(user_id, "user_id")
+        if err:
+            return None, err
+        
+        try:
+            workouts = WorkoutObject.find_favorites_by_user(user_id)
+            return workouts, None
+        except Exception as e:
+            return None, str(e)

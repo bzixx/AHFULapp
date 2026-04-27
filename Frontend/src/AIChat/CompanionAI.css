@@ -1,7 +1,7 @@
 .ai-chat-container {
   width: 100%;
   max-width: 800px;
-  background-color: var(--container-background);
+  background-color: var(--color-surface);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -11,9 +11,9 @@
 
 .ai-chat-header {
   padding: 1rem;
-  background-color: var(--background-color);
+  background-color: var(--color-primary);
   text-align: center;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .ai-character-viewer {
@@ -34,8 +34,8 @@
   font-weight: 600;
   background: -webkit-linear-gradient(
     45deg,
-    var(--primary-accent),
-    var(--secondary-accent)
+    var(--accent-blue),
+    var(--accent-green)
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -58,7 +58,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  background-color: var(--container-background);
+  background-color: var(--color-surface);
 }
 
 .ai-response-history::-webkit-scrollbar {
@@ -66,23 +66,23 @@
 }
 
 .ai-response-history::-webkit-scrollbar-track {
-  background-color: var(--background-color);
+  background-color: var(--color-primary);
   border-radius: 4px;
 }
 
 .ai-response-history::-webkit-scrollbar-thumb {
-  background-color: var(--border-color);
+  background-color: var(--color-border);
   border-radius: 4px;
   transition: background-color 0.2s;
 }
 
 .ai-response-history::-webkit-scrollbar-thumb:hover {
-  background-color: var(--primary-accent);
+  background-color: var(--accent-blue);
 }
 
 .ai-no-responses {
   text-align: center;
-  color: var(--text-color);
+  color: var(--text-primary);
   opacity: 0.6;
   font-style: italic;
   margin: 2rem auto;
@@ -90,8 +90,8 @@
 
 .ai-response-box {
   position: relative;
-  background-color: var(--background-color);
-  border: 1px solid var(--border-color);
+  background-color: var(--color-primary);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 1rem;
   padding-right: 2.5rem;
@@ -113,7 +113,7 @@
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.6;
-  color: var(--text-color);
+  color: var(--text-primary);
   word-wrap: break-word;
   white-space: pre-wrap;
 }
@@ -124,7 +124,7 @@
   right: 0.5rem;
   background: none;
   border: none;
-  color: var(--text-color);
+  color: var(--text-primary);
   cursor: pointer;
   padding: 0.25rem 0.5rem;
   font-size: 1.25rem;
@@ -135,7 +135,7 @@
 
 .ai-delete-button:hover {
   opacity: 1;
-  color: var(--primary-accent);
+  color: var(--accent-red);
   background-color: rgba(255, 0, 0, 0.1);
 }
 
@@ -147,15 +147,15 @@
 .ai-chat-input-area {
   display: flex;
   padding: 1rem;
-  border-top: 1px solid var(--border-color);
-  background-color: var(--background-color);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-primary);
   gap: 0.5rem;
 }
 
 #ai-voice-select {
-  background-color: var(--input-background);
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 0.8rem;
   font-family: "Inter", sans-serif;
@@ -164,9 +164,9 @@
 
 #ai-text-input {
   flex-grow: 1;
-  background-color: var(--input-background);
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--color-border);
   border-radius: 8px;
   padding: 0.8rem;
   font-family: "Inter", sans-serif;
@@ -179,13 +179,13 @@
 
 #ai-text-input:focus {
   outline: none;
-  border-color: var(--primary-accent);
+  border-color: var(--accent-blue);
 }
 
 #ai-send-button {
   background: none;
   border: none;
-  color: var(--primary-accent);
+  color: var(--accent-blue);
   cursor: pointer;
   padding: 0.5rem 1rem;
   display: flex;
@@ -197,6 +197,39 @@
 
 #ai-send-button:active {
   opacity: 0.7;
+}
+
+.ai-mute-button {
+  background: none;
+  border: 1px solid var(--color-border);
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  border-radius: 8px;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  height: 50px;
+  width: 50px;
+}
+
+.ai-mute-button:hover {
+  border-color: var(--accent-blue);
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.ai-mute-button.muted {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+.ai-mute-button:active {
+  opacity: 0.7;
+  transform: scale(0.95);
 }
 
 #ai-send-button:hover {

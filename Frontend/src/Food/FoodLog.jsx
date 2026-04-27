@@ -4,6 +4,7 @@ import React, {useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import "./FoodLog.css";
 import "../siteStyles.css";
+import { toggleFoodFavorite } from "../QueryFunctions.js";
 
 const API_BASE = "https://www.ahful.app/api/AHFULfoods";
 
@@ -52,6 +53,7 @@ export function FoodLog() {
     const [selectedDate, setSelectedDate] = useState(toLocalDateInput(new Date()));
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(false);
+    const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
     // USDA Food Search States
     const [usda_searchInput, setUsda_searchInput] = useState("");
@@ -69,7 +71,8 @@ export function FoodLog() {
         totalCalories: doc.calsPerServing * doc.servings,
         mealType: doc.type,
         loggedAt: new Date(doc.time * 1000),
-        timestamp: new Date(doc.time * 1000).toLocaleTimeString()
+        timestamp: new Date(doc.time * 1000).toLocaleTimeString(),
+        favorite: doc.favorite || false
     });
 
     // USDA Food Search - with debouncing
@@ -197,7 +200,8 @@ export function FoodLog() {
 
     // Apply search only within the selected date range
     const filteredFoods = foodsInPeriod.filter((food) =>
-        food.name.toLowerCase().includes(searchTerm.toLowerCase())
+        food.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        (!showFavoritesOnly || food.favorite)
     );
 
     const addFood = async (e) => {
@@ -275,6 +279,23 @@ export function FoodLog() {
             setFoods(foods.filter(food => food.id !== id));
         } catch (err) {
             console.error("Network error — could not delete food", err);
+        }
+    };
+
+    const toggleFavorite = async (id) => {
+        try {
+            const { data, error } = await toggleFoodFavorite(id);
+            if (error) {
+                console.error("Failed to toggle favorite:", error);
+                return;
+            }
+            setFoods((prev) =>
+                prev.map((food) =>
+                    food.id === id ? { ...food, favorite: !food.favorite } : food
+                )
+            );
+        } catch (err) {
+            console.error("Error toggling favorite:", err);
         }
     };
 
@@ -503,10 +524,17 @@ export function FoodLog() {
                 <button
                     className={`period-btn ${timePeriod === 'yearly' ? 'active' : ''}`}
                     onClick={() => setTimePeriod('yearly')}
-                    >
-                        Yearly
-                    </button>
-                </div>
+                >
+                    Yearly
+                </button>
+                <button
+                    className={`favorite-filter-btn ${showFavoritesOnly ? 'active' : ''}`}
+                    onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                    title="Show favorites only"
+                >
+                    {showFavoritesOnly ? '⭐ Favorites' : '☆ All'}
+                </button>
+               </div>
 
                 <div className="date-navigation">
                     <button
@@ -593,6 +621,13 @@ export function FoodLog() {
                                 <span className="calories-badge">{food.totalCalories} cal</span>
                                 <span className="time-badge">{food.timestamp}</span>
                             </div>
+                            <button
+                                className="btn-favorite"
+                                onClick={() => toggleFavorite(food.id)}
+                                title={food.favorite ? "Remove from favorites" : "Add to favorites"}
+                            >
+                                {food.favorite ? '⭐' : '☆'}
+                            </button>
                             <button
                                 className="btn-edit"
                                 onClick={() => startEdit(food)}

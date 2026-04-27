@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import "../siteStyles.css";
 import { DashboardTaskTodoItem } from "./DashboardTaskTodoItem";
-import { updateTask } from "../QueryFunctions";
+import { updateTask, toggleTaskFavorite } from "../QueryFunctions";
 
 export function DashboardTaskTodoList() {
   const [tasks, setTasks] = useState([]);
@@ -55,6 +55,15 @@ export function DashboardTaskTodoList() {
     }
   };
 
+  const handleToggleFavorite = async (taskId) => {
+    const { data, error } = await toggleTaskFavorite(taskId);
+    if (!error) {
+      setTasks(tasks.map(t =>
+        t._id === taskId ? { ...t, favorite: !t.favorite } : t
+      ));
+    }
+  };
+
   if (loading) {
     return (
       <div className="dashboard-todo-list">
@@ -76,6 +85,7 @@ export function DashboardTaskTodoList() {
               key={task._id} 
               task={task}
               onToggleComplete={handleToggleComplete}
+              onToggleFavorite={handleToggleFavorite}
             />
           ))}
         </div>
