@@ -48,12 +48,12 @@ export function ExploreFriends() {
 
     return (
         <div style={{ padding: "1rem" }}>
-            {/* Add friend hbox at top */}
+            {/* Top input hbox */}
             <div
                 className="add-friend-hbox"
-                style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "1rem" }}
+                style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "1.25rem" }}
             >
-                <label htmlFor="friend-email" style={{ minWidth: "110px" }}>
+                <label htmlFor="friend-email" style={{ minWidth: "140px", fontWeight: 600 }}>
                     Add friend by email
                 </label>
                 <input
@@ -76,71 +76,78 @@ export function ExploreFriends() {
                 </p>
             )}
 
-            {/* Pending requests in a 3-column grid */}
-            <section style={{ marginBottom: "1.5rem" }}>
-                <h2>Pending Friend Requests</h2>
-                {pendingRequests.length === 0 ? (
-                    <p>No pending friend requests.</p>
-                ) : (
-                    <div
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(3, 1fr)",
-                            gap: "1rem",
-                        }}
-                    >
-                        {pendingRequests.map((p) => (
-                            <div
-                                key={p}
-                                className="pending-card"
-                                style={{
-                                    border: "1px solid #ddd",
-                                    padding: "0.75rem",
-                                    borderRadius: "6px",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: "0.5rem",
-                                }}
-                            >
-                                <div style={{ fontWeight: 600 }}>{p}</div>
-                                <div style={{ display: "flex", gap: "0.5rem" }}>
-                                    <button onClick={() => handleAccept(p)}>Accept</button>
-                                    <button onClick={() => handleCancelPending(p)}>Cancel</button>
+            {/* Two-column layout: left = pending, right = confirmed */}
+            <div
+                style={{
+                    display: "flex",
+                    gap: "1rem",
+                    alignItems: "flex-start",
+                }}
+            >
+                {/* Left: Pending Requests */}
+                <div style={{ flex: 1, minWidth: 260, display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}>
+                    <h3 style={{ marginTop: 0 }}>Pending Requests</h3>
+                    {pendingRequests.length === 0 ? (
+                        <p>No pending friend requests.</p>
+                    ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                            {pendingRequests.map((p) => (
+                                <div
+                                    key={p}
+                                    className="pending-card"
+                                    style={{
+                                        border: '1px solid #ddd',
+                                        padding: '0.75rem',
+                                        borderRadius: '6px',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        width: '100%',
+                                        boxSizing: 'border-box',
+                                    }}
+                                >
+                                    <div style={{ fontWeight: 600 }}>{p}</div>
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <button onClick={() => handleAccept(p)}>Accept</button>
+                                        <button onClick={() => handleCancelPending(p)}>Cancel</button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </section>
+                            ))}
+                        </div>
+                    )}
+                </div>
 
-            {/* Current friends list */}
-            <section>
-                <h2>Your Friends</h2>
-                {friends.length === 0 ? (
-                    <p>You have no friends yet.</p>
-                ) : (
-                    <div style={{ display: "grid", gap: "0.5rem" }}>
-                        {friends.map((f) => (
-                            <div
-                                key={f}
-                                style={{
-                                    border: "1px solid #eee",
-                                    padding: "0.5rem",
-                                    borderRadius: "6px",
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                }}
-                            >
-                                <div>{f}</div>
-                                <div>
-                                    <button onClick={() => handleRemoveFriend(f)}>Remove</button>
+                {/* Right: Confirmed Friends */}
+                <div style={{ flex: 1, minWidth: 260, display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}>
+                    <h3 style={{ marginTop: 0 }}>Your Friends</h3>
+                    {friends.length === 0 ? (
+                        <p>You have no friends yet.</p>
+                    ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            {friends.map((f) => (
+                                <div
+                                    key={f}
+                                    style={{
+                                        border: '1px solid #eee',
+                                        padding: '0.5rem',
+                                        borderRadius: '6px',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        width: '100%',
+                                        boxSizing: 'border-box',
+                                    }}
+                                >
+                                    <div>{f}</div>
+                                    <div>
+                                        <button onClick={() => handleRemoveFriend(f)}>Remove</button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </section>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }
