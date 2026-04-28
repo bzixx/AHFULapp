@@ -16,6 +16,7 @@ import { TOS } from "./TOS.jsx";
 import { Layout } from "./Layout.jsx"
 import { Settings } from "./Auth/Settings.jsx";
 import { ExploreTasks } from "./Tasks/ExploreTasks.jsx";
+import { FavoritesHub } from "./Favorites/FavoritesHub.jsx";
 import { useTutorial } from "./Auth/useTutorial.js";
 import { TutorialOverlay } from "./Auth/TutorialOverlay.jsx";
 import "./siteStyles.css";
@@ -50,7 +51,7 @@ function AHFULApp() {
     } else {
       document.body.classList.remove("dark");
     }
-  }, [theme]);  
+  }, [theme]);
 
   // Apply WhoAmI Check globally - runs on all pages
   useEffect(() => {
@@ -79,7 +80,7 @@ function AHFULApp() {
     }
 
     checkCookies();
-  }, []);  
+  }, []);
 
 
   return (
@@ -110,6 +111,8 @@ function AHFULApp() {
               <Profile/>}/>
           <Route path="/ExploreTasks" element={
               <ExploreTasks/>}/>
+          <Route path="/Favorites" element={
+              <FavoritesHub/>}/>
           <Route path="Settings" element={
               <Settings/>} />
         </Route>
