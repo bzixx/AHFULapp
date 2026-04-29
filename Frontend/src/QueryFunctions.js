@@ -767,7 +767,7 @@ export async function updateTask(taskId, updates) {
     return { error: err.message || "Failed to update task" };
   }
 }
-//FetchFood
+//Fetch Specific Food
 export async function FetchFood(userId) {
   try {
     const res = await fetch(
@@ -794,7 +794,7 @@ export async function FetchFood(userId) {
 
   } catch (err) {
     console.error("Failed to fetch foods:", err);
-    
+
     return {
       error: err.message || "Failed to fetch foods",
     };
