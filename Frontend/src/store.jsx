@@ -55,7 +55,7 @@ export const store = configureStore({
     pullTemplate: persistedPullTemplateReducer,
     pullWorkout: persistedPullWorkoutReducer,
     pullPersonalExercise: persistedPersonalExerciseReducer,
-    pullFood: persistedPullFoodReducer
+    pullFood: persistedFoodReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

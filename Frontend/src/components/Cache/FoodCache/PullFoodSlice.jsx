@@ -14,5 +14,5 @@ const pullFoodSlice = createSlice({
     }
   },
 });
-export const { setFood, setError } = pullFood.actions;
+export const { setFood, setError } = pullFoodSlice.actions;
 export default pullFoodSlice.reducer;

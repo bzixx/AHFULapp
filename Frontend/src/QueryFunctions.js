@@ -768,12 +768,12 @@ export async function updateTask(taskId, updates) {
   }
 }
 //Fetch Specific Food
-export async function FetchFood(userId) {
+export async function fetchFood(userId) {
   try {
     const res = await fetch(
       `http://localhost:5000/api/AHFULfoods/${userId}`,
       {
-        method: "GET",
+        method: "POST",
         credentials: "include",
       }
     );

@@ -1,5 +1,5 @@
 import { store } from "../../../store";
-import { setExercises, setError } from "./PullFoodSlice";
+import { setFood, setError } from "./PullFoodSlice";
 import { fetchFood } from "../../../QueryFunctions";
 
 export async function pullFood() {
