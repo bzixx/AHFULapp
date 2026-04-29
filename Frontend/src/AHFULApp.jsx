@@ -32,7 +32,6 @@ function AHFULApp() {
   const userData = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const {
     isActive: tutorialActive,
     currentStep,

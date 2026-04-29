@@ -1,14 +1,30 @@
-  import { GoogleLogin } from "@react-oauth/google";
-import { useSelector } from "react-redux";
+import { GoogleLogin } from "@react-oauth/google";
+import { useSelector, useDispatch } from "react-redux";
+import { useState, useEffect, useRef } from "react";
 import { handle_google_login, getUserSettings } from "../QueryFunctions.js";
 import { authLogin } from "./AuthSlice.jsx";
-import { useDispatch } from "react-redux";
 import { setSettings } from '../Auth/SettingsSlice.jsx';
-import "./Login.css";
+import googleIconDay from "../../images/Login/GoogleIcons/web_light_rd_na@2x.png";
+import googleIconNotScrolledDay from "../../images/Login/GoogleIcons/web_light_rd_SI@4x.png";
+import googleIconNight from "../../images/Login/GoogleIcons/web_dark_rd_na@2x.png";
+import googleIconNotScrolledNight from "../../images/Login/GoogleIcons/web_dark_rd_SI@4x.png";
+import "./Auth.css";
 
-export function GoogleButton({ onSuccess, onError }) {
+export function GoogleButton({ onSuccess, onError, isScrolled }) {
   const dispatch = useDispatch();
-  const theme = useSelector((state) => state.setting?.theme || "Light");
+  const [isNightMode, setIsNightMode] = useState(false);
+  const googleButtonRef = useRef(null);
+
+  useEffect(() => {
+    const checkTimeOfDay = () => {
+      const hour = new Date().getHours();
+      const isNight = hour >= 16 || hour < 5;
+      setIsNightMode(isNight);
+    };
+    checkTimeOfDay();
+    const interval = setInterval(checkTimeOfDay, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handle_google_success = async (response) => {
     try {
@@ -43,16 +59,42 @@ export function GoogleButton({ onSuccess, onError }) {
     onError?.(error);
   };
 
+  const getScrolledImage = () => {
+    return isNightMode ? googleIconNight : googleIconDay;
+  };
+
+  const getUnscrolledImage = () => {
+    return isNightMode ? googleIconNotScrolledNight : googleIconNotScrolledDay;
+  };
+
+  const triggerGoogleLogin = () => {
+    if (googleButtonRef.current) {
+      const button = googleButtonRef.current.querySelector('div[role="button"]');
+      if (button) button.click();
+    }
+  };
+
   return (
-    <div className="google-button-fixed">
-      <GoogleLogin
-        size="medium"
-        text={""}
-        theme={theme === "dark" ? "filled_black" : "outline"}
-        shape="circle"
-        onSuccess={handle_google_success}
-        onError={handle_google_failure}
-      />
-    </div>
+    <>
+      <div ref={googleButtonRef} style={{ position: 'absolute', left: '-9999px' }}>
+        <GoogleLogin
+          onSuccess={handle_google_success}
+          onError={handle_google_failure}
+        />
+      </div>
+
+      <button 
+        className={`google-login-button ${isScrolled ? 'hidden' : ''}`} 
+        onClick={triggerGoogleLogin}
+      >
+        <img src={getUnscrolledImage()} alt="Google Login" />
+      </button>
+      <button 
+        className={`google-login-button-scrolled ${isScrolled ? 'visible' : 'hidden'}`} 
+        onClick={triggerGoogleLogin}
+      >
+        <img src={getScrolledImage()} alt="Google Login" />
+      </button>
+    </>
   );
 }
