@@ -48,11 +48,12 @@ class VerificationDriver:
                 return None, "User not found"
             elif user["deactivated"] == True:
                 return None, "Your account has been deactivated :("
+            elif user["email_verified"] == False:
+                return None, "Your email has not been verified, who are you? >:["
             elif user["magic_bits"] != bits:
                 return None, "These bits don't match :("
-            # Commented out for ease of development
-            # elif datetime.now().timestamp() - user["last_login_expire"] > 0:
-            #     return None, "These bits are too old :,("
+            elif datetime.now().timestamp() - user["last_login_expire"] > 0:
+                return None, "These bits are too old :,("
             else:
                 return user, None
                 
