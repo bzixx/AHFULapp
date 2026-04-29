@@ -80,44 +80,7 @@ export function Login() {
       }
     }
   }, [isAuthenticated, user, navigate]);
-
-  const handle_google_success = async (response) => {
-    try {
-      setStatusText(`Logging in with Google...`);
-      let fetchResponse = await handle_google_login(response);
-
-      if (!fetchResponse || fetchResponse?.ok === false) {
-        console.error("Google login failed:", fetchResponse?.error || fetchResponse);
-        setStatusText(
-          fetchResponse?.error || `Google login failed (${fetchResponse?.status || "unknown"})`,
-        );
-        return;
-      }
-
-      let userSettingsResponse = await getUserSettings();
-
-      if (!userSettingsResponse || userSettingsResponse?.ok === false) {
-        console.error("Failed to get user settings:", userSettingsResponse?.error || userSettingsResponse);
-        setStatusText(
-          userSettingsResponse?.error || `Failed to fetch user settings`,
-        );
-        return;
-      }
-
-      dispatch(authLogin(fetchResponse.user_info));
-      dispatch(setSettings(userSettingsResponse));
-
-    } catch (error) {
-      console.error("Google login error:", error);
-      setStatusText(error.message || "Login failed. Please try again.");
-    }
-  };
-
-  const handle_google_failure = (error) => {
-    console.error("Google Login failed:", error);
-    setStatusText("Google login failed. Please try again.");
-  };
-
+  
   // ----- LOGIN Page HTML ---------------------------------------------------------------------------
   return (
     <div className={`login-page ${isScrolled ? 'scrolled' : ''}`}>
