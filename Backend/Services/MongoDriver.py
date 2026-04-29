@@ -7,10 +7,10 @@ from flask import current_app, g
 # context. If not present, create it using Flask config or environment
 # variables.
 def get_mongo_client() -> MongoClient:
-    ahfulMongoDBClient = getattr(g, "ahful_mongodb_client", None)
-    if ahfulMongoDBClient is not None:
-        # print("Using Cached MongoDB Client from Flask g")
-        return ahfulMongoDBClient
+    # ahfulMongoDBClient = getattr(g, "ahful_mongodb_client", None)
+    # if ahfulMongoDBClient is not None:
+    #     # print("Using Cached MongoDB Client from Flask g")
+    #     return ahfulMongoDBClient
 
     uri = None
     if not uri:
@@ -27,7 +27,7 @@ def get_mongo_client() -> MongoClient:
     except Exception as e:
         print(f"Error pinging MongoDB Connection: {e}")
 
-    g.ahful_mongodb_client = ahfulMongoDBClient
+    # g.ahful_mongodb_client = ahfulMongoDBClient
     return ahfulMongoDBClient
 
 #Return the database instance. Uses current_app.config['MONGODB_DB'] or
