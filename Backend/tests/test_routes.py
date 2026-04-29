@@ -12,7 +12,7 @@ from Services.PromoDriver import PromoDriver
 
 # Food
 
-def test_find_food_by_id(app_context):
+def test_find_food_by_id():
     # Give a valid gym_id
     oid = "699d0f5f888d8f649698307e"
     food, err = FoodDriver.get_food_by_id(oid)
@@ -59,7 +59,7 @@ def test_find_food_by_id(app_context):
     assert food is None
     assert err == inv_err_code
 
-def test_find_food_by_user(app_context):
+def test_find_food_by_user():
     # Give a valid email
     user_id = "699d0093795741a59fe13616"
     foods, err = FoodDriver.get_food_by_user(user_id)
@@ -108,7 +108,7 @@ def test_find_food_by_user(app_context):
     assert food is None
     assert err == inv_err_code
 
-def test_create_delete_food(app_context):
+def test_create_delete_food():
     # Give a valid user
     user_id = "699d0093795741a59fe13616"
     name = "Lettuce"
@@ -151,7 +151,7 @@ def test_create_delete_food(app_context):
     # Assertions
     assert response == response_id
 
-def test_update_food_roundtrip(app_context):
+def test_update_food_roundtrip():
     # Known existing document id from your tests/fixtures
     food_id = "699d0f5f888d8f649698307e"
 
@@ -249,7 +249,7 @@ def test_update_food_roundtrip(app_context):
     assert final.get("type") == orig_type
     assert final.get("time") == orig_time
     
-def test_food_invalid_inputs(app_context):
+def test_food_invalid_inputs():
     valid_food_id = "699d0f5f888d8f649698307e"
     valid_user_id = "699d0093795741a59fe13616"
 
@@ -365,7 +365,7 @@ def test_food_invalid_inputs(app_context):
     assert resp is None
     assert err == "Food not found"
 
-def test_food_partial_empty_unknown_updates(app_context):
+def test_food_partial_empty_unknown_updates():
     valid_user_id = "699d0093795741a59fe13616"
     valid_food_id = "699d0f5f888d8f649698307e"
 
