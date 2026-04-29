@@ -2,10 +2,7 @@
 # They know how to talk to Mongo DB Collection and that is it. 
 from bson import ObjectId
 from datetime import datetime
-from Services.MongoDriver import getMongoDatabase
-
-ahfulAppDataDB = getMongoDatabase()
-userCollection = ahfulAppDataDB['user']
+from Services.MongoDriver import get_collection
 
 class UserObject:
     # ── Helpers ────────────────────────────────────────────────────────────────
@@ -19,17 +16,17 @@ class UserObject:
     # ── Read ──────────────────────────────────────────────────────────────────
     @staticmethod
     def find_all():
-        users = userCollection.find()
+        users = get_collection('user').find()
         return [UserObject._serialize(u) for u in users]
     
     @staticmethod
     def find_by_id(id):
-        user = userCollection.find_one({"_id": ObjectId(id)})
+        user = get_collection('user').find_one({"_id": ObjectId(id)})
         return UserObject._serialize(user)
 
     @staticmethod
     def find_by_email(email):
-        user = userCollection.find_one({"email": email})
+        user = get_collection('user').find_one({"email": email})
         return UserObject._serialize(user)
     
     # def find_email_by_id(id):
@@ -39,7 +36,7 @@ class UserObject:
     # ── Update ─────────────────────────────────────────────────────────────────
     @staticmethod
     def add_role_by_id(user_id, role):
-        result = userCollection.update_one(
+        result = get_collection('user').update_one(
             {"_id": ObjectId(user_id)},
             {
                 # add only if not present; if roles is missing, it becomes [role]
@@ -50,12 +47,12 @@ class UserObject:
         if result.matched_count == 0:
             return None
         # return updated document
-        updated = userCollection.find_one({"_id": ObjectId(user_id)})
+        updated = get_collection('user').find_one({"_id": ObjectId(user_id)})
         return UserObject._serialize(updated)
     
     @staticmethod
     def remove_role_by_id(user_id, role):
-        result = userCollection.update_one(
+        result = get_collection('user').update_one(
             {"_id": ObjectId(user_id)},
             {
                 "$pull": {"roles": role},
@@ -64,12 +61,12 @@ class UserObject:
         )
         if result.matched_count == 0:
             return None
-        updated = userCollection.find_one({"_id": ObjectId(user_id)})
+        updated = get_collection('user').find_one({"_id": ObjectId(user_id)})
         return UserObject._serialize(updated)
     
     @staticmethod
     def deactivate_by_id(user_id):
-        result = userCollection.update_one(
+        result = get_collection('user').update_one(
             {"_id": ObjectId(user_id)},
             {
                 "$set": {
@@ -80,20 +77,20 @@ class UserObject:
         )
         if result.matched_count == 0:
             return None
-        updated = userCollection.find_one({"_id": ObjectId(user_id)})
+        updated = get_collection('user').find_one({"_id": ObjectId(user_id)})
         return UserObject._serialize(updated)
     
     @staticmethod
     def enable_verification(user_id, type):
         if type == "email":
-            result = userCollection.update_one(
+            result = get_collection('user').update_one(
                 {"_id": ObjectId(user_id)},
                 {
                     "$set": {"email_verified": True}
                 }
             )
         else :
-            result = userCollection.update_one(
+            result = get_collection('user').update_one(
                 {"_id": ObjectId(user_id)},
                 {
                     "$set": {"phone_verified": True}
@@ -103,20 +100,20 @@ class UserObject:
         if result.matched_count == 0:
             return None
         # return updated document
-        updated = userCollection.find_one({"_id": ObjectId(user_id)})
+        updated = get_collection('user').find_one({"_id": ObjectId(user_id)})
         return UserObject._serialize(updated)
     
     @staticmethod
     def disable_verification(user_id, type):
         if type == "email":
-            result = userCollection.update_one(
+            result = get_collection('user').update_one(
                 {"_id": ObjectId(user_id)},
                 {
                     "$set": {"email_verified": False}
                 }
             )
         else :
-            result = userCollection.update_one(
+            result = get_collection('user').update_one(
                 {"_id": ObjectId(user_id)},
                 {
                     "$set": {"phone_verified": False}
@@ -126,7 +123,7 @@ class UserObject:
         if result.matched_count == 0:
             return None
         # return updated document
-        updated = userCollection.find_one({"_id": ObjectId(user_id)})
+        updated = get_collection('user').find_one({"_id": ObjectId(user_id)})
         return UserObject._serialize(updated)
     
     # ── Untested ──────────────────────────────────────────────────────────────────
@@ -136,13 +133,13 @@ class UserObject:
         user_data["roles"] = ["User"]
         user_data["email_verified"] = False
         user_data["phone_verified"] = False
-        result = userCollection.insert_one(user_data)
+        result = get_collection('user').insert_one(user_data)
         return str(result.inserted_id)
     
     # Not tested
     @staticmethod
     def update(user_id, updates):
-        updateResults = userCollection.update_one(
+        updateResults = get_collection('user').update_one(
             {"_id": ObjectId(user_id)},
             {"$set": updates}
         )
@@ -152,5 +149,5 @@ class UserObject:
     # Not tested    
     @staticmethod
     def delete(user_id):
-        result = userCollection.delete_one({"_id": ObjectId(user_id)})
+        result = get_collection('user').delete_one({"_id": ObjectId(user_id)})
         return id if result.deleted_count == 1 else None

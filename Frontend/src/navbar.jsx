@@ -52,6 +52,7 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
           <NavLink
             to="/AIChat"
             className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={handleNavClick}
           >
             AI Chat
           </NavLink>

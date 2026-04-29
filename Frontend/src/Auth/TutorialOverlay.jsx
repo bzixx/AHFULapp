@@ -5,16 +5,25 @@ export function TutorialOverlay({ step, totalSteps, title, message, highlightSel
   const highlightRef = useRef(null);
 
   useEffect(() => {
-    if (highlightSelector && step === 0) {
+    // Apply highlight for the provided selector whenever highlightSelector or step changes
+    if (highlightRef.current) {
+      // remove previous highlight
+      highlightRef.current.classList.remove('tutorial-highlight');
+      highlightRef.current = null;
+    }
+
+    if (highlightSelector) {
       const element = document.querySelector(highlightSelector);
       if (element) {
         element.classList.add('tutorial-highlight');
         highlightRef.current = element;
       }
     }
+
     return () => {
       if (highlightRef.current) {
         highlightRef.current.classList.remove('tutorial-highlight');
+        highlightRef.current = null;
       }
     };
   }, [highlightSelector, step]);
