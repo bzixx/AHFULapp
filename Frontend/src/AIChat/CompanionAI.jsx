@@ -10,7 +10,39 @@ export function CompanionAI() {
   const statusRef = useRef(null);
   const aiInstanceRef = useRef(null);
   const responsesContainerRef = useRef(null);
+  const isMutedRef = useRef(false);
+  const audioContextRef = useRef(null);
+  const gainNodeRef = useRef(null);
   const [responses, setResponses] = useState([]);
+  const [isMuted, setIsMuted] = useState(false);
+
+  // Initialize Web Audio API for global muting
+  useEffect(() => {
+    try {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      audioContextRef.current = audioContext;
+
+      // Create a gain node to control volume
+      const gainNode = audioContext.createGain();
+      gainNode.connect(audioContext.destination);
+      gainNodeRef.current = gainNode;
+
+      console.log('Web Audio API initialized for global muting');
+    } catch (error) {
+      console.log('Web Audio API not available:', error);
+    }
+  }, []);
+
+  // Update the ref whenever the state changes
+  useEffect(() => {
+    isMutedRef.current = isMuted;
+
+    // Keep image static when muted
+    if (isMuted && imgRef.current) {
+      imgRef.current.src = 'https://www.ahful.app/images/char-mouth-closed.png';
+      console.log('Image set to static (mouth closed)');
+    }
+  }, [isMuted]);
 
   useEffect(() => {
     aiInstanceRef.current = initCompanionAI({
@@ -20,6 +52,7 @@ export function CompanionAI() {
       voiceSelect: voiceRef.current,
       status: statusRef.current,
       responsesContainer: responsesContainerRef.current,
+      isMutedRef: isMutedRef,
       onResponseAdded: (response) => {
         setResponses(prev => [...prev, { id: Date.now(), text: response }]);
       }
@@ -53,6 +86,53 @@ export function CompanionAI() {
 
   const handleDeleteResponse = (id) => {
     setResponses(prev => prev.filter(response => response.id !== id));
+  };
+
+  const handleMuteToggle = () => {
+    const newMutedState = !isMuted;
+    console.log('🔊 Mute button clicked - new state:', newMutedState ? '🔇 MUTED' : '🔊 UNMUTED');
+
+    // Update ref immediately
+    isMutedRef.current = newMutedState;
+
+    // Mute/unmute Web Speech API
+    if (aiInstanceRef.current) {
+      if (newMutedState) {
+        console.log('Canceling AI speech...');
+        aiInstanceRef.current.cancelSpeech();
+      }
+      aiInstanceRef.current.setMuted(newMutedState);
+    }
+
+    // Mute/unmute all audio elements on the page
+    const audioElements = document.querySelectorAll('audio');
+    audioElements.forEach(audio => {
+      audio.muted = newMutedState;
+      console.log('Audio element muted:', newMutedState);
+    });
+
+    // Mute/unmute Web Audio API contexts
+    if (audioContextRef.current) {
+      try {
+        // Resume audio context if suspended
+        if (audioContextRef.current.state === 'suspended') {
+          audioContextRef.current.resume();
+        }
+      } catch (e) {
+        console.log('Audio context error:', e);
+      }
+    }
+
+    // Also set global mute on speechSynthesis as backup
+    if (window.speechSynthesis) {
+      if (newMutedState) {
+        window.speechSynthesis.cancel();
+        console.log('Global speechSynthesis canceled');
+      }
+    }
+
+    // Update state after all muting is done
+    setIsMuted(newMutedState);
   };
 
   return (
@@ -91,6 +171,13 @@ export function CompanionAI() {
       </div>
       <footer className="ai-chat-input-area">
         <select ref={voiceRef} id="ai-voice-select"></select>
+        <button
+          className={`ai-mute-button ${isMuted ? 'muted' : ''}`}
+          onClick={handleMuteToggle}
+          title={isMuted ? 'Unmute AI' : 'Mute AI'}
+        >
+          {isMuted ? '🔇' : '🔊'}
+        </button>
         <textarea
           ref={textRef}
           id="ai-text-input"

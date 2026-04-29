@@ -1,8 +1,5 @@
 from bson import ObjectId
-from Services.MongoDriver import getMongoDatabase
-
-ahfulAppDataDB = getMongoDatabase()
-measurementCollection = ahfulAppDataDB['measurement']
+from Services.MongoDriver import get_collection
 
 
 class MeasurementObject:
@@ -15,24 +12,24 @@ class MeasurementObject:
 
     @staticmethod
     def create(measurement_data):
-        result = measurementCollection.insert_one(measurement_data)
+        result = get_collection('measurement').insert_one(measurement_data)
         return str(result.inserted_id)
 
     def find_all():
-        measurements = measurementCollection.find().sort("date", 1)
+        measurements = get_collection('measurement').find().sort("date", 1)
         return [MeasurementObject._serialize(m) for m in measurements]
 
     def find_by_id(id):
-        measurement = measurementCollection.find_one({"_id": ObjectId(id)})
+        measurement = get_collection('measurement').find_one({"_id": ObjectId(id)})
         return MeasurementObject._serialize(measurement)
 
     def find_by_user(user_id):
-        measurements = measurementCollection.find({"user_id": ObjectId(user_id)}).sort("date", 1)
+        measurements = get_collection('measurement').find({"user_id": ObjectId(user_id)}).sort("date", 1)
         return [MeasurementObject._serialize(m) for m in measurements]
 
     @staticmethod
     def update(id, update_data):
-        result = measurementCollection.update_one(
+        result = get_collection('measurement').update_one(
             {"_id": ObjectId(id)},
             {"$set": update_data}
         )
@@ -42,5 +39,5 @@ class MeasurementObject:
 
     @staticmethod
     def delete(id):
-        result = measurementCollection.delete_one({"_id": ObjectId(id)})
+        result = get_collection('measurement').delete_one({"_id": ObjectId(id)})
         return str((result.deleted_count == 1) * id)

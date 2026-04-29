@@ -1,9 +1,6 @@
 from bson import ObjectId
 from datetime import datetime
-from Services.MongoDriver import getMongoDatabase
-
-ahfulAppDataDB = getMongoDatabase()
-verificationCollection = ahfulAppDataDB['verificationTokens']
+from Services.MongoDriver import get_collection
 
 class VerificationObject:
     @staticmethod
@@ -15,26 +12,26 @@ class VerificationObject:
 
     @staticmethod
     def find_all():
-        verifies = verificationCollection.find()
+        verifies = get_collection('verificationTokens').find()
         return [VerificationObject._serialize(t) for t in verifies]
 
     @staticmethod   
     def find_by_id(id):
-        verification = verificationCollection.find_one({
+        verification = get_collection('verificationTokens').find_one({
             "_id": ObjectId(id)
         })
         return VerificationObject._serialize(verification)
 
     @staticmethod
     def find_type_by_user(user_id, type):
-        verify = verificationCollection.find(
+        verify = get_collection('verificationTokens').find(
             {"user_id": ObjectId(user_id),
             "type": type})
         return [VerificationObject._serialize(t) for t in verify]
     
     @staticmethod
     def find_all_by_user(user_id, type):
-        verify = verificationCollection.find(
+        verify = get_collection('verificationTokens').find(
             {"user_id": ObjectId(user_id)})
         return [VerificationObject._serialize(t) for t in verify]
 
@@ -47,12 +44,12 @@ class VerificationObject:
                 "user_id": ObjectId(user_id),
                 "created_at": int(datetime.now().timestamp())
             }
-            result = verificationCollection.insert_one(verify_data)
+            result = get_collection('verificationTokens').insert_one(verify_data)
             return str(result.inserted_id), None
         except Exception as e:
                 return None, str(e)
 
     @staticmethod
     def delete(verify_id):
-        result = verificationCollection.delete_one({"_id": ObjectId(verify_id)})
+        result = get_collection('verificationTokens').delete_one({"_id": ObjectId(verify_id)})
         return id if result.deleted_count == 1 else None

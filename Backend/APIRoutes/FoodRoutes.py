@@ -128,3 +128,34 @@ def get_food_streak(user_id):
     if error:
         return jsonify({"error": error}), 500
     return jsonify(streak_data), 200
+
+# ── FAVORITE food ────────────────────────────────────────────────────────────
+@foodRouteBlueprint.route("/<food_id>/favorite", methods=["PUT"])
+@login_required_user
+def toggle_favorite_food(food_id):
+    if not food_id:
+        return jsonify({"error": "food_id is required"}), 400
+    
+    food, error = FoodDriver.toggle_favorite(g.user_id, food_id)
+    if error:
+        return jsonify({"error": error}), 400
+    
+    favorite_status = food.get("favorite", False)
+    return jsonify({
+        "message": f"Food marked as {'favorite' if favorite_status else 'not favorite'}",
+        "food": food
+    }), 200
+
+# ── GET favorite foods for user ──────────────────────────────────────
+@foodRouteBlueprint.route("/favorites/<user_id>", methods=["GET"])
+@login_required_user
+def get_favorite_foods(user_id):
+    # Own user request, devs or admins only
+    if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
+        return jsonify({"error": "You may only access your own data"}), 403
+    
+    foods, error = FoodDriver.get_favorite_foods(user_id)
+    if error:
+        return jsonify({"error": error}), 404
+    
+    return jsonify(foods), 200

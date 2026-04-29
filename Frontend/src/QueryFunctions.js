@@ -767,3 +767,170 @@ export async function updateTask(taskId, updates) {
     return { error: err.message || "Failed to update task" };
   }
 }
+
+// ── Favorite Functions ──────────────────────────────────────────────────────
+
+// ── Workout Favorite Functions ──────────────────────────────────────────
+export async function toggleWorkoutFavorite(workoutId) {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/AHFULworkouts/${workoutId}/favorite`,
+      {
+        method: "PUT",
+        mode: "cors",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to toggle favorite: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    return { data: data.workout, error: null };
+  } catch (err) {
+    console.error("toggleWorkoutFavorite error:", err);
+    return { data: null, error: err.message };
+  }
+}
+
+export async function getWorkoutFavorites(userId) {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/AHFULworkouts/favorites/${userId}`,
+      {
+        method: "GET",
+        mode: "cors",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch favorites: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    return { data: data, error: null };
+  } catch (err) {
+    console.error("getWorkoutFavorites error:", err);
+    return { data: null, error: err.message };
+  }
+}
+
+// ── Food Favorite Functions ──────────────────────────────────────────
+export async function toggleFoodFavorite(foodId) {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/AHFULfoods/${foodId}/favorite`,
+      {
+        method: "PUT",
+        mode: "cors",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to toggle favorite: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    return { data: data.food, error: null };
+  } catch (err) {
+    console.error("toggleFoodFavorite error:", err);
+    return { data: null, error: err.message };
+  }
+}
+
+export async function getFoodFavorites(userId) {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/AHFULfoods/favorites/${userId}`,
+      {
+        method: "GET",
+        mode: "cors",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch favorites: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    return { data: data, error: null };
+  } catch (err) {
+    console.error("getFoodFavorites error:", err);
+    return { data: null, error: err.message };
+  }
+}
+
+// ── Task Favorite Functions ──────────────────────────────────────────
+export async function toggleTaskFavorite(taskId) {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/AHFULtasks/${taskId}/favorite`,
+      {
+        method: "PUT",
+        mode: "cors",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to toggle favorite: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    return { data: data.task, error: null };
+  } catch (err) {
+    console.error("toggleTaskFavorite error:", err);
+    return { data: null, error: err.message };
+  }
+}
+
+export async function getTaskFavorites(userId) {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/AHFULtasks/favorites/${userId}`,
+      {
+        method: "GET",
+        mode: "cors",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch favorites: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    return { data: data, error: null };
+  } catch (err) {
+    console.error("getTaskFavorites error:", err);
+    return { data: null, error: err.message };
+  }
+}

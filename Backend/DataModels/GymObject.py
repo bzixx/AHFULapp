@@ -1,8 +1,5 @@
 from bson import ObjectId
-from Services.MongoDriver import getMongoDatabase
-
-ahfulAppDataDB = getMongoDatabase()
-gymCollection = ahfulAppDataDB['gym']
+from Services.MongoDriver import get_collection
 
 class GymObject:
     @staticmethod
@@ -17,7 +14,7 @@ class GymObject:
 
     @staticmethod
     def create(gym_data):
-        result = gymCollection.insert_one(gym_data)
+        result = get_collection('gym').insert_one(gym_data)
         return str(result.inserted_id)
 
     @staticmethod
@@ -33,8 +30,7 @@ class GymObject:
                 {"_id": {"$ne": ObjectId("000000000000000000000000")}}
             ]
         }
-
-        gyms = gymCollection.find(filter_doc)
+        gyms = get_collection('gym').find(filter_doc)
         return [GymObject._serialize(g) for g in gyms]
 
     @staticmethod
@@ -48,7 +44,7 @@ class GymObject:
                 ]}
             ]
         }
-        gym = gymCollection.find_one(filter_doc)
+        gym = get_collection('gym').find_one(filter_doc)
         return GymObject._serialize(gym)
     
     @staticmethod
@@ -64,12 +60,12 @@ class GymObject:
         }
         update_doc = {"$set": updates}
 
-        result = gymCollection.update_one(filter_doc, update_doc)
+        result = get_collection('gym').update_one(filter_doc, update_doc)
 
         if result.matched_count == 0:
             return None
 
-        updated = gymCollection.find_one({"_id": ObjectId(id)})
+        updated = get_collection('gym').find_one({"_id": ObjectId(id)})
         return GymObject._serialize(updated)
 
     @staticmethod
@@ -80,5 +76,5 @@ class GymObject:
                 {"user_id": ObjectId(user_id)}
             ]
         }
-        result = gymCollection.delete_one(filter_doc)
+        result = get_collection('gym').delete_one(filter_doc)
         return str((result.deleted_count == 1) * id)
