@@ -2381,7 +2381,7 @@ def test_create_and_delete_promo():
 
 def test_update_promo_roundtrip():
     promo_id = "69efbaff3fb064208bde07cd"
-    user_id = "69996a73313d1a459f4529da"
+    user_id = "699d0093795741a59fe13616"
 
     original, err = PromoDriver.get_promo_by_id(promo_id)
     assert err is None
