@@ -121,7 +121,7 @@ class PromoDriver:
             if not promo:
                 return None, "Promo not found"
             
-            gym = GymObject.find_by_id(promo["gym_id"])
+            gym = GymObject.find_by_id(promo["gym_id"], user_id)
 
             user = UserObject.find_by_id(user_id)
             if not user:
