@@ -1,6 +1,6 @@
-import veniceDesktop from "../../images/Login/venice desktop with overlay.jpg";
-import veniceMobile from "../../images/Login/venice mobile with overlay.jpg";
-import "./Login.css";
+import veniceDesktop from "../../images/Login/Backgrounds/venice desktop with overlay.jpg";
+import veniceMobile from "../../images/Login/Backgrounds/venice mobile with overlay.jpg";
+import "./Auth.css";
 import "../Dashboard/Dashboard.css";
 import { GoogleLogin } from "@react-oauth/google";
 import { GoogleButton } from "./GoogleButton";
@@ -80,48 +80,16 @@ export function Login() {
       }
     }
   }, [isAuthenticated, user, navigate]);
-
-  const handle_google_success = async (response) => {
-    try {
-      setStatusText(`Logging in with Google...`);
-      let fetchResponse = await handle_google_login(response);
-
-      if (!fetchResponse || fetchResponse?.ok === false) {
-        console.error("Google login failed:", fetchResponse?.error || fetchResponse);
-        setStatusText(
-          fetchResponse?.error || `Google login failed (${fetchResponse?.status || "unknown"})`,
-        );
-        return;
-      }
-
-      let userSettingsResponse = await getUserSettings();
-
-      if (!userSettingsResponse || userSettingsResponse?.ok === false) {
-        console.error("Failed to get user settings:", userSettingsResponse?.error || userSettingsResponse);
-        setStatusText(
-          userSettingsResponse?.error || `Failed to fetch user settings`,
-        );
-        return;
-      }
-
-      dispatch(authLogin(fetchResponse.user_info));
-      dispatch(setSettings(userSettingsResponse));
-
-    } catch (error) {
-      console.error("Google login error:", error);
-      setStatusText(error.message || "Login failed. Please try again.");
-    }
-  };
-
-  const handle_google_failure = (error) => {
-    console.error("Google Login failed:", error);
-    setStatusText("Google login failed. Please try again.");
-  };
-
+  
   // ----- LOGIN Page HTML ---------------------------------------------------------------------------
   return (
     <div className={`login-page ${isScrolled ? 'scrolled' : ''}`}>
       <div className="login-background" style={{ backgroundImage: `url(${isMobile ? veniceMobile : veniceDesktop})` }}></div>
+      <GoogleButton
+        onSuccess={() => setStatusText("Logged in!")}
+        onError={(err) => setStatusText(err || "Login failed")}
+        isScrolled={isScrolled}
+      />
       <div className="login-top-overlay">
         <div className={`login-content ${showContent ? 'fade-in' : ''}`}>
           <div className="login-title">
@@ -130,25 +98,7 @@ export function Login() {
                 A Helpful Fitness Utilization Logger App
               </div>
           </div>
-          <div className="login-button">
-            {!isScrolled ? (
-              <GoogleLogin
-                size="large"
-                width="200"
-                text="signin_with"
-                theme={theme === "dark" ? "filled_black" : "outline"}
-                shape="pill"
-                onSuccess={handle_google_success}
-                onError={handle_google_failure}
-              />
-            ) : (
-              <GoogleButton
-                onSuccess={() => setStatusText("Logged in!")}
-                onError={(err) => setStatusText(err || "Login failed")}
-              />
-            )}
-          </div>
-          <div className={`scroll-down-text ${showScrollText ? 'fade-in' : ''}`}>
+          <div className={`scroll-down-text ${showScrollText ? 'fade-in' : ''} ${isScrolled ? 'hidden' : ''}`}>
             {typedText}<span className="typing-cursor"></span>
           </div>
         </div>
@@ -166,11 +116,6 @@ export function Login() {
               <div className="streaks-wrapper">
                 <StreakCounter count={3} type="workout" loading={false} />
                 <StreakCounter count={5} type="food" loading={false} />
-              </div>
-              <div className="login-dashboard-cta">
-                <a href="#features" className="secondary-cta">
-                  Learn More
-                </a>
               </div>
             </div>
           </section>
