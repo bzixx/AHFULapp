@@ -4,7 +4,7 @@ import time
 from Services.MongoDriver import getMongoDatabase
 
 ahfulAppDataDB = getMongoDatabase()
-promoCollection = ahfulAppDataDB['promo']
+promoCollection = ahfulAppDataDB['promotions']
 
 class PromoObject:
     @staticmethod
