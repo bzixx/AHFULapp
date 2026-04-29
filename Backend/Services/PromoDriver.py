@@ -79,7 +79,7 @@ class PromoDriver:
             return None, err
 
         try:
-            gym = GymObject.find_by_id(gym_oid)
+            gym = GymObject.find_by_id(gym_oid, user_id)
             if not gym:
                 return None, "Gym not found"
 
