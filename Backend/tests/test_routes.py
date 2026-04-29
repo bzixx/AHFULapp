@@ -2343,7 +2343,7 @@ def test_get_all_promos():
 
 def test_create_and_delete_promo():
     gym_id = "699cff88400d9d43a32e924d"
-    user_id = "69996a73313d1a459f4529da"
+    user_id = "699d0093795741a59fe13616"
 
     data = {
         "type": "Coupon",
