@@ -767,3 +767,36 @@ export async function updateTask(taskId, updates) {
     return { error: err.message || "Failed to update task" };
   }
 }
+//FetchFood
+export async function FetchFood(userId) {
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/AHFULfoods/${userId}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        error: data.error || "Failed to fetch foods",
+      };
+    }
+
+    const sorted = (Array.isArray(data) ? data : [])
+      .sort((a, b) => (b.time || 0) - (a.time || 0))
+      .slice(0, 15);
+
+    return sorted;
+
+  } catch (err) {
+    console.error("Failed to fetch foods:", err);
+    
+    return {
+      error: err.message || "Failed to fetch foods",
+    };
+  }
+}

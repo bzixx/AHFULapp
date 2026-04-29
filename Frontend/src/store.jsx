@@ -9,6 +9,7 @@ import pullExerciseReducer from "./components/Cache/ExerciseCache/PullExerciseSl
 import pullTemplateReducer from "./components/Cache/TemplateCache/PullTemplateSlice";
 import pullWorkoutReducer from "./components/Cache/WorkoutCache/PullWorkoutSlice";
 import pullPersonalExerciseReducer from "./components/Cache/PersonalExerciseCache/PersonalExerciseSlice";
+import pullFoodReducer from "./components/Cache/FoodCache/PullFoodSlice";
 
 const persistExerciseConfig = {
   key: "pullExercise",
@@ -33,11 +34,17 @@ const persistPersonalExerciseConfig = {
   storage,
 };
 
+const persistFoodConfig = {
+  key: "pullFood",
+  storage,
+}
+
 const persistedPullExerciseReducer = persistReducer(persistExerciseConfig, pullExerciseReducer);
 const persistedPullTemplateReducer = persistReducer(persistTemplateConfig, pullTemplateReducer);
 const persistedPullWorkoutReducer = persistReducer(persistWorkoutConfig, pullWorkoutReducer);
 const persistedCalendarReducer = persistReducer(persistCalendarConfig, calendarReducer);
 const persistedPersonalExerciseReducer = persistReducer(persistPersonalExerciseConfig, pullPersonalExerciseReducer);
+const persistedFoodReducer = persistReducer(persistFoodConfig, pullFoodReducer);
 
 export const store = configureStore({
   reducer: {
@@ -48,6 +55,7 @@ export const store = configureStore({
     pullTemplate: persistedPullTemplateReducer,
     pullWorkout: persistedPullWorkoutReducer,
     pullPersonalExercise: persistedPersonalExerciseReducer,
+    pullFood: persistedPullFoodReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
