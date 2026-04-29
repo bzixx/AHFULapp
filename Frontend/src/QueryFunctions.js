@@ -767,7 +767,39 @@ export async function updateTask(taskId, updates) {
     return { error: err.message || "Failed to update task" };
   }
 }
+//Fetch Specific Food
+export async function fetchFood(userId) {
+  try {
+    const res = await fetch(
+      `https://www.ahful.app/api/AHFULfoods/${userId}`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
 
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        error: data.error || "Failed to fetch foods",
+      };
+    }
+
+    const sorted = (Array.isArray(data) ? data : [])
+      .sort((a, b) => (b.time || 0) - (a.time || 0))
+      .slice(0, 15);
+
+    return sorted;
+
+  } catch (err) {
+    console.error("Failed to fetch foods:", err);
+
+    return {
+      error: err.message || "Failed to fetch foods",
+    };
+  }
+}
 // ── Favorite Functions ──────────────────────────────────────────────────────
 
 // ── Workout Favorite Functions ──────────────────────────────────────────
