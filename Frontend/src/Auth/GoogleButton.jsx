@@ -90,7 +90,7 @@ export function GoogleButton({ onSuccess, onError, isScrolled }) {
         <img src={getUnscrolledImage()} alt="Google Login" />
       </button>
       <button 
-        className={`google-login-button-scrolled ${isScrolled ? 'visible' : ''}`} 
+        className={`google-login-button-scrolled ${isScrolled ? 'visible' : 'hidden'}`} 
         onClick={triggerGoogleLogin}
       >
         <img src={getScrolledImage()} alt="Google Login" />

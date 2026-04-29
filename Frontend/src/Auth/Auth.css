@@ -37,7 +37,10 @@
   opacity: 0;
   transition: opacity 0.3s ease;
 }
-
+.google-login-button-scrolled.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
 .google-login-button-scrolled.visible {
   opacity: 1;
   pointer-events: auto;
