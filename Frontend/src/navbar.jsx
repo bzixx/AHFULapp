@@ -15,7 +15,7 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
   return (
     <nav className={`sidebar ${isOpen ? "open" : "closed"}`} style={{ minHeight }}>
       <NavLink
-        to="/"
+        to="/Dashboard"
         className={({ isActive }) => (isActive ? "active" : "")}
         onClick={handleNavClick}
       >
