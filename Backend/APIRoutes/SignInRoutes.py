@@ -100,6 +100,8 @@ def whoami():
                 "picture": routeUserObject["picture"],
                 "roles": routeUserObject["roles"],
                 "last_login_time": routeUserObject["last_login_time"],
+                "phone_verified": routeUserObject["phone_verified"],
+                "email_verified": routeUserObject["email_verified"],
             }
         }))
 
