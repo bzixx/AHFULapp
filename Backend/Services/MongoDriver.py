@@ -2,49 +2,47 @@ from pymongo import MongoClient
 import certifi
 import os
 from flask import current_app
+import atexit
 
-#Register the Mongo teardown on the given Flask `app`
 def connect_mongo(app):
-    print("Setting up MongoDB Connection for proper teardown.")
-    app.teardown_appcontext(close_mongo_client)
-    return get_mongo_client()
+    """Create one MongoClient at startup, store both client and db on app."""
+    print("Setting up MongoDB connection.")
 
-# Return a MongoClient cached on flask.g for the current request/app
-# context. If not present, create it using Flask config or environment
-# variables.
-def get_mongo_client() -> MongoClient:
-
-    uri = None
+    uri = os.getenv("MONGODB_URI")
     if not uri:
-        uri = os.getenv("MONGODB_URI")
+        raise RuntimeError("MONGODB_URI environment variable not set.")
 
-    if not uri:
-        raise RuntimeError("MongoDB URI not set in Flask config or environment")
+    # Store the CLIENT separately from the DATABASE
+    client = MongoClient(uri, tlsCAFile=certifi.where())
 
-    ahfulMongoDBClient = MongoClient(uri, tlsCAFile=certifi.where())
+    # Store BOTH on the app — client for teardown, db for queries
+    app.MongoClient = client
+    app.MongoDBConn = client["appData"]
 
-    # Send a ping to confirm a successful connection
+    # Smoke test the connection immediately
     try:
-        ahfulMongoDBClient.admin.command('ping')
+        client.admin.command("ping")
+        print("MongoDB ping successful.")
     except Exception as e:
-        print(f"Error pinging MongoDB Connection: {e}")
+        raise RuntimeError(f"Could not connect to MongoDB: {e}")
+    
+    if app.MongoDBConn is None:
+        raise RuntimeError("MongoDBConn failed to initialize — client['appData'] returned None.")
 
-    #return the conenction to the DB
-    return ahfulMongoDBClient["appData"]
+    # Register teardown ONCE here
+    atexit.register(lambda: client.close())
 
-#Convenience helper to return a collection handle.
+
 def get_collection(collection_name: str):
-    return current_app.MongoDriver[collection_name]
+    """Convenience helper to return a collection handle."""
+    return current_app.MongoDBConn[collection_name]
 
-#Close the cached client (if any) during Flask teardown.
+
 def close_mongo_client(e=None):
-    try:
-        current_app.MongoDriver.close()
-        # print("Closed MongoDB Client Connection.")
-    except Exception:
-        print("Error closing MongoDB Client Connection during teardown.")
-        pass
-
-
-
-
+    """Close the MongoClient (not the Database) during Flask teardown."""
+    client = getattr(current_app._get_current_object(), "MongoClient", None)
+    if client:
+        client.close()
+        print("MongoDB client closed.")
+    else:
+        print("No MongoDB client found to close.")

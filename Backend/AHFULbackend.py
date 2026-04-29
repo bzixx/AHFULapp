@@ -24,7 +24,6 @@ from APIRoutes.TaskRoutes import taskBlueprint
 from APIRoutes.SocialRoutes import socialRouteBlueprint
 from APIRoutes.VerificationRoutes import verificationRouteBlueprint
 from APIRoutes.ChatRoutes import chatRouteBlueprint
-from Services.MongoDriver import get_mongo_client
 
 #Firebase Admin SDK
 import firebase_admin
@@ -48,8 +47,7 @@ def create_app():
 
     #Make an Appwade SignInDriver to reference later
     app.AHFULSignInDriver = SignInDriver(os.getenv("GOOGLE_CLIENT_ID"))
-    app.MongoDriver = connect_mongo(app)
-
+    connect_mongo(app)
 
     #Initialize Firebase Admin SDK
     cred = credentials.Certificate("./firebaseSecret.json")
