@@ -3,8 +3,13 @@ import { setExercises, setError } from "./PullFoodSlice";
 import { fetchFood } from "../../../QueryFunctions";
 
 export async function pullFood() {
+  const user = store.getState().auth.user;
+  if (!user?._id) {
+    store.dispatch(setError("No user logged in"));
+    return [];
+  }
   try {
-    const list = await fetchFood();
+    const list = await fetchFood(user._id);
     const metadata = list.map(e => ({
       _id: e._id,
       name: e.name,
