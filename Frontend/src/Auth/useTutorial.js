@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { updateUserSettings } from '../QueryFunctions';
+import { updateUserSettings, getUserSettings } from '../QueryFunctions';
+import { setSettings } from './SettingsSlice.jsx';
 
 /**
  * TUTORIAL_STEPS - Configuration for the onboarding tutorial flow
@@ -136,18 +137,30 @@ export function useTutorial() {
    * @param {boolean} completed - Whether tutorial was completed (true) or skipped (false)
    *                           - Both paths currently result in tutorialComplete: true
    */
+  const dispatch = useDispatch();
+
   const endTutorial = useCallback(async (completed = true) => {
     setIsActive(false);
     if (user && user._id) {
       try {
         // Step 1: Update backend with tutorial completion status
         await updateUserSettings(user._id, { tutorialComplete: true });
-        
+
+        // Step 2: Re-fetch fresh settings from backend and sync to Redux
+        try {
+          const freshSettings = await getUserSettings();
+          // The backend may return settings directly or under a `data` field.
+          // Dispatch whatever shape we received; setSettings merges into state.
+          dispatch(setSettings(freshSettings));
+        } catch (fetchErr) {
+          console.error('Failed to re-fetch settings after tutorial completion:', fetchErr);
+        }
+
       } catch (err) {
         console.error("Failed to update tutorial status:", err);
       }
     }
-  }, [user]);
+  }, [user, dispatch]);
 
   /**
    * skipTutorial - Called when user clicks "Skip Tutorial" button
@@ -195,7 +208,7 @@ export function useTutorial() {
    */
   useEffect(() => {
     if (hasAutoStarted.current) return;
-    
+
     if ((tutorialComplete === false || tutorialComplete === undefined) && user && user._id) {
       if (user.email_verified) {
         startTutorial();
@@ -204,7 +217,7 @@ export function useTutorial() {
         email_redirect();
       }
     }
-  }, []);
+  }, [user, tutorialComplete, startTutorial, email_redirect]);
 
   /**
    * Returned interface for components using this hook
