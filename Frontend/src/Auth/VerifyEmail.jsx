@@ -23,8 +23,8 @@ export function VerifyEmail() {
         {status === "success" ? (
           <>
             <h2>Email verified successfully!</h2>
-            <button onClick={() => navigate("/Login")}>
-              Continue to Login
+            <button onClick={() => navigate("/Dashboard")}>
+              Continue to Dashboard
             </button>
           </>
         ) : (

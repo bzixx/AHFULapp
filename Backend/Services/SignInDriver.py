@@ -114,8 +114,6 @@ class SignInDriver:
                 }
             }))
 
-            print("1 ", str(response))
-
             # 2. Set the cookie with User ID
             # We store ONLY the session/user ID here
             response.set_cookie(
@@ -126,8 +124,6 @@ class SignInDriver:
                 samesite='Strict',      # CSRF protection (use 'Strict' for high security)
                 max_age=3600         # Expiration in seconds (e.g., 1 hour)
             )
-
-            print("2 ", str(response))
 
             # 3. Set the cookie with User Settings ID
             # We store ONLY the session/user ID here
@@ -140,8 +136,6 @@ class SignInDriver:
                 max_age=3600         # Expiration in seconds (e.g., 1 hour)
             )
 
-            print("3 ", str(response))
-
             # 4. Set MagicBits Cookie with Token.
             response.set_cookie(
                 'magic_bits',        # Cookie name
@@ -151,8 +145,6 @@ class SignInDriver:
                 samesite='Strict',      # CSRF protection (use 'Strict' for high security)
                 max_age=3600         # Expiration in seconds (e.g., 1 hour)
             )
-
-            print("4 ", str(response))
 
             #Log to Console & Security Logging. 
             print (f"Logged in & set cookie(s!) for user_id: {routeUserObject['_id']}")

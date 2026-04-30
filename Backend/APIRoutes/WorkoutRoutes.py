@@ -114,6 +114,9 @@ def update_workout(workout_id):
     if not data or not isinstance(data, dict):
         return jsonify({"error": "You must provide a JSON body with at least one field to update"}), 400
 
+    if not data.get("gym_id"): 
+        data["gym_id"] = "000000000000000000000000"
+
     # Call the driver (it already validates allowed fields & id)
     updated, error = WorkoutDriver.update_workout(id=workout_id, updates=data)
 
