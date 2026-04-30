@@ -17,7 +17,7 @@ def test_find_food_by_id():
     food, err = FoodDriver.get_food_by_id(oid)
 
     if err is not None:
-        print(food, err)
+        print("There was a testing error on: ", food, err)
 
     # Assertions
     assert err is None
@@ -35,7 +35,7 @@ def test_find_food_by_id():
     food, err = FoodDriver.get_food_by_id(bad_oid)
 
     if err is not None:
-        print(food, err)
+        print("There was a testing error on: ", food, err)
 
     # Expected
     bad_err_code = "Invalid food_id format; must be a 24-hex string"
@@ -49,7 +49,10 @@ def test_find_food_by_id():
     food, err = FoodDriver.get_food_by_id(inv_oid)
 
     if err is not None:
-        print(food, err)
+        print("There was a testing error on: ", food, err)
+
+    if err is not None:
+        print("There was a testing error on: ", food, err)
 
     # Expected
     inv_err_code = "Food not found"
@@ -66,7 +69,7 @@ def test_find_food_by_user():
     food = next((item for item in foods if item["_id"] == "699d0f5f888d8f649698307e"), None)
 
     if err is not None:
-        print(food, err)
+        print("There was a testing error on: ", food, err)
 
     # Assertions
     assert err is None
@@ -84,7 +87,7 @@ def test_find_food_by_user():
     food, err = FoodDriver.get_food_by_user(bad_user_id)
 
     if err is not None:
-        print(food, err)
+        print("There was a testing error on: ", food, err)
 
     # Expected
     bad_err_code = "Invalid food_id format; must be a 24-hex string"
@@ -98,7 +101,7 @@ def test_find_food_by_user():
     food, err = FoodDriver.get_food_by_id(inv_oid)
 
     if err is not None:
-        print(food, err)
+        print("There was a testing error on: ", food, err)
 
     # Expected
     inv_err_code = "Food not found"
@@ -118,7 +121,7 @@ def test_create_delete_food():
     response_id, err = FoodDriver.create_food(user_id, name, calsPerServing, servings, type, time)
 
     if err is not None:
-        print(response_id, err)
+        print("There was a testing error on: ", response_id, err)
         
     # Check if response is valid id
     try:
@@ -130,7 +133,7 @@ def test_create_delete_food():
     food, err = FoodDriver.get_food_by_id(response_id)
 
     if err is not None:
-        print(food, err)
+        print("There was a testing error on: ", food, err)
 
     # Assertions
     assert err is None
@@ -146,7 +149,7 @@ def test_create_delete_food():
     # Delete created gym
     response, err = FoodDriver.delete_food(response_id)
     if err is not None:
-        print(response, err)
+        print("There was a testing error on: ", response, err)
     # Assertions
     assert response == response_id
 
@@ -428,7 +431,7 @@ def test_find_gym_by_id():
     gym, err = GymDriver.get_gym_by_id(oid, "699d0093795741a59fe13616")
 
     if err is not None:
-        print(gym, err)
+        print("There was a testing error on: ", gym, err)
 
     # Assertions
     assert err is None
@@ -445,7 +448,7 @@ def test_find_gym_by_id():
     gym, err = GymDriver.get_gym_by_id(bad_oid, "699d0093795741a59fe13616")
 
     if err is not None:
-        print(gym, err)
+        print("There was a testing error on: ", gym, err)
 
     # Expected
     bad_err_code = "Invalid gym_id format; must be a 24-hex string"
@@ -460,7 +463,7 @@ def test_find_gym_by_id():
     gym, err = GymDriver.get_gym_by_id(inv_oid, "699d0093795741a59fe13616")
 
     if err is not None:
-        print(gym, err)
+        print("There was a testing error on: ", gym, err)
 
     # Expected
     inv_err_code = "Gym not found"
@@ -485,7 +488,7 @@ def test_create_delete_gym():
     print("Response: ", response_id)
 
     if res_err is not None:
-        print(response_id, res_err)
+        print("There was a testing error on: ", response_id, res_err)
 
     # Check if response is valid id
     try:
@@ -511,7 +514,7 @@ def test_create_delete_gym():
     # Delete created gym
     response, err = GymDriver.delete_gym(response_id, user_id)
     if err is not None:
-        print(response, err)
+        print("There was a testing error on: ", response, err)
     # Assertions
     assert response == response_id
 
@@ -719,7 +722,7 @@ def test_find_personal_ex_by_id():
     ex, err = PersonalExDriver.get_personal_ex_by_id(oid)
 
     if err is not None:
-        print(ex, err)
+        print("There was a testing error on: ", ex, err)
 
     # Assertions
     assert err is None
@@ -740,7 +743,7 @@ def test_find_personal_ex_by_id():
     ex, err = PersonalExDriver.get_personal_ex_by_id(bad_oid)
 
     if err is not None:
-        print(ex, err)
+        print("There was a testing error on: ", ex, err)
 
     # Expected
     bad_err_code = "Invalid personal ex id format; must be a 24-hex string"
@@ -754,7 +757,7 @@ def test_find_personal_ex_by_id():
     ex, err = PersonalExDriver.get_personal_ex_by_id(inv_oid)
 
     if err is not None:
-        print(ex, err)
+        print("There was a testing error on: ", ex, err)
 
     # Expected
     inv_err_code = "PersonalEx not found"
@@ -769,7 +772,7 @@ def test_find_personal_ex_by_workout():
     exs, err = PersonalExDriver.get_personal_exs_by_workout(oid)
 
     if err is not None:
-        print(exs, err)
+        print("There was a testing error on: ", exs, err)
     
     pe_oid = "69ab5596dc5dee4f518a01cd"
     filtered = [d for d in exs if d.get("_id") == pe_oid]
@@ -795,7 +798,7 @@ def test_find_personal_ex_by_workout():
     exs, err = PersonalExDriver.get_personal_exs_by_workout(bad_oid)
 
     if err is not None:
-        print(exs, err)
+        print("There was a testing error on: ", exs, err)
 
     # Expected
     bad_err_code = "Invalid workout_id format; must be a 24-hex string"
@@ -809,7 +812,7 @@ def test_find_personal_ex_by_workout():
     exs, err = PersonalExDriver.get_personal_exs_by_workout(inv_oid)
 
     if err is not None:
-        print(exs, err)
+        print("There was a testing error on: ", exs, err)
 
     # Expected
     inv_err_code = "PersonalEx not found"
@@ -824,7 +827,7 @@ def test_find_personal_ex_by_user():
     exs, err = PersonalExDriver.get_personal_exs_by_user(oid)
 
     if err is not None:
-        print(exs, err)
+        print("There was a testing error on: ", exs, err)
     
     pe_oid = "69ab5596dc5dee4f518a01cd"
     filtered = [d for d in exs if d.get("_id") == pe_oid]
@@ -850,7 +853,7 @@ def test_find_personal_ex_by_user():
     exs, err = PersonalExDriver.get_personal_exs_by_user(bad_oid)
 
     if err is not None:
-        print(exs, err)
+        print("There was a testing error on: ", exs, err)
 
     # Expected
     bad_err_code = "Invalid user_id format; must be a 24-hex string"
@@ -864,7 +867,7 @@ def test_find_personal_ex_by_user():
     exs, err = PersonalExDriver.get_personal_exs_by_user(inv_oid)
 
     if err is not None:
-        print(exs, err)
+        print("There was a testing error on: ", exs, err)
 
     # Expected
     inv_err_code = "PersonalEx not found"
@@ -887,7 +890,7 @@ def test_create_delete_personal_ex():
     response_id, err = PersonalExDriver.create_personal_ex(user_id, exercise_id, workout_id, reps, sets, weight, duration, distance, completed)
 
     if err is not None:
-        print(response_id, err)
+        print("There was a testing error on: ", response_id, err)
 
     # Check if response is valid id
     try:
@@ -899,7 +902,7 @@ def test_create_delete_personal_ex():
     personalEx, err = PersonalExDriver.get_personal_ex_by_id(response_id)
 
     if err is not None:
-        print(personalEx, err)
+        print("There was a testing error on: ", personalEx, err)
 
     # Assertions
     assert err is None
@@ -918,7 +921,7 @@ def test_create_delete_personal_ex():
     # Delete created gym
     response, err = PersonalExDriver.delete_personal_ex(response_id)
     if err is not None:
-        print(response, err)
+        print("There was a testing error on: ", response, err)
     # Assertions
     assert response == response_id
    
@@ -1175,7 +1178,7 @@ def test_find_user_by_id():
     user, err = UserDriver.get_user_by_id(oid)
 
     if err is not None:
-        print(user, err)
+        print("There was a testing error on: ", user, err)
 
     # Assertions
     assert err is None
@@ -1193,7 +1196,7 @@ def test_find_user_by_id():
     user, err = UserDriver.get_user_by_id(bad_oid)
 
     if err is not None:
-        print(user, err)
+        print("There was a testing error on: ", user, err)
 
     # Expected
     bad_err_code = "Invalid user_id format; must be a 24-hex string"
@@ -1207,7 +1210,7 @@ def test_find_user_by_id():
     user, err = UserDriver.get_user_by_id(inv_oid)
 
     if err is not None:
-        print(user, err)
+        print("There was a testing error on: ", user, err)
 
     # Expected
     inv_err_code = "User not found"
@@ -1222,7 +1225,7 @@ def test_find_user_by_email():
     user, err = UserDriver.get_user_by_email(email)
 
     if err is not None:
-        print(user, err)
+        print("There was a testing error on: ", user, err)
 
     # Assertions
     assert err is None
@@ -1240,7 +1243,7 @@ def test_find_user_by_email():
     user, err = UserDriver.get_user_by_email(inv_email)
 
     if err is not None:
-        print(user, err)
+        print("There was a testing error on: ", user, err)
 
     # Expected
     inv_err_code = "User not found"
@@ -1451,7 +1454,7 @@ def test_find_workout_by_id():
     ex, err = WorkoutDriver.get_workout_by_id(oid)
 
     if err is not None:
-        print(ex, err)
+        print("There was a testing error on: ", ex, err)
 
     # Assertions
     assert err is None
@@ -1468,7 +1471,7 @@ def test_find_workout_by_id():
     ex, err = WorkoutDriver.get_workout_by_id(bad_oid)
 
     if err is not None:
-        print(ex, err)
+        print("There was a testing error on: ", ex, err)
 
     # Expected
     bad_err_code = "Invalid workout_id format; must be a 24-hex string"
@@ -1482,7 +1485,7 @@ def test_find_workout_by_id():
     ex, err = WorkoutDriver.get_workout_by_id(inv_oid)
 
     if err is not None:
-        print(ex, err)
+        print("There was a testing error on: ", ex, err)
 
     # Expected
     inv_err_code = "Workout not found"
@@ -1497,7 +1500,7 @@ def test_find_workout_by_user():
     exs, err = WorkoutDriver.get_workouts_by_user(oid)
 
     if err is not None:
-        print(exs, err)
+        print("There was a testing error on: ", exs, err)
     
     wo_oid = "69d43248f826ab5daa4431af"
     filtered = [d for d in exs if d.get("_id") == wo_oid]
@@ -1519,7 +1522,7 @@ def test_find_workout_by_user():
     exs, err = WorkoutDriver.get_workouts_by_user(bad_oid)
 
     if err is not None:
-        print(exs, err)
+        print("There was a testing error on: ", exs, err)
 
     # Expected
     bad_err_code = "Invalid user_id format; must be a 24-hex string"
@@ -1533,7 +1536,7 @@ def test_find_workout_by_user():
     exs, err = WorkoutDriver.get_workouts_by_user(inv_oid)
 
     if err is not None:
-        print(exs, err)
+        print("There was a testing error on: ", exs, err)
 
     # Expected
     inv_err_code = "Workout not found"
@@ -1548,7 +1551,7 @@ def test_find_template_by_user():
     temps, err = WorkoutDriver.get_user_templates(oid)
 
     if err is not None:
-        print(temps, err)
+        print("There was a testing error on: ", temps, err)
     
     tp_oid = "69c19753432188dfcd568ddc"
     filtered = [d for d in temps if d.get("_id") == tp_oid]
@@ -1569,7 +1572,7 @@ def test_find_template_by_user():
     temps, err = WorkoutDriver.get_user_templates(bad_oid)
 
     if err is not None:
-        print(temps, err)
+        print("There was a testing error on: ", temps, err)
 
     # Expected
     bad_err_code = "Invalid user_id format; must be a 24-hex string"
@@ -1583,7 +1586,7 @@ def test_find_template_by_user():
     temps, err = WorkoutDriver.get_user_templates(inv_oid)
 
     if err is not None:
-        print(temps, err)
+        print("There was a testing error on: ", temps, err)
 
     # Expected
     inv_err_code = "Templates not found"
@@ -1613,7 +1616,7 @@ def test_create_delete_workout():
     response_id, err = WorkoutDriver.create_workout(user_id, gym_id, title, startTime, endTime)
 
     if err is not None:
-        print(response_id, err)
+        print("There was a testing error on: ", response_id, err)
 
     # Check if response is valid id
     try:
@@ -1625,7 +1628,7 @@ def test_create_delete_workout():
     workout, err = WorkoutDriver.get_workout_by_id(response_id)
 
     if err is not None:
-        print(workout, err)
+        print("There was a testing error on: ", workout, err)
 
     # Assertions
     assert err is None
@@ -1639,7 +1642,7 @@ def test_create_delete_workout():
     # Delete created gym
     response, err = WorkoutDriver.delete_workout(response_id)
     if err is not None:
-        print(response, err)
+        print("There was a testing error on: ", response, err)
     # Assertions
     assert response == response_id
 
@@ -1650,7 +1653,7 @@ def test_create_delete_template():
     response_id, err = WorkoutDriver.create_template(user_id, title)
 
     if err is not None:
-        print(response_id, err)
+        print("There was a testing error on: ", response_id, err)
 
     # Check if response is valid id
     try:
@@ -1662,7 +1665,7 @@ def test_create_delete_template():
     templates, err = WorkoutDriver.get_user_templates(user_id)
 
     if err is not None:
-        print(templates, err)
+        print("There was a testing error on: ", templates, err)
 
     filtered = [d for d in templates if d.get("_id") == response_id]
 
@@ -1678,7 +1681,7 @@ def test_create_delete_template():
     # Delete created template
     response, err = WorkoutDriver.delete_workout(response_id)
     if err is not None:
-        print(response, err)
+        print("There was a testing error on: ", response, err)
     # Assertions
     assert response == response_id
    
@@ -1919,7 +1922,7 @@ def test_find_measurement_by_id():
     m, err = MeasurementDriver.get_measurement_by_id(oid)
 
     if err is not None:
-        print(m, err)
+        print("There was a testing error on: ", m, err)
 
     # Assertions
     assert err is None
@@ -1978,7 +1981,7 @@ def test_create_delete_measurement():
 
     new_id, err = MeasurementDriver.create_measurement(user_id, data)
     if err is not None:
-        print(new_id, err)
+        print("There was a testing error on: ", new_id, err)
 
     # Ensure valid ObjectId
     try:
@@ -2116,7 +2119,7 @@ def test_find_task_by_id():
     task, err = TaskDriver.get_task_by_id(oid)
 
     if err is not None:
-        print(task, err)
+        print("There was a testing error on: ", task, err)
 
     assert err is None
     assert task is not None
@@ -2144,7 +2147,7 @@ def test_find_tasks_by_user():
     tasks, err = TaskDriver.get_tasks_by_user(user_id)
 
     if err is not None:
-        print(tasks, err)
+        print("There was a testing error on: ", tasks, err)
 
     assert err is None
     assert isinstance(tasks, list)
@@ -2172,7 +2175,7 @@ def test_create_delete_task():
     created, err = TaskDriver.create_task(user_id, data)
 
     if err is not None:
-        print(created, err)
+        print("There was a testing error on: ", created, err)
 
     assert err is None
     assert created is not None
