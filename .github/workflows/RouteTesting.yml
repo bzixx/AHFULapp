@@ -1,4 +1,4 @@
-name: Python Backend 
+name: Python Backend Route Tests 
 
 on:
   push:
@@ -8,15 +8,13 @@ on:
 
 jobs:
   test:
-    name: Backend Route Tests (Flask + Mongo)
+    name: Python Backend Route Tests (Flask + Mongo)
     runs-on: ubuntu-latest
 
     env:
       # Your app reads these to connect to Mongo
       MONGODB_URI: ${{ secrets.MONGODB_URI }}
       MONGODB_NAME: ${{ secrets.MONGODB_NAME }}
-      # Known doc id to verify a GET-by-id route
-      EXISTING_DOC_ID: ${{ secrets.EXISTING_DOC_ID }}
 
       # Flask app config
       FLASK_APP: Backend/AHFULbackend.py
@@ -61,22 +59,9 @@ jobs:
           # test deps (if not already in requirements)
           pip install pytest requests
 
-      - name: Start Flask app (background)
-        run: |
-          # If your app requires importing create_app(), FLASK_APP above should point to it
-          flask run --port $PORT &
-          echo $! > flask_pid.txt
-
-      - name: Wait for app to start
-        run: |
-          for i in {1..30}; do
-              if nc -z 127.0.0.1 $PORT; then
-                  echo "App is up on $PORT"
-                  break
-              fi
-              echo "Waiting for Flask to start... attempt $i/30"
-              sleep 1
-          done
+      # Note: tests use a pytest fixture that creates a Flask app context and
+      # attaches a MongoDB testing connection. Starting a separate Flask server
+      # is unnecessary and has been removed to make CI faster and less fragile.
 
       - name: Run integration tests
         env:
@@ -84,13 +69,4 @@ jobs:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
         run: pytest -s -q
 
-      - name: Show app process (if failed)
-        if: failure()
-        run: ps aux | grep flask || true
-
-      - name: Stop Flask
-        if: always()
-        run: |
-          if [ -f flask_pid.txt ]; then
-            kill $(cat flask_pid.txt) || true
-          fi
+      # No background Flask process to show/stop since tests manage their own app context
