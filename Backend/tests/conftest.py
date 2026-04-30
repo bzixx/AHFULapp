@@ -1,6 +1,25 @@
 import atexit
 import pytest
 from flask import Flask
+import os
+import sys
+
+# Make sure the Backend directory (parent of tests/) is on sys.path so imports like
+# `from Services.MongoDriver import ...` work regardless of where pytest is run from.
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# Try to load a .env file automatically (useful when pytest is run from a venv).
+# This is optional — if python-dotenv isn't installed we'll fall back to the
+# environment as-is and print a hint.
+try:
+    from dotenv import load_dotenv
+    # Prefer a .env file in Backend/, then fall back to repository root.
+    backend_env = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.env'))
+    if os.path.exists(backend_env):
+        load_dotenv(backend_env)
+except ImportError:
+    # Not critical — advise the developer to install python-dotenv if they want
+    # automatic .env loading when running pytest.
+    pass
 
 from Services.MongoDriver import connect_mongo_testing
 
