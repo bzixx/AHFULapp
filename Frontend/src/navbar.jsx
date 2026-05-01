@@ -104,15 +104,6 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
           >
             Measurement Logger
           </NavLink>
-
-          <a
-            href="https://www.ahful.app/api/APIDocs"
-            target="_blank"
-            rel="noreferrer"
-            onClick={handleNavClick}
-          >
-            Documentation
-          </a>
         </>
         )}
 
