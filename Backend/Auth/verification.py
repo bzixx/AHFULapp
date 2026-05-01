@@ -19,16 +19,18 @@ def login_required_user(f):
         magic_bits = magic_bits[-32:]
 
         # 2. Database Verification
-        res, err = VerificationDriver.confirm_user_login(user_id, magic_bits)
+        user, err = VerificationDriver.confirm_user_login(user_id, magic_bits)
         if err:
             return jsonify({"authenticated": False, "error": f"Invalid session token. Hint: {err}"}), 200
 
         g.user_id = user_id  # Store user_id in Flask's global context for access in the wrapped-route
         g.token = magic_bits
 
-        if "Admin" in res["roles"]:
+        g.email = (user.get("email") or "").strip().lower()
+
+        if "Admin" in user["roles"]:
             g.role = "Admin"
-        elif "Developer" in res["roles"]:
+        elif "Developer" in user["roles"]:
             g.role = "Developer"
         else:
             g.role = "User"

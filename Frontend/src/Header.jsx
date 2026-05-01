@@ -6,7 +6,7 @@ import "./siteStyles.css";
 import "./Stylesheets/Themes/Lightmode.css";
 import "./Stylesheets/Themes/Darkmode.css";
 
-export function Header({ onMenuToggle = null, isMenuOpen = false }) {
+export function Header({ onMenuToggle = null, isMenuOpen = false, onNavClick = null }) {
   const dispatch = useDispatch();
   const theme = useSelector((state) => state.setting?.theme || "light");
   const user = useSelector((state) => state.auth.user);
@@ -33,7 +33,7 @@ export function Header({ onMenuToggle = null, isMenuOpen = false }) {
         <span></span>
         <span></span>
       </button>
-      <NavLink to="/" className="logo">AHFUL</NavLink>
+      <NavLink to="/Dashboard" className="logo">AHFUL</NavLink>
       <div className="header-right">
         <button
           className="theme-toggle"
@@ -43,7 +43,7 @@ export function Header({ onMenuToggle = null, isMenuOpen = false }) {
         >
           {theme === "light" ? "🌙" : "☀️"}
         </button>
-        <NavLink to="/Profile" className="profile-link">Profile</NavLink>
+        <NavLink to="/Profile" className="profile-link" onClick={() => { if (onNavClick) onNavClick(); }}>Profile</NavLink>
       </div>
     </div>
   );

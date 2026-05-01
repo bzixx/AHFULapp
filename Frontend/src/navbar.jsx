@@ -4,6 +4,7 @@ import "./siteStyles.css";
 
 export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const user = useSelector((state) => state.auth.user);
 
   const handleNavClick = () => {
     if (onNavClick) {
@@ -14,14 +15,14 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
   return (
     <nav className={`sidebar ${isOpen ? "open" : "closed"}`} style={{ minHeight }}>
       <NavLink
-        to="/"
+        to="/Dashboard"
         className={({ isActive }) => (isActive ? "active" : "")}
         onClick={handleNavClick}
       >
         Dashboard Home
       </NavLink>
 
-      {!isAuthenticated ? (
+      {(!isAuthenticated || !user.email_verified) ? (
         <>
           <NavLink
             to="/Login"
@@ -52,6 +53,7 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
           <NavLink
             to="/AIChat"
             className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={handleNavClick}
           >
             AI Chat
           </NavLink>
@@ -111,8 +113,17 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
           >
             Documentation
           </a>
+          </NavLink> 
         </>
         )}
+
+      { (user?.roles?.includes("Admin") && user?.email_verified == true) && (<a
+        href="http://localhost:5000/api/APIDocs"
+        target="_blank"
+        rel="noreferrer"
+        onClick={handleNavClick}>
+        Documentation
+      </a>)}
     </nav>
   );
 }

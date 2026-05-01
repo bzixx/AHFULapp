@@ -26,6 +26,7 @@ import { whoami, getUserSettings } from "./QueryFunctions.js";
 import { setSettings } from './Auth/SettingsSlice.jsx';
 import { authLogin } from "./Auth/AuthSlice.jsx";
 import { ExploreFriends } from "./Social/ExploreFriends.jsx";
+import { RequireVerifiedEmail } from "./Auth/EnsureEmailVerify.jsx";
 
 
 function AHFULApp() {
@@ -33,7 +34,6 @@ function AHFULApp() {
   const userData = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const {
     isActive: tutorialActive,
     currentStep,
@@ -115,6 +115,20 @@ function AHFULApp() {
               <FavoritesHub/>}/>
           <Route path="Settings" element={
               <Settings/>} />
+          <Route path="/Profile" element={<Profile/>}/>
+          <Route path="/NotVerified" element={<NotVerified/>}/>
+          <Route element={<RequireVerifiedEmail />}>
+            <Route path="/WorkoutLogger" element={<WorkoutLogger/>} />
+            <Route path="/ExploreWorkout" element={<ExploreWorkouts/>}/>
+            <Route path="/FoodLog" element={<FoodLog/>}/>
+            <Route path="/EmailVerification" element={<VerifyEmail/>}/>
+            <Route path="/AIChat" element={<AIChat/>}/>
+            <Route path="/Map" element={<Map/>}/>
+            <Route path="/ExploreFriends" element={<ExploreFriends/>}/>
+            <Route path="/MeasurementLogger" element={<MeasurementLogger/>}/>
+            <Route path="/ExploreTasks" element={<ExploreTasks/>}/>
+            <Route path="Settings" element={<Settings/>} />
+            </Route>
         </Route>
         {/* Put outside of the Layout so it doesn't show the header/navbar */}
         <Route path="/" element={<Login/>}/>

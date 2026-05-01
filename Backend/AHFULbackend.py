@@ -6,6 +6,7 @@ from flask_mail import Mail
 
 #Services/Drivers Imports
 from Services.SignInDriver import SignInDriver
+from Services.MongoDriver import connect_mongo
 
 #Routes/Blueprints Imports
 from APIRoutes.UserRoutes import userRouteBlueprint #[Local] Import User API routes as a Flask Blueprint
@@ -20,8 +21,10 @@ from APIRoutes.ExerciseRoutes import exerciseRouteBlueprint
 from APIRoutes.UserSettingsRoutes import userSettingsBlueprint
 from APIRoutes.TokenRoutes import tokenBlueprint
 from APIRoutes.TaskRoutes import taskBlueprint
+from APIRoutes.SocialRoutes import socialRouteBlueprint
 from APIRoutes.VerificationRoutes import verificationRouteBlueprint
 from APIRoutes.ChatRoutes import chatRouteBlueprint
+from APIRoutes.PromoRoutes import promoBlueprint
 
 #Firebase Admin SDK
 import firebase_admin
@@ -35,6 +38,7 @@ mail = Mail()
 
 #Main AHFUL APP Backend Entry Point.
 def create_app():
+    print("----------------------------Let's Get AHFUL!--------------------------------------------")
     # Load environment variables from .env file
     load_dotenv()
 
@@ -44,6 +48,7 @@ def create_app():
 
     #Make an Appwade SignInDriver to reference later
     app.AHFULSignInDriver = SignInDriver(os.getenv("GOOGLE_CLIENT_ID"))
+    connect_mongo(app)
 
     #Initialize Firebase Admin SDK
     cred = credentials.Certificate("./firebaseSecret.json")
@@ -79,8 +84,10 @@ def create_app():
     AHFULAPI.register_blueprint(userSettingsBlueprint)
     AHFULAPI.register_blueprint(tokenBlueprint)
     AHFULAPI.register_blueprint(taskBlueprint)
+    AHFULAPI.register_blueprint(socialRouteBlueprint)
     AHFULAPI.register_blueprint(chatRouteBlueprint)
     AHFULAPI.register_blueprint(verificationRouteBlueprint)
+    AHFULAPI.register_blueprint(promoBlueprint)
 
     app.register_blueprint(AHFULAPI)
     app.register_blueprint(swaggerUIBlueprint)

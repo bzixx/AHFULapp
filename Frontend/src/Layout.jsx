@@ -29,7 +29,7 @@ export function Layout() {
     return (
         <>
             <main>
-            <Header onMenuToggle={toggleNav} isMenuOpen={isNavOpen} />
+            <Header onMenuToggle={toggleNav} isMenuOpen={isNavOpen} onNavClick={closeNav} />
             <Navbar isOpen={isNavOpen} onNavClick={closeNav} />
             <div className="page-content">
                 <Outlet />
