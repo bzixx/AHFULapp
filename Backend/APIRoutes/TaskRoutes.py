@@ -73,23 +73,6 @@ def delete_task(task_id):
         return jsonify({"error": error}), 404
     return jsonify(result), 200
 
-# ── FAVORITE task ────────────────────────────────────────────────────────────
-@taskBlueprint.route("/<task_id>/favorite", methods=["PUT"])
-@login_required_user
-def toggle_favorite_task(task_id):
-    if not task_id:
-        return jsonify({"error": "task_id is required"}), 400
-    
-    task, error = TaskDriver.toggle_favorite(g.user_id, task_id)
-    if error:
-        return jsonify({"error": error}), 400
-    
-    favorite_status = task.get("favorite", False)
-    return jsonify({
-        "message": f"Task marked as {'favorite' if favorite_status else 'not favorite'}",
-        "task": task
-    }), 200
-
 # ── GET favorite tasks for user ──────────────────────────────────────
 @taskBlueprint.route("/favorites/<user_id>", methods=["GET"])
 @login_required_user
@@ -97,9 +80,26 @@ def get_favorite_tasks(user_id):
     # Own user request, devs or admins only
     if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
         return jsonify({"error": "You may only access your own data"}), 403
-    
+
     tasks, error = TaskDriver.get_favorite_tasks(user_id)
     if error:
         return jsonify({"error": error}), 404
-    
+
     return jsonify(tasks), 200
+
+# ── FAVORITE task ────────────────────────────────────────────────────────────
+@taskBlueprint.route("/<task_id>/favorite", methods=["PUT"])
+@login_required_user
+def toggle_favorite_task(task_id):
+    if not task_id:
+        return jsonify({"error": "task_id is required"}), 400
+
+    task, error = TaskDriver.toggle_favorite(g.user_id, task_id)
+    if error:
+        return jsonify({"error": error}), 400
+
+    favorite_status = task.get("favorite", False)
+    return jsonify({
+        "message": f"Task marked as {'favorite' if favorite_status else 'not favorite'}",
+        "task": task
+    }), 200

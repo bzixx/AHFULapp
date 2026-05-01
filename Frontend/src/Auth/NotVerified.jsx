@@ -35,7 +35,12 @@ export function NotVerified() {
         return;
       }
 
-      alert(data.message);
+      if (data.message) {
+        alert(data.message);
+      }
+      else {
+        alert(data.error);
+      }
     } catch (err) {
       console.error("Verify email failed:", err);
       alert("Network error sending verification email");

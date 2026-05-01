@@ -29,6 +29,36 @@ class VerificationDriver:
         return ''.join(secrets.choice(characters) for _ in range(length))
     
     @staticmethod
+    def confirm_user_unverified(user_id, bits):
+        # Validate vars present
+        if not user_id:
+            return None, "user_id is required"
+        if not bits:
+            return None, "bits is required"
+
+        # Validate user_id valid
+        oid, err = VerificationDriver._validate_obj_id(user_id, "user_id")
+        if err:
+            return None, err
+        
+        try:
+            #Find user, ensure exists
+            user = UserObject.find_by_id(user_id)
+            if not user:
+                return None, "User not found"
+            elif user["deactivated"] == True:
+                return None, "Your account has been deactivated :("
+            elif user["magic_bits"] != bits:
+                return None, "These bits don't match :("
+            elif datetime.now().timestamp() - user["last_login_expire"] > 0:
+                return None, "These bits are too old :,("
+            else:
+                return user, None
+                
+        except Exception as e:
+            return None, str(e)
+
+    @staticmethod
     def confirm_user_login(user_id, bits):
         # Validate vars present
         if not user_id:
@@ -136,7 +166,7 @@ class VerificationDriver:
                             # if err when sending new email
                             return None, err
                         # if err on deleting state email
-                        return  "error deleting stale email, ", None
+                        return  None, "error deleting stale email, "
                     # fresh verification exists
                     return "email already sent", None
                 # Should not get here, big error

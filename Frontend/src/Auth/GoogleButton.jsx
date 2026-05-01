@@ -54,7 +54,7 @@ export function GoogleButton({ onSuccess, onError, isScrolled }) {
 
   return (
     <>
-      <div ref={hiddenRef} style={{ position: 'absolute', left: '-9999px' }}>
+      <div ref={hiddenRef} style={{ position: 'absolute', left: '10px' }}>
         <GoogleLogin onSuccess={handleSuccess} onError={handleFailure} />
       </div>
 

@@ -4,6 +4,42 @@ from Services.VerificationDriver import VerificationDriver
 from functools import wraps
 import asyncio
 
+def login_required_unverified(f):
+    @wraps(f)
+    async def decorated_function(*args, **kwargs):
+        # 1. Extraction
+        user_id = request.cookies.get("session_id")
+        magic_bits = request.cookies.get("magic_bits")
+        if not user_id:
+            return jsonify({"authenticated": False, "error": "We require goodies to enter."}), 200  
+
+        if not magic_bits:
+            return jsonify({"authenticated": False, "error": "The Dragon roared too Loudly for your Magic."}), 200
+
+        magic_bits = magic_bits[-32:]
+
+        # 2. Database Verification
+        user, err = VerificationDriver.confirm_user_unverified(user_id, magic_bits)
+        if err:
+            return jsonify({"authenticated": False, "error": f"Invalid session token. Hint: {err}"}), 200
+
+        g.user_id = user_id  # Store user_id in Flask's global context for access in the wrapped-route
+        g.token = magic_bits
+
+        g.email = (user.get("email") or "").strip().lower()
+
+        if "Admin" in user["roles"]:
+            g.role = "Admin"
+        elif "Developer" in user["roles"]:
+            g.role = "Developer"
+        else:
+            g.role = "User"
+
+        if asyncio.iscoroutinefunction(f):
+            return await f(*args, **kwargs)  # async route
+        return f(*args, **kwargs)            # regular sync route
+    return decorated_function
+
 def login_required_user(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):

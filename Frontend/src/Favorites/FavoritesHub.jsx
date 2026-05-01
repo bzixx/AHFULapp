@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import "./FavoritesHub.css";
 import "../siteStyles.css";
-import { getFoodFavorites, getWorkoutFavorites, getTaskFavorites, createWorkout } from "../QueryFunctions";
+import { getFoodFavorites, getWorkoutFavorites, getTaskFavorites, createWorkout, toggleFoodFavorite, toggleWorkoutFavorite, toggleTaskFavorite } from "../QueryFunctions";
 
 export function FavoritesHub() {
   const user = useSelector((state) => state.auth.user);
@@ -89,12 +89,11 @@ export function FavoritesHub() {
   const addFavoriteWorkoutToToday = async (workout) => {
     try {
       const now = Math.floor(Date.now() / 1000);
-      const res = await fetch(`http://localhost:5000/api/AHFULworkouts/create/${userId}`, {
+      const res = await fetch(`http://localhost:5000/api/AHFULworkouts/create`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: userId,
           title: `${workout.title} (from favorites)`,
           startTime: now,
           endTime: now,
@@ -139,6 +138,51 @@ export function FavoritesHub() {
     } catch (err) {
       console.error("Error adding task:", err);
       alert("Error adding task");
+    }
+  };
+
+  const removeFavoriteFood = async (foodId) => {
+    try {
+      const { data, error } = await toggleFoodFavorite(foodId);
+      if (error) {
+        alert(`Failed to remove favorite: ${error}`);
+      } else {
+        setFavoriteFoods(favoriteFoods.filter(f => f._id !== foodId));
+        alert("✅ Removed from favorites!");
+      }
+    } catch (err) {
+      console.error("Error removing favorite:", err);
+      alert("Error removing favorite");
+    }
+  };
+
+  const removeFavoriteWorkout = async (workoutId) => {
+    try {
+      const { data, error } = await toggleWorkoutFavorite(workoutId);
+      if (error) {
+        alert(`Failed to remove favorite: ${error}`);
+      } else {
+        setFavoriteWorkouts(favoriteWorkouts.filter(w => w._id !== workoutId));
+        alert("✅ Removed from favorites!");
+      }
+    } catch (err) {
+      console.error("Error removing favorite:", err);
+      alert("Error removing favorite");
+    }
+  };
+
+  const removeFavoriteTask = async (taskId) => {
+    try {
+      const { data, error } = await toggleTaskFavorite(taskId);
+      if (error) {
+        alert(`Failed to remove favorite: ${error}`);
+      } else {
+        setFavoriteTasks(favoriteTasks.filter(t => t._id !== taskId));
+        alert("✅ Removed from favorites!");
+      }
+    } catch (err) {
+      console.error("Error removing favorite:", err);
+      alert("Error removing favorite");
     }
   };
 
@@ -194,13 +238,22 @@ export function FavoritesHub() {
                       </p>
                       <span className="food-type">{food.type}</span>
                     </div>
-                    <button
-                      className="quick-add-btn"
-                      onClick={() => addFavoriteFoodToLog(food)}
-                      title="Add this food to today's log"
-                    >
-                      + Add Today
-                    </button>
+                    <div className="button-group">
+                      <button
+                        className="quick-add-btn"
+                        onClick={() => addFavoriteFoodToLog(food)}
+                        title="Add this food to today's log"
+                      >
+                        + Add Today
+                      </button>
+                      <button
+                        className="remove-btn"
+                        onClick={() => removeFavoriteFood(food._id)}
+                        title="Remove from favorites"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -228,13 +281,22 @@ export function FavoritesHub() {
                         </p>
                       )}
                     </div>
-                    <button
-                      className="quick-add-btn"
-                      onClick={() => addFavoriteWorkoutToToday(workout)}
-                      title="Add this workout to today"
-                    >
-                      + Add Today
-                    </button>
+                    <div className="button-group">
+                      <button
+                        className="quick-add-btn"
+                        onClick={() => addFavoriteWorkoutToToday(workout)}
+                        title="Add this workout to today"
+                      >
+                        + Add Today
+                      </button>
+                      <button
+                        className="remove-btn"
+                        onClick={() => removeFavoriteWorkout(workout._id)}
+                        title="Remove from favorites"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -261,13 +323,22 @@ export function FavoritesHub() {
                         <span className="recurring-badge">🔄 Repeats {task.recurrenceType}</span>
                       )}
                     </div>
-                    <button
-                      className="quick-add-btn"
-                      onClick={() => addFavoriteTaskToList(task)}
-                      title="Add this task to your list"
-                    >
-                      + Add
-                    </button>
+                    <div className="button-group">
+                      <button
+                        className="quick-add-btn"
+                        onClick={() => addFavoriteTaskToList(task)}
+                        title="Add this task to your list"
+                      >
+                        + Add
+                      </button>
+                      <button
+                        className="remove-btn"
+                        onClick={() => removeFavoriteTask(task._id)}
+                        title="Remove from favorites"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

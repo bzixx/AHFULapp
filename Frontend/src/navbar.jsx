@@ -104,16 +104,6 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
           >
             Measurement Logger
           </NavLink>
-
-          <a
-            href="http://localhost:5000/api/APIDocs"
-            target="_blank"
-            rel="noreferrer"
-            onClick={handleNavClick}
-          >
-            Documentation
-          </a>
-          </NavLink> 
         </>
         )}
 
