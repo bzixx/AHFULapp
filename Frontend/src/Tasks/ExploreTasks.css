@@ -231,3 +231,45 @@
   background: rgba(59, 130, 246, 0.2);
   color: var(--accent-blue);
 }
+
+/* Recurring Task Badge */
+.recurring-badge {
+  display: inline-block;
+  background: rgba(34, 197, 94, 0.2);
+  color: var(--accent-green);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  margin-right: 8px;
+  font-weight: 500;
+}
+
+/* Recurrence Form Styling */
+.task-form select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 2px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.task-form select:hover {
+  border-color: var(--accent-blue);
+}
+
+.task-form select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.task-form input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
