@@ -416,6 +416,42 @@ export async function deleteGym(gymId) {
 }
 
 
+export async function fetchAllPromos() {
+  try {
+    const res = await fetch("http://localhost:5000/api/promotions", {
+      credentials: "include"
+    });
+
+    if (!res.ok) {
+      let bodyText = "";
+      try { bodyText = await res.text(); } catch (e) { /* ignore */ }
+      throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
+    }
+
+    const data = await res.json();
+
+    let list = [];
+    if (Array.isArray(data)) {
+      list = data;
+    } else if (data && Array.isArray(data.data)) {
+      list = data.data;
+    } else if (data && Array.isArray(data.results)) {
+      list = data.results;
+    } else {
+      list = [];
+    }
+
+    return list;
+  } catch (err) {
+    console.error("fetchAllPromos error:", err);
+    const friendly =
+      err && err.name ? `${err.name}: ${err.message}` : String(err);
+    throw new Error(friendly || "Unknown error");
+  }
+}
+
+
+
 // ── Exercise Functions ─────────────────────────────────────────────────────────
 
 export async function fetchExerciseById(exerciseId) {
