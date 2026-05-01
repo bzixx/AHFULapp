@@ -55,7 +55,7 @@ export function Calendar({ locale, todoPosition, onCalendarSizeChange }) {
   
   const selectedDate = useSelector((state) => state.calendar.selectedDate);
   const workouts = useSelector((state) => state.pullWorkout.workouts);
-  const foods = useSelector((state) => state.pullFood.food);
+  const foods = useSelector((state) => state.pullUserFood.food);
   
   const hasWorkoutDates = useMemo(() => workoutDatesSet(workouts), [workouts]);
   const hasFoodDates = useMemo(() => foodDatesSet(foods), [foods]);

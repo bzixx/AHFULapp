@@ -35,7 +35,7 @@ export function CalendarButton({ trigger = undefined, setTrigger = undefined, to
 
     const selectedDate = useSelector((state) => state.calendar.selectedDate);
     const workouts = useSelector((state) => state.pullWorkout.workouts);
-    const foods = useSelector((state) => state.pullFood.food);
+    const foods = useSelector((state) => state.pullUserFood.food);
 
     useEffect(() => {
         if (typeof trigger !== "undefined") {

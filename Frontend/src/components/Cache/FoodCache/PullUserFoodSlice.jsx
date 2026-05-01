@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-const pullFoodSlice = createSlice({
-  name: "pullFood",
+const pullUserFoodSlice = createSlice({
+  name: "pullUserFood",
   initialState: {
     food: [],
     error: null,
@@ -14,5 +14,5 @@ const pullFoodSlice = createSlice({
     }
   },
 });
-export const { setFood, setError } = pullFoodSlice.actions;
-export default pullFoodSlice.reducer;
+export const { setFood, setError } = pullUserFoodSlice.actions;
+export default pullUserFoodSlice.reducer;
