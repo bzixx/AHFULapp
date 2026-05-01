@@ -31,17 +31,7 @@ class SocialObject:
             }
         )
         return [SocialObject._serialize(f) for f in friendships]
-
-    @staticmethod
-    def find_pending_for_user_email(user_email):
-        friendships = get_collection("socialFriends").find(
-            {
-                "User2Email": user_email,
-                "User2Accepted": False,
-            }
-        )
-        return [SocialObject._serialize(f) for f in friendships]
-
+    
     @staticmethod
     def find_pending_all():
         friendships = get_collection("socialFriends").find(
