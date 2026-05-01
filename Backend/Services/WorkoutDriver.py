@@ -306,13 +306,22 @@ class WorkoutDriver:
         if not user_id or not workout_id:
             return None, "user_id and workout_id are required"
         
-        # Verify operation permission
-        res, err = WorkoutDriver.verify_operation(user_id, workout_id)
+        # Validate workout_id format
+        workout_oid, err = WorkoutDriver._validate_obj_id(workout_id, "workout_id")
         if err:
             return None, err
         
         try:
-            updated = WorkoutObject.toggle_favorite(workout_id)
+            # Check that workout exists and belongs to user
+            workout = WorkoutObject.find_by_id(workout_oid)
+            if not workout:
+                return None, "Workout not found"
+            
+            # Verify user owns the workout
+            if str(workout.get("user_id")) != str(user_id):
+                return None, "You can only modify your own workouts"
+            
+            updated = WorkoutObject.toggle_favorite(workout_oid)
             if not updated:
                 return None, "Workout not found"
             return updated, None

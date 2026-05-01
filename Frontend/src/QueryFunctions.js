@@ -878,7 +878,9 @@ export async function toggleFoodFavorite(foodId) {
     }
 
     const data = await res.json();
-    return { data: data.food, error: null };
+    console.log("toggleFoodFavorite response:", data);
+    const food = data.food || data;
+    return { data: food, error: null };
   } catch (err) {
     console.error("toggleFoodFavorite error:", err);
     return { data: null, error: err.message };

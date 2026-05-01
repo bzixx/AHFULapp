@@ -23,7 +23,7 @@ from APIRoutes.TokenRoutes import tokenBlueprint
 from APIRoutes.TaskRoutes import taskBlueprint
 from APIRoutes.SocialRoutes import socialRouteBlueprint
 from APIRoutes.VerificationRoutes import verificationRouteBlueprint
-from APIRoutes.ChatRoutes import chatRouteBlueprint
+# from APIRoutes.ChatRoutes import chatRouteBlueprint  # Temporarily commented out - requires google.adk
 from APIRoutes.PromoRoutes import promoBlueprint
 
 #Firebase Admin SDK
@@ -85,7 +85,7 @@ def create_app():
     AHFULAPI.register_blueprint(tokenBlueprint)
     AHFULAPI.register_blueprint(taskBlueprint)
     AHFULAPI.register_blueprint(socialRouteBlueprint)
-    AHFULAPI.register_blueprint(chatRouteBlueprint)
+    # AHFULAPI.register_blueprint(chatRouteBlueprint)  # Temporarily commented out - requires google.adk
     AHFULAPI.register_blueprint(verificationRouteBlueprint)
     AHFULAPI.register_blueprint(promoBlueprint)
 
