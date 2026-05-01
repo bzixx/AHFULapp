@@ -35,19 +35,6 @@ def get_friendship(friendship_id):
 
     return jsonify(friendship), 200
 
-
-@socialRouteBlueprint.route("/user/<user_id>", methods=["GET"])
-@login_required_user
-def get_friendships_for_user(user_id):
-    if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
-        return jsonify({"error": "You may only access your own data"}), 403
-
-    friendships, error = SocialDriver.get_friendships_by_user(user_id)
-    if error:
-        return jsonify({"error": error}), 404
-    return jsonify(friendships), 200
-
-
 @socialRouteBlueprint.route("/pending/<user_id>", methods=["GET"])
 @login_required_user
 def get_pending_friendships_for_user(user_id):

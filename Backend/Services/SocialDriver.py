@@ -84,8 +84,10 @@ class SocialDriver:
             user_email = SocialDriver._normalize_email(user.get("email"))
             if not user_email:
                 return None, "User is missing email"
+            # Return only confirmed friendships (ConfirmedSince is not None)
             friendships = SocialObject.find_by_user_email(user_email)
-            return friendships, None
+            confirmed = [f for f in (friendships or []) if (f.get("ConfirmedSince") is not None)]
+            return confirmed, None
         except Exception as e:
             return None, str(e)
 
@@ -95,8 +97,10 @@ class SocialDriver:
         if not normalized:
             return None, "user_email is required"
         try:
+            # Only return friendships that have been confirmed
             friendships = SocialObject.find_by_user_email(normalized)
-            return friendships, None
+            confirmed = [f for f in (friendships or []) if (f.get("ConfirmedSince") is not None)]
+            return confirmed, None
         except Exception as e:
             return None, str(e)
 
@@ -114,7 +118,13 @@ class SocialDriver:
             user_email = SocialDriver._normalize_email(user.get("email"))
             if not user_email:
                 return None, "User is missing email"
-            pending = SocialObject.find_pending_for_user_email(user_email)
+            # Retrieve all friendships for this user and filter for pending
+            # Pending = ConfirmedSince is None (not confirmed yet) and the user
+            # appears as either User1Email or User2Email on the record.
+            friendships = SocialObject.find_by_user_email(user_email)
+            pending = [
+                f for f in (friendships or []) if (f.get("ConfirmedSince") is None)
+            ]
             return pending, None
         except Exception as e:
             return None, str(e)
@@ -125,7 +135,11 @@ class SocialDriver:
         if not normalized:
             return None, "user_email is required"
         try:
-            pending = SocialObject.find_pending_for_user_email(normalized)
+            # Get all friendships for this email and return those not yet confirmed
+            friendships = SocialObject.find_by_user_email(normalized)
+            pending = [
+                f for f in (friendships or []) if (f.get("ConfirmedSince") is None)
+            ]
             return pending, None
         except Exception as e:
             return None, str(e)
@@ -133,7 +147,9 @@ class SocialDriver:
     @staticmethod
     def find_pending_friend_requests():
         try:
-            pending = SocialObject.find_pending_all()
+            # Find all friendships and consider pending those without a confirmation timestamp
+            friendships = SocialObject.find_all()
+            pending = [f for f in (friendships or []) if (f.get("ConfirmedSince") is None)]
             return pending, None
         except Exception as e:
             return None, str(e)
