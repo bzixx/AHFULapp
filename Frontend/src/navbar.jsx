@@ -113,7 +113,6 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
           >
             Documentation
           </a>
-          </NavLink> 
         </>
         )}
 

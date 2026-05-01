@@ -157,13 +157,22 @@ class TaskDriver:
         if not user_id or not task_id:
             return None, "user_id and task_id are required"
 
-        # Verify operation permission
-        res, err = TaskDriver.verify_operation(user_id, task_id)
+        # Validate task_id format
+        task_oid, err = TaskDriver._validate_obj_id(task_id, "task_id")
         if err:
             return None, err
 
         try:
-            updated = TaskObject.toggle_favorite(task_id)
+            # Check that task exists and belongs to user
+            task = TaskObject.find_by_id(task_oid)
+            if not task:
+                return None, "Task not found"
+
+            # Verify user owns the task
+            if str(task.get("user_id")) != str(user_id):
+                return None, "You can only modify your own tasks"
+
+            updated = TaskObject.toggle_favorite(task_oid)
             if not updated:
                 return None, "Task not found"
             return updated, None

@@ -53,30 +53,32 @@ class FoodObject:
     @staticmethod
     def toggle_favorite(id):
         """Toggle the favorite status of a food."""
-        food = foodCollection.find_one({"_id": ObjectId(id)})
+        collection = get_collection('food')
+        food = collection.find_one({"_id": ObjectId(id)})
         if not food:
             return None
-        
+
         # Toggle favorite field
         current_favorite = food.get("favorite", False)
         new_favorite = not current_favorite
-        
-        result = foodCollection.update_one(
+
+        result = collection.update_one(
             {"_id": ObjectId(id)},
             {"$set": {"favorite": new_favorite}}
         )
-        
+
         if result.matched_count == 0:
             return None
-        
+
         # Return updated food
-        updated = foodCollection.find_one({"_id": ObjectId(id)})
+        updated = collection.find_one({"_id": ObjectId(id)})
         return FoodObject._serialize(updated)
 
     @staticmethod
     def find_favorites_by_user(user_id):
         """Get all favorite foods for a user."""
-        foods = foodCollection.find({
+        collection = get_collection('food')
+        foods = collection.find({
             "user_id": ObjectId(user_id),
             "favorite": True
         })
