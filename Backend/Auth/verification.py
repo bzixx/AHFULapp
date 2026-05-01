@@ -6,7 +6,7 @@ import asyncio
 
 def login_required_unverified(f):
     @wraps(f)
-    async def decorated_function(*args, **kwargs):
+    def decorated_function(*args, **kwargs):
         # 1. Extraction
         user_id = request.cookies.get("session_id")
         magic_bits = request.cookies.get("magic_bits")
@@ -36,7 +36,7 @@ def login_required_unverified(f):
             g.role = "User"
 
         if asyncio.iscoroutinefunction(f):
-            return await f(*args, **kwargs)  # async route
+            return asyncio.run(f(*args, **kwargs))  # async route
         return f(*args, **kwargs)            # regular sync route
     return decorated_function
 
