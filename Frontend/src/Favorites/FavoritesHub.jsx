@@ -62,7 +62,7 @@ export function FavoritesHub() {
   const addFavoriteFoodToLog = async (food) => {
     try {
       const now = Math.floor(Date.now() / 1000);
-      const res = await fetch(`http://localhost:5000/api/AHFULfoods/create/${userId}`, {
+      const res = await fetch(`http://localhost:5000/api/AHFULfoods/create`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
