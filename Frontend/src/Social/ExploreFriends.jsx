@@ -234,7 +234,7 @@ export function ExploreFriends() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                             {friends.map((f) => {
                                 //TODO UPDATE HERE: backend will return a stic shape and this is too loose. 
-                                const email = f.User1Email ;
+                                let email = f.User1Email ;
 
                                 if (email === user.email){
                                     email = f.User2Email;
