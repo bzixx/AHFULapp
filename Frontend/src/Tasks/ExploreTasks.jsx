@@ -17,6 +17,11 @@ export function ExploreTasks() {
   const [taskDueDateTime, setTaskDueDateTime] = useState("");
   const [formError, setFormError] = useState("");
 
+  // Recurrence state
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recurrenceType, setRecurrenceType] = useState("daily"); // daily, weekly, monthly, yearly
+  const [recurrenceEndDate, setRecurrenceEndDate] = useState("");
+
   const getUserId = () => {
     if (user?._id) return user._id;
     try {
@@ -79,6 +84,13 @@ export function ExploreTasks() {
       dueTime = Math.floor(dateObj.getTime() / 1000);
     }
 
+    // Convert recurrence end date to Unix timestamp
+    let recEndTime = null;
+    if (isRecurring && recurrenceEndDate) {
+      const endDateObj = new Date(recurrenceEndDate);
+      recEndTime = Math.floor(endDateObj.getTime() / 1000);
+    }
+
     try {
       const res = await fetch(`http://localhost:5000/api/AHFULtasks/create/${userId}`, {
         method: "POST",
@@ -87,7 +99,10 @@ export function ExploreTasks() {
         body: JSON.stringify({
           name: taskName,
           note: taskNote,
-          dueTime: dueTime
+          dueTime: dueTime,
+          recurring: isRecurring,
+          recurrenceType: isRecurring ? recurrenceType : null,
+          recurrenceEndDate: recEndTime
         })
       });
 
@@ -101,6 +116,9 @@ export function ExploreTasks() {
       setTaskName("");
       setTaskNote("");
       setTaskDueDateTime("");
+      setIsRecurring(false);
+      setRecurrenceType("daily");
+      setRecurrenceEndDate("");
       fetchTasks();
     } catch (err) {
       setFormError("Network error - could not create task");
@@ -112,7 +130,7 @@ export function ExploreTasks() {
     const newCompleted = !currentCompleted;
     const result = await updateTask(taskId, { completed: newCompleted });
     if (result.success) {
-      setTasks(tasks.map(t => 
+      setTasks(tasks.map(t =>
         t._id === taskId ? { ...t, completed: newCompleted } : t
       ));
     } else {
@@ -190,6 +208,47 @@ export function ExploreTasks() {
                 onChange={(e) => setTaskDueDateTime(e.target.value)}
               />
             </div>
+
+            {/* Recurring Task Options */}
+            <div className="form-group">
+              <label htmlFor="isRecurring">
+                <input
+                  id="isRecurring"
+                  type="checkbox"
+                  checked={isRecurring}
+                  onChange={(e) => setIsRecurring(e.target.checked)}
+                />
+                {" "}Make this a repeating task
+              </label>
+            </div>
+
+            {isRecurring && (
+              <>
+                <div className="form-group">
+                  <label htmlFor="recurrenceType">Repeat</label>
+                  <select
+                    id="recurrenceType"
+                    value={recurrenceType}
+                    onChange={(e) => setRecurrenceType(e.target.value)}
+                  >
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="yearly">Yearly</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="recurrenceEndDate">End Date (optional)</label>
+                  <input
+                    id="recurrenceEndDate"
+                    type="date"
+                    value={recurrenceEndDate}
+                    onChange={(e) => setRecurrenceEndDate(e.target.value)}
+                  />
+                </div>
+              </>
+            )}
+
             {formError && <div className="error-message">{formError}</div>}
             <button type="submit" className="btn-add">Create Task</button>
           </form>
@@ -243,6 +302,7 @@ export function ExploreTasks() {
                           </div>
                           <div className="exercise-meta">
                             {task.note && <span>{task.note}</span>}
+                            {task.recurring && <span className="recurring-badge">🔄 {task.recurrenceType || "Repeating"}</span>}
                             {task.dueTime !== undefined && (
                               <span> • Due: {formatDueDate(task.dueTime)}</span>
                             )}

@@ -809,7 +809,7 @@ export async function fetchFood(userId) {
     const res = await fetch(
       `http://localhost:5000/api/AHFULfoods/${userId}`,
       {
-        method: "POST",
+        method: "GET",
         credentials: "include",
       }
     );
