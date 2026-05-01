@@ -52,4 +52,4 @@ class VerificationObject:
     @staticmethod
     def delete(verify_id):
         result = get_collection('verificationTokens').delete_one({"_id": ObjectId(verify_id)})
-        return id if result.deleted_count == 1 else None
+        return verify_id if result.deleted_count == 1 else None

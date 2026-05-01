@@ -1,12 +1,12 @@
 from flask import Blueprint, request, jsonify, redirect, g
 from Services.VerificationDriver import VerificationDriver
-from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner
+from Auth.verification import login_required_user, login_required_dev, login_required_admin, login_required_gym_owner, login_required_unverified
 
 verificationRouteBlueprint = Blueprint("verification", __name__, url_prefix="/AHFULverify")
 
 # ── VERIFY email by id ─────────────────────────────────────────────────────
 @verificationRouteBlueprint.route("/verify/email/user_id/", methods=["POST"])
-@login_required_user
+@login_required_unverified
 def verify_email_by_user_id():
     data = request.get_json()
     if not data:
@@ -29,7 +29,7 @@ def verify_email_by_user_id():
 
 # ── VERIFY phone by id ─────────────────────────────────────────────────────
 @verificationRouteBlueprint.route("/verify/phone/user_id/", methods=["POST"])
-@login_required_user
+@login_required_unverified
 def verify_phone_by_user_id():
     data = request.get_json()
     if not data:
