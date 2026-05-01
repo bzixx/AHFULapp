@@ -100,7 +100,7 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
         )}
 
       { (user?.roles?.includes("Admin") && user?.email_verified == true) && (<a
-        href="http://localhost:5000/api/APIDocs"
+        href="https://www.ahful.app/api/APIDocs"
         target="_blank"
         rel="noreferrer"
         onClick={handleNavClick}>
