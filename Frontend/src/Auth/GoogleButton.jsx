@@ -13,87 +13,62 @@ import "./Auth.css";
 export function GoogleButton({ onSuccess, onError, isScrolled }) {
   const dispatch = useDispatch();
   const [isNightMode, setIsNightMode] = useState(false);
-  const googleButtonRef = useRef(null);
+  const hiddenRef = useRef(null);
 
   useEffect(() => {
-    const checkTimeOfDay = () => {
-      const hour = new Date().getHours();
-      const isNight = hour >= 16 || hour < 5;
-      setIsNightMode(isNight);
-    };
-    checkTimeOfDay();
-    const interval = setInterval(checkTimeOfDay, 60000);
-    return () => clearInterval(interval);
+    const check = () => setIsNightMode(new Date().getHours() >= 16 || new Date().getHours() < 5);
+    check();
+    const id = setInterval(check, 60000);
+    return () => clearInterval(id);
   }, []);
 
-  const handle_google_success = async (response) => {
+  const handleSuccess = async (response) => {
     try {
-      let fetchResponse = await handle_google_login(response);
-
-      if (!fetchResponse || fetchResponse?.ok === false) {
-        console.error("Google login failed:", fetchResponse?.error || fetchResponse);
-        onError?.(fetchResponse?.error || "Google login failed");
+      const res = await handle_google_login(response);
+      if (!res || res?.ok === false) {
+        console.error("Google login failed:", res?.error || res);
+        onError?.(res?.error || "Google login failed");
         return;
       }
-
-      let userSettingsResponse = await getUserSettings();
-
-      if (!userSettingsResponse || userSettingsResponse?.ok === false) {
-        console.error("Failed to get user settings:", userSettingsResponse?.error || userSettingsResponse);
-        onError?.(userSettingsResponse?.error || "Failed to fetch user settings");
+      const settings = await getUserSettings();
+      if (!settings || settings?.ok === false) {
+        console.error("Failed to get user settings:", settings?.error || settings);
+        onError?.(settings?.error || "Failed to fetch user settings");
         return;
       }
-
-      dispatch(authLogin(fetchResponse.user_info));
-      dispatch(setSettings(userSettingsResponse));
+      dispatch(authLogin(res.user_info));
+      dispatch(setSettings(settings));
       onSuccess?.();
-
-    } catch (error) {
-      console.error("Google login error:", error);
-      onError?.(error.message || "Login failed. Please try again.");
+    } catch (e) {
+      console.error("Google login error:", e);
+      onError?.(e.message || "Login failed. Please try again.");
     }
   };
 
-  const handle_google_failure = (error) => {
+  const handleFailure = (error) => {
     console.error("Google Login failed:", error);
     onError?.(error);
   };
 
-  const getScrolledImage = () => {
-    return isNightMode ? googleIconNight : googleIconDay;
-  };
-
-  const getUnscrolledImage = () => {
-    return isNightMode ? googleIconNotScrolledNight : googleIconNotScrolledDay;
-  };
-
-  const triggerGoogleLogin = () => {
-    if (googleButtonRef.current) {
-      const button = googleButtonRef.current.querySelector('div[role="button"]');
-      if (button) button.click();
-    }
-  };
+  const trigger = () => hiddenRef.current?.querySelector('div[role="button"]')?.click();
 
   return (
     <>
-      <div ref={googleButtonRef} style={{ position: 'absolute', left: '-9999px' }}>
-        <GoogleLogin
-          onSuccess={handle_google_success}
-          onError={handle_google_failure}
-        />
+      <div ref={hiddenRef} style={{ position: 'absolute', left: '-9999px' }}>
+        <GoogleLogin onSuccess={handleSuccess} onError={handleFailure} />
       </div>
 
       <button 
         className={`google-login-button ${isScrolled ? 'hidden' : ''}`} 
-        onClick={triggerGoogleLogin}
+        onClick={trigger}
       >
-        <img src={getUnscrolledImage()} alt="Google Login" />
+        <img src={isNightMode ? googleIconNotScrolledNight : googleIconNotScrolledDay} alt="Google Login" />
       </button>
       <button 
         className={`google-login-button-scrolled ${isScrolled ? 'visible' : 'hidden'}`} 
-        onClick={triggerGoogleLogin}
+        onClick={trigger}
       >
-        <img src={getScrolledImage()} alt="Google Login" />
+        <img src={isNightMode ? googleIconNight : googleIconDay} alt="Google Login" />
       </button>
     </>
   );
