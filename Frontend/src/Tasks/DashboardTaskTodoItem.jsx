@@ -41,6 +41,9 @@ export function DashboardTaskTodoItem({ task, onToggleComplete, onToggleFavorite
         {task.note && (
           <div className="dashboard-todo-item-meta">{task.note}</div>
         )}
+        {task.recurring && (
+          <div className="dashboard-todo-item-meta recurring-badge">🔄 Repeats {task.recurrenceType || "daily"}</div>
+        )}
         <div className="dashboard-todo-item-sub">
           <span>Due: {formatDueDate(task.dueTime)}</span>
           <span className="dashboard-todo-item-date">{formatDate(task.created_at)}</span>

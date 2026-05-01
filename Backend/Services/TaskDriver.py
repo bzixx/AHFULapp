@@ -9,12 +9,12 @@ class TaskDriver:
             return ObjectId(str(id)), None
         except (bson_errors.InvalidId, TypeError, ValueError):
             return None, f"Invalid {name} format; must be a 24-hex string"
-        
+
     @staticmethod
     def verify_operation(user_id, task_id):
         if (not user_id) or (not task_id):
             return None, "Missing user or task_id"
-        
+
         # Convert IDs safely
         user_id, err = TaskDriver._validate_obj_id(user_id, "user_id")
         if err:
@@ -23,14 +23,14 @@ class TaskDriver:
         task_id, err = TaskDriver._validate_obj_id(task_id, "task_id")
         if err:
             return None, err
-        
+
         user = UserObject.find_by_id(user_id)
         if not user:
             return None, "User not found"
         task = TaskObject.find_by_id(task_id)
         if not task:
             return None, "Food not found"
-        
+
         if user["_id"] == task["user_id"]:
             return "Operation valid", None
         elif ("Admin" in user["roles"]) or ("Developer" in user["roles"]):
@@ -122,6 +122,13 @@ class TaskDriver:
             updates.pop("user_id", None)
             updates.pop("created_at", None)
             updated = TaskObject.update(oid, updates)
+
+            # Handle recurring tasks when completed
+            if updates.get("completed") == True and existing.get("recurring"):
+                next_task = TaskObject.create_next_occurrence(oid)
+                if next_task:
+                    return {"task": updated, "nextOccurrence": next_task}, None
+
             return updated, None
         except Exception as e:
             return None, str(e)
@@ -149,12 +156,12 @@ class TaskDriver:
         # Validate inputs
         if not user_id or not task_id:
             return None, "user_id and task_id are required"
-        
+
         # Verify operation permission
         res, err = TaskDriver.verify_operation(user_id, task_id)
         if err:
             return None, err
-        
+
         try:
             updated = TaskObject.toggle_favorite(task_id)
             if not updated:
@@ -168,11 +175,11 @@ class TaskDriver:
         """Get all favorite tasks for a user."""
         if not user_id:
             return None, "user_id is required"
-        
+
         oid, err = TaskDriver._validate_obj_id(user_id, "user_id")
         if err:
             return None, err
-        
+
         try:
             tasks = TaskObject.find_favorites_by_user(user_id)
             return tasks, None
