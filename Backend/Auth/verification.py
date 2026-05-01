@@ -42,7 +42,7 @@ def login_required_unverified(f):
 
 def login_required_user(f):
     @wraps(f)
-    async def decorated_function(*args, **kwargs):
+    def decorated_function(*args, **kwargs):
         # 1. Extraction
         user_id = request.cookies.get("session_id")
         magic_bits = request.cookies.get("magic_bits")
@@ -71,14 +71,18 @@ def login_required_user(f):
         else:
             g.role = "User"
 
+        # If the wrapped route is async, run it in a fresh event loop.
+        # Keeping the decorator itself synchronous avoids forcing Flask to
+        # treat every view as a coroutine (which triggers asgiref/ensure_sync
+        # and can block in WSGI/gunicorn sync workers).
         if asyncio.iscoroutinefunction(f):
-            return await f(*args, **kwargs)  # async route
-        return f(*args, **kwargs)            # regular sync route
+            return asyncio.run(f(*args, **kwargs))
+        return f(*args, **kwargs)
     return decorated_function
 
 def login_required_dev(f):
     @wraps(f)
-    async def decorated_function(*args, **kwargs):
+    def decorated_function(*args, **kwargs):
         # 1. Extraction
         user_id = request.cookies.get("session_id")
         magic_bits = request.cookies.get("magic_bits")
@@ -100,8 +104,8 @@ def login_required_dev(f):
         g.role = "Developer"
 
         if asyncio.iscoroutinefunction(f):
-            return await f(*args, **kwargs)  # async route
-        return f(*args, **kwargs)            # regular sync route
+            return asyncio.run(f(*args, **kwargs))
+        return f(*args, **kwargs)
     return decorated_function
 
 def login_required_admin(f):
