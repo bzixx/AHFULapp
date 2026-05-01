@@ -56,7 +56,6 @@ class TaskObject:
         if "recurrenceEndDate" not in task_data:
             task_data["recurrenceEndDate"] = None
 
-        result = taskCollection.insert_one(task_data)
         result = get_collection('task').insert_one(task_data)
         return str(result.inserted_id)
 
@@ -81,7 +80,7 @@ class TaskObject:
     @staticmethod
     def toggle_favorite(task_id):
         """Toggle the favorite status of a task."""
-        task = taskCollection.find_one({"_id": ObjectId(task_id)})
+        task = get_collection('task').find_one({"_id": ObjectId(task_id)})
         if not task:
             return None
 
@@ -89,7 +88,7 @@ class TaskObject:
         current_favorite = task.get("favorite", False)
         new_favorite = not current_favorite
 
-        result = taskCollection.update_one(
+        result = get_collection('task').update_one(
             {"_id": ObjectId(task_id)},
             {"$set": {"favorite": new_favorite, "updated_at": int(datetime.now().timestamp())}}
         )
@@ -98,13 +97,13 @@ class TaskObject:
             return None
 
         # Return updated task
-        updated = taskCollection.find_one({"_id": ObjectId(task_id)})
+        updated = get_collection('task').find_one({"_id": ObjectId(task_id)})
         return TaskObject._serialize(updated)
 
     @staticmethod
     def find_favorites_by_user(user_id):
         """Get all favorite tasks for a user."""
-        tasks = taskCollection.find({
+        tasks = get_collection('task').find({
             "user_id": ObjectId(user_id),
             "favorite": True
         })
@@ -115,7 +114,7 @@ class TaskObject:
         """Create the next occurrence of a recurring task."""
         from datetime import timedelta
 
-        task = taskCollection.find_one({"_id": ObjectId(task_id)})
+        task = get_collection('task').find_one({"_id": ObjectId(task_id)})
         if not task or not task.get("recurring"):
             return None
 
@@ -165,6 +164,6 @@ class TaskObject:
             "updated_at": int(datetime.now().timestamp())
         }
 
-        result = taskCollection.insert_one(next_task_data)
-        new_task = taskCollection.find_one({"_id": result.inserted_id})
+        result = get_collection('task').insert_one(next_task_data)
+        new_task = get_collection('task').find_one({"_id": result.inserted_id})
         return TaskObject._serialize(new_task)
