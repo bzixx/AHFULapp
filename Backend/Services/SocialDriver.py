@@ -84,8 +84,10 @@ class SocialDriver:
             user_email = SocialDriver._normalize_email(user.get("email"))
             if not user_email:
                 return None, "User is missing email"
+            # Return only confirmed friendships (ConfirmedSince is not None)
             friendships = SocialObject.find_by_user_email(user_email)
-            return friendships, None
+            confirmed = [f for f in (friendships or []) if (f.get("ConfirmedSince") is not None)]
+            return confirmed, None
         except Exception as e:
             return None, str(e)
 
@@ -95,8 +97,10 @@ class SocialDriver:
         if not normalized:
             return None, "user_email is required"
         try:
+            # Only return friendships that have been confirmed
             friendships = SocialObject.find_by_user_email(normalized)
-            return friendships, None
+            confirmed = [f for f in (friendships or []) if (f.get("ConfirmedSince") is not None)]
+            return confirmed, None
         except Exception as e:
             return None, str(e)
 
