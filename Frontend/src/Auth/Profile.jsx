@@ -77,16 +77,6 @@ export function Profile() {
           }),
         }
       );
-
-      const verifyEmailData = await verifyUserEmailResponse.json(); // parse JSON
-      console.log("Response JSON:", verifyEmailData);
-
-      if (!verifyUserEmailResponse.ok) {
-        alert(verifyEmailData.error || "Failed to send verification email");
-        return;
-      }
-
-      alert(verifyEmailData.message);
     } catch (err) {
       console.error("Verify email failed:", err);
       alert("Network error sending verification email");
@@ -167,19 +157,6 @@ export function Profile() {
             Explore Friends
           </button>
         </div>
-
-
-        {/* Manually verify user email*/}
-        {UserData?.email_verified === false && (
-          <div className="profile-email-verify-section">
-            <button
-              className="profile-email-verify-btn"
-              onClick={handleVerifyEmail}
-            >
-              Verify Email
-            </button>
-          </div>
-        )}
 
         {/* Logout */}
         <div className="profile-logout-section">

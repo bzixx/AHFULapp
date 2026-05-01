@@ -273,7 +273,8 @@ class VerificationDriver:
                 "Thank you for Signing up from the AHFUL Team!"
             ).format(link=link)
         )
-        current_app.mail.send(msg)
+        with current_app.app_context():
+            current_app.mail.send(msg)
 
         return "Verification email sent", None
     
