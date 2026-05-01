@@ -18,8 +18,8 @@
 }
 
 .google-login-button {
-  top: 300px;
-  left: 50%;
+  width: 40%;
+  left:54%;
   transform: translateX(-40%);
 }
 
@@ -42,12 +42,12 @@
 
 .google-login-button img {
   display: block;
-  width: 80%;
+  width: 60%;
 }
 
 .google-login-button-scrolled img {
   display: block;
-  width: 100%;
+  width: 70%;
   max-width: clamp(80px, 16vw, 120px);
 }
 
@@ -70,7 +70,7 @@
 }
 
   .google-login-button {
-    top: 42%;
+    top: 45%;
   }
   .google-login-button-scrolled {
     max-width: clamp(200px, 60vw, 800px);
