@@ -24,6 +24,7 @@ from APIRoutes.TaskRoutes import taskBlueprint
 from APIRoutes.SocialRoutes import socialRouteBlueprint
 from APIRoutes.VerificationRoutes import verificationRouteBlueprint
 from APIRoutes.ChatRoutes import chatRouteBlueprint
+from APIRoutes.PromoRoutes import promoBlueprint
 
 #Firebase Admin SDK
 import firebase_admin
@@ -86,6 +87,7 @@ def create_app():
     AHFULAPI.register_blueprint(socialRouteBlueprint)
     AHFULAPI.register_blueprint(chatRouteBlueprint)
     AHFULAPI.register_blueprint(verificationRouteBlueprint)
+    AHFULAPI.register_blueprint(promoBlueprint)
 
     app.register_blueprint(AHFULAPI)
     app.register_blueprint(swaggerUIBlueprint)

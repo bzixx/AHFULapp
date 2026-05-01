@@ -33,7 +33,7 @@ export function Header({ onMenuToggle = null, isMenuOpen = false, onNavClick = n
         <span></span>
         <span></span>
       </button>
-      <NavLink to="/" className="logo">AHFUL</NavLink>
+      <NavLink to="/Dashboard" className="logo">AHFUL</NavLink>
       <div className="header-right">
         <button
           className="theme-toggle"
