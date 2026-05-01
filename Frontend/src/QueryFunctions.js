@@ -612,7 +612,7 @@ export async function fetchWorkoutById(workoutId) {
     }
 
     const data = await res.json();
-    return data; 
+    return data;
   } catch (err) {
     console.error("fetchWorkout error:", err);
     throw err;
@@ -914,7 +914,9 @@ export async function toggleFoodFavorite(foodId) {
     }
 
     const data = await res.json();
-    return { data: data.food, error: null };
+    console.log("toggleFoodFavorite response:", data);
+    const food = data.food || data;
+    return { data: food, error: null };
   } catch (err) {
     console.error("toggleFoodFavorite error:", err);
     return { data: null, error: err.message };

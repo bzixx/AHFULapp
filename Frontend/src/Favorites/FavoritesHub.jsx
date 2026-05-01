@@ -89,12 +89,11 @@ export function FavoritesHub() {
   const addFavoriteWorkoutToToday = async (workout) => {
     try {
       const now = Math.floor(Date.now() / 1000);
-      const res = await fetch(`http://localhost:5000/api/AHFULworkouts/create/${userId}`, {
+      const res = await fetch(`http://localhost:5000/api/AHFULworkouts/create`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: userId,
           title: `${workout.title} (from favorites)`,
           startTime: now,
           endTime: now,
