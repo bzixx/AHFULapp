@@ -19,12 +19,12 @@ class FoodDriver:
             return ObjectId(str(id)), None
         except (bson_errors.InvalidId, TypeError, ValueError):
             return None, f"Invalid {name} format; must be a 24-hex string"
-        
+
     @staticmethod
     def verify_operation(user_id, food_id):
         if (not user_id) or (not food_id):
             return None, "Missing user or food_id"
-        
+
         # Convert IDs safely
         user_id, err = FoodDriver._validate_obj_id(user_id, "user_id")
         if err:
@@ -33,14 +33,14 @@ class FoodDriver:
         food_id, err = FoodDriver._validate_obj_id(food_id, "food_id")
         if err:
             return None, err
-        
+
         user = UserObject.find_by_id(user_id)
         if not user:
             return None, "User not found"
         food = FoodObject.find_by_id(food_id)
         if not food:
             return None, "Food not found"
-        
+
         if user["_id"] == food["user_id"]:
             return "Operation valid", None
         elif ("Admin" in user["roles"]) or ("Developer" in user["roles"]):
@@ -71,7 +71,8 @@ class FoodDriver:
             "calsPerServing": calsPerServing,
             "servings": servings,
             "type": type,
-            "time": time
+            "time": time,
+            "favorite": False
         }
 
         try:
@@ -125,7 +126,7 @@ class FoodDriver:
         oid, err = FoodDriver._validate_obj_id(id, "food_id")
         if err:
             return None, err
-        
+
         if not updates or not isinstance(updates, dict):
             return None, "You must provide at least one field to update"
 
@@ -346,14 +347,23 @@ class FoodDriver:
         # Validate inputs
         if not user_id or not food_id:
             return None, "user_id and food_id are required"
-        
-        # Verify operation permission
-        res, err = FoodDriver.verify_operation(user_id, food_id)
+
+        # Validate food_id format
+        food_oid, err = FoodDriver._validate_obj_id(food_id, "food_id")
         if err:
             return None, err
-        
+
         try:
-            updated = FoodObject.toggle_favorite(food_id)
+            # Check that food exists and belongs to user
+            food = FoodObject.find_by_id(food_oid)
+            if not food:
+                return None, "Food not found"
+
+            # Verify user owns the food
+            if str(food.get("user_id")) != str(user_id):
+                return None, "You can only modify your own foods"
+
+            updated = FoodObject.toggle_favorite(food_oid)
             if not updated:
                 return None, "Food not found"
             return updated, None
@@ -365,11 +375,11 @@ class FoodDriver:
         """Get all favorite foods for a user."""
         if not user_id:
             return None, "user_id is required"
-        
+
         oid, err = FoodDriver._validate_obj_id(user_id, "user_id")
         if err:
             return None, err
-        
+
         try:
             foods = FoodObject.find_favorites_by_user(user_id)
             return foods, None

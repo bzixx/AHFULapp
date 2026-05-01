@@ -283,19 +283,18 @@ export function FoodLog() {
     };
 
     const toggleFavorite = async (id) => {
-        try {
-            const { data, error } = await toggleFoodFavorite(id);
-            if (error) {
-                console.error("Failed to toggle favorite:", error);
-                return;
-            }
+        console.log("Toggling favorite for food ID:", id);
+        const { data, error } = await toggleFoodFavorite(id);
+        console.log("Toggle response - data:", data, "error:", error);
+        if (!error && data) {
+            console.log("Updated favorite status:", data.favorite);
             setFoods((prev) =>
                 prev.map((food) =>
-                    food.id === id ? { ...food, favorite: !food.favorite } : food
+                    food.id === id ? { ...food, favorite: data.favorite } : food
                 )
             );
-        } catch (err) {
-            console.error("Error toggling favorite:", err);
+        } else {
+            console.error("Failed to toggle favorite:", error);
         }
     };
 

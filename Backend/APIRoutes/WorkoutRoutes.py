@@ -43,7 +43,7 @@ def get_templates(user_id):
 def get_template(template_id):
     res, err = WorkoutDriver.verify_operation(g.user_id, template_id)
     if err:
-        return jsonify({"error": err}), 400 
+        return jsonify({"error": err}), 400
     workouts, error = WorkoutDriver.get_template(template_id)
     if error:
         return jsonify({"error": error}), 404
@@ -55,7 +55,7 @@ def get_template(template_id):
 def get_workout(workout_id):
     res, err = WorkoutDriver.verify_operation(g.user_id, workout_id)
     if err:
-        return jsonify({"error": err}), 400 
+        return jsonify({"error": err}), 400
     workout, error = WorkoutDriver.get_workout_by_id(workout_id)
     if error:
         return jsonify({"error": error}), 404
@@ -76,7 +76,7 @@ def create_workout():
         startTime=data.get("startTime"),
         endTime=data.get("endTime"),
     )
-    
+
     if error:
         return jsonify({"error": error}), 400
     return jsonify({"workout_id": workout_id, "message": "Workout created"}), 201
@@ -93,7 +93,7 @@ def create_template():
         user_id=g.user_id,
         title=data.get("title")
     )
-    
+
     if error:
         return jsonify({"error": error}), 400
     return jsonify({"workout_id": workout_id, "message": "Template created"}), 201
@@ -105,16 +105,16 @@ def create_template():
 def update_workout(workout_id):
     if not workout_id:
         return jsonify({"error": "You must provide a workout id to update"}), 400
-    
+
     res, err = WorkoutDriver.verify_operation(g.user_id, workout_id)
     if err:
-        return jsonify({"error": err}), 400 
+        return jsonify({"error": err}), 400
 
     data = request.get_json(silent=True)
     if not data or not isinstance(data, dict):
         return jsonify({"error": "You must provide a JSON body with at least one field to update"}), 400
 
-    if not data.get("gym_id"): 
+    if not data.get("gym_id"):
         data["gym_id"] = "000000000000000000000000"
 
     # Call the driver (it already validates allowed fields & id)
@@ -125,7 +125,7 @@ def update_workout(workout_id):
         if "not found" in err_lower:
             return jsonify({"error": error}), 404
         return jsonify({"error": error}), 400
-    
+
     return jsonify({"message": "Workout updated", "workout": updated}), 200
 
 # Only delete own? dev for now
@@ -135,10 +135,10 @@ def update_workout(workout_id):
 def delete_workout(workout_id):
     if not workout_id:
         return jsonify({"error": "You must provide a workout id to delete"}), 400
-    
+
     res, err = WorkoutDriver.verify_operation(g.user_id, workout_id)
     if err:
-        return jsonify({"error": err}), 400 
+        return jsonify({"error": err}), 400
 
     response, error = WorkoutDriver.delete_workout(workout_id)
     if error:
@@ -157,23 +157,6 @@ def get_workout_streak(user_id):
         return jsonify({"error": error}), 404
     return jsonify(streak_data), 200
 
-# ── FAVORITE workout ────────────────────────────────────────────────────────────
-@workoutRouteBlueprint.route("/<workout_id>/favorite", methods=["PUT"])
-@login_required_user
-def toggle_favorite_workout(workout_id):
-    if not workout_id:
-        return jsonify({"error": "workout_id is required"}), 400
-    
-    workout, error = WorkoutDriver.toggle_favorite(g.user_id, workout_id)
-    if error:
-        return jsonify({"error": error}), 400
-    
-    favorite_status = workout.get("favorite", False)
-    return jsonify({
-        "message": f"Workout marked as {'favorite' if favorite_status else 'not favorite'}",
-        "workout": workout
-    }), 200
-
 # ── GET favorite workouts for user ──────────────────────────────────────
 @workoutRouteBlueprint.route("/favorites/<user_id>", methods=["GET"])
 @login_required_user
@@ -181,9 +164,26 @@ def get_favorite_workouts(user_id):
     # Own user request, devs or admins only
     if (user_id != g.user_id) and (g.role != "Developer") and (g.role != "Admin"):
         return jsonify({"error": "You may only access your own data"}), 403
-    
+
     workouts, error = WorkoutDriver.get_favorite_workouts(user_id)
     if error:
         return jsonify({"error": error}), 404
-    
+
     return jsonify(workouts), 200
+
+# ── FAVORITE workout ────────────────────────────────────────────────────────────
+@workoutRouteBlueprint.route("/<workout_id>/favorite", methods=["PUT"])
+@login_required_user
+def toggle_favorite_workout(workout_id):
+    if not workout_id:
+        return jsonify({"error": "workout_id is required"}), 400
+
+    workout, error = WorkoutDriver.toggle_favorite(g.user_id, workout_id)
+    if error:
+        return jsonify({"error": error}), 400
+
+    favorite_status = workout.get("favorite", False)
+    return jsonify({
+        "message": f"Workout marked as {'favorite' if favorite_status else 'not favorite'}",
+        "workout": workout
+    }), 200

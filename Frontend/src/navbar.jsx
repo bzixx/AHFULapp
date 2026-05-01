@@ -82,6 +82,14 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
           </NavLink>
 
           <NavLink
+            to="/Favorites"
+            className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={handleNavClick}
+          >
+            ⭐ My Favorites
+          </NavLink>
+
+          <NavLink
             to="/Map"
             className={({ isActive }) => (isActive ? "active" : "")}
             onClick={handleNavClick}
@@ -95,7 +103,16 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
             onClick={handleNavClick}
           >
             Measurement Logger
-          </NavLink> 
+          </NavLink>
+
+          <a
+            href="https://www.ahful.app/api/APIDocs"
+            target="_blank"
+            rel="noreferrer"
+            onClick={handleNavClick}
+          >
+            Documentation
+          </a>
         </>
         )}
 

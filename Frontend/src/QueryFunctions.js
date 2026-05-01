@@ -416,6 +416,42 @@ export async function deleteGym(gymId) {
 }
 
 
+export async function fetchAllPromos() {
+  try {
+    const res = await fetch("https://www.ahful.app/api/promotions", {
+      credentials: "include"
+    });
+
+    if (!res.ok) {
+      let bodyText = "";
+      try { bodyText = await res.text(); } catch (e) { /* ignore */ }
+      throw new Error(`Server returned ${res.status} ${res.statusText} ${bodyText}`);
+    }
+
+    const data = await res.json();
+
+    let list = [];
+    if (Array.isArray(data)) {
+      list = data;
+    } else if (data && Array.isArray(data.data)) {
+      list = data.data;
+    } else if (data && Array.isArray(data.results)) {
+      list = data.results;
+    } else {
+      list = [];
+    }
+
+    return list;
+  } catch (err) {
+    console.error("fetchAllPromos error:", err);
+    const friendly =
+      err && err.name ? `${err.name}: ${err.message}` : String(err);
+    throw new Error(friendly || "Unknown error");
+  }
+}
+
+
+
 // ── Exercise Functions ─────────────────────────────────────────────────────────
 
 export async function fetchExerciseById(exerciseId) {
@@ -576,7 +612,7 @@ export async function fetchWorkoutById(workoutId) {
     }
 
     const data = await res.json();
-    return data; 
+    return data;
   } catch (err) {
     console.error("fetchWorkout error:", err);
     throw err;
@@ -878,7 +914,9 @@ export async function toggleFoodFavorite(foodId) {
     }
 
     const data = await res.json();
-    return { data: data.food, error: null };
+    console.log("toggleFoodFavorite response:", data);
+    const food = data.food || data;
+    return { data: food, error: null };
   } catch (err) {
     console.error("toggleFoodFavorite error:", err);
     return { data: null, error: err.message };
