@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import UseCalendar from "./UseCalendar";
 import { useSelector, useDispatch } from "react-redux";
 /*Need to look over framer motion again between sprints, hardly understand it and 
@@ -31,7 +31,7 @@ const foodDatesSet = (foods) => {
   return set;
 };
 
-export function Calendar({ locale, todoPosition }) {
+export function Calendar({ locale, todoPosition, onCalendarSizeChange }) {
   locale = locale || navigator.language;
 
   const { 
@@ -44,6 +44,12 @@ export function Calendar({ locale, todoPosition }) {
     goNext, 
     goPrevious 
   } = UseCalendar(new Date(), locale);
+
+  const rows = useMemo(() => Math.ceil(cells.length / 7), [cells.length]);
+
+  useEffect(() => {
+    onCalendarSizeChange?.(rows);
+  }, [rows, onCalendarSizeChange]);
 
   const dispatch = useDispatch();
   

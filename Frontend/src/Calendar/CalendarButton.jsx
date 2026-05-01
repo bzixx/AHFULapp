@@ -1,12 +1,12 @@
 import "./Calendar.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Calendar } from "../Calendar/Calendar.jsx";
 import { useSelector } from "react-redux";
 import { fetchPersonalExercises, fetchGym } from "../QueryFunctions";
 import { DashboardWorkoutTodoItem } from "../ExploreWorkouts/DashboardWorkoutTodoItem";
 import { DashboardFoodTodoItem } from "../Food/DashboardFoodTodoItem";
 
-export function CalendarButton({ trigger = undefined, setTrigger = undefined, todoPosition = { top: "620px" } }) {
+export function CalendarButton({ trigger = undefined, setTrigger = undefined, todoPosition = { top5Rows: "61%", top6Rows: "69.5%" } }) {
     const [open, setOpen] = useState(Boolean(trigger));
     const [selectedWorkout, setSelectedWorkout] = useState(null);
     const [personalExercises, setPersonalExercises] = useState([]);
@@ -17,6 +17,21 @@ export function CalendarButton({ trigger = undefined, setTrigger = undefined, to
     const [dayWorkouts, setDayWorkouts] = useState([]);
     const [dayFoods, setDayFoods] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [calendarRows, setCalendarRows] = useState(5);
+    const wrapperRef = useRef(null);
+
+    const todoTop = calendarRows === 6 ? todoPosition.top6Rows : todoPosition.top5Rows;
+
+    useEffect(() => {
+        if (!open) return;
+        const handleClick = (e) => {
+            if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+                toggle();
+            }
+        };
+        document.addEventListener("mousedown", handleClick);
+        return () => document.removeEventListener("mousedown", handleClick);
+    }, [open]);
 
     const selectedDate = useSelector((state) => state.calendar.selectedDate);
     const workouts = useSelector((state) => state.pullWorkout.workouts);
@@ -151,10 +166,10 @@ export function CalendarButton({ trigger = undefined, setTrigger = undefined, to
     };
 
     return (
-        <div className="calendar-button-wrapper">
+        <div className="calendar-button-wrapper" ref={wrapperRef}>
             <div style={{ display: open ? "block" : "none" }} className="calendar-popup-content">
-                <Calendar />
-                <div className="calendar-todo-row" style={{ top: todoPosition.top }}>
+                <Calendar onCalendarSizeChange={(rows) => setCalendarRows(rows)} />
+                <div className="calendar-todo-row" style={{ top: todoTop }}>
                     <div className="calendar-todo-panel">
                         <h3 className="dashboard-todo-title">Workouts</h3>
                         {loading ? (
