@@ -773,7 +773,7 @@ export async function fetchFood(userId) {
     const res = await fetch(
       `https://www.ahful.app/api/AHFULfoods/${userId}`,
       {
-        method: "POST",
+        method: "GET",
         credentials: "include",
       }
     );

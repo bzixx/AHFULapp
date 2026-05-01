@@ -2,7 +2,7 @@ import { pullExercises } from "../components/Cache/ExerciseCache/PullExercise";
 import { pullPersonalExercises } from "../components/Cache/PersonalExerciseCache/PersonalExercise";
 import { pullTemplates } from "../components/Cache/TemplateCache/PullTemplate";
 import { pullWorkouts } from "../components/Cache/WorkoutCache/PullWorkout";
-import { pullFood } from "../components/Cache/FoodCache/PullFood";
+import { pullFood } from "../components/Cache/FoodCache/PullUserFood";
 export function onLoginCache() {
   console.log("onLoginCache called");
   pullExercises().catch((err) => console.error("Exercise Cache error:", err));
