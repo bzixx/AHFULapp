@@ -19,7 +19,19 @@ const workoutDatesSet = (workouts) => {
   return set;
 };
 
-export function Calendar({ locale }) {
+const foodDatesSet = (foods) => {
+  const set = new Set();
+  foods.forEach((f) => {
+    if (f.time) {
+      const date = new Date(f.time * 1000);
+      const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      set.add(dateStr);
+    }
+  });
+  return set;
+};
+
+export function Calendar({ locale, todoPosition }) {
   locale = locale || navigator.language;
 
   const { 
@@ -35,11 +47,12 @@ export function Calendar({ locale }) {
 
   const dispatch = useDispatch();
   
-  // Read selected date from Redux (single source of truth)
   const selectedDate = useSelector((state) => state.calendar.selectedDate);
   const workouts = useSelector((state) => state.pullWorkout.workouts);
+  const foods = useSelector((state) => state.pullFood.food);
   
   const hasWorkoutDates = useMemo(() => workoutDatesSet(workouts), [workouts]);
+  const hasFoodDates = useMemo(() => foodDatesSet(foods), [foods]);
   
   const selectedDateStr = selectedDate ? new Date(selectedDate).toISOString().slice(0, 10) : null;
 
@@ -107,6 +120,7 @@ export function Calendar({ locale }) {
             const dateStr = date.toISOString().slice(0, 10);
             const isSelected = selectedDateStr === dateStr;
             const hasWorkout = hasWorkoutDates.has(dateStr);
+            const hasFood = hasFoodDates.has(dateStr);
 
             let cellClass = "calendar-cell";
             if (currentMonth) {
@@ -125,6 +139,7 @@ export function Calendar({ locale }) {
                 onClick={() => handleDateClick(date)}
               >
                 {hasWorkout && <span className="workout-dot" />}
+                {hasFood && <span className="food-dot" />}
                 <span className={todayCell ? "calendar-day-today" : ""}>
                   {date.getDate()}
                 </span>
