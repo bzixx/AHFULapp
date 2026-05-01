@@ -19,7 +19,7 @@ def login_required_unverified(f):
         magic_bits = magic_bits[-32:]
 
         # 2. Database Verification
-        user, err = VerificationDriver.confirm_user_unverified(user_id, magic_bits)
+        user, err = asyncio.run(VerificationDriver.confirm_user_unverified(user_id, magic_bits))
         if err:
             return jsonify({"authenticated": False, "error": f"Invalid session token. Hint: {err}"}), 200
 
@@ -35,8 +35,6 @@ def login_required_unverified(f):
         else:
             g.role = "User"
 
-        if asyncio.iscoroutinefunction(f):
-            return asyncio.run(f(*args, **kwargs))  # async route
         return f(*args, **kwargs)            # regular sync route
     return decorated_function
 
@@ -55,7 +53,7 @@ def login_required_user(f):
         magic_bits = magic_bits[-32:]
 
         # 2. Database Verification
-        user, err = VerificationDriver.confirm_user_login(user_id, magic_bits)
+        user, err = asyncio.run(VerificationDriver.confirm_user_login(user_id, magic_bits))
         if err:
             return jsonify({"authenticated": False, "error": f"Invalid session token. Hint: {err}"}), 200
 
@@ -71,12 +69,6 @@ def login_required_user(f):
         else:
             g.role = "User"
 
-        # If the wrapped route is async, run it in a fresh event loop.
-        # Keeping the decorator itself synchronous avoids forcing Flask to
-        # treat every view as a coroutine (which triggers asgiref/ensure_sync
-        # and can block in WSGI/gunicorn sync workers).
-        if asyncio.iscoroutinefunction(f):
-            return asyncio.run(f(*args, **kwargs))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -95,7 +87,7 @@ def login_required_dev(f):
         magic_bits = magic_bits[-32:]
 
         # 2. Database Verification
-        res, err = VerificationDriver.confirm_user_developer(user_id, magic_bits)
+        res, err = asyncio.run(VerificationDriver.confirm_user_developer(user_id, magic_bits))
         if err:
             return jsonify({"authenticated": False, "error": f"Invalid session token. Hint: {err}"}), 200
 
@@ -103,8 +95,6 @@ def login_required_dev(f):
         g.token = magic_bits
         g.role = "Developer"
 
-        if asyncio.iscoroutinefunction(f):
-            return asyncio.run(f(*args, **kwargs))
         return f(*args, **kwargs)
     return decorated_function
 
