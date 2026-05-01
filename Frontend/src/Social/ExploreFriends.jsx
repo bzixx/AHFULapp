@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../siteStyles.css";
 import * as socialApi from "./socialApi";
+import { useSelector } from "react-redux";
 
 export function ExploreFriends() {
     // state (will be backed by backend)
@@ -11,6 +12,7 @@ export function ExploreFriends() {
     const [friends, setFriends] = useState([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
+    const user = useSelector((state) => state.auth.user);
 
     const handleAddFriend = (e) => {
         if (e && e.preventDefault) e.preventDefault();
@@ -159,39 +161,66 @@ export function ExploreFriends() {
                 {/* Left: Pending Requests */}
                 <div style={{ flex: 1, minWidth: 260, display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}>
                     <h3 style={{ marginTop: 0 }}>Pending Requests</h3>
-                        {loading ? (
-                            <p>Loading...</p>
-                        ) : pendingRequests.length === 0 ? (
-                            <p>No pending friend requests.</p>
-                        ) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                                {pendingRequests.map((p) => {
-                                    const email = (p.User2Email || p.User1Email || p.email || "");
-                                    return (
-                                    <div
-                                        key={p._id || p.id || email}
-                                        className="pending-card"
-                                        style={{
-                                            border: '1px solid #ddd',
-                                            padding: '0.75rem',
-                                            borderRadius: '6px',
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            width: '100%',
-                                            boxSizing: 'border-box',
-                                        }}
-                                    >
-                                        <div style={{ fontWeight: 600 }}>{email}</div>
-                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                            <button onClick={() => handleAccept(p)}>Accept</button>
-                                            <button onClick={() => handleCancelPending(p)}>Cancel</button>
-                                        </div>
+                                {loading ? (
+                                    <p>Loading...</p>
+                                ) : pendingRequests.length === 0 ? (
+                                    <p>No pending friend requests.</p>
+                                ) : (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                                        {/* Split pending into requests sent by the current user vs received */}
+                                        {(() => {
+                                            const currentEmail = (user && user.email.toLowerCase()) || "";
+                                            const sent = pendingRequests.filter((p) => ((p.User1Email || "") || "").toLowerCase() === currentEmail);
+                                            const received = pendingRequests.filter((p) => ((p.User2Email || "") || "").toLowerCase() === currentEmail);
+                                            return (
+                                                <>
+                                                    <div>
+                                                        <strong>Requests you sent</strong>
+                                                        {sent.length === 0 ? (
+                                                            <div style={{ padding: '0.5rem', color: '#666' }}>None</div>
+                                                        ) : (
+                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+                                                                {sent.map((p) => {
+                                                                    const otherEmail = (p.User2Email || p.User1Email || "");
+                                                                    return (
+                                                                        <div key={p._id || p.id || otherEmail} className="pending-card" style={{ border: '1px solid #ddd', padding: '0.75rem', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                            <div style={{ fontWeight: 600 }}>{otherEmail}</div>
+                                                                            <div>
+                                                                                <button onClick={() => handleCancelPending(p)}>Cancel</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <div style={{ marginTop: '0.75rem' }}>
+                                                        <strong>Requests you received</strong>
+                                                        {received.length === 0 ? (
+                                                            <div style={{ padding: '0.5rem', color: '#666' }}>None</div>
+                                                        ) : (
+                                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+                                                                {received.map((p) => {
+                                                                    const otherEmail = (p.User1Email || p.User2Email || "");
+                                                                    return (
+                                                                        <div key={p._id || p.id || otherEmail} className="pending-card" style={{ border: '1px solid #ddd', padding: '0.75rem', borderRadius: '6px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                                            <div style={{ fontWeight: 600 }}>{otherEmail}</div>
+                                                                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                                                <button onClick={() => handleAccept(p)}>Accept</button>
+                                                                                <button onClick={() => handleCancelPending(p)}>Decline</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </>
+                                            );
+                                        })()}
                                     </div>
-                                    );
-                                })}
-                            </div>
-                        )}
+                                )}
                 </div>
 
                 {/* Right: Confirmed Friends */}
