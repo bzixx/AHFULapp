@@ -576,7 +576,7 @@ export async function fetchWorkoutById(workoutId) {
     }
 
     const data = await res.json();
-    return data; 
+    return data;
   } catch (err) {
     console.error("fetchWorkout error:", err);
     throw err;

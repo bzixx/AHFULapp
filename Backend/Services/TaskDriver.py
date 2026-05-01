@@ -167,11 +167,11 @@ class TaskDriver:
             task = TaskObject.find_by_id(task_oid)
             if not task:
                 return None, "Task not found"
-            
+
             # Verify user owns the task
             if str(task.get("user_id")) != str(user_id):
                 return None, "You can only modify your own tasks"
-            
+
             updated = TaskObject.toggle_favorite(task_oid)
             if not updated:
                 return None, "Task not found"

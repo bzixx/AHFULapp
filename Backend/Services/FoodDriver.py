@@ -358,11 +358,11 @@ class FoodDriver:
             food = FoodObject.find_by_id(food_oid)
             if not food:
                 return None, "Food not found"
-            
+
             # Verify user owns the food
             if str(food.get("user_id")) != str(user_id):
                 return None, "You can only modify your own foods"
-            
+
             updated = FoodObject.toggle_favorite(food_oid)
             if not updated:
                 return None, "Food not found"

@@ -91,7 +91,7 @@ def create_app():
 
     app.register_blueprint(AHFULAPI)
     app.register_blueprint(swaggerUIBlueprint)
-    
+
     # Enable CORS - includes CloudFront production URL and custom domain
     allowed_origins = [
         'http://localhost:5173',

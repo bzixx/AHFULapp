@@ -57,19 +57,19 @@ class FoodObject:
         food = collection.find_one({"_id": ObjectId(id)})
         if not food:
             return None
-        
+
         # Toggle favorite field
         current_favorite = food.get("favorite", False)
         new_favorite = not current_favorite
-        
+
         result = collection.update_one(
             {"_id": ObjectId(id)},
             {"$set": {"favorite": new_favorite}}
         )
-        
+
         if result.matched_count == 0:
             return None
-        
+
         # Return updated food
         updated = collection.find_one({"_id": ObjectId(id)})
         return FoodObject._serialize(updated)
