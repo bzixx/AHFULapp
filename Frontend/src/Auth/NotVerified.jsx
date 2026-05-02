@@ -50,9 +50,10 @@ export function NotVerified() {
 // ----- Verification Page HTML ---------------------------------------------------------------------------
   return (
     <div className="not-verified-page">
+        <h1>AHFUL App Email Verification Page</h1>   
         <h2>Your email is not verified</h2>   
-        <h2>Please check your email for a verification email, and follow the link</h2>   
-        <h2>You can leave this page</h2>
+        <h2>Click the button below to send a verification email</h2>
+        <p>After you receive the email click the link in it and log out and log back in to access all features.</p>
 
         {/* Manually verify user email*/}
           <div className="profile-email-verify-section">

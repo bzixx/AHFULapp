@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
-import "./WorkoutChart.css";
+import "./ExploreWorkouts.css";
 
 const API_BASE = "https://www.ahful.app/api/AHFULworkouts";
 const WEEK_OPTIONS = [4, 6, 8, 12];

@@ -5,10 +5,9 @@ from DataModels.UserObject import UserObject
 from DataModels.VerificationObject import VerificationObject
 from datetime import datetime
 from bson import ObjectId, errors as bson_errors
-from flask_mail import Message
-from flask import current_app
 import secrets
 import string
+from Services.EmailDriver import send_email
 
 # The EmailDriver is responsible for implementing the business logic related to user operations.
 #   It acts as an intermediary between the API routes and the data models,
@@ -260,21 +259,18 @@ class VerificationDriver:
         # Link contains token id and token text
         link = f"https://www.ahful.app/api/AHFULverify/verify/email/{response}/{token}"
 
-        # Send message with enable link
-        msg = Message(
+        send_email(
+            to_address=email,
             subject="Your email is not verified",
-            recipients=[email],
-            body=(
+            body_text=(
                 "Hello,\n\n"
                 "Our records show that your email has not been verified yet.\n\n"
                 "You currently may have limited access to the application.\n\n"
                 "Please verify your email to unlock full access.\n\n"
-                "Your verification link is {link}\n\n"
+                f"Your verification link is {link}\n\n"
                 "Thank you for Signing up from the AHFUL Team!"
-            ).format(link=link)
+            )
         )
-        with current_app.app_context():
-            current_app.mail.send(msg)
 
         return "Verification email sent", None
     
@@ -312,22 +308,8 @@ class VerificationDriver:
         # Link contains token id and token text
         link = f"https://www.ahful.app/api/AHFULverify/verify/phone/{response}/{token}"
 
-        # Send message with enable link
-        msg = Message(
-            subject="Your email is not verified",
-            recipients=[number],
-            body=(
-                "Hello,\n\n"
-                "Our records show that your phone number has not been verified yet.\n\n"
-                "You currently may have limited access to the application.\n\n"
-                "Please verify your phone number to unlock full access.\n\n"
-                "Your verification link is {link}\n\n"
-                "Thank you for Signing up from the AHFUL Team!"
-            ).format(link=link)
-        )
-        current_app.mail.send(msg)
 
-        return "Verification text sent", None
+        return "Verification text Not Setup Yet.", None
     
     @staticmethod
     def confirm_phone_token(token_id, token):
