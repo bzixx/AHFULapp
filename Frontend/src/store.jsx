@@ -39,18 +39,24 @@ const persistUserFoodConfig = {
   storage,
 }
 
+const persistSettingsConfig = {
+  key: "settings",
+  storage,
+};
+
 const persistedPullExerciseReducer = persistReducer(persistExerciseConfig, pullExerciseReducer);
 const persistedPullTemplateReducer = persistReducer(persistTemplateConfig, pullTemplateReducer);
 const persistedPullWorkoutReducer = persistReducer(persistWorkoutConfig, pullWorkoutReducer);
 const persistedCalendarReducer = persistReducer(persistCalendarConfig, calendarReducer);
 const persistedPersonalExerciseReducer = persistReducer(persistPersonalExerciseConfig, pullPersonalExerciseReducer);
 const persistedUserFoodReducer = persistReducer(persistUserFoodConfig, pullUserFoodReducer);
+const persistedSettingsReducer = persistReducer(persistSettingsConfig, settingsReducer);
 
 export const store = configureStore({
   reducer: {
     calendar: persistedCalendarReducer,
     auth: authReducer,
-    setting: settingsReducer,
+    setting: persistedSettingsReducer,
     pullExercise: persistedPullExerciseReducer,
     pullTemplate: persistedPullTemplateReducer,
     pullWorkout: persistedPullWorkoutReducer,
