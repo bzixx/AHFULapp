@@ -25,6 +25,7 @@ export function Login() {
   const [isMobile, setIsMobile] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showTOS, setShowTOS] = useState(false);
+const [browser, setBrowser] = useState('');
   const scrollText = "∨ scroll down to learn more ∨";
 
   useEffect(() => {
@@ -43,6 +44,17 @@ export function Login() {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const detectBrowser = () => {
+      const ua = navigator.userAgent;
+      if (ua.indexOf("Edg") !== -1 || ua.indexOf("Edge") !== -1) return "Microsoft Edge";
+      if (ua.indexOf("Chrome") !== -1 && ua.indexOf("Edg") === -1) return "Google Chrome";
+      if (ua.indexOf("Trident") !== -1 || ua.indexOf("MSIE") !== -1) return "Internet Explorer";
+      return "Other";
+    };
+    setBrowser(detectBrowser());
   }, []);
 
   useEffect(() => {
@@ -89,6 +101,7 @@ export function Login() {
         onSuccess={() => setStatusText("Logged in!")}
         onError={(err) => setStatusText(err || "Login failed")}
         isScrolled={isScrolled}
+        browser={browser}
       />
       <div className="login-top-overlay">
         <div className={`login-content ${showContent ? 'fade-in' : ''}`}>

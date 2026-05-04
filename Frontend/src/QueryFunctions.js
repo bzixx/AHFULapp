@@ -836,6 +836,26 @@ export async function fetchFood(userId) {
     };
   }
 }
+export async function fetchAllFood() {
+  try {
+    const res = await fetch("http://localhost:5000/api/AHFULfoods", {
+      method: "GET",
+      credentials: "include",
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      return {
+        error: data.error || "Failed to fetch all foods",
+      };
+    }
+    return data;
+  } catch (err) {
+    console.error("Failed to fetch all foods:", err);
+    return {
+      error: err.message || "Failed to fetch all foods",
+    };
+  }
+}
 // ── Favorite Functions ──────────────────────────────────────────────────────
 
 // ── Workout Favorite Functions ──────────────────────────────────────────

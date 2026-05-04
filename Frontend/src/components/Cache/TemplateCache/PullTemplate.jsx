@@ -1,6 +1,6 @@
 import { store } from "../../../store";
 import { setTemplates, setError } from "./PullTemplateSlice";
-import { fetchTemplate } from "../../../QueryFunctions";
+import { fetchTemplate, fetchPersonalExercises } from "../../../QueryFunctions";
 
 export async function pullTemplates() {
   try {
@@ -9,15 +9,28 @@ export async function pullTemplates() {
       store.dispatch(setError("No user logged in"));
       return;
     }
-    
+
     const list = await fetchTemplate(user._id);
-    const metadata = list.map(t => ({
-      _id: t._id,
-      title: t.title,
-    }));
-    console.log("Pulled templates:", metadata);
-    store.dispatch(setTemplates(metadata));
-  } 
+
+    // Fetch full template data including exercises for each template
+    const fullTemplates = await Promise.all(
+      list.map(async (t) => {
+        try {
+          const exercises = await fetchPersonalExercises(t._id);
+          return {
+            ...t,
+            exercises: exercises || [],
+          };
+        } catch (err) {
+          console.error("Error fetching exercises for template:", t._id, err);
+          return { ...t, exercises: [] };
+        }
+      })
+    );
+
+    console.log("Pulled templates with exercises:", fullTemplates);
+    store.dispatch(setTemplates(fullTemplates));
+  }
   catch (err) {
     store.dispatch(setError("No templates found"));
   }

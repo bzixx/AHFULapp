@@ -6,7 +6,7 @@ import asyncio
 
 def login_required_unverified(f):
     @wraps(f)
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         # 1. Extraction
         user_id = request.cookies.get("session_id")
         magic_bits = request.cookies.get("magic_bits")
@@ -36,13 +36,13 @@ def login_required_unverified(f):
             g.role = "User"
 
         if asyncio.iscoroutinefunction(f):
-            return asyncio.run(f(*args, **kwargs))  # async route
+            return await f(*args, **kwargs)  # async route
         return f(*args, **kwargs)            # regular sync route
     return decorated_function
 
 def login_required_user(f):
     @wraps(f)
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         # 1. Extraction
         user_id = request.cookies.get("session_id")
         magic_bits = request.cookies.get("magic_bits")
@@ -76,13 +76,13 @@ def login_required_user(f):
         # treat every view as a coroutine (which triggers asgiref/ensure_sync
         # and can block in WSGI/gunicorn sync workers).
         if asyncio.iscoroutinefunction(f):
-            return asyncio.run(f(*args, **kwargs))
+            return await f(*args, **kwargs)
         return f(*args, **kwargs)
     return decorated_function
 
 def login_required_dev(f):
     @wraps(f)
-    def decorated_function(*args, **kwargs):
+    async def decorated_function(*args, **kwargs):
         # 1. Extraction
         user_id = request.cookies.get("session_id")
         magic_bits = request.cookies.get("magic_bits")
@@ -104,7 +104,7 @@ def login_required_dev(f):
         g.role = "Developer"
 
         if asyncio.iscoroutinefunction(f):
-            return asyncio.run(f(*args, **kwargs))
+            return await f(*args, **kwargs)
         return f(*args, **kwargs)
     return decorated_function
 

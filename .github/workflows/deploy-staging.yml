@@ -40,17 +40,22 @@ jobs:
           git checkout -B release/staging origin/main
           git push origin release/staging --force
 
-      # Replace every occurrence of the localhost URL across all files.
+      # Replace every occurrence of the localhost URLs across all files.
       # Binary files are skipped automatically by grep -rl.
       - name: Replace localhost URLs with Production URL
         run: |
-          echo ">>> Replacing http://localhost:5000 → https://www.ahful.app"
+          echo ">>> Replacing http://localhost:5000 → https://www.ahful.app and http://localhost:5173 → https://ahful.app"
+          # Search for files that contain either localhost:5000 or localhost:5173 so
+          # files that only reference the dev frontend port (5173) are also found
+          # (for example files under Backend/APIRoutes or Frontend).
           grep -rl \
             --exclude-dir='.git' \
             --exclude-dir='.github' \
             --exclude-dir='.devcontainer' \
             --exclude-dir='node_modules' \
-            'http://localhost:5000' . | while read file; do
+            -e 'http://localhost:5000' \
+            -e 'http://localhost:5173' \
+            . | while read file; do
             sed -i 's|http://localhost:5000|https://www.ahful.app|g' "$file"
             sed -i 's|http://localhost:5173|https://ahful.app|g' "$file"
             echo "  patched: $file"

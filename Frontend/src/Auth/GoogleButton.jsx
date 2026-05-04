@@ -10,7 +10,7 @@ import googleIconNight from "../../images/Login/GoogleIcons/web_dark_rd_na@2x.pn
 import googleIconNotScrolledNight from "../../images/Login/GoogleIcons/web_dark_rd_SI@4x.png";
 import "./Auth.css";
 
-export function GoogleButton({ onSuccess, onError, isScrolled }) {
+export function GoogleButton({ onSuccess, onError, isScrolled, browser }) {
   const dispatch = useDispatch();
   const [isNightMode, setIsNightMode] = useState(false);
   const hiddenRef = useRef(null);
@@ -52,24 +52,42 @@ export function GoogleButton({ onSuccess, onError, isScrolled }) {
 
   const trigger = () => hiddenRef.current?.querySelector('div[role="button"]')?.click();
 
-  return (
-    <>
-      <div ref={hiddenRef} style={{ position: 'absolute', left: '10px' }}>
-        <GoogleLogin onSuccess={handleSuccess} onError={handleFailure} />
-      </div>
 
-      <button 
-        className={`google-login-button ${isScrolled ? 'hidden' : ''}`} 
-        onClick={trigger}
-      >
-        <img src={isNightMode ? googleIconNotScrolledNight : googleIconNotScrolledDay} alt="Google Login" />
-      </button>
-      <button 
-        className={`google-login-button-scrolled ${isScrolled ? 'visible' : 'hidden'}`} 
-        onClick={trigger}
-      >
-        <img src={isNightMode ? googleIconNight : googleIconDay} alt="Google Login" />
-      </button>
-    </>
-  );
+  if (browser === "Internet Explorer" || browser === "Google Chrome" || browser === "Microsoft Edge") {
+    return(
+      <>
+        <div className="google-button-fixed">
+          <GoogleLogin
+            size="medium"
+            text={""}
+            shape="circle"
+            onSuccess={handleSuccess}
+            onError={handleFailure}
+          />
+        </div>
+      </>
+    )
+  }
+  else{
+    return (
+      <>
+        <div ref={hiddenRef} style={{ position: 'absolute', left: '-9999px' }}>
+          <GoogleLogin onSuccess={handleSuccess} onError={handleFailure} />
+        </div>
+
+        <button 
+          className={`google-login-button ${isScrolled ? 'hidden' : ''}`} 
+          onClick={trigger}
+        >
+          <img src={isNightMode ? googleIconNotScrolledNight : googleIconNotScrolledDay} alt="Google Login" />
+        </button>
+        <button 
+          className={`google-login-button-scrolled ${isScrolled ? 'visible' : 'hidden'}`} 
+          onClick={trigger}
+        >
+          <img src={isNightMode ? googleIconNight : googleIconDay} alt="Google Login" />
+        </button>
+      </>
+    );
+  }
 }

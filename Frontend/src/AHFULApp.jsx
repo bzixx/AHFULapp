@@ -27,6 +27,7 @@ import { setSettings } from './Auth/SettingsSlice.jsx';
 import { authLogin } from "./Auth/AuthSlice.jsx";
 import { ExploreFriends } from "./Social/ExploreFriends.jsx";
 import { RequireVerifiedEmail } from "./Auth/EnsureEmailVerify.jsx";
+import { SocialWorkouts } from "./Social/SocialWorkouts.jsx";
 
 
 function AHFULApp() {
@@ -92,6 +93,8 @@ function AHFULApp() {
               <WorkoutLogger/>} />
           <Route path="/ExploreWorkout" element={
               <ExploreWorkouts/>}/>
+          <Route path="/SocialWorkouts" element={
+              <SocialWorkouts/>}/>
           <Route path="/FoodLog" element={
               <FoodLog/>}/>
           <Route path="/EmailVerification" element={
