@@ -14,6 +14,7 @@ export function FavoritesHub() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [addedToday, setAddedToday] = useState(new Set()); // Track items added today
 
   const getUserId = () => {
     if (user?._id) return user._id;
@@ -24,6 +25,44 @@ export function FavoritesHub() {
       return null;
     }
   };
+
+  // Check if an item was added today
+  const wasAddedToday = (itemId) => {
+    const storageKey = `favorite_add_${itemId}`;
+    const lastAddedDate = localStorage.getItem(storageKey);
+    if (!lastAddedDate) return false;
+
+    const lastAdded = new Date(lastAddedDate);
+    const today = new Date();
+    return (
+      lastAdded.getFullYear() === today.getFullYear() &&
+      lastAdded.getMonth() === today.getMonth() &&
+      lastAdded.getDate() === today.getDate()
+    );
+  };
+
+  // Mark an item as added today
+  const markAsAddedToday = (itemId) => {
+    const storageKey = `favorite_add_${itemId}`;
+    localStorage.setItem(storageKey, new Date().toISOString());
+    setAddedToday((prev) => new Set([...prev, itemId]));
+  };
+
+  // Load all items added today on mount
+  useEffect(() => {
+    const todayAdded = new Set();
+    const allFavoriteIds = [
+      ...favoriteFoods.map((f) => f._id),
+      ...favoriteWorkouts.map((w) => w._id),
+      ...favoriteTasks.map((t) => t._id),
+    ];
+    allFavoriteIds.forEach((id) => {
+      if (wasAddedToday(id)) {
+        todayAdded.add(id);
+      }
+    });
+    setAddedToday(todayAdded);
+  }, [favoriteFoods, favoriteWorkouts, favoriteTasks]);
 
   const userId = getUserId();
 
@@ -60,6 +99,12 @@ export function FavoritesHub() {
   };
 
   const addFavoriteFoodToLog = async (food) => {
+    // Check if already added today
+    if (wasAddedToday(food._id)) {
+      alert("You've already added this food today. Come back tomorrow! 🚫");
+      return;
+    }
+
     try {
       const now = Math.floor(Date.now() / 1000);
       const res = await fetch(`http://localhost:5000/api/AHFULfoods/create`, {
@@ -76,6 +121,7 @@ export function FavoritesHub() {
       });
 
       if (res.ok) {
+        markAsAddedToday(food._id);
         alert(`✅ Added "${food.name}" to today's food log!`);
       } else {
         alert("Failed to add food");
@@ -87,6 +133,12 @@ export function FavoritesHub() {
   };
 
   const addFavoriteWorkoutToToday = async (workout) => {
+    // Check if already added today
+    if (wasAddedToday(workout._id)) {
+      alert("You've already added this workout today. Come back tomorrow! 🚫");
+      return;
+    }
+
     try {
       const now = Math.floor(Date.now() / 1000);
       const res = await fetch(`http://localhost:5000/api/AHFULworkouts/create`, {
@@ -104,6 +156,7 @@ export function FavoritesHub() {
       });
 
       if (res.ok) {
+        markAsAddedToday(workout._id);
         alert(`✅ Added "${workout.title}" to today's workouts!`);
       } else {
         alert("Failed to add workout");
@@ -115,6 +168,12 @@ export function FavoritesHub() {
   };
 
   const addFavoriteTaskToList = async (task) => {
+    // Check if already added today
+    if (wasAddedToday(task._id)) {
+      alert("You've already added this task today. Come back tomorrow! 🚫");
+      return;
+    }
+
     try {
       const res = await fetch(`http://localhost:5000/api/AHFULtasks/create/${userId}`, {
         method: "POST",
@@ -131,6 +190,7 @@ export function FavoritesHub() {
       });
 
       if (res.ok) {
+        markAsAddedToday(task._id);
         alert(`✅ Added "${task.name}" to your tasks!`);
       } else {
         alert("Failed to add task");
@@ -242,9 +302,10 @@ export function FavoritesHub() {
                       <button
                         className="quick-add-btn"
                         onClick={() => addFavoriteFoodToLog(food)}
-                        title="Add this food to today's log"
+                        disabled={addedToday.has(food._id)}
+                        title={addedToday.has(food._id) ? "Already added today" : "Add this food to today's log"}
                       >
-                        + Add Today
+                        {addedToday.has(food._id) ? "✓ Added Today" : "+ Add Today"}
                       </button>
                       <button
                         className="remove-btn"
@@ -285,9 +346,10 @@ export function FavoritesHub() {
                       <button
                         className="quick-add-btn"
                         onClick={() => addFavoriteWorkoutToToday(workout)}
-                        title="Add this workout to today"
+                        disabled={addedToday.has(workout._id)}
+                        title={addedToday.has(workout._id) ? "Already added today" : "Add this workout to today"}
                       >
-                        + Add Today
+                        {addedToday.has(workout._id) ? "✓ Added Today" : "+ Add Today"}
                       </button>
                       <button
                         className="remove-btn"
@@ -327,9 +389,10 @@ export function FavoritesHub() {
                       <button
                         className="quick-add-btn"
                         onClick={() => addFavoriteTaskToList(task)}
-                        title="Add this task to your list"
+                        disabled={addedToday.has(task._id)}
+                        title={addedToday.has(task._id) ? "Already added today" : "Add this task to your list"}
                       >
-                        + Add
+                        {addedToday.has(task._id) ? "✓ Added Today" : "+ Add"}
                       </button>
                       <button
                         className="remove-btn"
