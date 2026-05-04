@@ -54,6 +54,7 @@ export function WorkoutLogger() {
   const cachedPersonalExercises = useSelector(
     (state) => state.pullPersonalExercise.personalExercises,
   );
+  const templates = useSelector((state) => state.pullTemplate.templates);
 
   // ─── Personal Exercise State ──────────────────────────────────────────────────
   // Tracks exercises to be deleted when workout is submitted (removed from UI but need DB deletion)
@@ -178,7 +179,6 @@ export function WorkoutLogger() {
   const [templateSearch, setTemplateSearch] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [templatePreview, setTemplatePreview] = useState(null);
-  const [templates, setTemplates] = useState([]);
 
   // ─── Favorite Filter State ───────────────────────────────────────────────────
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
@@ -485,7 +485,7 @@ export function WorkoutLogger() {
 
   async function handleApplyTemplate(template) {
     try {
-      const templateExercises = await fetchPersonalExercises(template._id);
+      const templateExercises = cachedPersonalExercises(template._id);
 
       // Open popup
       setTemplatePreview({
@@ -930,26 +930,6 @@ export function WorkoutLogger() {
 
     getPersonalEx();
   }, [workoutId]);
-
-  // useEffect: fetch templates that user has created on load
-  useEffect(() => {
-    async function getTemplates() {
-      try {
-        const allTemplates = await fetchTemplate(user._id);
-
-        // Normalize if needed (backend might return null or object)
-        if (Array.isArray(allTemplates)) {
-          setTemplates(allTemplates);
-        } else {
-          setTemplates([]); // fallback
-        }
-      } catch (err) {
-        console.error("Error fetching templates:", err);
-      }
-    }
-
-    getTemplates();
-  }, []);
 
   // ─── Loading State ────────────────────────────────────────────────────────────
   if (workoutLoading) {

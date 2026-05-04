@@ -11,25 +11,15 @@ export async function pullTemplates() {
     }
 
     const list = await fetchTemplate(user._id);
+    const metaData = list.map(t => ({
+      _id: t._id,
+      user_id: t.user_id,
+      title: t.title,
+      template: t.template,
+    }));
 
-    // Fetch full template data including exercises for each template
-    const fullTemplates = await Promise.all(
-      list.map(async (t) => {
-        try {
-          const exercises = await fetchPersonalExercises(t._id);
-          return {
-            ...t,
-            exercises: exercises || [],
-          };
-        } catch (err) {
-          console.error("Error fetching exercises for template:", t._id, err);
-          return { ...t, exercises: [] };
-        }
-      })
-    );
-
-    console.log("Pulled templates with exercises:", fullTemplates);
-    store.dispatch(setTemplates(fullTemplates));
+    console.log("Pulled templates with exercises:", metaData);
+    store.dispatch(setTemplates(metaData));
   }
   catch (err) {
     store.dispatch(setError("No templates found"));
