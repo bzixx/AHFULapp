@@ -8,17 +8,27 @@ import {
   formatTime as formatTimeFn,
   loadEquipment as loadEquipmentFn,
   loadTargetMuscles,
+  fetchExercisesFromBackend,
+  searchExercises,
+  fetchWorkout,
+  fetchWorkoutById,
+  fetchPersonalExercises,
+  fetchExerciseById,
   fetchAllGyms,
   createWorkout,
   updateWorkout,
   createPersonalExercise,
   updatePersonalExercise,
   deletePersonalExercise,
+  fetchTemplate,
   createTemplate,
   loadBodyParts,
   createExercise,
   toggleWorkoutFavorite,
 } from "../QueryFunctions.js";
+import { pullWorkouts } from "../components/Cache/WorkoutCache/PullWorkout.jsx";
+import { pullTemplates } from "../components/Cache/TemplateCache/PullTemplate.jsx";
+import { pullPersonalExercises } from "../components/Cache/PersonalExerciseCache/PersonalExercise.jsx";
 
 /**
  * Logger - Main workout tracking page
@@ -44,8 +54,6 @@ export function WorkoutLogger() {
   const cachedPersonalExercises = useSelector(
     (state) => state.pullPersonalExercise.personalExercises,
   );
-  const cachedExercises = useSelector((state) => state.pullExercise.exercises);
-  const cachedTemplates = useSelector((state) => state.pullTemplate.templates);
 
   // ─── Personal Exercise State ──────────────────────────────────────────────────
   // Tracks exercises to be deleted when workout is submitted (removed from UI but need DB deletion)
@@ -57,8 +65,8 @@ export function WorkoutLogger() {
   const [exercisesInProgressTable, setExercisesInProgressTable] = useState([]);
 
   // ─── Exercise Database State ──────────────────────────────────────────────────
-  // All exercises available in the database (from store)
-  const exercises = cachedExercises || [];
+  // All exercises available in the database
+  const [exercises, setExercises] = useState([]);
   // Exercise list loading state
   const [exerciseLoading, setExerciseLoading] = useState(false);
   // Error state for exercise operations
@@ -128,12 +136,18 @@ export function WorkoutLogger() {
     });
 
     if (!todaysWorkout) return;
+    (async () => {
+      try {
+        const fullWorkout = await fetchWorkoutById(todaysWorkout._id);
 
-    // Use cached workout directly (already has full data)
-    setWorkout(todaysWorkout);
-    setWorkoutId(todaysWorkout._id);
-    setWorkoutTitle(todaysWorkout.title || "");
-    setSelectedGymId(todaysWorkout.gym_id || "");
+        setWorkout(fullWorkout);
+        setWorkoutId(fullWorkout._id);
+        setWorkoutTitle(fullWorkout.title || "");
+        setSelectedGymId(fullWorkout.gym_id || "");
+      } catch (err) {
+        console.error("Failed to load full workout:", err);
+      }
+    })();
   }, [selectedDate, cachedWorkouts]);
 
   // ─── Timer State ─────────────────────────────────────────────────────────────
@@ -287,12 +301,27 @@ export function WorkoutLogger() {
     };
   }, []);
 
-  // ─── Load Exercises from Store ─────────────────────────────────────────────
-  useEffect(() => {
-    if (cachedExercises && cachedExercises.length > 0) {
+  // ─── Load Exercises from Database ─────────────────────────────────────────────
+  const fetch_exercises = async () => {
+    setExerciseLoading(true);
+    setError(null);
+    try {
+      const list = await fetchExercisesFromBackend();
+      setExercises(list);
+    } catch (err) {
+      console.error("Failed to fetch exercises:", err);
+      const friendly =
+        err && err.name ? `${err.name}: ${err.message}` : String(err);
+      setError(friendly || "Unknown error");
+      setExercises([]);
+    } finally {
       setExerciseLoading(false);
     }
-  }, [cachedExercises]);
+  };
+
+  useEffect(() => {
+    fetch_exercises();
+  }, []);
 
   // useEffect(() => {
   //   location.reload();
@@ -358,11 +387,14 @@ export function WorkoutLogger() {
   };
 
   // ─── Load Exercise Names for Display ─────────────────────────────────────────
-  // When exercises are added to the workout or showing the template preview,
-  // get their display names from cached exercises
+  // When exercises are added to the workout or showing the template preview ,
+  // we need to fetch their display names
   useEffect(() => {
     // Collect IDs from workout table
-    const workoutIds = exercisesInProgressTable.map((ex) => ex.exercise_id);
+    //const workoutIds = exercisesInProgressTable.map((ex) => ex.exerciseId);
+    const workoutIds = exercisesInProgressTable.map((ex) => {
+      return ex.exercise_id;
+    });
 
     // Collect IDs from template preview
     const templateIds =
@@ -378,17 +410,28 @@ export function WorkoutLogger() {
 
     if (missing.length === 0) return;
 
-    const results = {};
+    const loadNames = async () => {
+      try {
+        const results = {};
 
-    for (const id of missing) {
-      const exercise = cachedExercises?.find(
-        (ex) => ex._id === id || ex.exerciseId === id
-      );
-      results[id] = exercise?.name || "Unknown Exercise";
-    }
+        for (const id of missing) {
+          try {
+            const data = await fetchExerciseById(id);
+            results[id] = data.name;
+          } catch (err) {
+            console.error("Error fetching exercise name for", id, err);
+            results[id] = "Unknown Exercise";
+          }
+        }
 
-    setPersonalExNames((prev) => ({ ...prev, ...results }));
-  }, [exercisesInProgressTable, templatePreview, cachedExercises]);
+        setPersonalExNames((prev) => ({ ...prev, ...results }));
+      } catch (err) {
+        console.error("Error fetching exercise names:", err);
+      }
+    };
+
+    loadNames();
+  }, [exercisesInProgressTable, templatePreview]);
 
   // ─── Save Template ───────────────────────────────────────────────────────────
   // Saves personal exercises as a template using the workout name
@@ -437,15 +480,12 @@ export function WorkoutLogger() {
       console.error("Error saving template:", err);
       alert("Failed to save template.");
     }
+    await pullPersonalExercises();
   };
 
   async function handleApplyTemplate(template) {
     try {
-      // Get template exercises from cache (personal exercises with template's workout_id)
-      const templateExercises =
-        cachedPersonalExercises?.filter(
-          (pe) => pe?.workout_id === template._id,
-        ) || [];
+      const templateExercises = await fetchPersonalExercises(template._id);
 
       // Open popup
       setTemplatePreview({
@@ -492,7 +532,7 @@ export function WorkoutLogger() {
 
       try {
         const created = await createWorkout(payload);
-        const persisted = created.workout || created;
+        const persisted = await fetchWorkoutById(created.workout_id);
 
         // Save the correct ID for later
         targetWorkoutId = persisted._id;
@@ -609,6 +649,9 @@ export function WorkoutLogger() {
     } catch (err) {
       console.error("Error submitting workout:", err);
     }
+    await pullWorkouts();
+    await pullPersonalExercises();
+    await pullTemplates();
   };
 
   // ─── Remove Exercise from Workout ─────────────────────────────────────────────
@@ -650,7 +693,7 @@ export function WorkoutLogger() {
 
       try {
         const created = await createWorkout(payload);
-        const persisted = created.workout || created;
+        const persisted = await fetchWorkoutById(created.workout_id);
 
         // Save the correct ID for later
         targetWorkoutId = persisted._id;
@@ -696,20 +739,14 @@ export function WorkoutLogger() {
 
     if (!searchQuery) {
       setSearchTerm(exerciseName);
-      setExercises(cachedExercises || []);
-      setExerciseLoading(false);
-      return;
+      fetchExercises(exerciseName);
     }
 
     setExerciseLoading(true);
     setError(null);
     try {
-      // Filter cached exercises based on search query
-      const filtered =
-        cachedExercises?.filter((ex) =>
-          ex.name?.toLowerCase().includes(searchQuery.toLowerCase()),
-        ) || [];
-      setExercises(filtered);
+      const list = await searchExercises(searchQuery);
+      setExercises(list);
     } catch (err) {
       console.error("Search failed:", err);
       const friendly =
@@ -752,15 +789,17 @@ export function WorkoutLogger() {
 
       if (!selected) return;
 
-      // Use cached workout directly (already has full data)
-      setWorkout(selected);
-      setWorkoutId(selected._id);
-      setWorkoutTitle(selected.title);
-      setSelectedGymId(selected.gym_id || "");
+      // Fetch full workout from DB (ensures fresh data)
+      const fullWorkout = await fetchWorkoutById(selected._id);
+
+      setWorkout(fullWorkout);
+      setWorkoutId(fullWorkout._id);
+      setWorkoutTitle(fullWorkout.title);
+      setSelectedGymId(fullWorkout.gym_id || "");
 
       // Reset timer based on workout times
-      if (selected.startTime && selected.endTime) {
-        setTime(selected.endTime - selected.startTime);
+      if (fullWorkout.startTime && fullWorkout.endTime) {
+        setTime(fullWorkout.endTime - fullWorkout.startTime);
       } else {
         setTime(0);
       }
@@ -793,8 +832,8 @@ export function WorkoutLogger() {
       // Create workout
       const created = await createWorkout(payload);
 
-      // Use the returned workout data directly
-      const persisted = created.workout || created;
+      // Fetch persisted version
+      const persisted = await fetchWorkoutById(created.workout_id);
 
       // Add to daily list
       setDailyWorkouts((prev) => (prev ? [...prev, persisted] : [persisted]));
@@ -829,7 +868,7 @@ export function WorkoutLogger() {
     setIsRunning((r) => !r);
   };
 
-  // ─── Load or Create Today's Workout from Store ──────────────────────────────
+  // ─── Load or Create Today's Workout ───────────────────────────────────────────
   useEffect(() => {
     // Don't proceed if user isn't logged in
     if (!userAuthenticated) {
@@ -851,8 +890,8 @@ export function WorkoutLogger() {
         tomorrow.setDate(today.getDate() + 1);
         const tomorrowUnix = Math.floor(tomorrow.getTime() / 1000);
 
-        // Use cached workouts from store
-        const allWorkouts = cachedWorkouts || [];
+        // Fetch all workouts for this user
+        const allWorkouts = await fetchWorkout(user._id);
 
         // Filter to today's workouts only
         const todaysWorkouts = allWorkouts.filter(
@@ -870,7 +909,7 @@ export function WorkoutLogger() {
     }
 
     getWorkout();
-  }, [userAuthenticated, cachedWorkouts, selectedDate]);
+  }, [userAuthenticated, workoutId]);
 
   useEffect(() => {
     if (!workoutId) return;
@@ -880,19 +919,37 @@ export function WorkoutLogger() {
       return;
     }
 
-    // Load personal exercises from cache for this workout
-    const workoutPersonalExercises =
-      cachedPersonalExercises?.filter((pe) => pe?.workout_id === workoutId) || [];
-
-    setExercisesInProgressTable(workoutPersonalExercises);
-  }, [workoutId, cachedPersonalExercises]);
-
-  // ─── Templates from Store ───────────────────────────────────────────────
-  useEffect(() => {
-    if (cachedTemplates && Array.isArray(cachedTemplates)) {
-      setTemplates(cachedTemplates);
+    async function getPersonalEx() {
+      try {
+        const data = await fetchPersonalExercises(workoutId);
+        setExercisesInProgressTable(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Error fetching personal exercises:", err);
+      }
     }
-  }, [cachedTemplates]);
+
+    getPersonalEx();
+  }, [workoutId]);
+
+  // useEffect: fetch templates that user has created on load
+  useEffect(() => {
+    async function getTemplates() {
+      try {
+        const allTemplates = await fetchTemplate(user._id);
+
+        // Normalize if needed (backend might return null or object)
+        if (Array.isArray(allTemplates)) {
+          setTemplates(allTemplates);
+        } else {
+          setTemplates([]); // fallback
+        }
+      } catch (err) {
+        console.error("Error fetching templates:", err);
+      }
+    }
+
+    getTemplates();
+  }, []);
 
   // ─── Loading State ────────────────────────────────────────────────────────────
   if (workoutLoading) {
