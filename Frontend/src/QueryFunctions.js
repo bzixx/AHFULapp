@@ -1,4 +1,6 @@
 // Shared query and utility functions used by pages/components
+import { store } from "./store";
+
 export function formatTime(seconds) {
   const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
   const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
@@ -572,49 +574,35 @@ export async function createWorkout(workoutData) {
 
 export async function fetchWorkout(userId) {
   try {
-    const res = await fetch(`https://www.ahful.app/api/AHFULworkouts/${userId}`, {credentials: 'include'});
+    // Get workouts from local Redux store instead of API call
+    const state = store.getState();
+    const allWorkouts = state.pullWorkout?.workouts || [];
 
-    // Handle empty or not found responses for new users
-    if (res.status === 404 || res.status === 204) {
-      return [];
-    }
+    // Filter workouts for the specific user
+    const userWorkouts = allWorkouts.filter(w => w.user_id === userId);
 
-    if (!res.ok) {
-      const bodyText = await res.text().catch(() => "");
-      throw new Error(
-        `Server returned ${res.status} ${res.statusText} ${bodyText}`,
-      );
-    }
-
-    const data = await res.json();
-    return data
-
+    return userWorkouts;
   } catch (err) {
     console.error("fetchWorkout error:", err);
-    // Return empty array for network errors on new user accounts
     throw err;
   }
 }
 
 export async function fetchWorkoutById(workoutId) {
   try {
-    const res = await fetch(`https://www.ahful.app/api/AHFULworkouts/id/${workoutId}`, {credentials: 'include'});
+    // Search in local Redux store instead of making API call
+    const state = store.getState();
+    const workouts = state.pullWorkout?.workouts || [];
 
-    if (res.status === 404 || res.status === 204) {
+    const workout = workouts.find(w => w._id === workoutId);
+
+    if (!workout) {
       return null;
     }
 
-    if (!res.ok) {
-      const bodyText = await res.text().catch(() => "");
-      throw new Error(
-        `Server returned ${res.status} ${res.statusText} ${bodyText}`,
-      );
-    }
-
-    const data = await res.json();
-    return data;
+    return workout;
   } catch (err) {
-    console.error("fetchWorkout error:", err);
+    console.error("fetchWorkoutById error:", err);
     throw err;
   }
 }
@@ -920,6 +908,19 @@ export async function toggleFoodFavorite(foodId) {
   } catch (err) {
     console.error("toggleFoodFavorite error:", err);
     return { data: null, error: err.message };
+  }
+}
+
+export async function fetchAllFood() {
+  try {
+    const res = await fetch("https://www.ahful.app/api/AHFULfoods", {
+      credentials: "include"
+    });
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("fetchAllFood error:", err);
+    return { error: err.message };
   }
 }
 
