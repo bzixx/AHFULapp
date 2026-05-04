@@ -88,7 +88,6 @@ function AHFULApp() {
       <Routes>
         <Route element={<Layout/>}>
           <Route path="/Dashboard" element={<Dashboard/>}/>
-          <Route path="/TOS" element={<TOS/>}/>
           <Route path="/WorkoutLogger" element={
               <WorkoutLogger/>} />
           <Route path="/ExploreWorkout" element={
@@ -132,6 +131,7 @@ function AHFULApp() {
         </Route>
         {/* Put outside of the Layout so it doesn't show the header/navbar */}
         <Route path="/" element={<Login/>}/>
+        <Route path="/TOS" element={<TOS/>}/>
       </Routes>
 
       {tutorialActive && currentStepData && (

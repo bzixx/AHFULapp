@@ -440,7 +440,7 @@ tbody tr:hover {
   100% { transform: rotate(360deg); }
 }
 
-/* ---------------------------------------- NAVIGATION BAR CSS ---------------------------------------- */
+/* ---------------------------------------- NAVIGATION BAR CSS (nav bar)---------------------------------------- */
 
 .sidebar {
   width: 250px;
@@ -476,6 +476,37 @@ tbody tr:hover {
   .sidebar.closed {
     transform: translateX(-100%);
   }
+}
+
+/* Sidebar buttons (same style as links) */
+.sidebar button {
+  padding: 14px 18px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  text-align: left;
+  cursor: pointer;
+  font-size: var(--text-md);
+  font-weight: var(--font-normal);
+  transition: all 0.2s ease;
+}
+
+/* Hover */
+.sidebar button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Active-style (manual, for modals etc) */
+.sidebar button.active {
+  background: var(--color-bg);
+  color: var(--text-primary);
+  font-weight: var(--font-semibold);
+}
+
+/* Dark mode */
+.dark .sidebar button.active {
+  background: var(--color-surface);
 }
 
 /* Sidebar links styled like settings sidebar buttons */
