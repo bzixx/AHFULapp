@@ -43,11 +43,11 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
       ):(
         <>
           <NavLink
-            to="/WorkoutLogger"
+            to="/Favorites"
             className={({ isActive }) => (isActive ? "active" : "")}
             onClick={handleNavClick}
           >
-            Workout Logger
+            ⭐ My Favorites
           </NavLink>
 
           <NavLink
@@ -59,18 +59,43 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
           </NavLink>
 
           <NavLink
-            to="/ExploreWorkout"
+            to="/WorkoutLogger"
             className={({ isActive }) => (isActive ? "active" : "")}
             onClick={handleNavClick}
           >
-            Explore Workouts
+            Workout Logger
           </NavLink>
+
           <NavLink
             to="/FoodLog"
             className={({ isActive }) => (isActive ? "active" : "")}
             onClick={handleNavClick}
           >
             Food Log
+          </NavLink>
+
+          <NavLink
+            to="/MeasurementLogger"
+            className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={handleNavClick}
+          >
+            Measurement Logger
+          </NavLink>
+
+          <NavLink
+            to="/ExploreWorkout"
+            className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={handleNavClick}
+          >
+            Explore Workouts
+          </NavLink>
+
+          <NavLink
+            to="/SocialWorkouts"
+            className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={handleNavClick}
+          >
+            Social Workouts
           </NavLink>
 
           <NavLink
@@ -82,14 +107,6 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
           </NavLink>
 
           <NavLink
-            to="/Favorites"
-            className={({ isActive }) => (isActive ? "active" : "")}
-            onClick={handleNavClick}
-          >
-            ⭐ My Favorites
-          </NavLink>
-
-          <NavLink
             to="/Map"
             className={({ isActive }) => (isActive ? "active" : "")}
             onClick={handleNavClick}
@@ -97,13 +114,7 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
             Gym's & Map
           </NavLink>
 
-          <NavLink
-            to="/MeasurementLogger"
-            className={({ isActive }) => (isActive ? "active" : "")}
-            onClick={handleNavClick}
-          >
-            Measurement Logger
-          </NavLink>
+
         </>
         )}
 
