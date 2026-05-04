@@ -6,7 +6,6 @@ export function CompanionAI() {
   const textRef = useRef(null);
   const sendRef = useRef(null);
   const imgRef = useRef(null);
-  const voiceRef = useRef(null);
   const statusRef = useRef(null);
   const aiInstanceRef = useRef(null);
   const responsesContainerRef = useRef(null);
@@ -49,7 +48,6 @@ export function CompanionAI() {
       textInput: textRef.current,
       sendButton: sendRef.current,
       characterImage: imgRef.current,
-      voiceSelect: voiceRef.current,
       status: statusRef.current,
       responsesContainer: responsesContainerRef.current,
       isMutedRef: isMutedRef,
@@ -170,7 +168,6 @@ export function CompanionAI() {
         )}
       </div>
       <footer className="ai-chat-input-area">
-        <select ref={voiceRef} id="ai-voice-select"></select>
         <button
           className={`ai-mute-button ${isMuted ? 'muted' : ''}`}
           onClick={handleMuteToggle}
