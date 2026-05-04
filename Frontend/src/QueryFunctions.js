@@ -1,6 +1,4 @@
 // Shared query and utility functions used by pages/components
-import { store } from "./store";
-
 export function formatTime(seconds) {
   const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
   const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
@@ -574,35 +572,49 @@ export async function createWorkout(workoutData) {
 
 export async function fetchWorkout(userId) {
   try {
-    // Get workouts from local Redux store instead of API call
-    const state = store.getState();
-    const allWorkouts = state.pullWorkout?.workouts || [];
+    const res = await fetch(`http://localhost:5000/api/AHFULworkouts/${userId}`, {credentials: 'include'});
 
-    // Filter workouts for the specific user
-    const userWorkouts = allWorkouts.filter(w => w.user_id === userId);
+    // Handle empty or not found responses for new users
+    if (res.status === 404 || res.status === 204) {
+      return [];
+    }
 
-    return userWorkouts;
+    if (!res.ok) {
+      const bodyText = await res.text().catch(() => "");
+      throw new Error(
+        `Server returned ${res.status} ${res.statusText} ${bodyText}`,
+      );
+    }
+
+    const data = await res.json();
+    return data
+
   } catch (err) {
     console.error("fetchWorkout error:", err);
+    // Return empty array for network errors on new user accounts
     throw err;
   }
 }
 
 export async function fetchWorkoutById(workoutId) {
   try {
-    // Search in local Redux store instead of making API call
-    const state = store.getState();
-    const workouts = state.pullWorkout?.workouts || [];
+    const res = await fetch(`http://localhost:5000/api/AHFULworkouts/id/${workoutId}`, {credentials: 'include'});
 
-    const workout = workouts.find(w => w._id === workoutId);
-
-    if (!workout) {
+    if (res.status === 404 || res.status === 204) {
       return null;
     }
 
-    return workout;
+    if (!res.ok) {
+      const bodyText = await res.text().catch(() => "");
+      throw new Error(
+        `Server returned ${res.status} ${res.statusText} ${bodyText}`,
+      );
+    }
+
+    const data = await res.json();
+    return data;
   } catch (err) {
-    console.error("fetchWorkoutById error:", err);
+    console.error("fetchWorkout error:", err);
     throw err;
   }
 }
@@ -824,6 +836,26 @@ export async function fetchFood(userId) {
     };
   }
 }
+export async function fetchAllFood() {
+  try {
+    const res = await fetch("http://localhost:5000/api/AHFULfoods", {
+      method: "GET",
+      credentials: "include",
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      return {
+        error: data.error || "Failed to fetch all foods",
+      };
+    }
+    return data;
+  } catch (err) {
+    console.error("Failed to fetch all foods:", err);
+    return {
+      error: err.message || "Failed to fetch all foods",
+    };
+  }
+}
 // ── Favorite Functions ──────────────────────────────────────────────────────
 
 // ── Workout Favorite Functions ──────────────────────────────────────────
@@ -908,19 +940,6 @@ export async function toggleFoodFavorite(foodId) {
   } catch (err) {
     console.error("toggleFoodFavorite error:", err);
     return { data: null, error: err.message };
-  }
-}
-
-export async function fetchAllFood() {
-  try {
-    const res = await fetch("http://localhost:5000/api/AHFULfoods", {
-      credentials: "include"
-    });
-    const data = await res.json();
-    return data;
-  } catch (err) {
-    console.error("fetchAllFood error:", err);
-    return { error: err.message };
   }
 }
 
