@@ -3,6 +3,7 @@ import { pullPersonalExercises } from "../components/Cache/PersonalExerciseCache
 import { pullTemplates } from "../components/Cache/TemplateCache/PullTemplate";
 import { pullWorkouts } from "../components/Cache/WorkoutCache/PullWorkout";
 import { pullFood } from "../components/Cache/FoodCache/PullUserFood";
+import { pullFood as pullAllFood } from "../components/Cache/FoodCache/PullFood";
 export function onLoginCache() {
   console.log("onLoginCache called");
   pullExercises().catch((err) => console.error("Exercise Cache error:", err));
@@ -10,4 +11,5 @@ export function onLoginCache() {
   pullWorkouts().catch((err) => console.error("Workout Cache error:", err));
   pullPersonalExercises().catch((err) => console.error("Personal Exercise Cache error:", err));
   pullFood().catch((err) => console.error("Food Cache error:", err));
+  pullAllFood().catch((err) => console.error("All Food Cache error:", err));
 }
