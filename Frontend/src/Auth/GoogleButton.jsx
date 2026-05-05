@@ -55,17 +55,17 @@ export function GoogleButton({ onSuccess, onError, isScrolled, browser }) {
 
   if (browser === "Internet Explorer" || browser === "Google Chrome" || browser === "Microsoft Edge") {
     return(
-      <>
-        <div className="google-button-fixed">
-          <GoogleLogin
-            size="medium"
-            text={""}
-            shape="circle"
-            onSuccess={handleSuccess}
-            onError={handleFailure}
-          />
-        </div>
-      </>
+    <div className={`google-login-centered ${isScrolled ? 'hidden' : 'visible'}`}>
+      <div className="google-button-fixed">
+        <GoogleLogin
+          size="medium"
+          text={""}
+          shape="circle"
+          onSuccess={handleSuccess}
+          onError={handleFailure}
+        />
+      </div>
+    </div>
     )
   }
   else{

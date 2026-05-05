@@ -1,4 +1,40 @@
 /* Google Button */
+.google-login-centered {
+  position: fixed;
+  top: 45%;
+  left: 45%;
+  transform: translate(-50%, -50%);
+  z-index: 100002;
+}
+
+.google-login-centered.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.google-login-centered.visible {
+  opacity: 1;
+}
+
+.google-button-fixed {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: scale(4.5);
+}
+@media (max-width: 768px) {
+
+  .google-login-centered {
+    top: 40%;
+    left: 38%;
+    transform: translateX(-50%);
+  }
+
+  .google-button-fixed {
+    transform: scale(3);
+  }
+
+}
 .google-login-button,
 .google-login-button-scrolled {
   position: fixed;
