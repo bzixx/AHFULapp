@@ -47,7 +47,7 @@ export function SocialWorkouts() {
     setError(null);
     try {
       // Attempt a sensible endpoint; if your backend differs update this URL
-      const res = await fetch(`http://localhost:5000/api/AHFULworkouts/shared`, {
+      const res = await fetch(`https://www.ahful.app/api/AHFULworkouts/shared`, {
         method: "GET",
         credentials: "include",
       });
