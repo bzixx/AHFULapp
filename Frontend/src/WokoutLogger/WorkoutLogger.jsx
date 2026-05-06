@@ -48,12 +48,14 @@ import { pullPersonalExercises } from "../components/Cache/PersonalExerciseCache
 export function WorkoutLogger() {
   // ─── Redux State ─────────────────────────────────────────────────────────
   const user = useSelector((state) => state.auth.user);
+  const cachedExercises = useSelector((state) => state.pullExercise?.exercises);
   const userAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const selectedDate = useSelector((state) => state.calendar.selectedDate);
   const cachedWorkouts = useSelector((state) => state.pullWorkout.workouts);
   const cachedPersonalExercises = useSelector(
     (state) => state.pullPersonalExercise.personalExercises,
   );
+  const templates = useSelector((state) => state.pullTemplate.templates);
 
   // ─── Personal Exercise State ──────────────────────────────────────────────────
   // Tracks exercises to be deleted when workout is submitted (removed from UI but need DB deletion)
@@ -178,7 +180,6 @@ export function WorkoutLogger() {
   const [templateSearch, setTemplateSearch] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [templatePreview, setTemplatePreview] = useState(null);
-  const [templates, setTemplates] = useState([]);
 
   // ─── Favorite Filter State ───────────────────────────────────────────────────
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
@@ -306,7 +307,7 @@ export function WorkoutLogger() {
     setExerciseLoading(true);
     setError(null);
     try {
-      const list = await fetchExercisesFromBackend();
+      const list = cachedExercises;
       setExercises(list);
     } catch (err) {
       console.error("Failed to fetch exercises:", err);
@@ -480,12 +481,17 @@ export function WorkoutLogger() {
       console.error("Error saving template:", err);
       alert("Failed to save template.");
     }
+    await pullTemplates();
     await pullPersonalExercises();
   };
 
   async function handleApplyTemplate(template) {
     try {
-      const templateExercises = await fetchPersonalExercises(template._id);
+      // Get template exercises from cache (personal exercises with template's workout_id)
+      const templateExercises =
+        cachedPersonalExercises?.filter(
+          (pe) => pe?.workout_id === template._id
+        ) || [];
 
       // Open popup
       setTemplatePreview({
@@ -693,17 +699,14 @@ export function WorkoutLogger() {
 
       try {
         const created = await createWorkout(payload);
-        const persisted = await fetchWorkoutById(created.workout_id);
-
         // Save the correct ID for later
-        targetWorkoutId = persisted._id;
 
         // Update UI
-        setDailyWorkouts((prev) => (prev ? [...prev, persisted] : [persisted]));
-        setWorkout(persisted);
-        setWorkoutId(persisted._id);
-        setWorkoutTitle(persisted.title);
-        setSelectedGymId(persisted.gym_id);
+        setDailyWorkouts((prev) => (prev ? [...prev, created] : [created]));
+        setWorkout(created);
+        setWorkoutId(created._id);
+        setWorkoutTitle(created.title);
+        setSelectedGymId(created.gym_id);
         setTime(0);
       } catch (e) {
         console.error("Error: ", e);
@@ -930,26 +933,6 @@ export function WorkoutLogger() {
 
     getPersonalEx();
   }, [workoutId]);
-
-  // useEffect: fetch templates that user has created on load
-  useEffect(() => {
-    async function getTemplates() {
-      try {
-        const allTemplates = await fetchTemplate(user._id);
-
-        // Normalize if needed (backend might return null or object)
-        if (Array.isArray(allTemplates)) {
-          setTemplates(allTemplates);
-        } else {
-          setTemplates([]); // fallback
-        }
-      } catch (err) {
-        console.error("Error fetching templates:", err);
-      }
-    }
-
-    getTemplates();
-  }, []);
 
   // ─── Loading State ────────────────────────────────────────────────────────────
   if (workoutLoading) {
