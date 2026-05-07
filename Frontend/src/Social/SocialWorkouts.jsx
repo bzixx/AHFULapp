@@ -17,9 +17,6 @@ export function SocialWorkouts() {
   const [friends, setFriends] = useState([]);
   const [friendsLoading, setFriendsLoading] = useState(false);
   const [friendsError, setFriendsError] = useState(null);
-  const [shareTargetEmail, setShareTargetEmail] = useState("");
-  const [sharing, setSharing] = useState(false);
-  const [shareError, setShareError] = useState(null);
   const [postNotes, setPostNotes] = useState("");
   const [postIsPublic, setPostIsPublic] = useState(false);
   const [postTargetEmail, setPostTargetEmail] = useState("");
@@ -28,24 +25,13 @@ export function SocialWorkouts() {
 
   const getUserId = () => {
     if (user?._id) return user._id;
-    try {
-      const stored = JSON.parse(localStorage.getItem("user_data"));
-      return stored?._id || null;
-    } catch {
-      return null;
-    }
+
   };
 
   const userId = getUserId();
 
   const getUserEmail = () => {
     if (user?.email) return user.email;
-    try {
-      const stored = JSON.parse(localStorage.getItem("user_data"));
-      return stored?.email || null;
-    } catch {
-      return null;
-    }
   };
 
   const userEmail = (getUserEmail() || "").toLowerCase();
@@ -157,37 +143,6 @@ export function SocialWorkouts() {
     }
   };
 
-  const shareWorkout = async () => {
-    if (!selectedWorkout) return;
-    if (!shareTargetEmail) {
-      setShareError("Please select a friend to share with.");
-      return;
-    }
-
-    setSharing(true);
-    setShareError(null);
-    try {
-      const workoutId = selectedWorkout.workout_id || selectedWorkout._id;
-      const res = await fetch(`http://localhost:5000/api/AHFULsocial/shared-workouts`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ workout_id: workoutId, to_user_email: shareTargetEmail }),
-      });
-
-      if (!res.ok) {
-        const errBody = await res.json().catch(() => ({}));
-        throw new Error(errBody?.error || `Server returned ${res.status} ${res.statusText}`);
-      }
-
-      await res.json().catch(() => ({}));
-      setShareTargetEmail("");
-    } catch (err) {
-      setShareError(String(err));
-    } finally {
-      setSharing(false);
-    }
-  };
 
   const createWallPost = async () => {
     if (!postNotes.trim()) {
@@ -440,29 +395,6 @@ export function SocialWorkouts() {
                 </div>
               )}
 
-              <div className="workout-detail-section">
-                <label className="workout-detail-label">Share this workout</label>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                  <select
-                    className="task-input"
-                    value={shareTargetEmail}
-                    onChange={(e) => setShareTargetEmail(e.target.value)}
-                    disabled={friendsLoading}
-                  >
-                    <option value="">Select a friend</option>
-                    {friends.map((email) => (
-                      <option key={email} value={email}>
-                        {email}
-                      </option>
-                    ))}
-                  </select>
-                  <button className="refresh-btn" onClick={shareWorkout} disabled={sharing}>
-                    {sharing ? "Sharing..." : "Share"}
-                  </button>
-                </div>
-                {friendsError && <div className="explore-error">{friendsError}</div>}
-                {shareError && <div className="explore-error">{shareError}</div>}
-              </div>
             </div>
             <div className="workout-modal-actions">
               <button className="workout-modal-btn workout-modal-btn-close" onClick={() => setSelectedWorkout(null)}>
