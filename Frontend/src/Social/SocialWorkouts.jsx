@@ -9,8 +9,8 @@ import "../siteStyles.css";
 
 export function SocialWorkouts() {
   const user = useSelector((s) => s.auth.user);
-  const userId = user._id;
-  const userEmail = user.email.toLowerCase();
+  const userId = user?.id;
+  const userEmail = user?.email.toLowerCase();
 ``
   const [sharedWorkouts, setSharedWorkouts] = useState([]);
   const [loading, setLoading] = useState(false);
