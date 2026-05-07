@@ -86,3 +86,21 @@ def delete_friendship(friendship_id):
     if error:
         return jsonify({"error": error}), 404
     return jsonify(result), 200
+
+
+@socialRouteBlueprint.route("/shared-workouts", methods=["GET"])
+@login_required_user
+def get_shared_workouts_for_user():
+    workouts, error = SocialDriver.get_shared_workouts_for_user(g.user_id)
+    if error:
+        return jsonify({"error": error}), 400
+    return jsonify(workouts), 200
+
+
+@socialRouteBlueprint.route("/wall-posts", methods=["GET"])
+@login_required_user
+def get_wall_posts_for_user():
+    posts, error = SocialDriver.get_wall_posts_for_user(g.user_id)
+    if error:
+        return jsonify({"error": error}), 400
+    return jsonify(posts), 200
