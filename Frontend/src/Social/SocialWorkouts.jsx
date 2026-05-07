@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import "../ExploreWorkouts/ExploreWorkouts.css";
 import "../siteStyles.css";
 
-// SocialWorkouts - mock social page that resembles ExploreWorkouts
-// Left: Shared workouts list
-// Right: Wall posts (friends' shared posts) + a small shared-workout summary area
+// SocialWorkouts - social page that resembles ExploreWorkouts what is the Shared workouts a User and their friends have shared
+// Left: Shared workouts list from friends.
+// Right: Wall posts (friends' shared posts or public Posts)
 
 export function SocialWorkouts() {
   const user = useSelector((s) => s.auth.user);
+  const userId = user._id;
+  const userEmail = user.email.toLowerCase();
+``
   const [sharedWorkouts, setSharedWorkouts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -22,19 +25,6 @@ export function SocialWorkouts() {
   const [postTargetEmail, setPostTargetEmail] = useState("");
   const [posting, setPosting] = useState(false);
   const [postError, setPostError] = useState(null);
-
-  const getUserId = () => {
-    if (user?._id) return user._id;
-
-  };
-
-  const userId = getUserId();
-
-  const getUserEmail = () => {
-    if (user?.email) return user.email;
-  };
-
-  const userEmail = (getUserEmail() || "").toLowerCase();
 
   const formatDate = (ts) => {
     if (!ts) return "N/A";
@@ -50,7 +40,7 @@ export function SocialWorkouts() {
     return m === 0 ? `${sec}s` : `${m}m ${sec}s`;
   };
 
-  // Try fetching shared workouts from backend, fall back to mock data
+  // Try fetching shared workouts from backend
   const fetchShared = async () => {
     setLoading(true);
     setError(null);
@@ -67,15 +57,13 @@ export function SocialWorkouts() {
 
       const data = await res.json();
       if (!Array.isArray(data) || data.length === 0) {
-        // fallback to mock
-        setSharedWorkouts(mockSharedWorkouts());
+        setSharedWorkouts([]);
       } else {
         setSharedWorkouts(data);
       }
     } catch (err) {
-      console.warn("fetchShared failed, using mock data:", err);
+      console.warn("fetchShared failed:", err);
       setError(String(err));
-      setSharedWorkouts(mockSharedWorkouts());
     } finally {
       setLoading(false);
     }
@@ -94,13 +82,12 @@ export function SocialWorkouts() {
 
       const data = await res.json();
       if (!Array.isArray(data) || data.length === 0) {
-        setWallPosts(mockWallPosts());
+        setWallPosts([]);
       } else {
         setWallPosts(data);
       }
     } catch (err) {
-      console.warn("fetchWallPosts failed, using mock data:", err);
-      setWallPosts(mockWallPosts());
+      console.warn("fetchWallPosts failed:", err);
     }
   };
 
@@ -192,48 +179,6 @@ export function SocialWorkouts() {
     fetchFriends();
   }, [userId]);
 
-  function mockSharedWorkouts() {
-    return [
-      {
-        _id: "sw1",
-        title: "Full Body Strength",
-        startTime: Math.floor(Date.now() / 1000) - 86400 * 2,
-        endTime: Math.floor(Date.now() / 1000) - 86400 * 2 + 3600,
-        gymId: null,
-        instructions: "Partner circuit with supersets",
-        sharedBy: { name: "Alex" },
-      },
-      {
-        _id: "sw2",
-        title: "Morning Run",
-        startTime: Math.floor(Date.now() / 1000) - 86400 * 5,
-        endTime: Math.floor(Date.now() / 1000) - 86400 * 5 + 1800,
-        gymId: null,
-        instructions: "Easy 5k with intervals",
-        sharedBy: { name: "Morgan" },
-      },
-    ];
-  }
-
-  function mockWallPosts() {
-    return [
-      {
-        id: "p1",
-        author: "Taylor",
-        ts: Math.floor(Date.now() / 1000) - 3600,
-        notes: "Hit a new PR on deadlift today — 315 lbs!🔥",
-        workoutRef: "sw1",
-      },
-      {
-        id: "p2",
-        author: "Jordan",
-        ts: Math.floor(Date.now() / 1000) - 86400,
-        notes: "Shared my 5k time — feeling great.",
-        workoutRef: "sw2",
-      },
-    ];
-  }
-
   const getPostTimestamp = (post) => post?.created_at || post?.ts || null;
 
   return (
@@ -249,7 +194,7 @@ export function SocialWorkouts() {
 
       <div className="explore-content">
         <div className="explore-left">
-          {error && <div className="explore-error">Failed to load shared workouts (showing mock data)</div>}
+          {error && <div className="explore-error">Failed to load shared workouts</div>}
 
           {!error && sharedWorkouts.length === 0 && (
             <div className="explore-empty">No shared workouts yet. When friends share workouts they'll appear here.</div>
