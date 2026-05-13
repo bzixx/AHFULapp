@@ -11,7 +11,7 @@ export function SocialWorkouts() {
   const user = useSelector((s) => s.auth.user);
   const userId = user?.id;
   const userEmail = user?.email.toLowerCase();
-``
+
   const [sharedWorkouts, setSharedWorkouts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -28,6 +28,9 @@ export function SocialWorkouts() {
   const [gymDetails, setGymDetails] = useState(null);
   const [gymLoading, setGymLoading] = useState(false);
   const [gymError, setGymError] = useState(null);
+  const [personalExercises, setPersonalExercises] = useState([]);
+  const [personalExLoading, setPersonalExLoading] = useState(false);
+  const [personalExError, setPersonalExError] = useState(null);
 
   const formatDate = (ts) => {
     if (!ts) return "N/A";
@@ -231,6 +234,55 @@ export function SocialWorkouts() {
     };
   }, [selectedWorkout?.gym_id]);
 
+  useEffect(() => {
+    let isActive = true;
+    const workoutId = selectedWorkout?.workout_id;
+
+    if (!workoutId) {
+      setPersonalExercises([]);
+      setPersonalExError(null);
+      return () => {
+        isActive = false;
+      };
+    }
+
+    const fetchPersonalExercises = async () => {
+      setPersonalExLoading(true);
+      setPersonalExError(null);
+      try {
+        const res = await fetch(`http://localhost:5000/api/AHFULpersonalEx/workout/${workoutId}`, {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (!res.ok) {
+          throw new Error(`Server returned ${res.status} ${res.statusText}`);
+        }
+
+        const data = await res.json();
+        if (isActive) {
+          setPersonalExercises(Array.isArray(data) ? data : []);
+        }
+      } catch (err) {
+        if (isActive) {
+          console.warn("fetchPersonalExercises failed:", err);
+          setPersonalExError("Unable to load personal exercises.");
+          setPersonalExercises([]);
+        }
+      } finally {
+        if (isActive) {
+          setPersonalExLoading(false);
+        }
+      }
+    };
+
+    fetchPersonalExercises();
+
+    return () => {
+      isActive = false;
+    };
+  }, [selectedWorkout?.workout_id, selectedWorkout?._id]);
+
   const getPostTimestamp = (post) => post?.created_at || post?.ts || null;
 
   return (
@@ -376,7 +428,7 @@ export function SocialWorkouts() {
                       <div>{gymDetails.name || "Gym"}</div>
                       {gymDetails.address && <div>{gymDetails.address}</div>}
                       {gymDetails.type && <div>Type: {gymDetails.type}</div>}
-                      {gymDetails.cost && <div>Cost: {formatCost(gymDetails.cost)}</div>}
+                      {gymDetails.cost && <div>Cost: (gymDetails.cost)</div>}
                       {gymDetails.link && (
                         <a href={gymDetails.link} target="_blank" rel="noreferrer">
                           Visit site
@@ -390,7 +442,37 @@ export function SocialWorkouts() {
                 </div>
               )}
 
-
+              <div className="workout-detail-section">
+                <label className="workout-detail-label">Shared Workout Exercises</label>
+                {personalExLoading && <p className="workout-detail-value">Loading exercises...</p>}
+                {!personalExLoading && personalExError && <p className="workout-detail-value">{personalExError}</p>}
+                {!personalExLoading && !personalExError && personalExercises.length === 0 && (
+                  <p className="workout-detail-value">No shared exercises found for workout.</p>
+                )}
+                {!personalExLoading && !personalExError && personalExercises.length > 0 && (
+                  <div className="workout-detail-value" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {personalExercises.map((ex) => (
+                      <div
+                        key={ex._id}
+                        style={{
+                          border: "1px solid var(--color-border)",
+                          borderRadius: 8,
+                          padding: 8,
+                          background: "var(--color-surface)",
+                        }}
+                      >
+                        <div><strong>Exercise:</strong> {ex.exercise_id || "Unknown"}</div>
+                        <div><strong>Sets:</strong> {ex.sets ?? 0}</div>
+                        <div><strong>Reps:</strong> {ex.reps ?? 0}</div>
+                        <div><strong>Weight:</strong> {ex.weight ?? 0}</div>
+                        <div><strong>Duration:</strong> {ex.duration ?? 0}</div>
+                        <div><strong>Distance:</strong> {ex.distance ?? 0}</div>
+                        <div><strong>Complete:</strong> {ex.complete ? "Yes" : "No"}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
             </div>
             <div className="workout-modal-actions">
