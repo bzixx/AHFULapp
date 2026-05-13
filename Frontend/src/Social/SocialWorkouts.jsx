@@ -11,6 +11,7 @@ export function SocialWorkouts() {
   const user = useSelector((s) => s.auth.user);
   const userId = user?.id;
   const userEmail = user?.email.toLowerCase();
+  const cachedExercises = useSelector((state) => state.pullExercise.exercises);
 
   const [sharedWorkouts, setSharedWorkouts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -461,8 +462,7 @@ export function SocialWorkouts() {
                           background: "var(--color-surface)",
                         }}
                       >
-                        <div><strong>Exercise:</strong> {ex.exercise_id || "Unknown"}</div>
-                        <div><strong>Sets:</strong> {ex.sets ?? 0}</div>
+                        <div><strong>Exercise:</strong> {cachedExercises?.find(e => e._id?.toString() === ex.exercise_id?.toString())?.name}</div>
                         <div><strong>Reps:</strong> {ex.reps ?? 0}</div>
                         <div><strong>Weight:</strong> {ex.weight ?? 0}</div>
                         <div><strong>Duration:</strong> {ex.duration ?? 0}</div>
