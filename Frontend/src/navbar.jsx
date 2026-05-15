@@ -114,7 +114,6 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
 
           <button
             to="/TOS"
-            className={({ isActive }) => (isActive ? "active" : "")}
             onClick={() => setShowTOS(true)}
           >
             Terms of Service
@@ -215,7 +214,6 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
 
           <button
             to="/TOS"
-            className={({ isActive }) => (isActive ? "active" : "")}
             onClick={() => setShowTOS(true)}
           >
             Terms of Service

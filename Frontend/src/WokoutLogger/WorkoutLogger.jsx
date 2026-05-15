@@ -430,10 +430,26 @@ export function WorkoutLogger() {
         return;
       }
 
-      // 1. Create the template
+      // 1. Create exercises array from Personal Exercises
+      const personalExPayload = [];
+
+      //2. Map exercises in progress to the template format
+      for (const ex of exercisesInProgressTable) {
+        personalExPayload.push({
+          exercise_id: ex.exercise_id,
+          reps: ex.reps,
+          sets: ex.sets,
+          weight: ex.weight,
+          duration: ex.duration,
+          distance: ex.distance,
+        });
+      }
+
+      // 3. Create the template
       const templatePayload = {
         title: workoutTitle,
         user_id: user._id,
+        exercises: personalExPayload,
       };
 
       const template = await createTemplate(templatePayload);
@@ -442,22 +458,7 @@ export function WorkoutLogger() {
         throw new Error("Failed to create template");
       }
 
-      // 2. Create personalExercises using template._id as workoutId
-      for (const ex of exercisesInProgressTable) {
-        const personalExPayload = {
-          exercise_id: ex.exercise_id,
-          reps: ex.reps,
-          sets: ex.sets,
-          weight: ex.weight,
-          duration: ex.duration,
-          distance: ex.distance,
-          complete: false,
-          user_id: user._id,
-          workout_id: template.data.workout_id,
-          template: true,
-        };
-        createPersonalExercise(personalExPayload);
-      }
+
 
       alert("Template has been saved!");
     } catch (err) {
