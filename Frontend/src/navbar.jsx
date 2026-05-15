@@ -182,7 +182,7 @@ export function Navbar({ minHeight, isOpen = false, onNavClick = null }) {
           </NavLink>
 
           <NavLink
-            to="/WorkoutLogger"
+            to="/Templates"
             className={({ isActive }) => (isActive ? "active" : "")}
             onClick={handleNavClick}
           >
