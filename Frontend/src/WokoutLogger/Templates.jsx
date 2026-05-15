@@ -38,8 +38,6 @@ export function Templates() {
 
     return (
     /* Left Column: Template/History */
-    <div className="left-column">
-        <div className="template-container">
           <div className="add-template-form">
             {/* Search Bar */}
             <div className="dropdown-wrapper">
@@ -50,50 +48,53 @@ export function Templates() {
                 onChange={(e) => setTemplateSearch(e.target.value)}
                 onKeyDown={exitOnEnter}
               />
-
-              <div className="dropdown-instructions">
-                Select a template to apply
-              </div>
-
-              {/* Template List */}
-              <div className="dropdown">
-                {templates.length === 0 && (
-                  <div className="dropdown-item">No templates found</div>
-                )}
-
-                {templates
-                  .filter((t) => {
-                    const title = t?.title ?? "";
-
-                    // Keep selected template visible even if search doesn't match
-                    if (selectedTemplate?._id === t._id) return true;
-
-                    return title
-                      .toLowerCase()
-                      .includes(templateSearch.toLowerCase());
-                  })
-                  .map((t, i) => {
-                    const isSelected = selectedTemplate?._id === t._id;
-
-                    return (
-                      <div
-                        key={t._id ?? i}
-                        className={`dropdown-item ${isSelected ? "selected" : ""}`}
-                        onClick={() => {
-                          if (isSelected) {
-                            setSelectedTemplate(null); // unselect
-                          } else {
-                            setSelectedTemplate(t); // select
-                          }
-                        }}
-                      >
-                        <span>{t.title ?? "Unnamed Template"}</span>
-                        {isSelected && <span className="check">✓</span>}
-                      </div>
-                    );
-                  })}
-              </div>
         </div>
+
+
+        <div className="dropdown-instructions">
+          Select a template to apply
+        </div>
+
+        {/* Template List */}
+          {templates.length === 0 && (
+            <div className="dropdown-item">No templates found</div>
+          )}
+
+          {templates
+            .filter((t) => {
+              const title = t?.title ?? "";
+
+              // Keep selected template visible even if search doesn't match
+              if (selectedTemplate?._id === t._id) return true;
+
+              return title
+                .toLowerCase()
+                .includes(templateSearch.toLowerCase());
+            })
+            .map((t, i) => {
+              const isSelected = selectedTemplate?._id === t._id;
+
+              return (
+                <div
+                  key={t._id ?? i}
+                  className={`dropdown-item ${isSelected ? "selected" : ""}`}
+                  onClick={() => {
+                    if (isSelected) {
+                      setSelectedTemplate(null); // unselect
+                    } else {
+                      setSelectedTemplate(t); // select
+                    }
+                  }}
+                >
+                  <span>Template Name: {t.title ?? "Unnamed Template"}</span>
+                  <br />
+                  <span>Created: {t.created_at ?? "Unknown Date"}</span>
+                  <br />
+                  <span>Notes: {t.notes ?? "No Notes"}</span>
+                  {isSelected && <span className="check">✓</span>}
+                </div>
+              );
+            })}
 
         <div
             className="apply-btn-wrapper"
@@ -110,7 +111,5 @@ export function Templates() {
             )}
             </div>
         </div>
-    </div>
-</div>
     );
 }
