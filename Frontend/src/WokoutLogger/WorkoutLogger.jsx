@@ -249,13 +249,6 @@ export function WorkoutLogger() {
     setNewExercise((prev) => ({ ...prev, [field]: values }));
   };
 
-  // useEffect 1: cleanup debounced search timer on unmount
-  useEffect(() => {
-    return () => {
-      if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-    };
-  }, []);
-
   // ─── Load Exercise Options on Mount ──────────────────────────────────────────
   useEffect(() => {
     let mounted = true;
