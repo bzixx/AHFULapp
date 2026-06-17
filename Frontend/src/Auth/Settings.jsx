@@ -1,7 +1,5 @@
 import "./Settings.css";
-import "../Stylesheets/Themes/Lightmode.css";
-import "../Stylesheets/Themes/Darkmode.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { DropdownRow, ActionRow } from "./SettingsHook.jsx";
 import { updateSetting, setSettings } from "./SettingsSlice.jsx";
@@ -24,14 +22,6 @@ const update = (key, val) => {
     }).catch(err => console.error("Failed to save theme:", err));
   }
 };
-
-  useEffect(() => {
-    if (answers.theme === "dark") {
-      document.body.classList.add("dark");
-    } else {
-      document.body.classList.remove("dark");
-    }
-  }, [answers.theme]);
 
   const handleSave = () => {
     if (!user || !user._id) return;
