@@ -1,9 +1,3 @@
-.dashboard-landing {
-  display: flex;
-  flex-direction: column;
-  align-self: center;
-}
-
 .hero-eyebrow {
   display: inline-block;
   font-weight: 500;
@@ -24,11 +18,6 @@
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 8px;
-}
-
-.section-sub {
-  color: var(--text-secondary);
-  margin-bottom: 18px;
 }
 
 .section_grid {
