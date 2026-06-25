@@ -4,8 +4,17 @@ title: "[Feature]: "
 labels: ["enhancement"]
 body:
   - type: textarea
+    id: user-story
+    attributes:
+      label: User Story
+      description: Describe who this issue effects and how it would improve their experience
+      placeholder: |
+        1. As a user I would like ... to be able to ... so that I can ...
+        2. As a gym owner I would like ... to be able to ... so that I can ...
+
+  - type: textarea
     id: feature-description
     attributes:
       label: Feature Description
-      description: Describe the feature you'd like to see
+      description: Describe how you would like this feature to work and what it should do
       placeholder: Tell us about your idea...
