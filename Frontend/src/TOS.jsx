@@ -1,29 +1,48 @@
 import React from "react";
 import "./siteStyles.css";
 
-export function TOS() {
-    return (
-        <div className="tos-page page-layout">
-            <div className="solo-page-container">
+export function TOS({ isOpen, onClose }) {
+  if (!isOpen) return null;
+
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  return (
+    <div className="tos-modal" onClick={handleBackdropClick}>
+      <div className="tos-modal-content">
+        <button className="tos-close" onClick={onClose}>
+          × 
+        </button>
                 <h1>Terms of Service</h1>
 
                 <p className="tos-intro">
                     These Terms of Service ("Terms") govern your access to and use of the AHFUL app and related services (the "Service"). By accessing or using the Service you agree to be bound by these Terms. If you do not agree to all of the terms, then you may not access the Service.
                 </p>
 
-                <h2>This website is a UW-Stout Student Group Project for Spring 2026</h2>
+                <h2>This website is a UW-Stout Student Open Source Group Project for the 2026-2027 Academic Year</h2>
                 <p>
-                    The authors of this website are students at the University of Wisconsin-Stout implementing their skills to show off the functional secure website they have built over the semester.
+                    The authors of this website are students at the University of Wisconsin-Stout implementing their advanced software engineering skills to show off the functional secure website they have built over the semester.
                 </p>
 
                 <h2>1. Using the Service</h2>
                 <p>
-                    You may use the Service only in compliance with these Terms and all applicable laws. You are responsible for any activity that occurs under your account.
+                    You may use the Service only in compliance with these Terms and all applicable local, state, and federal laws applicaable in your region's jurisdiction. You are responsible for any activity that occurs under your account.
                 </p>
 
-                <h2>2. Accounts</h2>
+                <h2>2. AHFUL Accounts</h2>
                 <p>
-                    Certain features require an account. Keep your account credentials secure. You are responsible for all activity on your account. We may suspend or terminate accounts for violation of these Terms.
+                    Most features require an account. In order to create an AHFUL account you must:  
+                        A)Have an active Google account in good standing with Google.  
+                        AND
+                        B)Allow AHFUL app to access your basic Google account information such as name, email, and profile picture. 
+                </p>
+
+                <h2>2.1 Account Security</h2>
+                <p>
+                    You are responsible for all activity on your account. We may deactivate your account if you violate these Terms. You are responsible for maintaining the security of your account. We cannot and will not be liable for any loss or damage from your failure to comply with this security obligation.
                 </p>
 
                 <h2>3. Content</h2>
@@ -65,12 +84,9 @@ export function TOS() {
                 <p>
                 The Gemini API Additional Terms of Service and the Google Privacy Policy apply. Prompts and responses may be reviewed and used to train Google AI, so don’t submit sensitive or personal information. Learn more about data use. Google AI models can make mistakes, so double-check responses before relying on, publishing, or otherwise using generated content.
                 </p>
-
-
-
-
-                <p className="tos-last-updated">Last updated: April 9, 2026</p>
-            </div>
-        </div>
-    );
+        <p className="tos-last-updated">Last updated: April 9, 2026</p>
+      </div>
+    </div>
+  );
 }
+

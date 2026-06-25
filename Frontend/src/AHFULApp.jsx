@@ -134,7 +134,6 @@ function AHFULApp() {
         </Route>
         {/* Put outside of the Layout so it doesn't show the header/navbar */}
         <Route path="/" element={<Login/>}/>
-        <Route path="/TOS" element={<TOS/>}/>
       </Routes>
 
       {tutorialActive && currentStepData && (
