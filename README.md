@@ -1,14 +1,14 @@
 ## Project Overview -- AHFUL App
 
-A Helpful Fitness Utilization Logger (AHFUL) app is a Web App for tracking workouts, food, gyms, and measurements. The repository contains a Python-based backend (API routes and services) under the `Backend/` and a React-based frontend (Static Files and Images) under the `Frontend/` folder.
+A Helpful Fitness Utilization Logger (AHFUL) app is an Open Source Web App for tracking workouts, food, gyms, and measurements. The repository contains a Python-based backend (Hosted APIs) under the `Backend/` and a React-based UI under the `Frontend/` folder.
 
 ## Architecture
 
-- Frontend: Node, React, & Vite (See detailed Frontend setup in ./Frontend/README.md)
+- Frontend: Node.js, React, & Vite (See detailed Frontend setup in ./Frontend/README.md)
 - Backend: Python Flask API Blueprints (see See detailed Beckend setup in ./Backend/README.md)
 - Database: Externally Hosted MongoDB via PyMongo Python Library
 - Notification Service Workers: Hosted GCP Project with Firebase Integration
-- AI Chatbot: Hosted GCP Projet with Vertex AI Integration (Recieved Credits for Student GenAI App Builder Integration)
+- AI Chatbot: Hosted GCP Project with Vertex AI Integration (Recieved Credits for Student GenAI App Builder Integration)
 
 ## Prerequisites:
 
@@ -31,29 +31,28 @@ Adjust the command to suit your environment and any test requirements (for examp
 
 ## Contributing Standards
 
-variableNames = "Use Camel Case"
+Variable names use camel case. Example: myCoolVariable = 'foo'
 
-def naming_functions_uses_lowercase_underscores:
+Function names user lowercase words connected by underscores. Example: def naming_functions_uses_lowercase_underscores
 
-class ClassNamesUseCapitalCase:  (FileNames also use CapitalCase)
+Class names and File names user Capital Case.  Example: class ClassNamesUseCapitalCase & MyCoolNewFile.txt
 
-This is a Team project, Contributions are welcome!
-
-1. Create an branch from main  (follow the repository branch naming conventions) -- > YourName/UserStoryName
-2. Create detailed commit messages and Commit after Testing
-3. Pull Main and resolve merge conflicts locally
-4. Open a pull request with a clear description of what changed and why.
-5. PRs to Main require review from another contributor before they can be merged.
+## This is an Open Source project, Contributions are welcome!  
+1. Request contributor access.
+2. Create an branch from main and follow the repository branch naming convention -- > YourName/UserStoryName
+3. Commit Often and create detailed commit messages 
+4. Test local commits before continuing. 
+5. Pull Main and resolve merge conflicts locally
+6. Open a pull request with a clear description of what changed and why.
+7. PRs to Main require review from a Team Owner before they can be merged.
 ---------------
 AUTOMATED
 ---------------
-6. Closed PRs to main will generate PRs to Production in prod-staging. 
-7. PRs to Prod Require any contributor to sign off on the Bot's Updates
-8. Approved PRs to Prod Staging will be Automatically bundeled and pushed to Production. 
-9. Wait a minute. 
-10. Visit https://www.ahful.app
-
-
+8. Closed PRs to main will generate PRs to Production in prod-staging. 
+9. PRs to Prod Require Team Owners to sign off on the Bot's Updates
+10. Approved PRs to Prod Staging will be Automatically bundeled and pushed to Production. 
+11. Wait for updates to cook for 3 minutes. 
+12. Visit https://www.ahful.app
 
 
 

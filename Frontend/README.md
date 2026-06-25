@@ -1,14 +1,11 @@
 ## AHFUL Application -- Frontend Technical Documentation
 
-This directory holds all information required for the Frontend to render and load for the user.  
-Key components:
-All Navigation Pages for the user
-Custom Auth Context component for persistent authentication
+This directory holds all information required for the Frontend UI Setup and Configuration.   
 
 ## Setup Instructions
 1. **Install Dependencies**:
     - In vscode, open a terminal (ctrl + ~) 
-        Navigat to the Frontend folder then run the following: 
+        Navigate to the Frontend folder then run the following: 
         
         ```bash
         npm install
@@ -25,9 +22,9 @@ Custom Auth Context component for persistent authentication
         ```
 
 2. **Access the Application**:
-    - Open your browser and navigate to `https://ahful.app`.
+    - Open your browser and navigate to the local development IP address provided by Vite.
 
-### CSS Information
+### CSS Contribution Information
   -Start with theme pages under Stylesheets/Themes/
   -Use design tokens (var(--...)) for all colors, text, borders, spacing, etc.
   -Never hardcode colors or font sizes
@@ -43,8 +40,8 @@ Custom Auth Context component for persistent authentication
 
 ### Muscle Map Library Information
 react-muscle-highlighter
-by:soroojshehryar
-https://github.com/soroojshehryar/react-muscle-highlighter?tab=readme-ov-file
+Credit to: soroojshehryar
+Website: https://github.com/soroojshehryar/react-muscle-highlighter?tab=readme-ov-file
 
 
 ### Frontend Directory Structure
