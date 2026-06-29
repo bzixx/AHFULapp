@@ -441,12 +441,12 @@ def test_find_gym_by_id():
     assert gym.get("link") == "https://examplegym.com"
     assert gym.get("isPublic") == True
 
-    # Give a bad gym_id
+    # Give a invalid format (Non 24-hex string) gym_id
     bad_oid = "699cff88400d9d43a32e924"
     gym, err = GymDriver.get_gym_by_id(bad_oid, "699d0093795741a59fe13616")
 
-    if err is not None:
-        print("12.  There was a testing error on Test 12 Object was: ", gym, "Error Was: ", err)
+    if err is None:
+        print("12.  There should have been an error but wasn't on Test 12. Object was: ", gym, "Error Was: ", err)
 
     # Expected
     bad_err_code = "Invalid gym_id format; must be a 24-hex string"
@@ -455,13 +455,13 @@ def test_find_gym_by_id():
     assert gym is None
     assert err == bad_err_code
 
-    # Give an invalid gym_id
+    # Give a correctly formatted but non-existent (oid not in DB) gym_id
     inv_oid = "111111111111111111111111"
     
     gym, err = GymDriver.get_gym_by_id(inv_oid, "699d0093795741a59fe13616")
 
-    if err is not None:
-        print("13.  There was a testing error on Test 13 Object was: ", gym, "Error Was: ", err)
+    if err is None:
+        print("13.  There should have been an error but wasn't on Test 13. Object was: ", gym, "Error Was: ", err)
 
     # Expected
     inv_err_code = "Gym not found"
