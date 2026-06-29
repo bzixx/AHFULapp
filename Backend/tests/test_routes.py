@@ -736,12 +736,12 @@ def test_find_personal_ex_by_id():
     assert ex.get("weight") == 150
     assert ex.get("workout_id") == "699d05d8f1677119323250bc"
 
-    # Give a bad _id
+    # Give a invalid format (Non 24-hex string) user_id
     bad_oid = "69ab5596dc5dee4f518a01c"
     ex, err = PersonalExDriver.get_personal_ex_by_id(bad_oid)
 
-    if err is not None:
-        print("17.  There was a testing error on Test 17 Object was: ", ex, "Error Was: ", err)
+    if err is None:
+        print("17.  There should have been an error but wasn't on Test 17. Object was: ", ex, "Error Was: ", err)
 
     # Expected
     bad_err_code = "Invalid personal ex id format; must be a 24-hex string"
@@ -750,12 +750,12 @@ def test_find_personal_ex_by_id():
     assert ex is None
     assert err == bad_err_code
 
-    # Give an invalid _id
+    # Give a correctly formatted but non-existent (oid not in DB) user_id
     inv_oid = "000000000000000000000000"
     ex, err = PersonalExDriver.get_personal_ex_by_id(inv_oid)
 
-    if err is not None:
-        print("18.  There was a testing error on Test 18 Object was: ", ex, "Error Was: ", err)
+    if err is None:
+        print("18.  There should have been an error but wasn't on Test 18. Object was: ", ex, "Error Was: ", err)
 
     # Expected
     inv_err_code = "PersonalEx not found"
