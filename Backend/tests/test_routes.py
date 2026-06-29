@@ -31,11 +31,11 @@ def test_find_food_by_id():
     assert food.get("type") == "Lunch"
     assert food.get("time") == 1708473601
 
-    # Give a bad user_id
+    # Give a invalid format (Non 24-hex string) user_id
     bad_oid = "699d0f5f888d8f649698307"
     food, err = FoodDriver.get_food_by_id(bad_oid)
 
-    if err is not None:
+    if err is None:
         print("2.  There was a testing error on Test 2 Object was: ", food, "Error Was: ", err)
 
     # Expected
@@ -45,15 +45,12 @@ def test_find_food_by_id():
     assert food is None
     assert err == bad_err_code
 
-    # Give an invalid user_id
+    # Give a correctly formatted but non-existent (oid not in DB) user_id
     inv_oid = "000000000000000000000000"
     food, err = FoodDriver.get_food_by_id(inv_oid)
 
-    if err is not None:
+    if err is None:
         print("3.  There was a testing error on Test 3 Object was: ", food, "Error Was: ", err)
-
-    if err is not None:
-        print("4.  There was a testing error on Test 4 Object was: ", food, "Error Was: ", err)
 
     # Expected
     inv_err_code = "Food not found"
