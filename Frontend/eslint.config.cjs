@@ -2,6 +2,11 @@ const importPlugin = require('eslint-plugin-import');
 const unicorn = require('eslint-plugin-unicorn');
 
 module.exports = [
+  // Global ignores — skip linting entirely for these
+  {
+    ignores: ['dist/**', 'build/**', 'node_modules/**', 'coverage/**'],
+  },
+
   {
     plugins: {
       import: importPlugin,
@@ -19,29 +24,39 @@ module.exports = [
     rules: {
       'import/no-unresolved': ['error', { caseSensitive: true }],
 
-      // Enforce PascalCase filenames for component-like files,
-      // and allow index files / config files to be exempt.
       'unicorn/filename-case': [
         'error',
         {
           case: 'pascalCase',
           ignore: [
+            // Firebase requires this exact filename
+            /^firebase-messaging-sw\.js$/,
+            // Build/config tooling files
             /^vite\.config\.[jt]s$/,
-            /^eslint\.config\.cjs$/,
-            /^index\.(js|jsx|ts|tsx)$/, // barrel files
-            /^\.[a-z]+rc\.[cm]?js$/,     // dotfile configs
+            /^eslint\.config\.(js|cjs|mjs)$/,
+            /^use[A-Z].*\.[jt]sx?$/, 
+            /^[a-z].*Api\.[jt]sx?$/,
+            /^firebase\.[jt]s$/,
+            /^CompanionAI\.js$/,
+            /^index\.[jt]sx?$/,
           ],
         },
       ],
 
-      // Enforce camelCase for variables
       camelcase: [
         'error',
         {
-          properties: 'never', // don't force it on object keys from external APIs
+          properties: 'never',
           ignoreDestructuring: false,
         },
       ],
+    },
+  },
+
+  {
+    files: ['vite.config.js', 'eslint.config.cjs'],
+    rules: {
+      'import/no-unresolved': 'off',
     },
   },
 ];
